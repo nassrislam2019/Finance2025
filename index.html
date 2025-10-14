@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>دفتر حساباتي — تتبُّع المصروفات والدخل</title>
+<title>دفتر حساباتي — تتبُّع المصروفات والدخل</title>
 <meta name="description" content="موقع شخصي بسيط لإدارة المصروفات والدخل — يعمل أوفلاين (PWA) ويحفظ البيانات محليًا." />
 <meta name="theme-color" content="#ffffff" />
-<link rel="manifest" href="manifest.json" />
+<link rel="manifest" href="/my-finance/manifest.json" />
 <meta name="mobile-web-app-capable" content="yes" />
 <style>
 :root{
@@ -93,7 +93,7 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
   <header>
     <div>
       <div class="title">دفتر حساباتي</div>
-      <div class="sub">تتبُّع المصروفات والدخل — يعمل أوفلاين (PWA) والبيانات محفوظة محليًا</div>
+      <div class="sub">تتبُّع المصروفات والدخل — يعمل أوفلاين (PWA) والبيانات محفوظة محليًا</div>
     </div>
     <div class="toolbar">
       <button id="exportJson" class="btn btn-outline" type="button">تصدير JSON</button>
@@ -127,9 +127,10 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
     <div class="card-head"><h3>استحقاقات قريبة</h3></div>
     <div class="card-body">
       <div id="dueSoonWrap" style="display:none">
-        <table style="width:100%"><thead>
-          <tr><th style="text-align:right">الاسم</th><th style="text-align:right">التاريخ</th><th style="text-align:right">المبلغ</th><th style="text-align:right">الحالة</th></tr>
-        </thead><tbody id="tbodyDueSoon"></tbody></table>
+        <table style="width:100%">
+          <thead><tr><th style="text-align:right">الاسم</th><th style="text-align:right">التاريخ</th><th style="text-align:right">المبلغ</th><th style="text-align:right">الحالة</th></tr></thead>
+          <tbody id="tbodyDueSoon"></tbody>
+        </table>
       </div>
       <div id="noDueSoon" style="color:var(--muted)">لا توجد استحقاقات خلال ٥ أيام.</div>
     </div>
@@ -166,7 +167,7 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
 
   <div class="hr"></div>
 
-  <!-- (2.5) تحويل بين الحسابات -->
+  <!-- (2.5) تحويل بين الحسابات (مطوي افتراضيًا) -->
   <section class="card collapsed" id="card-transfer" data-collapsible>
     <div class="card-head"><h3>تحويل بين الحسابات</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
     <div class="card-body">
@@ -286,7 +287,7 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
     <div class="card-head"><h3>مبالغ تحت التحصيل</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
     <div class="card-body">
       <div class="grid grid-4">
-        <div><label>اسم التحصيل</label><input id="coName" placeholder="مثال: مبيعات آجل" /></div>
+        <div><label>اسم التحصيل</label><input id="coName" placeholder="مثال: إيجار مستلم، مبيعات آجل" /></div>
         <div><label>المبلغ (ج.م)</label><input id="coAmount" type="number" step="0.01" placeholder="0.00" /></div>
         <div><label>تاريخ أول استحقاق</label><input id="coFirstDue" type="date" required /></div>
         <div class="checkbox-row"><input id="coRecurring" type="checkbox" /><label for="coRecurring" style="margin:0">يتكرر شهريًا</label></div>
@@ -305,6 +306,37 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
     </div>
   </section>
 
+  <div class="hr"></div>
+
+  <!-- (8) إعدادات مزامنة GitHub (واحد فقط) -->
+  <section class="card" id="card-github">
+    <div class="card-head"><h3>إعدادات مزامنة GitHub</h3></div>
+    <div class="card-body">
+      <div class="grid grid-4">
+        <div><label>اسم المستخدم</label><input id="ghUser" placeholder="مثال: nassrislam2019" /></div>
+        <div><label>المستودع (Repository)</label><input id="ghRepo" placeholder="مثال: Finance2025" /></div>
+        <div><label>الفرع</label><input id="ghBranch" value="main" /></div>
+        <div><label>مسار الملف (JSON)</label><input id="ghPath" value="data/my-finance.json" /></div>
+      </div>
+      <div class="grid grid-3" style="margin-top:8px">
+        <div><label>Personal Access Token</label><input id="ghToken" type="password" placeholder="ghp_..." /></div>
+        <div class="checkbox-row" style="margin-top:22px"><input id="ghAuto" type="checkbox"/><label for="ghAuto" style="margin:0">مزامنة تلقائيًا بعد أي تعديل</label></div>
+        <div class="grid grid-2" style="margin-top:22px">
+          <button id="ghSaveCfg" class="btn btn-outline" type="button">حفظ الإعدادات</button>
+          <button id="ghTest" class="btn btn-outline" type="button">اختبار الاتصال</button>
+        </div>
+      </div>
+      <div class="grid grid-3" style="margin-top:8px">
+        <button id="ghPull" class="btn btn-outline" type="button">تحميل البيانات من GitHub</button>
+        <button id="ghPush" class="btn btn-primary" type="button">رفع البيانات إلى GitHub</button>
+        <span id="ghStatus" class="badge">الحالة: غير متصل</span>
+      </div>
+      <div style="margin-top:8px;color:var(--muted);font-size:12px">
+        ⚠️ تنبيه: الـ Token يُحفظ محليًا على جهازك فقط. لا تنشره علنًا.
+      </div>
+    </div>
+  </section>
+
   <div class="footer">
     <div>⚠️ <span class="note">تنبيه:</span> كل البيانات محفوظة محليًا في <code>localStorage</code>. لا تنسَ التصدير كنسخة احتياطية.</div>
     <div style="margin-top:6px">تقدر تثبّت الموقع كتطبيق لأنه PWA.</div>
@@ -317,14 +349,14 @@ const KEY='pf_ledger_v1',
       ACC_KEY='pf_accounts_v1',
       CAT_KEY='pf_categories_v1',
       COM_KEY='pf_commitments_v1',
-      COL_KEY='pf_collections_v1';
+      COL_KEY='pf_collections_v1'; // مبالغ تحت التحصيل
 
 /* ===== الحالة ===== */
 let ledger=JSON.parse(localStorage.getItem(KEY)||'[]');
 let accounts=JSON.parse(localStorage.getItem(ACC_KEY)||'[]');
 let categories=JSON.parse(localStorage.getItem(CAT_KEY)||'[]');
-let commitments=JSON.parse(localStorage.getItem(COM_KEY)||'[]');
-let collections=JSON.parse(localStorage.getItem(COL_KEY)||'[]');
+let commitments=JSON.parse(localStorage.getItem(COM_KEY)||'[]'); // {id,name,amount,firstDue,nextDue,recurring,endAt}
+let collections=JSON.parse(localStorage.getItem(COL_KEY)||'[]'); // نفس البنية للتحصيل
 
 /* افتراضات أولية */
 if(accounts.length===0){ accounts=[{name:'كاش',opening:0},{name:'حساب بنكي',opening:0},{name:'محفظة',opening:0}]; saveAccounts(); }
@@ -360,10 +392,13 @@ const els={
   newAccountName:$('#newAccountName'), newAccountOpening:$('#newAccountOpening'), addAccount:$('#addAccount'), accountsList:$('#accountsList'),
   newCatName:$('#newCatName'), newCatType:$('#newCatType'), addCategory:$('#addCategory'), catsList:$('#catsList'),
   monthPicker:$('#monthPicker'), refreshReports:$('#refreshReports'), tbodyMonthly:$('#tbodyMonthly'), chartMonthly:$('#chartMonthly'),
+  /* التزامات */
   cName:$('#cName'), cAmount:$('#cAmount'), cFirstDue:$('#cFirstDue'), cRecurring:$('#cRecurring'), cEndAt:$('#cEndAt'),
   addCommitment:$('#addCommitment'), tbodyCommit:$('#tbodyCommit'),
+  /* تحصيل */
   coName:$('#coName'), coAmount:$('#coAmount'), coFirstDue:$('#coFirstDue'), coRecurring:$('#coRecurring'), coEndAt:$('#coEndAt'),
   addCollect:$('#addCollect'), tbodyCollect:$('#tbodyCollect'),
+  /* PWA & تحويل */
   installBtn:$('#installBtn'),
   trFrom:$('#trFrom'), trTo:$('#trTo'), trAmount:$('#trAmount'), trFee:$('#trFee'), trDate:$('#trDate'), trDesc:$('#trDesc'),
   execTransfer:$('#execTransfer'), resetTransfer:$('#resetTransfer')
@@ -461,7 +496,8 @@ function computeBalances(){
   return {bal,after};
 }
 function drawPerAccount(balMap){
-  const items=[]; for(const a of accounts){const v=balMap.get(a.name)??a.opening??0; items.push(`<span class="item">${escapeHtml(a.name)} · <b>${fmt(v)} ج.م</b></span>`);}
+  const items=[];
+  for(const a of accounts){const v=balMap.get(a.name)??a.opening??0; items.push(`<span class="item">${escapeHtml(a.name)} · <b>${fmt(v)} ج.م</b></span>`);}
   for(const [name,val] of balMap){ if(!accounts.some(a=>a.name===name)){ items.push(`<span class="item">⚠️ ${escapeHtml(name)} · <b>${fmt(val)} ج.م</b></span>`);} }
   if(els.perAccount) els.perAccount.innerHTML=items.join('');
 }
@@ -561,7 +597,7 @@ function render(){
     if(ff && t.date<ff) return false;
     if(fto && t.date>fto) return false;
     return true;
-  }).sort((a,b)=> a.date.localeCompare(b.date) || (a.id>b.id?1:-1));
+  }).sort((a,b)=> a.date.localeCompare(b.date) || (a.id>b.id?1:-1)); // الأقدم -> الأحدث
 
   if(els.tbody){
     els.tbody.innerHTML=rows.map(t=>{
@@ -589,7 +625,7 @@ els.saveTx?.addEventListener('click',()=>{
   if(!date || !account || !category || !amount || amount<=0){ alert('من فضلك أدخل بيانات صحيحة (تاريخ/حساب/فئة/مبلغ)'); return; }
   const tx={ id:editId||eid(), date, desc, type, amount, account:account.trim(), category:category.trim() };
   if(editId){ const i=ledger.findIndex(t=>t.id===editId); if(i>-1) ledger[i]=tx; editId=null; els.saveTx.textContent='حفظ'; }
-  else { ledger.push(tx); }
+  else { ledger.push(tx); } // الأقدم->الأحدث طبيعيًا
   saveLedger(); els.desc.value=''; els.amount.value=''; render();
 });
 els.resetForm?.addEventListener('click',()=>{ editId=null; els.saveTx.textContent='حفظ'; els.type.value='expense'; els.amount.value=''; els.desc.value=''; refreshCategorySelect(); });
@@ -929,13 +965,9 @@ function initCollapsibles(){
   });
 }
 
-/* ===== PWA ===== */
-let deferredPrompt=null;
-window.addEventListener('beforeinstallprompt', (e)=>{ e.preventDefault(); deferredPrompt=e; if(els.installBtn) els.installBtn.style.display='inline-flex'; });
-els.installBtn?.addEventListener('click', async ()=>{ if(!deferredPrompt) return; els.installBtn.disabled=true; await deferredPrompt.prompt(); deferredPrompt=null; els.installBtn.style.display='none'; });
-
+/* ===== Service Worker ===== */
 if('serviceWorker' in navigator){
-  window.addEventListener('load', ()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
+  window.addEventListener('load', ()=>{ navigator.serviceWorker.register('/my-finance/sw.js').catch(()=>{}); });
 }
 
 /* ===== تهيئة ===== */
@@ -955,6 +987,178 @@ function init(){
   els.coEndAt?.toggleAttribute('required', els.coRecurring?.checked);
 }
 init();
+</script>
+
+<!-- ===== GitHub Sync Module (مرة واحدة فقط) ===== -->
+<script>
+(function(){
+  const CFG_KEY = 'pf_gh_cfg_v1';
+  const $ = s => document.querySelector(s);
+  const els = {
+    user: $('#ghUser'), repo: $('#ghRepo'), branch: $('#ghBranch'), path: $('#ghPath'),
+    token: $('#ghToken'), auto: $('#ghAuto'),
+    save: $('#ghSaveCfg'), test: $('#ghTest'), pull: $('#ghPull'), push: $('#ghPush'), status: $('#ghStatus')
+  };
+
+  const encode64 = (str)=> btoa(unescape(encodeURIComponent(str)));
+  const decode64 = (b64)=> decodeURIComponent(escape(atob(b64)));
+  const nowISO = ()=> new Date().toISOString().replace('T',' ').slice(0,19);
+  const setStatus = (txt, ok=false)=> { if(els.status){ els.status.textContent = 'الحالة: '+txt; els.status.style.color = ok ? 'green' : ''; } };
+
+  function loadCfg(){
+    try{
+      const c = JSON.parse(localStorage.getItem(CFG_KEY)||'{}');
+      els.user && (els.user.value = c.user||'');
+      els.repo && (els.repo.value = c.repo||'');
+      els.branch && (els.branch.value = c.branch||'main');
+      els.path && (els.path.value = c.path||'data/my-finance.json');
+      els.token && (els.token.value = c.token||'');
+      els.auto && (els.auto.checked = !!c.auto);
+      return c;
+    }catch(_){ return {}; }
+  }
+  function getCfg(){
+    return {
+      user: els.user?.value.trim(),
+      repo: els.repo?.value.trim(),
+      branch: els.branch?.value.trim() || 'main',
+      path: els.path?.value.trim() || 'data/my-finance.json',
+      token: els.token?.value.trim(),
+      auto: !!els.auto?.checked
+    };
+  }
+  function saveCfgLocally(c){ localStorage.setItem(CFG_KEY, JSON.stringify(c)); }
+  function ghHeaders(token){
+    return {
+      'Accept': 'application/vnd.github+json',
+      'Authorization': 'Bearer ' + token,
+      'X-GitHub-Api-Version': '2022-11-28',
+      'Content-Type': 'application/json; charset=utf-8'
+    };
+  }
+  function cfgOk(c){ return c.user && c.repo && c.branch && c.path && c.token; }
+
+  function currentData(){
+    try{
+      return {
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        ledger: (typeof ledger!=='undefined'? ledger: []),
+        accounts: (typeof accounts!=='undefined'? accounts: []),
+        categories: (typeof categories!=='undefined'? categories: []),
+        commitments: (typeof commitments!=='undefined'? commitments: []),
+        collections: (typeof collections!=='undefined'? collections: [])
+      };
+    }catch(e){
+      return {version:1, exportedAt:new Date().toISOString(), ledger:[], accounts:[], categories:[], commitments:[], collections:[]};
+    }
+  }
+
+  async function getFileSha(c){
+    const url = `https://api.github.com/repos/${encodeURIComponent(c.user)}/${encodeURIComponent(c.repo)}/contents/${c.path}?ref=${encodeURIComponent(c.branch)}`;
+    const res = await fetch(url, { headers: ghHeaders(c.token) });
+    if(res.status===404) return null;
+    if(!res.ok) throw new Error('GET contents failed: '+res.status);
+    const js = await res.json();
+    let contentJson = null;
+    try{
+      if(js && js.content){ contentJson = JSON.parse(decode64(js.content.replace(/\n/g,''))); }
+    }catch(_){}
+    return { sha: js.sha, contentJson };
+  }
+
+  async function pushToGitHub(){
+    const c = getCfg();
+    if(!cfgOk(c)){ alert('أكمل إعدادات GitHub أولاً (User/Repo/Branch/Path/Token)'); return; }
+    setStatus('جارِ الرفع...');
+    const url = `https://api.github.com/repos/${encodeURIComponent(c.user)}/${encodeURIComponent(c.repo)}/contents/${c.path}`;
+    const prev = await getFileSha(c).catch(()=>null);
+    const data = currentData();
+    const body = {
+      message: `Update finance data (${nowISO()})`,
+      content: encode64(JSON.stringify(data,null,2)),
+      branch: c.branch
+    };
+    if(prev && prev.sha) body.sha = prev.sha;
+
+    const res = await fetch(url, { method:'PUT', headers: ghHeaders(c.token), body: JSON.stringify(body) });
+    if(!res.ok){
+      const t = await res.text();
+      setStatus('فشل الرفع');
+      alert('فشل الرفع:\n'+t);
+      return;
+    }
+    setStatus('تم الرفع بنجاح', true);
+  }
+
+  async function pullFromGitHub(){
+    const c = getCfg();
+    if(!cfgOk(c)){ alert('أكمل إعدادات GitHub أولاً'); return; }
+    setStatus('جارِ التحميل...');
+    const prev = await getFileSha(c);
+    if(!prev){ setStatus('لا يوجد ملف على GitHub'); alert('الملف غير موجود على GitHub بعد. ارفع أولاً.'); return; }
+    const data = prev.contentJson;
+    if(!data){ setStatus('فشل قراءة الملف'); alert('تعذر قراءة محتوى الملف من GitHub'); return; }
+
+    if(Array.isArray(data.ledger))      window.ledger      = data.ledger;
+    if(Array.isArray(data.accounts))    window.accounts    = data.accounts;
+    if(Array.isArray(data.categories))  window.categories  = data.categories;
+    if(Array.isArray(data.commitments)) window.commitments = data.commitments;
+    if(Array.isArray(data.collections)) window.collections = data.collections;
+
+    if(typeof saveLedger==='function') saveLedger();
+    if(typeof saveAccounts==='function') saveAccounts();
+    if(typeof saveCategories==='function') saveCategories();
+    if(typeof saveCommitments==='function') saveCommitments();
+    if(typeof saveCollections==='function') saveCollections();
+    if(typeof render==='function') render();
+
+    setStatus('تم التحميل بنجاح', true);
+    alert('تم تحميل البيانات من GitHub.');
+  }
+
+  // Auto push (debounced)
+  let _debTimer=null;
+  function ghAutoPush(){
+    const c = getCfg();
+    if(!c.auto || !cfgOk(c)) return;
+    clearTimeout(_debTimer);
+    _debTimer = setTimeout(()=>{ pushToGitHub().catch(()=>{}); }, 1200);
+  }
+
+  function bind(){
+    if(!els.save) return;
+    loadCfg();
+    els.save.addEventListener('click', ()=>{ const c=getCfg(); saveCfgLocally(c); setStatus('تم حفظ الإعدادات محليًا', true); alert('تم حفظ إعدادات GitHub محليًا.'); });
+    els.test.addEventListener('click', async ()=>{
+      try{
+        const c=getCfg(); if(!cfgOk(c)) return alert('أكمل الإعدادات أولًا.');
+        const r=await fetch(`https://api.github.com/repos/${encodeURIComponent(c.user)}/${encodeURIComponent(c.repo)}`, { headers: ghHeaders(c.token) });
+        if(!r.ok) throw new Error('فشل الوصول للمستودع');
+        setStatus('اتصال ناجح', true); alert('نجح الاتصال بالمستودع 👌');
+      }catch(e){ setStatus('فشل الاختبار'); alert('فشل الاختبار: '+e.message); }
+    });
+    els.pull.addEventListener('click', ()=>{ pullFromGitHub().catch(e=>{ setStatus('فشل التحميل'); alert(e.message); }); });
+    els.push.addEventListener('click', ()=>{ pushToGitHub().catch(e=>{ setStatus('فشل الرفع'); alert(e.message); }); });
+    els.auto.addEventListener('change', ()=> saveCfgLocally( getCfg() ));
+  }
+
+  function wrapSaves(){
+    const wrap = (name)=>{
+      if(typeof window[name] !== 'function') return;
+      const orig = window[name];
+      window[name] = function(){
+        const r = orig.apply(this, arguments);
+        try{ ghAutoPush(); }catch(_){}
+        return r;
+      };
+    };
+    ['saveLedger','saveAccounts','saveCategories','saveCommitments','saveCollections'].forEach(wrap);
+  }
+
+  function ghInit(){ bind(); wrapSaves(); }
+  ghInit();
+})();
 </script>
 </body>
 </html>
