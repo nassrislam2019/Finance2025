@@ -6,7 +6,7 @@
 <title>دفتر حساباتي — تتبُّع المصروفات والدخل</title>
 <meta name="description" content="موقع شخصي بسيط لإدارة المصروفات والدخل — يعمل أوفلاين (PWA) ويحفظ البيانات محليًا." />
 <meta name="theme-color" content="#ffffff" />
-<link rel="manifest" href="/my-finance/manifest.json" />
+<link rel="manifest" href="manifest.json" />
 <meta name="mobile-web-app-capable" content="yes" />
 <style>
 :root{
@@ -19,6 +19,10 @@ html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Noto Kufi Arabic",Tahoma,Arial,sans-serif}
 a{color:var(--brand);text-decoration:none}
 .container{max-width:1180px;margin-inline:auto;padding:20px}
+
+header{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px}
+.title{font-weight:800;font-size:20px}
+.sub{color:var(--muted);font-size:13px}
 
 /* Cards */
 .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:0;overflow:hidden}
@@ -123,10 +127,9 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
     <div class="card-head"><h3>استحقاقات قريبة</h3></div>
     <div class="card-body">
       <div id="dueSoonWrap" style="display:none">
-        <table style="width:100%">
-          <thead><tr><th style="text-align:right">الاسم</th><th style="text-align:right">التاريخ</th><th style="text-align:right">المبلغ</th><th style="text-align:right">الحالة</th></tr></thead>
-          <tbody id="tbodyDueSoon"></tbody>
-        </table>
+        <table style="width:100%"><thead>
+          <tr><th style="text-align:right">الاسم</th><th style="text-align:right">التاريخ</th><th style="text-align:right">المبلغ</th><th style="text-align:right">الحالة</th></tr>
+        </thead><tbody id="tbodyDueSoon"></tbody></table>
       </div>
       <div id="noDueSoon" style="color:var(--muted)">لا توجد استحقاقات خلال ٥ أيام.</div>
     </div>
@@ -163,7 +166,7 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
 
   <div class="hr"></div>
 
-  <!-- (2.5) تحويل بين الحسابات (مطوي افتراضيًا) -->
+  <!-- (2.5) تحويل بين الحسابات -->
   <section class="card collapsed" id="card-transfer" data-collapsible>
     <div class="card-head"><h3>تحويل بين الحسابات</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
     <div class="card-body">
@@ -283,7 +286,7 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
     <div class="card-head"><h3>مبالغ تحت التحصيل</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
     <div class="card-body">
       <div class="grid grid-4">
-        <div><label>اسم التحصيل</label><input id="coName" placeholder="مثال: إيجار مستلم، مبيعات آجل" /></div>
+        <div><label>اسم التحصيل</label><input id="coName" placeholder="مثال: مبيعات آجل" /></div>
         <div><label>المبلغ (ج.م)</label><input id="coAmount" type="number" step="0.01" placeholder="0.00" /></div>
         <div><label>تاريخ أول استحقاق</label><input id="coFirstDue" type="date" required /></div>
         <div class="checkbox-row"><input id="coRecurring" type="checkbox" /><label for="coRecurring" style="margin:0">يتكرر شهريًا</label></div>
@@ -301,147 +304,12 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
       </div>
     </div>
   </section>
-<section class="card" id="card-github">
-  <div class="card-head"><h3>إعدادات مزامنة GitHub</h3></div>
-  <div class="card-body">
-    <div class="grid grid-4">
-      <div>
-        <label>اسم المستخدم</label>
-        <input id="ghUser" placeholder="مثال: nassrislam2019" />
-      </div>
-      <div>
-        <label>المستودع (Repository)</label>
-        <input id="ghRepo" placeholder="مثال: Finance2025" />
-      </div>
-      <div>
-        <label>الفرع</label>
-        <input id="ghBranch" value="main" />
-      </div>
-      <div>
-        <label>مسار الملف (JSON)</label>
-        <input id="ghPath" value="data/my-finance.json" />
-      </div>
-    </div>
-    <div class="grid grid-3" style="margin-top:8px">
-      <div>
-        <label>Personal Access Token</label>
-        <input id="ghToken" type="password" placeholder="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" />
-      </div>
-      <div class="checkbox-row" style="margin-top:22px">
-        <input id="ghAuto" type="checkbox"/>
-        <label for="ghAuto" style="margin:0">مزامنة تلقائيًا بعد أي تعديل</label>
-      </div>
-      <div class="grid grid-2" style="margin-top:22px">
-        <button id="ghSaveCfg" class="btn btn-outline">حفظ الإعدادات</button>
-        <button id="ghTest" class="btn btn-outline">اختبار الاتصال</button>
-      </div>
-    </div>
-    <div class="grid grid-3" style="margin-top:8px">
-      <button id="ghPull" class="btn btn-outline">تحميل البيانات من GitHub</button>
-      <button id="ghPush" class="btn btn-primary">رفع البيانات إلى GitHub</button>
-      <span id="ghStatus" class="badge">الحالة: غير متصل</span>
-    </div>
-    <div style="margin-top:8px;color:var(--muted);font-size:12px">
-      ⚠️ تنبيه: الـ Token يتم حفظه محليًا في جهازك فقط، لا تشاركه مع أي شخص.
-    </div>
-  </div>
-</section>
-<section class="card" id="card-github">
-  <div class="card-head"><h3>إعدادات مزامنة GitHub</h3></div>
-  <div class="card-body">
-    <div class="grid grid-4">
-      <div>
-        <label>اسم المستخدم</label>
-        <input id="ghUser" placeholder="مثال: nassrislam2019" />
-      </div>
-      <div>
-        <label>المستودع (Repository)</label>
-        <input id="ghRepo" placeholder="مثال: Finance2025" />
-      </div>
-      <div>
-        <label>الفرع</label>
-        <input id="ghBranch" value="main" />
-      </div>
-      <div>
-        <label>مسار الملف (JSON)</label>
-        <input id="ghPath" value="data/my-finance.json" />
-      </div>
-    </div>
-    <div class="grid grid-3" style="margin-top:8px">
-      <div>
-        <label>Personal Access Token</label>
-        <input id="ghToken" type="password" placeholder="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" />
-      </div>
-      <div class="checkbox-row" style="margin-top:22px">
-        <input id="ghAuto" type="checkbox"/>
-        <label for="ghAuto" style="margin:0">مزامنة تلقائيًا بعد أي تعديل</label>
-      </div>
-      <div class="grid grid-2" style="margin-top:22px">
-        <button id="ghSaveCfg" class="btn btn-outline">حفظ الإعدادات</button>
-        <button id="ghTest" class="btn btn-outline">اختبار الاتصال</button>
-      </div>
-    </div>
-    <div class="grid grid-3" style="margin-top:8px">
-      <button id="ghPull" class="btn btn-outline">تحميل البيانات من GitHub</button>
-      <button id="ghPush" class="btn btn-primary">رفع البيانات إلى GitHub</button>
-      <span id="ghStatus" class="badge">الحالة: غير متصل</span>
-    </div>
-    <div style="margin-top:8px;color:var(--muted);font-size:12px">
-      ⚠️ تنبيه: الـ Token يتم حفظه محليًا في جهازك فقط، لا تشاركه مع أي شخص.
-    </div>
-  </div>
-</section>
 
   <div class="footer">
     <div>⚠️ <span class="note">تنبيه:</span> كل البيانات محفوظة محليًا في <code>localStorage</code>. لا تنسَ التصدير كنسخة احتياطية.</div>
     <div style="margin-top:6px">تقدر تثبّت الموقع كتطبيق لأنه PWA.</div>
   </div>
 </div>
-<section class="card" id="card-github">
-  <div class="card-head"><h3>إعدادات مزامنة GitHub</h3></div>
-  <div class="card-body">
-    <div class="grid grid-4">
-      <div>
-        <label>اسم المستخدم</label>
-        <input id="ghUser" placeholder="مثال: nassrislam2019" />
-      </div>
-      <div>
-        <label>المستودع (Repository)</label>
-        <input id="ghRepo" placeholder="مثال: Finance2025" />
-      </div>
-      <div>
-        <label>الفرع</label>
-        <input id="ghBranch" value="main" />
-      </div>
-      <div>
-        <label>مسار الملف (JSON)</label>
-        <input id="ghPath" value="data/my-finance.json" />
-      </div>
-    </div>
-    <div class="grid grid-3" style="margin-top:8px">
-      <div>
-        <label>Personal Access Token</label>
-        <input id="ghToken" type="password" placeholder="ghp_..." />
-      </div>
-      <div class="checkbox-row" style="margin-top:22px">
-        <input id="ghAuto" type="checkbox"/>
-        <label for="ghAuto" style="margin:0">مزامنة تلقائيًا بعد أي تعديل</label>
-      </div>
-      <div class="grid grid-2" style="margin-top:22px">
-        <button id="ghSaveCfg" class="btn btn-outline">حفظ الإعدادات</button>
-        <button id="ghTest" class="btn btn-outline">اختبار الاتصال</button>
-      </div>
-    </div>
-    <div class="grid grid-3" style="margin-top:8px">
-      <button id="ghPull" class="btn btn-outline">تحميل البيانات من GitHub</button>
-      <button id="ghPush" class="btn btn-primary">رفع البيانات إلى GitHub</button>
-      <span id="ghStatus" class="badge">الحالة: غير متصل</span>
-    </div>
-    <div style="margin-top:8px;color:var(--muted);font-size:12px">
-      تنبيه: الـ Token يتم حفظه محليًا في جهازك فقط، لا تنشره علنًا.
-    </div>
-  </div>
-</section>
 
 <script>
 /* ===== مفاتيح التخزين ===== */
@@ -449,14 +317,14 @@ const KEY='pf_ledger_v1',
       ACC_KEY='pf_accounts_v1',
       CAT_KEY='pf_categories_v1',
       COM_KEY='pf_commitments_v1',
-      COL_KEY='pf_collections_v1'; // مبالغ تحت التحصيل
+      COL_KEY='pf_collections_v1';
 
 /* ===== الحالة ===== */
 let ledger=JSON.parse(localStorage.getItem(KEY)||'[]');
 let accounts=JSON.parse(localStorage.getItem(ACC_KEY)||'[]');
 let categories=JSON.parse(localStorage.getItem(CAT_KEY)||'[]');
-let commitments=JSON.parse(localStorage.getItem(COM_KEY)||'[]'); // {id,name,amount,firstDue,nextDue,recurring,endAt}
-let collections=JSON.parse(localStorage.getItem(COL_KEY)||'[]'); // نفس البنية للتحصيل
+let commitments=JSON.parse(localStorage.getItem(COM_KEY)||'[]');
+let collections=JSON.parse(localStorage.getItem(COL_KEY)||'[]');
 
 /* افتراضات أولية */
 if(accounts.length===0){ accounts=[{name:'كاش',opening:0},{name:'حساب بنكي',opening:0},{name:'محفظة',opening:0}]; saveAccounts(); }
@@ -492,13 +360,10 @@ const els={
   newAccountName:$('#newAccountName'), newAccountOpening:$('#newAccountOpening'), addAccount:$('#addAccount'), accountsList:$('#accountsList'),
   newCatName:$('#newCatName'), newCatType:$('#newCatType'), addCategory:$('#addCategory'), catsList:$('#catsList'),
   monthPicker:$('#monthPicker'), refreshReports:$('#refreshReports'), tbodyMonthly:$('#tbodyMonthly'), chartMonthly:$('#chartMonthly'),
-  /* التزامات */
   cName:$('#cName'), cAmount:$('#cAmount'), cFirstDue:$('#cFirstDue'), cRecurring:$('#cRecurring'), cEndAt:$('#cEndAt'),
   addCommitment:$('#addCommitment'), tbodyCommit:$('#tbodyCommit'),
-  /* تحصيل */
   coName:$('#coName'), coAmount:$('#coAmount'), coFirstDue:$('#coFirstDue'), coRecurring:$('#coRecurring'), coEndAt:$('#coEndAt'),
   addCollect:$('#addCollect'), tbodyCollect:$('#tbodyCollect'),
-  /* PWA & تحويل */
   installBtn:$('#installBtn'),
   trFrom:$('#trFrom'), trTo:$('#trTo'), trAmount:$('#trAmount'), trFee:$('#trFee'), trDate:$('#trDate'), trDesc:$('#trDesc'),
   execTransfer:$('#execTransfer'), resetTransfer:$('#resetTransfer')
@@ -696,7 +561,7 @@ function render(){
     if(ff && t.date<ff) return false;
     if(fto && t.date>fto) return false;
     return true;
-  }).sort((a,b)=> a.date.localeCompare(b.date) || (a.id>b.id?1:-1)); // الأقدم -> الأحدث
+  }).sort((a,b)=> a.date.localeCompare(b.date) || (a.id>b.id?1:-1));
 
   if(els.tbody){
     els.tbody.innerHTML=rows.map(t=>{
@@ -724,7 +589,7 @@ els.saveTx?.addEventListener('click',()=>{
   if(!date || !account || !category || !amount || amount<=0){ alert('من فضلك أدخل بيانات صحيحة (تاريخ/حساب/فئة/مبلغ)'); return; }
   const tx={ id:editId||eid(), date, desc, type, amount, account:account.trim(), category:category.trim() };
   if(editId){ const i=ledger.findIndex(t=>t.id===editId); if(i>-1) ledger[i]=tx; editId=null; els.saveTx.textContent='حفظ'; }
-  else { ledger.push(tx); } // حتى يسير الترتيب الأقدم->الأحدث طبيعيًا
+  else { ledger.push(tx); }
   saveLedger(); els.desc.value=''; els.amount.value=''; render();
 });
 els.resetForm?.addEventListener('click',()=>{ editId=null; els.saveTx.textContent='حفظ'; els.type.value='expense'; els.amount.value=''; els.desc.value=''; refreshCategorySelect(); });
@@ -1064,14 +929,13 @@ function initCollapsibles(){
   });
 }
 
-/* ===== PWA: زر قبل التثبيت ===== */
+/* ===== PWA ===== */
 let deferredPrompt=null;
 window.addEventListener('beforeinstallprompt', (e)=>{ e.preventDefault(); deferredPrompt=e; if(els.installBtn) els.installBtn.style.display='inline-flex'; });
 els.installBtn?.addEventListener('click', async ()=>{ if(!deferredPrompt) return; els.installBtn.disabled=true; await deferredPrompt.prompt(); deferredPrompt=null; els.installBtn.style.display='none'; });
 
-/* ===== Service Worker ===== */
 if('serviceWorker' in navigator){
-  window.addEventListener('load', ()=>{ navigator.serviceWorker.register('/my-finance/sw.js').catch(()=>{}); });
+  window.addEventListener('load', ()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
 }
 
 /* ===== تهيئة ===== */
@@ -1094,4 +958,3 @@ init();
 </script>
 </body>
 </html>
-
