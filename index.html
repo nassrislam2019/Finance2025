@@ -301,12 +301,147 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
       </div>
     </div>
   </section>
+<section class="card" id="card-github">
+  <div class="card-head"><h3>إعدادات مزامنة GitHub</h3></div>
+  <div class="card-body">
+    <div class="grid grid-4">
+      <div>
+        <label>اسم المستخدم</label>
+        <input id="ghUser" placeholder="مثال: nassrislam2019" />
+      </div>
+      <div>
+        <label>المستودع (Repository)</label>
+        <input id="ghRepo" placeholder="مثال: Finance2025" />
+      </div>
+      <div>
+        <label>الفرع</label>
+        <input id="ghBranch" value="main" />
+      </div>
+      <div>
+        <label>مسار الملف (JSON)</label>
+        <input id="ghPath" value="data/my-finance.json" />
+      </div>
+    </div>
+    <div class="grid grid-3" style="margin-top:8px">
+      <div>
+        <label>Personal Access Token</label>
+        <input id="ghToken" type="password" placeholder="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" />
+      </div>
+      <div class="checkbox-row" style="margin-top:22px">
+        <input id="ghAuto" type="checkbox"/>
+        <label for="ghAuto" style="margin:0">مزامنة تلقائيًا بعد أي تعديل</label>
+      </div>
+      <div class="grid grid-2" style="margin-top:22px">
+        <button id="ghSaveCfg" class="btn btn-outline">حفظ الإعدادات</button>
+        <button id="ghTest" class="btn btn-outline">اختبار الاتصال</button>
+      </div>
+    </div>
+    <div class="grid grid-3" style="margin-top:8px">
+      <button id="ghPull" class="btn btn-outline">تحميل البيانات من GitHub</button>
+      <button id="ghPush" class="btn btn-primary">رفع البيانات إلى GitHub</button>
+      <span id="ghStatus" class="badge">الحالة: غير متصل</span>
+    </div>
+    <div style="margin-top:8px;color:var(--muted);font-size:12px">
+      ⚠️ تنبيه: الـ Token يتم حفظه محليًا في جهازك فقط، لا تشاركه مع أي شخص.
+    </div>
+  </div>
+</section>
+<section class="card" id="card-github">
+  <div class="card-head"><h3>إعدادات مزامنة GitHub</h3></div>
+  <div class="card-body">
+    <div class="grid grid-4">
+      <div>
+        <label>اسم المستخدم</label>
+        <input id="ghUser" placeholder="مثال: nassrislam2019" />
+      </div>
+      <div>
+        <label>المستودع (Repository)</label>
+        <input id="ghRepo" placeholder="مثال: Finance2025" />
+      </div>
+      <div>
+        <label>الفرع</label>
+        <input id="ghBranch" value="main" />
+      </div>
+      <div>
+        <label>مسار الملف (JSON)</label>
+        <input id="ghPath" value="data/my-finance.json" />
+      </div>
+    </div>
+    <div class="grid grid-3" style="margin-top:8px">
+      <div>
+        <label>Personal Access Token</label>
+        <input id="ghToken" type="password" placeholder="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" />
+      </div>
+      <div class="checkbox-row" style="margin-top:22px">
+        <input id="ghAuto" type="checkbox"/>
+        <label for="ghAuto" style="margin:0">مزامنة تلقائيًا بعد أي تعديل</label>
+      </div>
+      <div class="grid grid-2" style="margin-top:22px">
+        <button id="ghSaveCfg" class="btn btn-outline">حفظ الإعدادات</button>
+        <button id="ghTest" class="btn btn-outline">اختبار الاتصال</button>
+      </div>
+    </div>
+    <div class="grid grid-3" style="margin-top:8px">
+      <button id="ghPull" class="btn btn-outline">تحميل البيانات من GitHub</button>
+      <button id="ghPush" class="btn btn-primary">رفع البيانات إلى GitHub</button>
+      <span id="ghStatus" class="badge">الحالة: غير متصل</span>
+    </div>
+    <div style="margin-top:8px;color:var(--muted);font-size:12px">
+      ⚠️ تنبيه: الـ Token يتم حفظه محليًا في جهازك فقط، لا تشاركه مع أي شخص.
+    </div>
+  </div>
+</section>
 
   <div class="footer">
     <div>⚠️ <span class="note">تنبيه:</span> كل البيانات محفوظة محليًا في <code>localStorage</code>. لا تنسَ التصدير كنسخة احتياطية.</div>
     <div style="margin-top:6px">تقدر تثبّت الموقع كتطبيق لأنه PWA.</div>
   </div>
 </div>
+<section class="card" id="card-github">
+  <div class="card-head"><h3>إعدادات مزامنة GitHub</h3></div>
+  <div class="card-body">
+    <div class="grid grid-4">
+      <div>
+        <label>اسم المستخدم</label>
+        <input id="ghUser" placeholder="مثال: nassrislam2019" />
+      </div>
+      <div>
+        <label>المستودع (Repository)</label>
+        <input id="ghRepo" placeholder="مثال: Finance2025" />
+      </div>
+      <div>
+        <label>الفرع</label>
+        <input id="ghBranch" value="main" />
+      </div>
+      <div>
+        <label>مسار الملف (JSON)</label>
+        <input id="ghPath" value="data/my-finance.json" />
+      </div>
+    </div>
+    <div class="grid grid-3" style="margin-top:8px">
+      <div>
+        <label>Personal Access Token</label>
+        <input id="ghToken" type="password" placeholder="ghp_..." />
+      </div>
+      <div class="checkbox-row" style="margin-top:22px">
+        <input id="ghAuto" type="checkbox"/>
+        <label for="ghAuto" style="margin:0">مزامنة تلقائيًا بعد أي تعديل</label>
+      </div>
+      <div class="grid grid-2" style="margin-top:22px">
+        <button id="ghSaveCfg" class="btn btn-outline">حفظ الإعدادات</button>
+        <button id="ghTest" class="btn btn-outline">اختبار الاتصال</button>
+      </div>
+    </div>
+    <div class="grid grid-3" style="margin-top:8px">
+      <button id="ghPull" class="btn btn-outline">تحميل البيانات من GitHub</button>
+      <button id="ghPush" class="btn btn-primary">رفع البيانات إلى GitHub</button>
+      <span id="ghStatus" class="badge">الحالة: غير متصل</span>
+    </div>
+    <div style="margin-top:8px;color:var(--muted);font-size:12px">
+      تنبيه: الـ Token يتم حفظه محليًا في جهازك فقط، لا تنشره علنًا.
+    </div>
+  </div>
+</section>
 
 <script>
 /* ===== مفاتيح التخزين ===== */
@@ -959,3 +1094,4 @@ init();
 </script>
 </body>
 </html>
+
