@@ -212,6 +212,16 @@
       "recurring": true,
       "endAt": "2026-12-31",
       "paid": {}
+    },
+    {
+      "id": "ofpg6jkpmgruck82",
+      "name": "اشتراك",
+      "amount": 40,
+      "firstDue": "2025-10-25",
+      "nextDue": "2025-10-25",
+      "recurring": false,
+      "endAt": null,
+      "paid": {}
     }
   ],
   "collections": [
@@ -225,5 +235,5 @@
       "endAt": null
     }
   ],
-  "exportedAt": "2025-10-15T10:20:29.681Z"
+  "exportedAt": "2025-10-15T10:21:32.514Z"
 }
