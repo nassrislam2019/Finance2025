@@ -1,44 +1,5 @@
 {
-  "ledger": [
-    {
-      "id": "f6t8d610mgqgqjsu",
-      "date": "2025-10-14",
-      "desc": "كاش",
-      "type": "income",
-      "amount": 95,
-      "account": "كاش",
-      "category": "دخل آخر"
-    },
-    {
-      "id": "i0u43h7omgqgrbfa",
-      "date": "2025-10-14",
-      "desc": "رصيد فودافون كاش",
-      "type": "income",
-      "amount": 933,
-      "account": "محفظة",
-      "category": "دخل آخر"
-    },
-    {
-      "id": "f0o0zuk9mgrnavuk",
-      "link": "3mba6ue3mgrnavuk",
-      "isTransfer": true,
-      "date": "2025-10-14",
-      "desc": "تحويل إلى كاش — سحب من المحفظة",
-      "type": "expense",
-      "amount": 600,
-      "account": "محفظة",
-      "category": "تحويل صادر"
-    },
-    {
-      "id": "lreafw0pmgrnavuk",
-      "date": "2025-10-14",
-      "desc": "عمولة تحويل — سحب من المحفظة",
-      "type": "expense",
-      "amount": 6,
-      "account": "محفظة",
-      "category": "عمولة تحويل"
-    }
-  ],
+  "ledger": [],
   "accounts": [
     {
       "name": "كاش",
@@ -127,7 +88,7 @@
     {
       "id": "b9xam41amgoznubi",
       "name": "اشتراك",
-      "amount": 1040,
+      "amount": 1000,
       "firstDue": "2025-11-01",
       "nextDue": "2025-11-01",
       "recurring": true,
@@ -216,5 +177,5 @@
       "endAt": null
     }
   ],
-  "exportedAt": "2025-10-15T10:24:04.793Z"
+  "exportedAt": "2025-10-15T10:25:20.412Z"
 }
