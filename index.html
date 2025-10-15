@@ -341,7 +341,7 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
         <div><label>اسم المستخدم</label><input id="ghUser" placeholder="مثال: username" /></div>
         <div><label>المستودع</label><input id="ghRepo" placeholder="مثال: Finance2025" /></div>
         <div><label>الفرع</label><input id="ghBranch" value="main" /></div>
-        <div><label>مسار الملف (JSON)</label><input id="ghPath" value="data/my-finance.json" /></div>
+        <div><label>مسار الملف (JSON)</label><input id="ghPath" value="my-finance.json" /></div>
       </div>
       <div class="grid grid-3" style="margin-top:8px">
         <div><label>Personal Access Token</label><input id="ghToken" type="password" placeholder="ghp_..." /></div>
@@ -1052,7 +1052,7 @@ function fillGhFormFromStorage(){
   if(els.ghUser)  els.ghUser.value  = ghCfg.user || '';
   if(els.ghRepo)  els.ghRepo.value  = ghCfg.repo || '';
   if(els.ghBranch)els.ghBranch.value= ghCfg.branch || 'main';
-  if(els.ghPath)  els.ghPath.value  = ghCfg.path || 'data/my-finance.json';
+  if(els.ghPath)  els.ghPath.value  = ghCfg.path || 'my-finance.json';
   if(els.ghToken) els.ghToken.value = ghCfg.token || '';
   if(els.ghAuto)  els.ghAuto.checked= !!ghCfg.auto;
 }
@@ -1061,7 +1061,7 @@ function readGhFormToCfg(){
     user:els.ghUser.value.trim(),
     repo:els.ghRepo.value.trim(),
     branch:els.ghBranch.value.trim()||'main',
-    path:els.ghPath.value.trim()||'data/my-finance.json',
+    path:els.ghPath.value.trim()||'my-finance.json',
     token:els.ghToken.value.trim(),
     auto:!!els.ghAuto.checked
   };
