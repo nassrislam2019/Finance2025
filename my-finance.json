@@ -1,15 +1,6 @@
 {
   "ledger": [
     {
-      "id": "gczc06uvmgrv0pca",
-      "date": "2025-10-15",
-      "desc": "سداد جزء لهشام",
-      "type": "expense",
-      "amount": 400,
-      "account": "كاش",
-      "category": "التزامات شهرية"
-    },
-    {
       "id": "a1lmq5xlmgrw7722",
       "date": "2025-10-15",
       "desc": "هشام",
@@ -209,5 +200,5 @@
       "endAt": null
     }
   ],
-  "updatedAt": "2025-10-15T11:43:18.006Z"
+  "updatedAt": "2025-10-15T11:43:39.323Z"
 }
