@@ -121,7 +121,11 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
 
   <!-- كارت الاستحقاقات القريبة -->
   <section class="card" id="card-dueSoon" style="margin-top:12px">
-    <div class="card-head"><h3>استحقاقات قريبة</h3></div>
+    <!-- ✅ تمت إضافة البادج الجديدة هنا -->
+    <div class="card-head">
+      <h3>استحقاقات قريبة</h3>
+      <span id="dueTotalBadge" class="badge" title="إجمالي المتبقّي لهذا الشهر">إجمالي: 0.00 ج.م</span>
+    </div>
     <div class="card-body">
       <div id="dueSoonWrap" style="display:none">
         <table style="width:100%">
@@ -431,7 +435,9 @@ const els={
   execTransfer:$('#execTransfer'), resetTransfer:$('#resetTransfer'),
   /* GitHub */
   ghUser:$('#ghUser'), ghRepo:$('#ghRepo'), ghBranch:$('#ghBranch'), ghPath:$('#ghPath'), ghToken:$('#ghToken'),
-  ghAuto:$('#ghAuto'), ghSaveCfg:$('#ghSaveCfg'), ghTest:$('#ghTest'), ghPull:$('#ghPull'), ghPush:$('#ghPush'), ghStatus:$('#ghStatus')
+  ghAuto:$('#ghAuto'), ghSaveCfg:$('#ghSaveCfg'), ghTest:$('#ghTest'), ghPull:$('#ghPull'), ghPush:$('#ghPush'), ghStatus:$('#ghStatus'),
+  /* ✅ إجمالي الاستحقاقات */
+  dueTotalBadge:$('#dueTotalBadge')
 };
 ['saveTx','resetForm','addAccount','addCategory','exportJson','exportCsv','refreshReports','addCommitment','addCollect','execTransfer','resetTransfer','syncNow','ghSaveCfg','ghTest','ghPull','ghPush']
   .forEach(id=>document.getElementById(id)?.setAttribute('type','button'));
@@ -976,6 +982,13 @@ function drawDueSoon(){
     const diff=daysBetween(today,due);
     return {...c,due,dueStr,paid,total,remaining,diff};
   }).filter(Boolean).sort((a,b)=> a.dueStr.localeCompare(b.dueStr));
+
+  // ✅ تحديث إجمالي الاستحقاقات في البادج
+  const totalRemain = list.reduce((s,x)=>s + x.remaining, 0);
+  if(els.dueTotalBadge){
+    els.dueTotalBadge.textContent = 'إجمالي: ' + fmt(totalRemain) + ' ج.م';
+  }
+
   if(list.length===0){ wrap.style.display='none'; none.style.display='block'; tbody.innerHTML=''; return; }
   wrap.style.display='block'; none.style.display='none';
   tbody.innerHTML=list.map(x=>{
