@@ -9,6 +9,15 @@
       "account": "كاش",
       "category": "التزامات شهرية",
       "linkCommitId": "5ezkl2c1mgqfzaxx"
+    },
+    {
+      "id": "pq0z88vemgs2ow84",
+      "date": "2025-10-15",
+      "desc": "مواصلات",
+      "type": "expense",
+      "amount": 70,
+      "account": "كاش",
+      "category": "مواصلات"
     }
   ],
   "accounts": [
@@ -202,5 +211,5 @@
       "endAt": null
     }
   ],
-  "updatedAt": "2025-10-15T14:06:03.006Z"
+  "updatedAt": "2025-10-15T14:15:01.157Z"
 }
