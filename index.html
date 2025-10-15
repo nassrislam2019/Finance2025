@@ -82,6 +82,31 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
   .card-head h3{font-size:17px}
   .transfer-grid{grid-template-columns:1fr}
 }
+
+/* ===== استحقاقات قريبة (جدول للديسكتوب + بطاقات للموبايل) ===== */
+#dueSoonWrap{ overflow:auto; -webkit-overflow-scrolling:touch; }
+#dueSoonWrap table{ min-width: 760px; }             /* يضمن سكرول أفقي بالديسكتوب الصغير/التابلت */
+#dueSoonWrap td.actions{ white-space:nowrap; }
+
+/* بطاقات الموبايل */
+#dueSoonCards{ display:none; }
+.due-card{
+  background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:8px;
+  display:grid;gap:6px
+}
+.due-card .row{display:flex;justify-content:space-between;gap:8px}
+.due-card .name{font-weight:700}
+.due-card .remain{font-weight:800}
+.due-card .state{color:var(--warn);font-weight:700}
+.due-card .state.over{color:var(--danger)}
+.due-card .meta{color:var(--muted);font-size:12px}
+.due-card .actions{display:flex;gap:8px}
+
+/* إظهار البطاقات على الشاشات الصغيرة وإخفاء الجدول */
+@media(max-width:720px){
+  #dueSoonWrap{ display:none; }
+  #dueSoonCards{ display:block; }
+}
 </style>
 </head>
 <body>
@@ -119,15 +144,15 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
     </div>
   </section>
 
-  <!-- كارت الاستحقاقات القريبة -->
+  <!-- (A) كارت الاستحقاقات القريبة -->
   <section class="card" id="card-dueSoon" style="margin-top:12px">
     <div class="card-head">
       <h3>استحقاقات قريبة</h3>
-      <!-- ✅ بادج إجمالي المتبقّي لهذا الشهر -->
       <span id="dueTotalBadge" class="badge" title="إجمالي المتبقّي لهذا الشهر">إجمالي: 0.00 ج.م</span>
     </div>
     <div class="card-body">
-      <div id="dueSoonWrap" style="display:none">
+      <!-- جدول للديسكتوب/التابلت -->
+      <div id="dueSoonWrap" style="display:none;overflow:auto">
         <table style="width:100%">
           <thead><tr>
             <th style="text-align:right">الاسم</th>
@@ -136,12 +161,14 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
             <th style="text-align:right">المدفوع</th>
             <th style="text-align:right">المتبقي</th>
             <th style="text-align:right">الحالة</th>
-            <!-- ✅ عمود جديد للإجراءات -->
             <th style="text-align:right">إجراءات</th>
           </tr></thead>
           <tbody id="tbodyDueSoon"></tbody>
         </table>
       </div>
+      <!-- بطاقات للموبايل -->
+      <div id="dueSoonCards" style="display:none"></div>
+
       <div id="noDueSoon" style="color:var(--muted)">لا توجد استحقاقات هذا الشهر غير مسددة.</div>
     </div>
   </section>
@@ -316,7 +343,7 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
 
   <div class="hr"></div>
 
-  <!-- (4) التقارير — نُقِل لأسفل قبل إعدادات GitHub -->
+  <!-- (4) التقارير -->
   <section class="card collapsed" id="card-reports" data-collapsible>
     <div class="card-head"><h3>تقارير شهرية و رسوم بيانية</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
     <div class="card-body">
@@ -339,7 +366,7 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
 
   <div class="hr"></div>
 
-  <!-- إعدادات GitHub (مطوي افتراضيًا) -->
+  <!-- إعدادات GitHub -->
   <section class="card collapsed" id="card-github" data-collapsible>
     <div class="card-head"><h3>إعدادات مزامنة GitHub</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
     <div class="card-body">
@@ -379,15 +406,15 @@ const KEY='pf_ledger_v1',
       CAT_KEY='pf_categories_v1',
       COM_KEY='pf_commitments_v1',
       COL_KEY='pf_collections_v1',
-      GH_KEY='pf_github_cfg_v1'; // إعدادات GitHub
+      GH_KEY='pf_github_cfg_v1';
 
 /* ===== الحالة ===== */
-let ledger=JSON.parse(localStorage.getItem(KEY)||'[]');          // معاملات
-let accounts=JSON.parse(localStorage.getItem(ACC_KEY)||'[]');     // حسابات
-let categories=JSON.parse(localStorage.getItem(CAT_KEY)||'[]');   // فئات
-let commitments=JSON.parse(localStorage.getItem(COM_KEY)||'[]');  // التزامات {payments:{'YYYY-MM':number}}
-let collections=JSON.parse(localStorage.getItem(COL_KEY)||'[]');  // تحصيل
-let ghCfg=JSON.parse(localStorage.getItem(GH_KEY)||'{}');         // GitHub
+let ledger=JSON.parse(localStorage.getItem(KEY)||'[]');
+let accounts=JSON.parse(localStorage.getItem(ACC_KEY)||'[]');
+let categories=JSON.parse(localStorage.getItem(CAT_KEY)||'[]');
+let commitments=JSON.parse(localStorage.getItem(COM_KEY)||'[]');  // {payments:{'YYYY-MM':number}}
+let collections=JSON.parse(localStorage.getItem(COL_KEY)||'[]');
+let ghCfg=JSON.parse(localStorage.getItem(GH_KEY)||'{}');
 
 /* افتراضات أولية */
 if(accounts.length===0){ accounts=[{name:'كاش',opening:0},{name:'حساب بنكي',opening:0},{name:'محفظة',opening:0}]; saveAccounts(); }
@@ -438,8 +465,10 @@ const els={
   /* GitHub */
   ghUser:$('#ghUser'), ghRepo:$('#ghRepo'), ghBranch:$('#ghBranch'), ghPath:$('#ghPath'), ghToken:$('#ghToken'),
   ghAuto:$('#ghAuto'), ghSaveCfg:$('#ghSaveCfg'), ghTest:$('#ghTest'), ghPull:$('#ghPull'), ghPush:$('#ghPush'), ghStatus:$('#ghStatus'),
-  /* ✅ إجمالي الاستحقاقات */
-  dueTotalBadge:$('#dueTotalBadge')
+  /* إجمالي الاستحقاقات */
+  dueTotalBadge:$('#dueTotalBadge'),
+  /* بطاقات الموبايل */
+  dueSoonCards:$('#dueSoonCards')
 };
 ['saveTx','resetForm','addAccount','addCategory','exportJson','exportCsv','refreshReports','addCommitment','addCollect','execTransfer','resetTransfer','syncNow','ghSaveCfg','ghTest','ghPull','ghPush']
   .forEach(id=>document.getElementById(id)?.setAttribute('type','button'));
@@ -491,7 +520,7 @@ function refreshAccountSelects(){
   }
 }
 
-/* تعبئة قائمة ربط الالتزام (التزامات الشهر الحالي غير المسددة بالكامل) */
+/* تعبئة قائمة ربط الالتزام */
 function refreshLinkCommitOptions(){
   if(!els.linkCommit) return;
   const ym=YM();
@@ -555,14 +584,14 @@ function drawPerAccount(balMap){
   if(els.perAccount) els.perAccount.innerHTML=items.join('');
 }
 
-/* ===== دفعات الالتزامات (مدفوع/متبقي لكل شهر) ===== */
+/* ===== دفعات الالتزامات ===== */
 function ensurePaymentsObj(c){ if(!c.payments) c.payments={}; }
 function addCommitPayment(commitId, ym, amount){
   const c=commitments.find(x=>x.id===commitId); if(!c) return;
   ensurePaymentsObj(c);
   c.payments[ym]=(c.payments[ym]||0)+amount;
   const total=Number(c.amount||0);
-  if(c.payments[ym] >= total - 1e-9){ // تم السداد الكامل للشهر
+  if(c.payments[ym] >= total - 1e-9){
     const due=c.nextDue?parseLocalDate(c.nextDue):parseLocalDate(c.firstDue);
     if(c.recurring){
       const next=addMonthsPreserveDOM(due,1);
@@ -626,7 +655,7 @@ function recalc(){
   refreshLinkCommitOptions();
 }
 
-/* ===== جدول الحركات (الأقدم -> الأحدث) ===== */
+/* ===== جدول الحركات ===== */
 let editId=null;
 function render(){
   const q=(els.search?.value||'').toLowerCase(),
@@ -965,10 +994,14 @@ window.collectNow=id=>{
   saveCollections(); render();
 };
 
-/* ===== الاستحقاقات القريبة ===== */
+/* ===== الاستحقاقات القريبة: جدول + بطاقات ===== */
 function drawDueSoon(){
-  const wrap=document.getElementById('dueSoonWrap'); const none=document.getElementById('noDueSoon'); const tbody=document.getElementById('tbodyDueSoon');
-  if(!wrap||!tbody) return;
+  const wrap=document.getElementById('dueSoonWrap'),
+        none=document.getElementById('noDueSoon'),
+        tbody=document.getElementById('tbodyDueSoon'),
+        cards=els.dueSoonCards;
+  if(!wrap||!tbody||!cards) return;
+
   const ym=YM();
   const today=startOfToday();
   const list=commitments.map(c=>{
@@ -981,14 +1014,22 @@ function drawDueSoon(){
     return {...c,due,dueStr,paid,total,remaining,diff};
   }).filter(Boolean).sort((a,b)=> a.dueStr.localeCompare(b.dueStr));
 
-  // ✅ تحديث إجمالي الاستحقاقات في البادج
   const totalRemain = list.reduce((s,x)=>s + x.remaining, 0);
   if(els.dueTotalBadge){
     els.dueTotalBadge.textContent = 'إجمالي: ' + fmt(totalRemain) + ' ج.م';
   }
 
-  if(list.length===0){ wrap.style.display='none'; none.style.display='block'; tbody.innerHTML=''; return; }
-  wrap.style.display='block'; none.style.display='none';
+  if(list.length===0){
+    wrap.style.display='none'; cards.style.display='none'; none.style.display='block';
+    tbody.innerHTML=''; cards.innerHTML='';
+    return;
+  }
+
+  none.style.display='none';
+  wrap.style.display='block';
+  cards.style.display='block';
+
+  // جدول للديسكتوب/التابلت
   tbody.innerHTML=list.map(x=>{
     const state = x.diff<0 ? `<span style="color:var(--danger);font-weight:700">متأخر ${Math.abs(x.diff)} يوم</span>`
                  : x.diff===0 ? `<span style="color:var(--warn);font-weight:700">اليوم</span>`
@@ -1000,9 +1041,25 @@ function drawDueSoon(){
       <td>${fmt(x.paid)}</td>
       <td><b>${fmt(x.remaining)}</b></td>
       <td>${state}</td>
-      <!-- ✅ زر سداد الآن -->
-      <td><button class="btn btn-primary" onclick='payCommit("${x.id}")'>سداد الآن</button></td>
+      <td class="actions"><button class="btn btn-primary" onclick='payCommit("${x.id}")'>سداد الآن</button></td>
     </tr>`;
+  }).join('');
+
+  // بطاقات للموبايل
+  cards.innerHTML = list.map(x=>{
+    const over = x.diff<0;
+    const state = over ? `متأخر ${Math.abs(x.diff)} يوم` : (x.diff===0 ? 'اليوم' : `متبقي ${x.diff} يوم`);
+    const stateCls = over ? 'state over' : 'state';
+    return `
+      <div class="due-card">
+        <div class="row"><div class="name">${escapeHtml(x.name)}</div><div class="remain">${fmt(x.remaining)} ج.م</div></div>
+        <div class="row meta"><div>الأصل: ${fmt(x.total)} · المدفوع: ${fmt(x.paid)}</div><div>${x.dueStr}</div></div>
+        <div class="${stateCls}">${state}</div>
+        <div class="actions">
+          <button class="btn btn-primary" onclick='payCommit("${x.id}")' style="flex:1">سداد الآن</button>
+        </div>
+      </div>
+    `;
   }).join('');
 }
 
@@ -1083,8 +1140,6 @@ function readGhFormToCfg(){
 function ghStatus(msg, ok){
   if(els.ghStatus){ els.ghStatus.textContent='الحالة: '+msg; els.ghStatus.style.color= ok?'#0a0':'#900'; }
 }
-
-/* GitHub REST (مباشر من المتصفح) */
 async function gh_api(url, method='GET', body){
   const headers={'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
   if(ghCfg.token) headers['Authorization']='Bearer '+ghCfg.token;
