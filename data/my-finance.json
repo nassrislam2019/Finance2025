@@ -1,6 +1,4 @@
 {
-  "version": 1,
-  "exportedAt": "2025-10-15T07:10:47.456Z",
   "ledger": [
     {
       "id": "f6t8d610mgqgqjsu",
@@ -133,7 +131,8 @@
       "firstDue": "2025-11-12",
       "nextDue": "2025-11-12",
       "recurring": true,
-      "endAt": "2026-12-31"
+      "endAt": "2026-12-31",
+      "paid": {}
     },
     {
       "id": "3m2hp895mgozlmi6",
@@ -142,7 +141,8 @@
       "firstDue": "2025-10-20",
       "nextDue": "2025-10-20",
       "recurring": true,
-      "endAt": "2030-12-31"
+      "endAt": "2030-12-31",
+      "paid": {}
     },
     {
       "id": "b9xam41amgoznubi",
@@ -151,7 +151,8 @@
       "firstDue": "2025-11-01",
       "nextDue": "2025-11-01",
       "recurring": true,
-      "endAt": "2026-12-31"
+      "endAt": "2026-12-31",
+      "paid": {}
     },
     {
       "id": "w6ivs7i5mgozqe72",
@@ -160,7 +161,8 @@
       "firstDue": "2025-10-05",
       "nextDue": "2025-11-05",
       "recurring": true,
-      "endAt": "2026-12-14"
+      "endAt": "2026-12-14",
+      "paid": {}
     },
     {
       "id": "9f7hf8w3mgozrj5i",
@@ -169,7 +171,8 @@
       "firstDue": "2025-11-15",
       "nextDue": "2025-11-15",
       "recurring": true,
-      "endAt": "2026-12-31"
+      "endAt": "2026-12-31",
+      "paid": {}
     },
     {
       "id": "87dzatk4mgozsoba",
@@ -178,7 +181,8 @@
       "firstDue": "2025-10-20",
       "nextDue": "2025-10-20",
       "recurring": true,
-      "endAt": "2026-12-31"
+      "endAt": "2026-12-31",
+      "paid": {}
     },
     {
       "id": "5ezkl2c1mgqfzaxx",
@@ -187,7 +191,8 @@
       "firstDue": "2025-10-15",
       "nextDue": "2025-10-15",
       "recurring": false,
-      "endAt": null
+      "endAt": null,
+      "paid": {}
     }
   ],
   "collections": [
@@ -200,5 +205,7 @@
       "recurring": false,
       "endAt": null
     }
-  ]
+  ],
+  "updatedAt": "2025-10-15T07:58:43.457Z",
+  "app": "pf-ledger"
 }
