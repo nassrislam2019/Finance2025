@@ -93,7 +93,8 @@
       "nextDue": "2025-11-12",
       "recurring": true,
       "endAt": "2026-12-31",
-      "paid": {}
+      "paid": {},
+      "payments": {}
     },
     {
       "id": "3m2hp895mgozlmi6",
@@ -103,7 +104,8 @@
       "nextDue": "2025-10-20",
       "recurring": true,
       "endAt": "2030-12-31",
-      "paid": {}
+      "paid": {},
+      "payments": {}
     },
     {
       "id": "b9xam41amgoznubi",
@@ -113,7 +115,8 @@
       "nextDue": "2025-11-01",
       "recurring": true,
       "endAt": "2026-12-31",
-      "paid": {}
+      "paid": {},
+      "payments": {}
     },
     {
       "id": "w6ivs7i5mgozqe72",
@@ -123,7 +126,8 @@
       "nextDue": "2025-11-05",
       "recurring": true,
       "endAt": "2026-12-14",
-      "paid": {}
+      "paid": {},
+      "payments": {}
     },
     {
       "id": "9f7hf8w3mgozrj5i",
@@ -133,7 +137,8 @@
       "nextDue": "2025-11-15",
       "recurring": true,
       "endAt": "2026-12-31",
-      "paid": {}
+      "paid": {},
+      "payments": {}
     },
     {
       "id": "87dzatk4mgozsoba",
@@ -143,7 +148,8 @@
       "nextDue": "2025-10-20",
       "recurring": true,
       "endAt": "2026-12-31",
-      "paid": {}
+      "paid": {},
+      "payments": {}
     },
     {
       "id": "5ezkl2c1mgqfzaxx",
@@ -155,7 +161,8 @@
       "endAt": null,
       "paid": {
         "2025-10": 400
-      }
+      },
+      "payments": {}
     },
     {
       "id": "cs7lzxi9mgrtufxt",
@@ -165,7 +172,8 @@
       "nextDue": "2025-10-15",
       "recurring": true,
       "endAt": "2026-12-31",
-      "paid": {}
+      "paid": {},
+      "payments": {}
     },
     {
       "id": "ofpg6jkpmgruck82",
@@ -175,7 +183,8 @@
       "nextDue": "2025-10-25",
       "recurring": true,
       "endAt": "2026-12-31",
-      "paid": {}
+      "paid": {},
+      "payments": {}
     },
     {
       "id": "zp2468okmgruekz6",
@@ -185,7 +194,8 @@
       "nextDue": "2025-10-23",
       "recurring": false,
       "endAt": null,
-      "paid": {}
+      "paid": {},
+      "payments": {}
     }
   ],
   "collections": [
@@ -199,5 +209,5 @@
       "endAt": null
     }
   ],
-  "updatedAt": "2025-10-15T11:13:18.755Z"
+  "updatedAt": "2025-10-15T11:38:48.238Z"
 }
