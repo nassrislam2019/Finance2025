@@ -156,7 +156,7 @@
     {
       "id": "b9xam41amgoznubi",
       "name": "اشتراكات",
-      "amount": 1100,
+      "amount": 1040,
       "firstDue": "2025-11-01",
       "nextDue": "2025-11-01",
       "recurring": true,
@@ -217,5 +217,5 @@
       "endAt": null
     }
   ],
-  "exportedAt": "2025-10-15T10:00:46.828Z"
+  "exportedAt": "2025-10-15T10:06:53.723Z"
 }
