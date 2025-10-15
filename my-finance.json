@@ -1,16 +1,5 @@
 {
-  "ledger": [
-    {
-      "id": "a1lmq5xlmgrw7722",
-      "date": "2025-10-15",
-      "desc": "هشام",
-      "type": "expense",
-      "amount": 400,
-      "account": "كاش",
-      "category": "التزامات شهرية",
-      "commitId": "5ezkl2c1mgqfzaxx"
-    }
-  ],
+  "ledger": [],
   "accounts": [
     {
       "name": "كاش",
@@ -200,5 +189,5 @@
       "endAt": null
     }
   ],
-  "updatedAt": "2025-10-15T11:44:37.239Z"
+  "updatedAt": "2025-10-15T11:48:23.379Z"
 }
