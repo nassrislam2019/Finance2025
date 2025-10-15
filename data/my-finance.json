@@ -30,17 +30,6 @@
       "category": "تحويل صادر"
     },
     {
-      "id": "bsu1tgqkmgrnavuk",
-      "link": "3mba6ue3mgrnavuk",
-      "isTransfer": true,
-      "date": "2025-10-14",
-      "desc": "تحويل من محفظة — سحب من المحفظة",
-      "type": "income",
-      "amount": 600,
-      "account": "كاش",
-      "category": "تحويل وارد"
-    },
-    {
       "id": "lreafw0pmgrnavuk",
       "date": "2025-10-14",
       "desc": "عمولة تحويل — سحب من المحفظة",
@@ -48,24 +37,6 @@
       "amount": 6,
       "account": "محفظة",
       "category": "عمولة تحويل"
-    },
-    {
-      "id": "5r81haw6mgrnbkj0",
-      "date": "2025-10-15",
-      "desc": "سداد جزء من فلوس هشام",
-      "type": "expense",
-      "amount": 400,
-      "account": "كاش",
-      "category": "أكل وشرب"
-    },
-    {
-      "id": "no9yoh06mgrtlx8p",
-      "date": "2025-10-15",
-      "desc": "سداد جزء من مستحقات هشام",
-      "type": "expense",
-      "amount": 400,
-      "account": "كاش",
-      "category": "التزامات شهرية"
     }
   ],
   "accounts": [
@@ -245,5 +216,5 @@
       "endAt": null
     }
   ],
-  "exportedAt": "2025-10-15T10:23:03.696Z"
+  "exportedAt": "2025-10-15T10:24:04.793Z"
 }
