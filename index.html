@@ -121,9 +121,9 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
 
   <!-- كارت الاستحقاقات القريبة -->
   <section class="card" id="card-dueSoon" style="margin-top:12px">
-    <!-- ✅ تمت إضافة البادج الجديدة هنا -->
     <div class="card-head">
       <h3>استحقاقات قريبة</h3>
+      <!-- ✅ بادج إجمالي المتبقّي لهذا الشهر -->
       <span id="dueTotalBadge" class="badge" title="إجمالي المتبقّي لهذا الشهر">إجمالي: 0.00 ج.م</span>
     </div>
     <div class="card-body">
@@ -136,6 +136,8 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
             <th style="text-align:right">المدفوع</th>
             <th style="text-align:right">المتبقي</th>
             <th style="text-align:right">الحالة</th>
+            <!-- ✅ عمود جديد للإجراءات -->
+            <th style="text-align:right">إجراءات</th>
           </tr></thead>
           <tbody id="tbodyDueSoon"></tbody>
         </table>
@@ -216,47 +218,47 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
       </div>
     </div>
   </section>
-<div class="hr"></div>
+  <div class="hr"></div>
 
-<!-- (5) جدول الحركات -->
-<section class="card collapsed" id="card-txs" data-collapsible>
-  <div class="card-head">
-    <h3>الحركات</h3>
-    <button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button>
-  </div>
-  <div class="card-body">
-    <div class="toolbar" style="margin-bottom:8px">
-      <input id="search" placeholder="بحث بالوصف" style="max-width:220px"/>
-      <select id="fType" style="max-width:150px">
-        <option value="all" selected>الكل</option>
-        <option value="income">دخل فقط</option>
-        <option value="expense">مصروف فقط</option>
-      </select>
-      <select id="fAccount" style="max-width:180px"></select>
-      <input id="fFrom" type="date" />
-      <input id="fTo" type="date" />
-      <button id="clearFilters" class="btn btn-outline">مسح الفلاتر</button>
-      <span class="spacer"></span>
-      <span class="badge">العملة: ج.م</span>
+  <!-- (5) جدول الحركات -->
+  <section class="card collapsed" id="card-txs" data-collapsible>
+    <div class="card-head">
+      <h3>الحركات</h3>
+      <button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button>
     </div>
-    <div style="overflow:auto">
-      <table>
-        <thead>
-          <tr>
-            <th>التاريخ</th>
-            <th>الوصف</th>
-            <th>الفئة</th>
-            <th>الحساب</th>
-            <th>المبلغ</th>
-            <th>رصيد الحساب بعد العملية</th>
-            <th>إجراءات</th>
-          </tr>
-        </thead>
-        <tbody id="tbody"></tbody>
-      </table>
+    <div class="card-body">
+      <div class="toolbar" style="margin-bottom:8px">
+        <input id="search" placeholder="بحث بالوصف" style="max-width:220px"/>
+        <select id="fType" style="max-width:150px">
+          <option value="all" selected>الكل</option>
+          <option value="income">دخل فقط</option>
+          <option value="expense">مصروف فقط</option>
+        </select>
+        <select id="fAccount" style="max-width:180px"></select>
+        <input id="fFrom" type="date" />
+        <input id="fTo" type="date" />
+        <button id="clearFilters" class="btn btn-outline">مسح الفلاتر</button>
+        <span class="spacer"></span>
+        <span class="badge">العملة: ج.م</span>
+      </div>
+      <div style="overflow:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>التاريخ</th>
+              <th>الوصف</th>
+              <th>الفئة</th>
+              <th>الحساب</th>
+              <th>المبلغ</th>
+              <th>رصيد الحساب بعد العملية</th>
+              <th>إجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
   
   <div class="hr"></div>
 
@@ -561,11 +563,10 @@ function addCommitPayment(commitId, ym, amount){
   c.payments[ym]=(c.payments[ym]||0)+amount;
   const total=Number(c.amount||0);
   if(c.payments[ym] >= total - 1e-9){ // تم السداد الكامل للشهر
-    // ترحيل الشهر التالي (أو حذف لو غير متكرر)
     const due=c.nextDue?parseLocalDate(c.nextDue):parseLocalDate(c.firstDue);
     if(c.recurring){
       const next=addMonthsPreserveDOM(due,1);
-      if(c.endAt && next>parseLocalDate(c.endAt)){ // انتهى
+      if(c.endAt && next>parseLocalDate(c.endAt)){
         commitments=commitments.filter(xx=>xx.id!==commitId);
       }else{
         c.nextDue=formatLocalDate(next);
@@ -596,7 +597,7 @@ function sumCurrentMonthCollections(){
   for(const c of collections){
     const dueStr=c.nextDue||c.firstDue; if(!dueStr) continue;
     if(dueStr.slice(0,7)!==ym) continue;
-    total += Number(c.amount||0); // التحصيلات المتوقعة (لا تُخصم إلا بعد التحصيل)
+    total += Number(c.amount||0);
   }
   return total;
 }
@@ -610,7 +611,7 @@ function sumCurrentMonthIncome(){
 function recalc(){
   const {bal}=computeBalances(); let total=0; for(const v of bal.values()) total+=v;
 
-  const monthComRemain = sumCurrentMonthCommitments(); // المتبقي بعد دفعات الشهر
+  const monthComRemain = sumCurrentMonthCommitments();
   const monthCol = sumCurrentMonthCollections();
   const monthInc = sumCurrentMonthIncome();
   const afterCom = total - monthComRemain + monthCol;
@@ -641,7 +642,7 @@ function render(){
     if(ff && t.date<ff) return false;
     if(fto && t.date>fto) return false;
     return true;
-  }).sort((a,b)=> a.date.localeCompare(b.date) || (a.id>b.id?1:-1)); // الأقدم -> الأحدث
+  }).sort((a,b)=> a.date.localeCompare(b.date) || (a.id>b.id?1:-1));
 
   if(els.tbody){
     els.tbody.innerHTML=rows.map(t=>{
@@ -666,7 +667,6 @@ window.editTx=id=>{ const t=ledger.find(x=>x.id===id); if(!t) return;
 };
 window.delTx=id=>{ if(!confirm('هل تريد حذف هذه الحركة؟')) return; const was=ledger.find(t=>t.id===id);
   ledger=ledger.filter(t=>t.id!==id); saveLedger();
-  // لو كانت الحركة مرتبطة بالتزام و مصروف - نلغي تأثيرها (نعكس الدفعة)
   if(was && was.type==='expense' && was.linkCommitId){
     const ym=was.date.slice(0,7);
     const c=commitments.find(x=>x.id===was.linkCommitId);
@@ -684,7 +684,6 @@ els.saveTx?.addEventListener('click',()=>{
   else { ledger.push(tx); }
   saveLedger();
 
-  // لو دي مصروف ومربوطة بالتزام -> اعكسها كدفعة جزئية للشهر الحالي
   if(type==='expense' && tx.linkCommitId){
     addCommitPayment(tx.linkCommitId, tx.date.slice(0,7), tx.amount);
   }
@@ -881,7 +880,6 @@ window.payCommit=id=>{
   const accName=chooseAccount(); if(!accName) return;
   if(!confirm(`سداد كامل متبقّي الالتزام "${c.name}" بقيمة ${fmt(remain)} ج.م من "${accName}" بتاريخ ${dateStr}؟`)) return;
 
-  // سجل حركة + دفعة
   const tx={ id:eid(), date:dateStr, desc:`${c.name} (سداد التزام)`, type:'expense', amount:remain, account:accName, category:'التزامات شهرية', linkCommitId:c.id };
   ledger.push(tx); saveLedger();
   addCommitPayment(c.id, ym, remain);
@@ -967,7 +965,7 @@ window.collectNow=id=>{
   saveCollections(); render();
 };
 
-/* ===== الاستحقاقات القريبة (كل استحقاقات الشهر الحالي غير المسددة بالكامل) ===== */
+/* ===== الاستحقاقات القريبة ===== */
 function drawDueSoon(){
   const wrap=document.getElementById('dueSoonWrap'); const none=document.getElementById('noDueSoon'); const tbody=document.getElementById('tbodyDueSoon');
   if(!wrap||!tbody) return;
@@ -1002,6 +1000,8 @@ function drawDueSoon(){
       <td>${fmt(x.paid)}</td>
       <td><b>${fmt(x.remaining)}</b></td>
       <td>${state}</td>
+      <!-- ✅ زر سداد الآن -->
+      <td><button class="btn btn-primary" onclick='payCommit("${x.id}")'>سداد الآن</button></td>
     </tr>`;
   }).join('');
 }
@@ -1098,18 +1098,17 @@ function currentPayload(){
 }
 async function ghGetFile(){
   const u=`https://api.github.com/repos/${ghCfg.user}/${ghCfg.repo}/contents/${ghCfg.path}?ref=${ghCfg.branch}`;
-  try{ return await gh_api(u,'GET'); }catch(e){ return null; } // 404 -> null
+  try{ return await gh_api(u,'GET'); }catch(e){ return null; }
 }
 async function ghPutFile(contentObj, message){
   const u=`https://api.github.com/repos/${ghCfg.user}/${ghCfg.repo}/contents/${ghCfg.path}`;
   const text=JSON.stringify(contentObj,null,2);
   const b64=btoa(unescape(encodeURIComponent(text)));
-  // اجلب sha إن وجد
   let sha=null;
   const existing=await ghGetFile();
   if(existing && existing.sha) sha=existing.sha;
   const body={message:message||'update data', content:b64, branch:ghCfg.branch};
-  if(sha) body.sha=sha; // مطلوبة للتحديث، تُحذف عند الإنشاء الأول
+  if(sha) body.sha=sha;
   return gh_api(u,'PUT', body);
 }
 async function ghTest(){
