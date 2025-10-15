@@ -1,5 +1,16 @@
 {
-  "ledger": [],
+  "ledger": [
+    {
+      "id": "x9onmkuvmgrxxk1g",
+      "date": "2025-10-15",
+      "desc": "هشام",
+      "type": "expense",
+      "amount": 400,
+      "account": "كاش",
+      "category": "التزامات شهرية",
+      "linkCommitId": "5ezkl2c1mgqfzaxx"
+    }
+  ],
   "accounts": [
     {
       "name": "كاش",
@@ -7,11 +18,11 @@
     },
     {
       "name": "محفظة",
-      "opening": 0
+      "opening": 328
     },
     {
       "name": "إئتمان",
-      "opening": 0
+      "opening": -750
     },
     {
       "name": "حساب بنكي",
@@ -142,7 +153,9 @@
       "paid": {
         "2025-10": 400
       },
-      "payments": {}
+      "payments": {
+        "2025-10": 400
+      }
     },
     {
       "id": "cs7lzxi9mgrtufxt",
@@ -189,5 +202,5 @@
       "endAt": null
     }
   ],
-  "updatedAt": "2025-10-15T11:58:19.590Z"
+  "updatedAt": "2025-10-15T12:01:47.191Z"
 }
