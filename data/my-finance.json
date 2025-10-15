@@ -201,9 +201,7 @@
       "nextDue": "2025-10-15",
       "recurring": false,
       "endAt": null,
-      "paid": {
-        "2025-10": 400
-      }
+      "paid": {}
     },
     {
       "id": "cs7lzxi9mgrtufxt",
@@ -227,5 +225,5 @@
       "endAt": null
     }
   ],
-  "exportedAt": "2025-10-15T10:14:43.908Z"
+  "exportedAt": "2025-10-15T10:20:29.681Z"
 }
