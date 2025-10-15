@@ -3,7 +3,7 @@
   "accounts": [
     {
       "name": "كاش",
-      "opening": 0
+      "opening": 605
     },
     {
       "name": "محفظة",
@@ -189,5 +189,5 @@
       "endAt": null
     }
   ],
-  "updatedAt": "2025-10-15T11:56:15.174Z"
+  "updatedAt": "2025-10-15T11:58:19.590Z"
 }
