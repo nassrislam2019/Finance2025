@@ -8,6 +8,16 @@
       "amount": 400,
       "account": "كاش",
       "category": "التزامات شهرية"
+    },
+    {
+      "id": "a1lmq5xlmgrw7722",
+      "date": "2025-10-15",
+      "desc": "هشام",
+      "type": "expense",
+      "amount": 400,
+      "account": "كاش",
+      "category": "التزامات شهرية",
+      "commitId": "5ezkl2c1mgqfzaxx"
     }
   ],
   "accounts": [
@@ -189,5 +199,5 @@
       "endAt": null
     }
   ],
-  "exportedAt": "2025-10-15T10:40:15.184Z"
+  "updatedAt": "2025-10-15T11:13:18.755Z"
 }
