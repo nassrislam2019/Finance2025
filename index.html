@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>دفتر حساباتي — تتبُّع المصروفات والدخل</title>
-<meta name="description" content="موقع شخصي بسيط لإدارة المصروفات والدخل — يعمل أوفلاين (PWA) ويحفظ البيانات محليًا." />
+<meta name="description" content="موقع شخصي بسيط لإدارة المصروفات والدخل — يعمل أوفلاين (PWA) ويحفظ البيانات محليًا، مع خيار مزامنة GitHub." />
 <meta name="theme-color" content="#ffffff" />
 <link rel="manifest" href="/my-finance/manifest.json" />
 <meta name="mobile-web-app-capable" content="yes" />
@@ -95,6 +95,7 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
       <button id="exportJson" class="btn btn-outline" type="button">تصدير JSON</button>
       <button id="exportCsv" class="btn btn-outline" type="button">تصدير CSV</button>
       <label class="btn btn-muted" for="importFile">استيراد JSON<input id="importFile" type="file" accept="application/json" style="display:none"></label>
+      <button id="syncNow" class="btn btn-outline" type="button">مزامنة الآن</button>
       <button id="installBtn" class="btn btn-outline" type="button" style="display:none">تثبيت التطبيق</button>
     </div>
   </header>
@@ -118,17 +119,17 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
     </div>
   </section>
 
-  <!-- كارت الاستحقاقات القريبة -->
+  <!-- استحقاقات قريبة (كل غير المسدد في الشهر الحالي) -->
   <section class="card" id="card-dueSoon" style="margin-top:12px">
-    <div class="card-head"><h3>استحقاقات قريبة (الشهر الحالي)</h3></div>
+    <div class="card-head"><h3>استحقاقات قريبة</h3></div>
     <div class="card-body">
       <div id="dueSoonWrap" style="display:none">
         <table style="width:100%">
-          <thead><tr><th style="text-align:right">الاسم</th><th style="text-align:right">التاريخ</th><th style="text-align:right">المبلغ</th><th style="text-align:right">المتبقي</th><th style="text-align:right">الحالة</th></tr></thead>
+          <thead><tr><th>الاسم</th><th>التاريخ</th><th>الأصل</th><th>المسدّد</th><th>المتبقي</th><th>الحالة</th></tr></thead>
           <tbody id="tbodyDueSoon"></tbody>
         </table>
       </div>
-      <div id="noDueSoon" style="color:var(--muted)">لا توجد استحقاقات غير مسددة هذا الشهر.</div>
+      <div id="noDueSoon" style="color:var(--muted)">لا توجد استحقاقات غير مسددة في هذا الشهر.</div>
     </div>
   </section>
 
@@ -163,7 +164,7 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
 
   <div class="hr"></div>
 
-  <!-- (2.5) تحويل بين الحسابات (مطوي افتراضيًا) -->
+  <!-- (2.5) تحويل بين الحسابات (مطوي) -->
   <section class="card collapsed" id="card-transfer" data-collapsible>
     <div class="card-head"><h3>تحويل بين الحسابات</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
     <div class="card-body">
@@ -185,7 +186,7 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
 
   <div class="hr"></div>
 
-  <!-- (3) إضافة حركة -->
+  <!-- (3) إضافة حركة + سداد جزئي -->
   <section class="card collapsed" id="card-addtx" data-collapsible>
     <div class="card-head"><h3>إضافة حركة</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
     <div class="card-body">
@@ -196,48 +197,23 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
         <div><label>الوصف</label><input id="desc" type="text" placeholder="مثال: سوبر ماركت" /></div>
         <div><label>الحساب</label><select id="account"></select></div>
         <div><label>الفئة</label><select id="category"></select></div>
-
-        <!-- سداد من التزام (اختياري) -->
-        <div style="grid-column:1/-1" class="grid grid-3">
-          <div><label>سداد من التزام (اختياري)</label><select id="settleCommit"><option value="">— بدون —</option></select></div>
-          <div><label>المتبقي لهذا الشهر</label><input id="settleRemain" disabled /></div>
-          <div><label>سيتم تسجيله كـ</label><input id="settleInfo" disabled value="—"/></div>
-        </div>
-
-        <div class="grid grid-2" style="grid-column:1/-1">
-          <button id="saveTx" class="btn btn-primary">حفظ</button>
-          <button id="resetForm" class="btn btn-outline">إفراغ</button>
-        </div>
+      </div>
+      <div class="hr"></div>
+      <div class="grid grid-3">
+        <div class="checkbox-row"><input id="isPartialPay" type="checkbox" /><label for="isPartialPay" style="margin:0">سداد جزء من التزامات الشهر</label></div>
+        <div><label>الالتزام</label><select id="partialCommit" disabled></select></div>
+        <div><label>المتبقي (مرجعي)</label><input id="partialRemain" disabled placeholder="0.00" /></div>
+      </div>
+      <div class="grid grid-2" style="margin-top:10px">
+        <button id="saveTx" class="btn btn-primary">حفظ</button>
+        <button id="resetForm" class="btn btn-outline">إفراغ</button>
       </div>
     </div>
   </section>
 
   <div class="hr"></div>
 
-  <!-- (4) التقارير -->
-  <section class="card collapsed" id="card-reports" data-collapsible>
-    <div class="card-head"><h3>تقارير شهرية و رسوم بيانية</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
-    <div class="card-body">
-      <div class="toolbar" style="margin-bottom:8px">
-        <input id="monthPicker" type="month" />
-        <button id="refreshReports" class="btn btn-outline">تحديث</button>
-        <span class="spacer"></span><span class="badge">إجمالي الدخل/المصروف لكل شهر</span>
-      </div>
-      <div class="grid grid-2">
-        <div><canvas id="chartMonthly" width="560" height="320" aria-label="Monthly chart"></canvas></div>
-        <div style="overflow:auto">
-          <table>
-            <thead><tr><th>الشهر</th><th>إجمالي الدخل</th><th>إجمالي المصروف</th><th>الصافي</th></tr></thead>
-            <tbody id="tbodyMonthly"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="hr"></div>
-
-  <!-- (5) جدول الحركات -->
+  <!-- (4) جدول الحركات -->
   <section class="card collapsed" id="card-txs" data-collapsible>
     <div class="card-head"><h3>الحركات</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
     <div class="card-body">
@@ -260,6 +236,29 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
 
   <div class="hr"></div>
 
+  <!-- (5) التقارير (قبل GitHub) -->
+  <section class="card collapsed" id="card-reports" data-collapsible>
+    <div class="card-head"><h3>تقارير شهرية و رسوم بيانية</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
+    <div class="card-body">
+      <div class="toolbar" style="margin-bottom:8px">
+        <input id="monthPicker" type="month" />
+        <button id="refreshReports" class="btn btn-outline">تحديث</button>
+        <span class="spacer"></span><span class="badge">إجمالي الدخل/المصروف لكل شهر</span>
+      </div>
+      <div class="grid grid-2">
+        <div><canvas id="chartMonthly" width="560" height="320" aria-label="Monthly chart"></canvas></div>
+        <div style="overflow:auto">
+          <table>
+            <thead><tr><th>الشهر</th><th>إجمالي الدخل</th><th>إجمالي المصروف</th><th>الصافي</th></tr></thead>
+            <tbody id="tbodyMonthly"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="hr"></div>
+
   <!-- (6) الالتزامات الشهرية -->
   <section class="card collapsed" id="card-commit" data-collapsible>
     <div class="card-head"><h3>الالتزامات الشهرية</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
@@ -273,7 +272,7 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
       </div>
       <div class="toolbar" style="margin-top:10px">
         <button id="addCommitment" class="btn btn-outline">إضافة/تحديث</button>
-        <span class="spacer"></span><span class="badge">لا يظهر في الحركات إلا بعد "تم السداد"</span>
+        <span class="spacer"></span><span class="badge">لا يظهر في الحركات إلا بعد "تم السداد" أو سداد جزئي من "إضافة حركة"</span>
       </div>
       <div style="overflow:auto">
         <table>
@@ -291,7 +290,7 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
     <div class="card-head"><h3>مبالغ تحت التحصيل</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
     <div class="card-body">
       <div class="grid grid-4">
-        <div><label>اسم التحصيل</label><input id="coName" placeholder="مثال: إيجار مستلم، مبيعات آجل" /></div>
+        <div><label>اسم التحصيل</label><input id="coName" placeholder="مثال: مبيعات آجل" /></div>
         <div><label>المبلغ (ج.م)</label><input id="coAmount" type="number" step="0.01" placeholder="0.00" /></div>
         <div><label>تاريخ أول استحقاق</label><input id="coFirstDue" type="date" required /></div>
         <div class="checkbox-row"><input id="coRecurring" type="checkbox" /><label for="coRecurring" style="margin:0">يتكرر شهريًا</label></div>
@@ -299,7 +298,7 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
       </div>
       <div class="toolbar" style="margin-top:10px">
         <button id="addCollect" class="btn btn-outline">إضافة/تحديث</button>
-        <span class="spacer"></span><span class="badge">لا يظهر في الحركات إلا بعد "تم التحصيل"</span>
+        <span class="spacer"></span><span class="badge">لا يُحتسب إلا بعد "تم التحصيل"</span>
       </div>
       <div style="overflow:auto">
         <table>
@@ -312,20 +311,24 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
 
   <div class="hr"></div>
 
-  <!-- (8) مزامنة GitHub -->
-  <section class="card" id="card-github">
-    <div class="card-head"><h3>إعدادات مزامنة GitHub</h3></div>
+  <!-- (8) إعدادات GitHub (مطوي) -->
+  <section class="card collapsed" id="card-github" data-collapsible>
+    <div class="card-head"><h3>إعدادات مزامنة GitHub</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
     <div class="card-body">
       <div class="grid grid-4">
         <div><label>اسم المستخدم</label><input id="ghUser" placeholder="مثال: nassrislam2019" /></div>
-        <div><label>المستودع (Repository)</label><input id="ghRepo" placeholder="مثال: Finance2025" /></div>
+        <div><label>المستودع</label><input id="ghRepo" placeholder="مثال: Finance2025" /></div>
         <div><label>الفرع</label><input id="ghBranch" value="main" /></div>
         <div><label>مسار الملف (JSON)</label><input id="ghPath" value="data/my-finance.json" /></div>
       </div>
       <div class="grid grid-3" style="margin-top:8px">
-        <div><label>Personal Access Token</label><input id="ghToken" type="password" placeholder="ghp_..." /></div>
+        <div>
+          <label>Personal Access Token</label>
+          <input id="ghToken" type="password" placeholder="ghp_..." />
+        </div>
         <div class="checkbox-row" style="margin-top:22px">
-          <input id="ghAuto" type="checkbox"/><label for="ghAuto" style="margin:0">مزامنة تلقائيًا بعد أي تعديل</label>
+          <input id="ghAuto" type="checkbox"/>
+          <label for="ghAuto" style="margin:0">مزامنة تلقائيًا بعد كل عملية</label>
         </div>
         <div class="grid grid-2" style="margin-top:22px">
           <button id="ghSaveCfg" class="btn btn-outline">حفظ الإعدادات</button>
@@ -338,14 +341,14 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
         <span id="ghStatus" class="badge">الحالة: غير متصل</span>
       </div>
       <div style="margin-top:8px;color:var(--muted);font-size:12px">
-        ⚠️ تنبيه: الـ Token يتم حفظه محليًا في جهازك فقط، لا تشاركه مع أي شخص.
+        ⚠️ الـ Token محفوظ محليًا على جهازك فقط — لا تنشره علنًا.
       </div>
     </div>
   </section>
 
   <div class="footer">
     <div>⚠️ <span class="note">تنبيه:</span> كل البيانات محفوظة محليًا في <code>localStorage</code>. لا تنسَ التصدير كنسخة احتياطية.</div>
-    <div style="margin-top:6px">تقدر تثبّت الموقع كتطبيق لأنه PWA.</div>
+    <div style="margin-top:6px">يمكن تثبيت الموقع كتطبيق (PWA).</div>
   </div>
 </div>
 
@@ -362,12 +365,12 @@ const KEY='pf_ledger_v1',
 let ledger=JSON.parse(localStorage.getItem(KEY)||'[]');
 let accounts=JSON.parse(localStorage.getItem(ACC_KEY)||'[]');
 let categories=JSON.parse(localStorage.getItem(CAT_KEY)||'[]');
-let commitments=JSON.parse(localStorage.getItem(COM_KEY)||'[]'); // {id,name,amount,firstDue,nextDue,recurring,endAt,paid:{'YYYY-MM':number}}
-let collections=JSON.parse(localStorage.getItem(COL_KEY)||'[]'); // مماثل للتحصيل
+let commitments=JSON.parse(localStorage.getItem(COM_KEY)||'[]'); // {id,name,amount,firstDue,nextDue,recurring,endAt}
+let collections=JSON.parse(localStorage.getItem(COL_KEY)||'[]'); // نفس البنية للتحصيل
 let ghCfg = JSON.parse(localStorage.getItem(GH_KEY)||'{}');
 
-/* افتراضات */
-if(accounts.length===0){ accounts=[{name:'كاش',opening:0},{name:'حساب بنكي',opening:0},{name:'محفظة',opening:0}]; saveAccounts(); }
+/* افتراضات أولية */
+if(accounts.length===0){ accounts=[{name:'كاش',opening:0},{name:'حساب بنكي',opening:0},{name:'محفظة',opening:0}]; saveAccounts(false); }
 function ensureBaseCategories(){
   const need=[
     {name:'التزامات شهرية',type:'expense'},
@@ -385,7 +388,7 @@ function ensureBaseCategories(){
     changed=true;
   }
   for(const n of need){ if(!categories.some(c=>c.name===n.name && c.type===n.type)){ categories.push(n); changed=true; } }
-  if(changed) saveCategories();
+  if(changed) saveCategories(false);
 }
 ensureBaseCategories();
 
@@ -406,23 +409,24 @@ const els={
   /* تحصيل */
   coName:$('#coName'), coAmount:$('#coAmount'), coFirstDue:$('#coFirstDue'), coRecurring:$('#coRecurring'), coEndAt:$('#coEndAt'),
   addCollect:$('#addCollect'), tbodyCollect:$('#tbodyCollect'),
-  /* سداد من التزام */
-  settleCommit:$('#settleCommit'), settleRemain:$('#settleRemain'), settleInfo:$('#settleInfo'),
   /* PWA & تحويل */
   installBtn:$('#installBtn'),
   trFrom:$('#trFrom'), trTo:$('#trTo'), trAmount:$('#trAmount'), trFee:$('#trFee'), trDate:$('#trDate'), trDesc:$('#trDesc'),
   execTransfer:$('#execTransfer'), resetTransfer:$('#resetTransfer'),
+  /* جزئي */
+  isPartialPay:$('#isPartialPay'), partialCommit:$('#partialCommit'), partialRemain:$('#partialRemain'),
   /* GitHub */
-  ghUser:$('#ghUser'), ghRepo:$('#ghRepo'), ghBranch:$('#ghBranch'), ghPath:$('#ghPath'),
-  ghToken:$('#ghToken'), ghAuto:$('#ghAuto'), ghSaveCfg:$('#ghSaveCfg'), ghTest:$('#ghTest'),
+  syncNow:$('#syncNow'),
+  ghUser:$('#ghUser'), ghRepo:$('#ghRepo'), ghBranch:$('#ghBranch'), ghPath:$('#ghPath'), ghToken:$('#ghToken'),
+  ghAuto:$('#ghAuto'), ghSaveCfg:$('#ghSaveCfg'), ghTest:$('#ghTest'),
   ghPull:$('#ghPull'), ghPush:$('#ghPush'), ghStatus:$('#ghStatus')
 };
-['saveTx','resetForm','addAccount','addCategory','exportJson','exportCsv','refreshReports','addCommitment','addCollect','execTransfer','resetTransfer','ghSaveCfg','ghTest','ghPull','ghPush']
+['saveTx','resetForm','addAccount','addCategory','exportJson','exportCsv','refreshReports','addCommitment','addCollect','execTransfer','resetTransfer','syncNow','ghSaveCfg','ghTest','ghPull','ghPush']
   .forEach(id=>document.getElementById(id)?.setAttribute('type','button'));
 
 /* Utils */
 const eid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36);
-const fmt=n=>Number(n).toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmt=n=>Number(n||0).toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:2});
 const escapeHtml=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
 els.date.value=new Date().toISOString().slice(0,10);
 els.trDate.value=new Date().toISOString().slice(0,10);
@@ -433,11 +437,11 @@ function addMonthsPreserveDOM(date,months){const d=new Date(date.getTime());cons
 function daysBetween(a,b){const MS=24*60*60*1000;const da=new Date(a.getFullYear(),a.getMonth(),a.getDate());const db=new Date(b.getFullYear(),b.getMonth(),b.getDate());return Math.round((db-da)/MS);}
 
 /* ===== حفظ ===== */
-function saveLedger(){ localStorage.setItem(KEY, JSON.stringify(ledger)); }
-function saveAccounts(){ localStorage.setItem(ACC_KEY, JSON.stringify(accounts)); refreshAccountSelects(); drawAccountsBadges(); recalc(); }
-function saveCategories(){ localStorage.setItem(CAT_KEY, JSON.stringify(categories)); refreshCategorySelect(); drawCatsBadges(); }
-function saveCommitments(){ localStorage.setItem(COM_KEY, JSON.stringify(commitments)); drawCommitments(); drawDueSoon(); recalc(); }
-function saveCollections(){ localStorage.setItem(COL_KEY, JSON.stringify(collections)); drawCollections(); recalc(); }
+function saveLedger(withSync=true){ localStorage.setItem(KEY, JSON.stringify(ledger)); if(withSync) maybeAutoSync('ledger'); }
+function saveAccounts(withSync=true){ localStorage.setItem(ACC_KEY, JSON.stringify(accounts)); refreshAccountSelects(); drawAccountsBadges(); recalc(); if(withSync) maybeAutoSync('accounts'); }
+function saveCategories(withSync=true){ localStorage.setItem(CAT_KEY, JSON.stringify(categories)); refreshCategorySelect(); drawCatsBadges(); if(withSync) maybeAutoSync('categories'); }
+function saveCommitments(withSync=true){ localStorage.setItem(COM_KEY, JSON.stringify(commitments)); drawCommitments(); drawDueSoon(); recalc(); if(withSync) maybeAutoSync('commitments'); }
+function saveCollections(withSync=true){ localStorage.setItem(COL_KEY, JSON.stringify(collections)); drawCollections(); recalc(); if(withSync) maybeAutoSync('collections'); }
 
 /* ===== القوائم ===== */
 function buildAccountOptions(excludeName){
@@ -471,7 +475,7 @@ function ensureTransferCategories(){
   const need=[{name:'تحويل صادر',type:'expense'},{name:'تحويل وارد',type:'income'},{name:'عمولة تحويل',type:'expense'}];
   let changed=false;
   for(const n of need){ if(!categories.some(c=>c.name===n.name && c.type===n.type)){ categories.push(n); changed=true; } }
-  if(changed) saveCategories();
+  if(changed) saveCategories(false);
 }
 function syncTransferSelects(trigger){
   if(trigger === 'from' && els.trTo){
@@ -515,58 +519,51 @@ function drawPerAccount(balMap){
   if(els.perAccount) els.perAccount.innerHTML=items.join('');
 }
 
-/* ===== مساعد للمدفوع جزئياً ===== */
-function ymOf(d){ return formatLocalDate(d).slice(0,7); }
-function getPaidThisMonth(c){
-  const ym=ymOf(startOfToday());
-  const paid = (c.paid && c.paid[ym]) ? Number(c.paid[ym]) : 0;
-  return {ym,paid};
-}
-function addPaid(c,amount){
-  if(!c.paid) c.paid={};
-  const {ym,paid}=getPaidThisMonth(c);
-  c.paid[ym]=(paid + amount);
-}
-
 /* ===== إجماليات الشهر ===== */
-function sumCurrentMonthCommitments(){
-  const ym=ymOf(startOfToday());
-  let total=0;
+function sumCurrentMonthIncome(){
+  const ym = formatLocalDate(startOfToday()).slice(0,7);
+  return ledger.filter(t=>!t.isTransfer && t.type==='income' && t.date.slice(0,7)===ym)
+               .reduce((s,t)=>s+t.amount,0);
+}
+function getCurrentMonthKey(){ return formatLocalDate(startOfToday()).slice(0,7); }
+function sumPaidForCommitInMonth(commit){ // من الحركات (جزئية أو كاملة)
+  const ym=getCurrentMonthKey();
+  return ledger.filter(t=>t.type==='expense' && t.category==='التزامات شهرية' && t.commitId===commit.id && t.date.slice(0,7)===ym)
+               .reduce((s,t)=>s+(t.amount||0),0);
+}
+function monthCommitTotals(){ // {totalOriginal, totalRemaining}
+  const ym=getCurrentMonthKey(); let totalOriginal=0, totalRemaining=0;
   for(const c of commitments){
     const dueStr=c.nextDue||c.firstDue; if(!dueStr) continue;
     if(dueStr.slice(0,7)!==ym) continue;
-    const paid=(c.paid&&c.paid[ym])?Number(c.paid[ym]):0;
+    const paid=sumPaidForCommitInMonth(c);
     const remain=Math.max(0,(Number(c.amount)||0)-paid);
-    total+=remain;
+    totalOriginal += Number(c.amount)||0;
+    totalRemaining += remain;
   }
-  return total;
+  return {totalOriginal, totalRemaining};
 }
 function sumCurrentMonthCollections(){
-  const ym=ymOf(startOfToday()); let total=0;
+  const ym = getCurrentMonthKey();
+  let total=0;
   for(const c of collections){
-    const dueStr=c.nextDue||c.firstDue; if(!dueStr) continue;
-    if(dueStr.slice(0,7)!==ym) continue;
-    total+=Number(c.amount)||0;
+    const dueStr = c.nextDue || c.firstDue; if(!dueStr) continue;
+    if(dueStr.slice(0,7) === ym){ total += Number(c.amount)||0; }
   }
   return total;
-}
-function sumCurrentMonthIncome(){
-  const ym=ymOf(startOfToday());
-  return ledger.filter(t=>!t.isTransfer && t.type==='income' && t.date.slice(0,7)===ym)
-               .reduce((s,t)=>s+t.amount,0);
 }
 
 /* ===== إعادة الحساب + الملخص ===== */
 function recalc(){
   const {bal}=computeBalances(); let total=0; for(const v of bal.values()) total+=v;
 
-  const monthCom = sumCurrentMonthCommitments();
-  const monthCol = sumCurrentMonthCollections();
+  const {totalOriginal, totalRemaining} = monthCommitTotals();
   const monthInc = sumCurrentMonthIncome();
-  const afterCom = total - monthCom + monthCol;
+  const monthCol = sumCurrentMonthCollections(); // يظهر في “بعد التحصيلات والالتزامات”
+  const afterCom = total - totalRemaining + monthCol;
 
   if(els.totalBalance) els.totalBalance.textContent=fmt(total);
-  if(els.monthCommitTotal) els.monthCommitTotal.textContent = '-'+fmt(monthCom);
+  if(els.monthCommitTotal) els.monthCommitTotal.textContent = '-'+fmt(totalRemaining);
   if(els.monthIncome) els.monthIncome.textContent = fmt(monthInc);
   if(els.balanceAfterCommit) els.balanceAfterCommit.textContent = fmt(afterCom);
   if(els.txCount) els.txCount.textContent=ledger.length.toString();
@@ -605,57 +602,41 @@ function render(){
       </tr>`;
     }).join('');
   }
-  recalc(); drawMonthly(); refreshSettleDropdown(); // تحديث قائمة الالتزامات في كارت إضافة حركة
+  recalc(); drawMonthly();
 }
 window.editTx=id=>{ const t=ledger.find(x=>x.id===id); if(!t) return;
   editId=id; els.saveTx.textContent='تحديث';
   els.type.value=t.type; refreshCategorySelect(); els.amount.value=t.amount; els.date.value=t.date; els.desc.value=t.desc||''; els.account.value=t.account; els.category.value=t.category||'';
+  // تهيئة الجزئي (لو كان مرتبط)
+  if(t.commitId){ els.isPartialPay.checked=true; els.partialCommit.disabled=false; populatePartialCommitList(); els.partialCommit.value=t.commitId; updatePartialRemainField(); }
   window.scrollTo({top:0,behavior:'smooth'});
 };
-window.delTx=id=>{ if(!confirm('هل تريد حذف هذه الحركة؟')) return; ledger=ledger.filter(t=>t.id!==id); saveLedger(); render(); ghAutoSync('delete-transaction'); };
+window.delTx=id=>{ if(!confirm('هل تريد حذف هذه الحركة؟')) return; ledger=ledger.filter(t=>t.id!==id); saveLedger(); render(); maybeAutoSync('delete-tx'); };
+
 els.saveTx?.addEventListener('click',()=>{
   const type=els.type.value, amount=parseFloat(els.amount.value), date=els.date.value, desc=els.desc.value.trim(), account=els.account.value, category=els.category.value;
   if(!date || !account || !category || !amount || amount<=0){ alert('من فضلك أدخل بيانات صحيحة (تاريخ/حساب/فئة/مبلغ)'); return; }
-  const tx={ id:editId||eid(), date, desc, type, amount, account:account.trim(), category:category.trim() };
 
-  // سداد اختياري من التزام
-  const selId = els.settleCommit?.value || '';
-  if(selId){
-    const c = commitments.find(x=>x.id===selId);
-    if(!c){ alert('الالتزام المختار غير موجود'); return; }
-    if(type!=='expense'){ alert('السداد من التزام يجب أن يكون حركة مصروف'); return; }
-    // اجبر الفئة على "التزامات شهرية" لو مش مختارة
-    tx.category = 'التزامات شهرية';
-    // خصم جزء/كامل
-    const ym=ymOf(parseLocalDate(date));
-    const already=(c.paid&&c.paid[ym])?Number(c.paid[ym]):0;
-    const remain=Math.max(0,(Number(c.amount)||0)-already);
-    if(amount>remain){ alert('قيمة السداد تتجاوز المتبقي لهذا الشهر'); return; }
-    addPaid(c, amount);
-    // لو اكتمل السداد لهذا الشهر: قدّم الاستحقاق للشهر التالي (أو احذف لو غير متكرر)
-    const newPaid=(c.paid[ym]||0);
-    if(newPaid >= Number(c.amount)){
-      // اكتمال سداد هذا الشهر
-      const due=c.nextDue?parseLocalDate(c.nextDue):parseLocalDate(c.firstDue);
-      const next=addMonthsPreserveDOM(due,1);
-      if(c.recurring){
-        if(c.endAt && next>parseLocalDate(c.endAt)){ // انتهى
-          commitments = commitments.filter(x=>x.id!==c.id);
-        }else{
-          c.nextDue = formatLocalDate(next);
-        }
-      }else{
-        commitments = commitments.filter(x=>x.id!==c.id);
-      }
-    }
-    saveCommitments();
+  let commitId = null;
+  if(els.isPartialPay.checked){
+    commitId = els.partialCommit.value || null;
+    if(!commitId){ alert('اختر الالتزام للسداد الجزئي'); return; }
+    if(type!=='expense' || category!=='التزامات شهرية'){ alert('السداد الجزئي يجب أن يكون "مصروف" وبفئة "التزامات شهرية"'); return; }
+    const remain = parseFloat(els.partialRemain.value||'0');
+    if(amount>remain+1e-9){ alert('المبلغ أكبر من المتبقي'); return; }
   }
 
+  const tx={ id:editId||eid(), date, desc, type, amount, account:account.trim(), category:category.trim() };
+  if(commitId) tx.commitId = commitId;
+
   if(editId){ const i=ledger.findIndex(t=>t.id===editId); if(i>-1) ledger[i]=tx; editId=null; els.saveTx.textContent='حفظ'; }
-  else { ledger.push(tx); } // نحافظ على ترتيب الأقدم->الأحدث
-  saveLedger(); els.desc.value=''; els.amount.value=''; render(); ghAutoSync('save-transaction');
+  else { ledger.push(tx); } // نحافظ على ترتيب الأقدم -> الأحدث تلقائيًا
+
+  saveLedger();
+  els.desc.value=''; els.amount.value=''; els.isPartialPay.checked=false; els.partialCommit.disabled=true; els.partialCommit.innerHTML=''; els.partialRemain.value='';
+  render();
 });
-els.resetForm?.addEventListener('click',()=>{ editId=null; els.saveTx.textContent='حفظ'; els.type.value='expense'; els.amount.value=''; els.desc.value=''; refreshCategorySelect(); els.settleCommit.value=''; els.settleRemain.value=''; els.settleInfo.value='—'; });
+els.resetForm?.addEventListener('click',()=>{ editId=null; els.saveTx.textContent='حفظ'; els.type.value='expense'; els.amount.value=''; els.desc.value=''; refreshCategorySelect(); els.isPartialPay.checked=false; els.partialCommit.disabled=true; els.partialCommit.innerHTML=''; els.partialRemain.value=''; });
 
 /* ===== فلاتر ===== */
 els.search?.addEventListener('input',render);
@@ -680,13 +661,13 @@ window.renameAcc=i=>{
   const openingStr=prompt('الرصيد الافتتاحي', cur.opening); const opening=parseFloat(openingStr);
   accounts[i].name=newName.trim(); if(Number.isFinite(opening)) accounts[i].opening=opening;
   for(const t of ledger){ if(t.account===cur.name){ t.account=accounts[i].name; } }
-  saveLedger(); saveAccounts(); render(); ghAutoSync('rename-account');
+  saveLedger(false); saveAccounts(); render();
 };
-window.removeAcc=i=>{ if(!confirm('سيتم حذف الحساب من القوائم (لن تُحذف الحركات القديمة). متابعة؟')) return; accounts.splice(i,1); saveAccounts(); render(); ghAutoSync('remove-account'); };
+window.removeAcc=i=>{ if(!confirm('سيتم حذف الحساب من القوائم (لن تُحذف الحركات القديمة). متابعة؟')) return; accounts.splice(i,1); saveAccounts(); render(); };
 document.getElementById('addAccount')?.addEventListener('click',()=>{
   const name=els.newAccountName.value.trim(); const opening=parseFloat(els.newAccountOpening.value||'0');
   if(!name){ alert('ادخل اسم الحساب'); return; }
-  accounts.push({name, opening:Number.isFinite(opening)?opening:0}); els.newAccountName.value=''; els.newAccountOpening.value=''; saveAccounts(); render(); ghAutoSync('add-account');
+  accounts.push({name, opening:Number.isFinite(opening)?opening:0}); els.newAccountName.value=''; els.newAccountOpening.value=''; saveAccounts(); render();
 });
 function drawCatsBadges(){
   if(!els.catsList) return;
@@ -698,19 +679,19 @@ window.renameCat=i=>{
   const cur=categories[i]; if(!cur) return;
   const name=prompt('اسم الفئة', cur.name); if(!name) return;
   const type=prompt('النوع (income/expense)', cur.type); if(type!=='income'&&type!=='expense') return alert('نوع غير صحيح');
-  categories[i]={name:name.trim(), type}; saveCategories(); render(); ghAutoSync('rename-category');
+  categories[i]={name:name.trim(), type}; saveCategories(); render();
 };
-window.removeCat=i=>{ if(!confirm('هل تريد حذف هذه الفئة؟')) return; categories.splice(i,1); saveCategories(); render(); ghAutoSync('remove-category'); };
+window.removeCat=i=>{ if(!confirm('هل تريد حذف هذه الفئة؟')) return; categories.splice(i,1); saveCategories(); render(); };
 document.getElementById('addCategory')?.addEventListener('click',()=>{ const name=els.newCatName.value.trim(); const type=els.newCatType.value;
-  if(!name){ alert('ادخل اسم الفئة'); return; } categories.push({name,type}); els.newCatName.value=''; saveCategories(); refreshCategorySelect(); render(); ghAutoSync('add-category');
+  if(!name){ alert('ادخل اسم الفئة'); return; } categories.push({name,type}); els.newCatName.value=''; saveCategories(); refreshCategorySelect(); render();
 });
 
 /* ===== تصدير/استيراد ===== */
-document.getElementById('exportJson')?.addEventListener('click',()=>{ const data=buildPayload(); download('my-finance-data.json', JSON.stringify(data,null,2)); });
+document.getElementById('exportJson')?.addEventListener('click',()=>{ const data={ ledger, accounts, categories, commitments, collections, exportedAt:new Date().toISOString() }; download('my-finance-data.json', JSON.stringify(data,null,2)); });
 document.getElementById('exportCsv')?.addEventListener('click',()=>{
-  const header=['id','date','desc','type','amount','account','category'];
+  const header=['id','date','desc','type','amount','account','category','commitId'];
   const rows=[...ledger].sort((a,b)=> a.date.localeCompare(b.date) || (a.id>b.id?1:-1))
-                        .map(t=>[t.id,t.date,escCsv(t.desc||''),t.type,t.amount,t.account,t.category]);
+                        .map(t=>[t.id,t.date,escCsv(t.desc||''),t.type,t.amount,t.account,t.category,t.commitId||'']);
   const csv=[header.join(','), ...rows.map(r=>r.join(','))].join('\n');
   download('transactions.csv', csv);
 });
@@ -725,10 +706,11 @@ document.getElementById('importFile')?.addEventListener('change', async (e)=>{
     if(Array.isArray(data.categories)) categories=data.categories;
     if(Array.isArray(data.commitments)) commitments=data.commitments.map(c=>migrateCommit(c));
     if(Array.isArray(data.collections)) collections=data.collections.map(c=>migrateCollect(c));
-    saveLedger(); saveAccounts(); saveCategories(); saveCommitments(); saveCollections();
+    saveLedger(false); saveAccounts(false); saveCategories(false); saveCommitments(false); saveCollections(false);
     ensureAdvanceAllCommitments(false); ensureAdvanceAllCollections(false);
     drawCommitments(); drawCollections(); drawDueSoon(); render();
     alert('تم الاستيراد بنجاح');
+    maybeAutoSync('import');
   }catch(err){ alert('خطأ أثناء الاستيراد: '+err.message); }
   e.target.value='';
 });
@@ -770,12 +752,11 @@ function migrateCommit(c){
   if(typeof c.recurring!=='boolean') c.recurring=false;
   if(c.account) delete c.account;
   if(c.endAt===undefined) c.endAt=null;
-  if(!c.paid) c.paid={};
   return c;
 }
 function drawCommitments(){
   if(!els.tbodyCommit) return;
-  const rows=[...commitments].sort((a,b)=>(a.nextDue||a.firstDue||'').localeCompare(b.nextDue||b.firstDue||''));
+  const rows=[...commitments].sort((a,b)=>(a.nextDue||a.firstDue||'').localeCompare(b.nextDue||b.firstDue||'')); // الأقدم -> الأحدث
   els.tbodyCommit.innerHTML=rows.map(c=>{
     const recTxt=c.recurring?'شهري':'مرة واحدة';
     const endTxt=c.recurring && c.endAt?c.endAt:'—';
@@ -800,7 +781,7 @@ window.editCommit=id=>{
   editCommitId=id; els.cName.value=c.name; els.cAmount.value=c.amount; els.cFirstDue.value=c.firstDue||'';
   els.cRecurring.checked=!!c.recurring; els.cEndAt.value=c.endAt||''; els.addCommitment.textContent='تحديث الالتزام';
 };
-window.delCommit=id=>{ if(!confirm('هل تريد حذف هذا الالتزام؟')) return; commitments=commitments.filter(c=>c.id!==id); saveCommitments(); ghAutoSync('delete-commitment'); };
+window.delCommit=id=>{ if(!confirm('هل تريد حذف هذا الالتزام؟')) return; commitments=commitments.filter(c=>c.id!==id); saveCommitments(); };
 els.addCommitment?.addEventListener('click',()=>{
   const name=els.cName.value.trim(), amount=parseFloat(els.cAmount.value), firstDueStr=els.cFirstDue.value;
   const recurring=els.cRecurring.checked; const endAtStr=(els.cEndAt.value||'').trim();
@@ -812,51 +793,49 @@ els.addCommitment?.addEventListener('click',()=>{
   const today=startOfToday();
   while(nextDue<today){ const tryNext=addMonthsPreserveDOM(nextDue,1); if(recurring && (!endAtStr || tryNext<=parseLocalDate(endAtStr))) nextDue=tryNext; else break; }
 
-  const obj={ id:editCommitId||eid(), name, amount,
+  const commit={ id:editCommitId||eid(), name, amount,
     firstDue:formatLocalDate(firstDue), nextDue:formatLocalDate(nextDue),
-    recurring, endAt:(recurring?(endAtStr||null):null), paid:{} };
+    recurring, endAt:(recurring?(endAtStr||null):null) };
 
-  if(editCommitId){ const i=commitments.findIndex(c=>c.id===editCommitId); if(i>-1) commitments[i]=obj; editCommitId=null; els.addCommitment.textContent='إضافة/تحديث'; }
-  else commitments.push(obj);
+  if(editCommitId){ const i=commitments.findIndex(c=>c.id===editCommitId); if(i>-1) commitments[i]=commit; editCommitId=null; els.addCommitment.textContent='إضافة/تحديث'; }
+  else commitments.push(commit);
 
   els.cName.value=''; els.cAmount.value=''; els.cFirstDue.value=''; els.cRecurring.checked=false; els.cEndAt.value=''; endRequiredToggle();
-  saveCommitments(); drawCommitments(); drawDueSoon(); ghAutoSync('add-commitment');
+  saveCommitments();
+  drawCommitments(); drawDueSoon();
 });
+
+/* اختيار حساب دفع/تحصيل */
 function chooseAccount(){
-  if(accounts.length===0){ alert('لا توجد حسابات لإتمام العملية'); return null; }
+  if(accounts.length===0){ alert('لا توجد حسابات متاحة'); return null; }
   const menu=accounts.map((a,i)=>`${i+1} - ${a.name}`).join('\n');
-  const ans=prompt(`اختَر الحساب:\n${menu}`);
+  const ans=prompt(`اختر الحساب:\n${menu}`);
   if(ans===null) return null;
   const idx=parseInt(ans,10)-1; if(Number.isNaN(idx)||idx<0||idx>=accounts.length){ alert('اختيار غير صحيح'); return null; }
   return accounts[idx].name;
 }
+
+/* تم السداد كامل */
 window.payCommit=id=>{
   const c=commitments.find(x=>x.id===id); if(!c) return;
   const due=c.nextDue?parseLocalDate(c.nextDue):parseLocalDate(c.firstDue);
   const dateStr=formatLocalDate(due);
-  const ym=ymOf(due);
-  const paid=(c.paid&&c.paid[ym])?Number(c.paid[ym]):0;
-  const remain=Math.max(0,(Number(c.amount)||0)-paid);
-  if(remain<=0){ alert('هذا الالتزام مسدد بالكامل هذا الشهر'); return; }
   const accName=chooseAccount(); if(!accName) return;
-  if(!confirm(`تأكيد سداد "${c.name}" بمبلغ ${fmt(remain)} ج.م من حساب "${accName}" بتاريخ ${dateStr}؟`)) return;
+  if(!confirm(`تأكيد سداد الالتزام "${c.name}" بمبلغ ${fmt(c.amount)} ج.م من حساب "${accName}" بتاريخ ${dateStr}؟`)) return;
 
-  ledger.push({ id:eid(), date:dateStr, desc:`${c.name} (سداد التزام)`, type:'expense', amount:remain, account:accName, category:'التزامات شهرية' });
-  addPaid(c, remain);
+  ledger.push({ id:eid(), date:dateStr, desc:`${c.name} (سداد التزام)`, type:'expense', amount:c.amount, account:accName, category:'التزامات شهرية', commitId:c.id });
   saveLedger();
 
-  // اكتمل؟ قدّم للشهر التالي أو احذف
-  const newPaid=(c.paid[ym]||0);
-  if(newPaid >= Number(c.amount)){
-    const next=addMonthsPreserveDOM(due,1);
-    if(c.recurring){
-      if(c.endAt && next>parseLocalDate(c.endAt)){ commitments=commitments.filter(x=>x.id!==id); }
-      else{ c.nextDue=formatLocalDate(next); }
-    }else{
-      commitments=commitments.filter(x=>x.id!==id);
-    }
+  // ترحيل إذا اكتمل السداد (اكتمال مؤكد هنا)
+  const next=addMonthsPreserveDOM(due,1);
+  if(c.recurring){
+    if(c.endAt && next>parseLocalDate(c.endAt)){ commitments=commitments.filter(x=>x.id!==id); }
+    else{ c.nextDue=formatLocalDate(next); }
+  }else{
+    commitments=commitments.filter(x=>x.id!==id);
   }
-  saveCommitments(); render(); drawDueSoon(); ghAutoSync('pay-commitment');
+  saveCommitments();
+  render(); drawDueSoon();
 };
 
 /* ==== التحصيل ==== */
@@ -870,7 +849,7 @@ function migrateCollect(c){
 }
 function drawCollections(){
   if(!els.tbodyCollect) return;
-  const rows=[...collections].sort((a,b)=>(a.nextDue||a.firstDue||'').localeCompare(b.nextDue||b.firstDue||''));
+  const rows=[...collections].sort((a,b)=>(a.nextDue||a.firstDue||'').localeCompare(b.nextDue||b.firstDue||'')); // الأقدم -> الأحدث
   els.tbodyCollect.innerHTML=rows.map(c=>{
     const recTxt=c.recurring?'شهري':'مرة واحدة';
     const endTxt=c.recurring && c.endAt?c.endAt:'—';
@@ -893,7 +872,7 @@ window.editCollect=id=>{
   editCollectId=id; els.coName.value=c.name; els.coAmount.value=c.amount; els.coFirstDue.value=c.firstDue||'';
   els.coRecurring.checked=!!c.recurring; els.coEndAt.value=c.endAt||''; els.addCollect.textContent='تحديث التحصيل';
 };
-window.delCollect=id=>{ if(!confirm('هل تريد حذف هذا التحصيل؟')) return; collections=collections.filter(c=>c.id!==id); saveCollections(); ghAutoSync('delete-collection'); };
+window.delCollect=id=>{ if(!confirm('هل تريد حذف هذا التحصيل؟')) return; collections=collections.filter(c=>c.id!==id); saveCollections(); };
 function endRequiredToggleCollect(){ els.coEndAt?.toggleAttribute('required', els.coRecurring?.checked); }
 els.coRecurring?.addEventListener('change', endRequiredToggleCollect);
 
@@ -916,7 +895,7 @@ els.addCollect?.addEventListener('click',()=>{
   else collections.push(item);
 
   els.coName.value=''; els.coAmount.value=''; els.coFirstDue.value=''; els.coRecurring.checked=false; els.coEndAt.value=''; endRequiredToggleCollect();
-  saveCollections(); drawCollections(); ghAutoSync('add-collection');
+  saveCollections(); drawCollections();
 });
 window.collectNow=id=>{
   const c=collections.find(x=>x.id===id); if(!c) return;
@@ -935,24 +914,26 @@ window.collectNow=id=>{
   }else{
     collections=collections.filter(x=>x.id!==id);
   }
-  saveCollections(); render(); ghAutoSync('collect-now');
+  saveCollections(); render();
 };
 
-/* ===== الاستحقاقات القريبة (كل الشهر الحالي غير المسدد) ===== */
+/* ===== الاستحقاقات القريبة (كل غير المسدد في الشهر الحالي) ===== */
 function drawDueSoon(){
   const wrap=document.getElementById('dueSoonWrap'); const none=document.getElementById('noDueSoon'); const tbody=document.getElementById('tbodyDueSoon');
   if(!wrap||!tbody) return;
-  const ym=ymOf(startOfToday());
+  const ym=getCurrentMonthKey();
+  const today=startOfToday();
+
   const items=commitments.map(c=>{
     const dueStr=c.nextDue||c.firstDue; if(!dueStr) return null;
     if(dueStr.slice(0,7)!==ym) return null;
-    const due=parseLocalDate(dueStr);
-    const paid=(c.paid&&c.paid[ym])?Number(c.paid[ym]):0;
+    const paid=sumPaidForCommitInMonth(c);
     const remain=Math.max(0,(Number(c.amount)||0)-paid);
-    if(remain<=0) return null;
-    const diff=daysBetween(startOfToday(), due);
-    return {...c, dueStr, remain, diff};
-  }).filter(Boolean).sort((a,b)=>a.dueStr.localeCompare(b.dueStr));
+    if(remain<=0) return null; // غير مسدد بالكامل فقط
+    const due=parseLocalDate(dueStr);
+    const diff=daysBetween(today,due);
+    return {c, dueStr, origin:Number(c.amount)||0, paid, remain, diff};
+  }).filter(Boolean).sort((a,b)=> (a.dueStr).localeCompare(b.dueStr));
 
   if(items.length===0){ wrap.style.display='none'; none.style.display='block'; tbody.innerHTML=''; return; }
   wrap.style.display='block'; none.style.display='none';
@@ -960,7 +941,14 @@ function drawDueSoon(){
     const state = x.diff<0 ? `<span style="color:var(--danger);font-weight:700">متأخر ${Math.abs(x.diff)} يوم</span>`
                  : x.diff===0 ? `<span style="color:var(--warn);font-weight:700">اليوم</span>`
                  : `<span style="color:var(--warn);font-weight:700">متبقي ${x.diff} يوم</span>`;
-    return `<tr><td>${escapeHtml(x.name)}</td><td>${x.dueStr}</td><td>${fmt(x.amount)}</td><td>${fmt(x.remain)}</td><td>${state}</td></tr>`;
+    return `<tr>
+      <td>${escapeHtml(x.c.name)}</td>
+      <td>${x.dueStr}</td>
+      <td>${fmt(x.origin)}</td>
+      <td>${fmt(x.paid)}</td>
+      <td><b>${fmt(x.remain)}</b></td>
+      <td>${state}</td>
+    </tr>`;
   }).join('');
 }
 
@@ -987,13 +975,43 @@ function doTransfer(){
     ledger.push({ id:eid(), date, desc:descFee, type:'expense', amount:fee, account:from, category:'عمولة تحويل' });
   }
 
-  saveLedger(); render(); ghAutoSync('transfer');
-  els.trAmount.value=''; els.trFee.value=''; els.trDesc.value='';
+  saveLedger();
+  render();
 }
 els.execTransfer?.addEventListener('click', doTransfer);
 els.resetTransfer?.addEventListener('click', ()=>{ els.trAmount.value=''; els.trFee.value=''; els.trDesc.value=''; });
 els.trFrom?.addEventListener('change', ()=>syncTransferSelects('from'));
 els.trTo  ?.addEventListener('change', ()=>syncTransferSelects('to'));
+
+/* ===== سداد جزئي UI ===== */
+function populatePartialCommitList(){
+  const ym=getCurrentMonthKey();
+  const options = commitments
+    .filter(c => (c.nextDue||c.firstDue||'').slice(0,7)===ym)
+    .map(c => {
+      const paid = sumPaidForCommitInMonth(c);
+      const remain = Math.max(0,(Number(c.amount)||0)-paid);
+      return {c,remain};
+    })
+    .filter(x=>x.remain>0)
+    .map(x=>`<option value="${x.c.id}">${escapeHtml(x.c.name)} — متبقي ${fmt(x.remain)}</option>`)
+    .join('');
+  els.partialCommit.innerHTML = `<option value="">— اختر —</option>` + options;
+}
+function updatePartialRemainField(){
+  const id = els.partialCommit.value;
+  if(!id){ els.partialRemain.value=''; return; }
+  const c = commitments.find(k=>k.id===id); if(!c){ els.partialRemain.value=''; return; }
+  const paid = sumPaidForCommitInMonth(c);
+  const remain = Math.max(0,(Number(c.amount)||0)-paid);
+  els.partialRemain.value = fmt(remain);
+}
+els.isPartialPay?.addEventListener('change', ()=>{
+  const on = els.isPartialPay.checked;
+  els.partialCommit.disabled = !on;
+  if(on){ populatePartialCommitList(); updatePartialRemainField(); els.category.value='التزامات شهرية'; els.type.value='expense'; }
+});
+els.partialCommit?.addEventListener('change', updatePartialRemainField);
 
 /* ===== كروت الطي/الفتح ===== */
 function initCollapsibles(){
@@ -1007,140 +1025,6 @@ function initCollapsibles(){
   });
 }
 
-/* ===== GitHub Sync ===== */
-function ghSetStatus(text){ if(els.ghStatus) els.ghStatus.textContent = 'الحالة: ' + text; }
-function ghFillForm(){
-  if(!ghCfg) ghCfg={};
-  ['user','repo','branch','path','token','auto'].forEach(k=>{
-    const el = {user:els.ghUser,repo:els.ghRepo,branch:els.ghBranch,path:els.ghPath,token:els.ghToken,auto:els.ghAuto}[k];
-    if(!el) return;
-    if(k==='auto') el.checked = !!ghCfg.auto;
-    else if(ghCfg[k]) el.value = ghCfg[k];
-  });
-}
-function ghReadForm(){
-  ghCfg.user = (els.ghUser?.value||'').trim();
-  ghCfg.repo = (els.ghRepo?.value||'').trim();
-  ghCfg.branch = (els.ghBranch?.value||'main').trim();
-  ghCfg.path = (els.ghPath?.value||'data/my-finance.json').replace(/^\/+/,'');
-  ghCfg.token = (els.ghToken?.value||'').trim();
-  ghCfg.auto = !!els.ghAuto?.checked;
-}
-function buildPayload(){
-  return { ledger, accounts, categories, commitments, collections, exportedAt:new Date().toISOString() };
-}
-async function ghGetFile(){
-  ghReadForm();
-  const url=`https://api.github.com/repos/${encodeURIComponent(ghCfg.user)}/${encodeURIComponent(ghCfg.repo)}/contents/${ghCfg.path}?ref=${encodeURIComponent(ghCfg.branch)}`;
-  const res=await fetch(url,{ headers:{Authorization:`Bearer ${ghCfg.token}`,Accept:'application/vnd.github+json'} });
-  if(res.status===404) return {exists:false};
-  if(!res.ok){ const t=await res.text(); throw new Error(`HTTP ${res.status}: ${t}`); }
-  const js=await res.json();
-  return {exists:true, sha:js.sha, content:js.content};
-}
-async function ghPushData(reason='manual'){
-  try{
-    ghReadForm();
-    if(!ghCfg.user||!ghCfg.repo||!ghCfg.path||!ghCfg.branch||!ghCfg.token){
-      ghSetStatus('أكمل الإعدادات أولًا'); return;
-    }
-    const get=await ghGetFile(); if(get.exists) ghCfg.sha=get.sha;
-    const body={
-      message:`Update finance data (${reason})`,
-      content:btoa(unescape(encodeURIComponent(JSON.stringify(buildPayload(),null,2)))),
-      branch:ghCfg.branch
-    };
-    if(ghCfg.sha) body.sha=ghCfg.sha;
-    const url=`https://api.github.com/repos/${encodeURIComponent(ghCfg.user)}/${encodeURIComponent(ghCfg.repo)}/contents/${ghCfg.path}`;
-    const res=await fetch(url,{
-      method:'PUT',
-      headers:{Authorization:`Bearer ${ghCfg.token}`,Accept:'application/vnd.github+json'},
-      body:JSON.stringify(body)
-    });
-    const txt = await res.text();
-    if(!res.ok){
-      ghSetStatus(`فشل الرفع (HTTP ${res.status})`);
-      alert('فشل الرفع:\n'+txt);
-      return;
-    }
-    let js={};
-    try{ js=JSON.parse(txt);}catch{}
-    ghCfg.sha=js.content?.sha||ghCfg.sha;
-    localStorage.setItem(GH_KEY,JSON.stringify(ghCfg));
-    ghSetStatus('تم الرفع ✔︎');
-  }catch(e){
-    ghSetStatus('فشل الرفع (شبكة)');
-    alert('خطأ شبكة أثناء الرفع:\n'+ (e?.message||e));
-    console.error(e);
-  }
-}
-async function ghPullData(){
-  try{
-    ghReadForm();
-    const get=await ghGetFile();
-    if(!get.exists){
-      ghSetStatus('الملف غير موجود على GitHub');
-      alert('الملف غير موجود على GitHub — اعمل "رفع الآن" مرة من جهاز فيه بيانات.');
-      return;
-    }
-    const decoded=JSON.parse(decodeURIComponent(escape(atob(get.content))));
-    if(Array.isArray(decoded.ledger)) ledger=decoded.ledger;
-    if(Array.isArray(decoded.accounts)) accounts=decoded.accounts;
-    if(Array.isArray(decoded.categories)) categories=decoded.categories;
-    if(Array.isArray(decoded.commitments)) commitments=decoded.commitments.map(migrateCommit);
-    if(Array.isArray(decoded.collections)) collections=decoded.collections.map(migrateCollect);
-    saveLedger(); saveAccounts(); saveCategories(); saveCommitments(); saveCollections();
-    refreshAccountSelects(); refreshCategorySelect(); drawCatsBadges();
-    drawCommitments(); drawCollections(); drawDueSoon(); render();
-    const ref=await ghGetFile(); ghCfg.sha=ref.sha||ghCfg.sha; localStorage.setItem(GH_KEY,JSON.stringify(ghCfg));
-    ghSetStatus('تم التحميل ✔︎');
-  }catch(e){
-    ghSetStatus('فشل التحميل');
-    alert('خطأ أثناء التحميل:\n'+ (e?.message||e));
-    console.error(e);
-  }
-}
-function ghBindUI(){
-  if(!els.ghSaveCfg) return;
-  ghFillForm();
-  els.ghSaveCfg.addEventListener('click', ()=>{ ghReadForm(); localStorage.setItem(GH_KEY,JSON.stringify(ghCfg)); ghSetStatus('تم الحفظ'); });
-  els.ghTest.addEventListener('click', async ()=>{
-    try{ ghReadForm(); await ghGetFile(); ghSetStatus('اتصال ناجح ✔︎'); }
-    catch(e){ ghSetStatus('فشل الاتصال'); alert('فشل الاتصال:\n'+(e?.message||e)); }
-  });
-  els.ghPull.addEventListener('click', ghPullData);
-  els.ghPush.addEventListener('click', ()=>ghPushData('manual'));
-}
-function ghAutoSync(reason){
-  if(ghCfg && ghCfg.auto){ ghPushData(reason); }
-}
-
-/* ===== استكمال UI السداد من التزام داخل إضافة حركة ===== */
-function refreshSettleDropdown(){
-  if(!els.settleCommit) return;
-  const ym=ymOf(startOfToday());
-  const opts=['<option value="">— بدون —</option>'];
-  const data=[...commitments].filter(c=>{
-    const due=c.nextDue||c.firstDue; if(!due) return false;
-    if(due.slice(0,7)!==ym) return false;
-    const paid=(c.paid&&c.paid[ym])?Number(c.paid[ym]):0;
-    return paid < Number(c.amount||0);
-  }).sort((a,b)=>(a.nextDue||a.firstDue).localeCompare(b.nextDue||b.firstDue));
-  for(const c of data){ opts.push(`<option value="${c.id}">${escapeHtml(c.name)} — ${c.nextDue||c.firstDue}</option>`); }
-  els.settleCommit.innerHTML = opts.join('');
-  els.settleRemain.value=''; els.settleInfo.value='—';
-}
-els.settleCommit?.addEventListener('change',()=>{
-  const id=els.settleCommit.value;
-  if(!id){ els.settleRemain.value=''; els.settleInfo.value='—'; return; }
-  const c=commitments.find(x=>x.id===id); if(!c){ els.settleRemain.value=''; els.settleInfo.value='—'; return; }
-  const ym=ymOf(startOfToday());
-  const paid=(c.paid&&c.paid[ym])?Number(c.paid[ym]):0;
-  const remain=Math.max(0,(Number(c.amount)||0)-paid);
-  els.settleRemain.value = fmt(remain)+' ج.م';
-  els.settleInfo.value = 'التزامات شهرية (مصروف)';
-});
-
 /* ===== PWA: زر قبل التثبيت ===== */
 let deferredPrompt=null;
 window.addEventListener('beforeinstallprompt', (e)=>{ e.preventDefault(); deferredPrompt=e; if(els.installBtn) els.installBtn.style.display='inline-flex'; });
@@ -1151,12 +1035,129 @@ if('serviceWorker' in navigator){
   window.addEventListener('load', ()=>{ navigator.serviceWorker.register('/my-finance/sw.js').catch(()=>{}); });
 }
 
-/* ===== القوائم الديناميكية ===== */
+/* ===== GitHub Sync ===== */
+function ghLoadIntoUI(){
+  els.ghUser.value = ghCfg.user||''; els.ghRepo.value=ghCfg.repo||''; els.ghBranch.value=ghCfg.branch||'main'; els.ghPath.value=ghCfg.path||'data/my-finance.json';
+  els.ghToken.value = ghCfg.token||''; els.ghAuto.checked = !!ghCfg.auto;
+}
+function ghSaveFromUI(){
+  ghCfg = {
+    user: els.ghUser.value.trim(),
+    repo: els.ghRepo.value.trim(),
+    branch: els.ghBranch.value.trim() || 'main',
+    path: els.ghPath.value.trim() || 'data/my-finance.json',
+    token: els.ghToken.value.trim(),
+    auto: !!els.ghAuto.checked
+  };
+  localStorage.setItem(GH_KEY, JSON.stringify(ghCfg));
+}
+function setGhStatus(msg, ok=null){
+  els.ghStatus.textContent = 'الحالة: ' + msg;
+  els.ghStatus.style.borderColor = ok===false? 'var(--danger)' : ok===true? 'var(--ok)' : 'var(--border)';
+  els.ghStatus.style.color = ok===false? 'var(--danger)' : ok===true? 'var(--ok)' : 'var(--muted)';
+}
+async function ghApi(path, options={}){
+  const url = `https://api.github.com${path}`;
+  const headers = options.headers || {};
+  headers['Accept'] = 'application/vnd.github+json';
+  if(ghCfg.token) headers['Authorization'] = 'Bearer ' + ghCfg.token;
+  headers['X-GitHub-Api-Version'] = '2022-11-28';
+  return fetch(url,{...options, headers});
+}
+async function ghTestConn(){
+  try{
+    if(!ghCfg.user || !ghCfg.repo || !ghCfg.branch || !ghCfg.path || !ghCfg.token){ setGhStatus('أكمل الإعدادات', false); return; }
+    const r = await ghApi(`/repos/${ghCfg.user}/${ghCfg.repo}`,{});
+    if(!r.ok){ setGhStatus('فشل الاتصال بالمستودع', false); return; }
+    setGhStatus('متصل', true);
+  }catch(e){ setGhStatus('خطأ اتصال', false); }
+}
+async function ghGetFile(){
+  const r = await ghApi(`/repos/${ghCfg.user}/${ghCfg.repo}/contents/${encodeURIComponent(ghCfg.path)}?ref=${encodeURIComponent(ghCfg.branch)}`);
+  if(r.status===404) return {notFound:true};
+  const j = await r.json();
+  if(!r.ok) throw new Error(j.message||'GitHub error');
+  return {sha:j.sha, content:j.content, encoding:j.encoding};
+}
+function toBase64(str){ return btoa(unescape(encodeURIComponent(str))); }
+function fromBase64(b64){ return decodeURIComponent(escape(atob(b64))); }
+function buildPayload(){
+  return JSON.stringify({ ledger, accounts, categories, commitments, collections, updatedAt:new Date().toISOString() }, null, 2);
+}
+let syncing=false;
+async function ghPushNow(){
+  if(syncing) return;
+  try{
+    syncing=true; setGhStatus('جارِ الرفع...');
+    const get = await ghGetFile();
+    const body = {
+      message: 'chore: sync my-finance data',
+      content: toBase64(buildPayload()),
+      branch: ghCfg.branch
+    };
+    if(!get.notFound) body.sha = get.sha;
+
+    const r = await ghApi(`/repos/${ghCfg.user}/${ghCfg.repo}/contents/${encodeURIComponent(ghCfg.path)}`,{
+      method:'PUT',
+      body: JSON.stringify(body)
+    });
+    const j = await r.json();
+    if(!r.ok){
+      // معالجة شائعة: 409 أو 422 => حاول إحضار sha ثم أعد المحاولة
+      if((r.status===409 || r.status===422) && !get.notFound){
+        const fresh = await ghGetFile();
+        const body2 = {...body, sha:fresh.sha};
+        const r2 = await ghApi(`/repos/${ghCfg.user}/${ghCfg.repo}/contents/${encodeURIComponent(ghCfg.path)}`,{method:'PUT', body:JSON.stringify(body2)});
+        const j2 = await r2.json();
+        if(!r2.ok) throw new Error(j2.message||'فشل الرفع بعد إعادة المحاولة');
+        setGhStatus('تم الرفع', true); return;
+      }
+      throw new Error(j.message||'فشل الرفع');
+    }
+    setGhStatus('تم الرفع', true);
+  }catch(e){
+    setGhStatus('فشل الرفع', false);
+    console.warn('ghPush error', e);
+  }finally{ syncing=false; }
+}
+async function ghPullNow(){
+  try{
+    setGhStatus('جارِ التحميل...');
+    const f = await ghGetFile();
+    if(f.notFound){ setGhStatus('الملف غير موجود — ارفع من جهاز يوجد به بيانات أولًا', false); return; }
+    const text = fromBase64(f.content);
+    const data = JSON.parse(text);
+    if(Array.isArray(data.ledger)) ledger=data.ledger;
+    if(Array.isArray(data.accounts)) accounts=data.accounts;
+    if(Array.isArray(data.categories)) categories=data.categories;
+    if(Array.isArray(data.commitments)) commitments=data.commitments;
+    if(Array.isArray(data.collections)) collections=data.collections;
+    saveLedger(false); saveAccounts(false); saveCategories(false); saveCommitments(false); saveCollections(false);
+    ensureAdvanceAllCommitments(false); ensureAdvanceAllCollections(false);
+    drawCommitments(); drawCollections(); drawDueSoon(); render();
+    setGhStatus('تم التحميل', true);
+  }catch(e){
+    setGhStatus('فشل التحميل', false);
+  }
+}
+function maybeAutoSync(reason){
+  if(!ghCfg.auto) return;
+  ghPushNow();
+}
+
+/* روابط أزرار GitHub */
+els.ghSaveCfg?.addEventListener('click',()=>{ ghSaveFromUI(); setGhStatus('تم الحفظ'); });
+els.ghTest?.addEventListener('click', async ()=>{ ghSaveFromUI(); await ghTestConn(); });
+els.ghPush?.addEventListener('click', async ()=>{ ghSaveFromUI(); await ghPushNow(); });
+els.ghPull?.addEventListener('click', async ()=>{ ghSaveFromUI(); await ghPullNow(); });
+els.syncNow?.addEventListener('click', async ()=>{ ghSaveFromUI(); await ghPushNow(); });
+
+/* ===== تهيئة ===== */
 function refreshCategorySelect(){
   const cats = categories.filter(c=>c.type===els.type.value);
   els.category.innerHTML = cats.map(c=>`<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`).join('');
 }
-function ensureAdvanceAllCommitments(){
+function ensureAdvanceAllCommitments(doSave=true){
   const today=startOfToday(); let touched=false;
   for(const c of commitments){
     if(!c.nextDue && c.firstDue){ c.nextDue=c.firstDue; touched=true; }
@@ -1169,9 +1170,9 @@ function ensureAdvanceAllCommitments(){
       c.nextDue=formatLocalDate(d);
     }
   }
-  if(touched) saveCommitments();
+  if(touched && doSave) saveCommitments(false);
 }
-function ensureAdvanceAllCollections(){
+function ensureAdvanceAllCollections(doSave=true){
   const today=startOfToday(); let touched=false;
   for(const c of collections){
     if(!c.nextDue && c.firstDue){ c.nextDue=c.firstDue; touched=true; }
@@ -1184,22 +1185,31 @@ function ensureAdvanceAllCollections(){
       c.nextDue=formatLocalDate(d);
     }
   }
-  if(touched) saveCollections();
+  if(touched && doSave) saveCollections(false);
 }
-
-/* ===== تهيئة ===== */
 function init(){
   initCollapsibles();
-  commitments=commitments.map(migrateCommit);
-  collections=collections.map(migrateCollect);
-  saveCommitments(); saveCollections();
+
+  // تحميل إعدادات GitHub
+  ghLoadIntoUI();
+
+  // تحويل الفئات الأساسية
   ensureTransferCategories();
+
+  // تهيئة قوائم/حقول
   refreshAccountSelects(); refreshCategorySelect(); drawCatsBadges();
-  ensureAdvanceAllCommitments(); ensureAdvanceAllCollections();
+
+  // جدولة الالتزامات/التحصيل
+  commitments=commitments.map(c=>migrateCommit(c));
+  collections=collections.map(c=>migrateCollect(c));
+  saveCommitments(false); saveCollections(false);
+  ensureAdvanceAllCommitments(false); ensureAdvanceAllCollections(false);
+
   drawCommitments(); drawCollections(); drawDueSoon(); render();
+
+  // required toggle
   els.cEndAt?.toggleAttribute('required', els.cRecurring?.checked);
   els.coEndAt?.toggleAttribute('required', els.coRecurring?.checked);
-  ghBindUI();
 }
 init();
 </script>
