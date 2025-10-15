@@ -1,22 +1,23 @@
 {
   "ledger": [
     {
-      "id": "f6t8d610mgqgqjsu",
-      "date": "2025-10-14",
-      "desc": "كاش",
-      "type": "income",
-      "amount": 95,
+      "id": "gczc06uvmgrv0pca",
+      "date": "2025-10-15",
+      "desc": "سداد جزء لهشام",
+      "type": "expense",
+      "amount": 400,
       "account": "كاش",
-      "category": "دخل آخر"
+      "category": "التزامات شهرية"
     },
     {
-      "id": "i0u43h7omgqgrbfa",
-      "date": "2025-10-14",
-      "desc": "رصيد فودافون كاش",
-      "type": "income",
-      "amount": 933,
-      "account": "محفظة",
-      "category": "دخل آخر"
+      "id": "a1lmq5xlmgrw7722",
+      "date": "2025-10-15",
+      "desc": "هشام",
+      "type": "expense",
+      "amount": 400,
+      "account": "كاش",
+      "category": "التزامات شهرية",
+      "commitId": "5ezkl2c1mgqfzaxx"
     }
   ],
   "accounts": [
@@ -91,7 +92,9 @@
       "firstDue": "2025-11-12",
       "nextDue": "2025-11-12",
       "recurring": true,
-      "endAt": "2026-12-31"
+      "endAt": "2026-12-31",
+      "paid": {},
+      "payments": {}
     },
     {
       "id": "3m2hp895mgozlmi6",
@@ -100,16 +103,20 @@
       "firstDue": "2025-10-20",
       "nextDue": "2025-10-20",
       "recurring": true,
-      "endAt": "2030-12-31"
+      "endAt": "2030-12-31",
+      "paid": {},
+      "payments": {}
     },
     {
       "id": "b9xam41amgoznubi",
-      "name": "اشتراكات",
-      "amount": 1100,
+      "name": "اشتراك",
+      "amount": 1000,
       "firstDue": "2025-11-01",
       "nextDue": "2025-11-01",
       "recurring": true,
-      "endAt": "2026-12-31"
+      "endAt": "2026-12-31",
+      "paid": {},
+      "payments": {}
     },
     {
       "id": "w6ivs7i5mgozqe72",
@@ -118,7 +125,9 @@
       "firstDue": "2025-10-05",
       "nextDue": "2025-11-05",
       "recurring": true,
-      "endAt": "2026-12-14"
+      "endAt": "2026-12-14",
+      "paid": {},
+      "payments": {}
     },
     {
       "id": "9f7hf8w3mgozrj5i",
@@ -127,7 +136,9 @@
       "firstDue": "2025-11-15",
       "nextDue": "2025-11-15",
       "recurring": true,
-      "endAt": "2026-12-31"
+      "endAt": "2026-12-31",
+      "paid": {},
+      "payments": {}
     },
     {
       "id": "87dzatk4mgozsoba",
@@ -136,7 +147,9 @@
       "firstDue": "2025-10-20",
       "nextDue": "2025-10-20",
       "recurring": true,
-      "endAt": "2026-12-31"
+      "endAt": "2026-12-31",
+      "paid": {},
+      "payments": {}
     },
     {
       "id": "5ezkl2c1mgqfzaxx",
@@ -145,7 +158,44 @@
       "firstDue": "2025-10-15",
       "nextDue": "2025-10-15",
       "recurring": false,
-      "endAt": null
+      "endAt": null,
+      "paid": {
+        "2025-10": 400
+      },
+      "payments": {}
+    },
+    {
+      "id": "cs7lzxi9mgrtufxt",
+      "name": "اشتراك",
+      "amount": 60,
+      "firstDue": "2025-10-15",
+      "nextDue": "2025-10-15",
+      "recurring": true,
+      "endAt": "2026-12-31",
+      "paid": {},
+      "payments": {}
+    },
+    {
+      "id": "ofpg6jkpmgruck82",
+      "name": "اشتراك",
+      "amount": 40,
+      "firstDue": "2025-10-25",
+      "nextDue": "2025-10-25",
+      "recurring": true,
+      "endAt": "2026-12-31",
+      "paid": {},
+      "payments": {}
+    },
+    {
+      "id": "zp2468okmgruekz6",
+      "name": "لينكد ان",
+      "amount": 900,
+      "firstDue": "2025-10-23",
+      "nextDue": "2025-10-23",
+      "recurring": false,
+      "endAt": null,
+      "paid": {},
+      "payments": {}
     }
   ],
   "collections": [
@@ -159,5 +209,5 @@
       "endAt": null
     }
   ],
-  "exportedAt": "2025-10-14T11:18:28.095Z"
+  "updatedAt": "2025-10-15T11:41:38.676Z"
 }
