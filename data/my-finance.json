@@ -204,6 +204,16 @@
       "paid": {
         "2025-10": 400
       }
+    },
+    {
+      "id": "cs7lzxi9mgrtufxt",
+      "name": "اشتراك",
+      "amount": 60,
+      "firstDue": "2025-10-15",
+      "nextDue": "2025-10-15",
+      "recurring": true,
+      "endAt": "2026-12-31",
+      "paid": {}
     }
   ],
   "collections": [
@@ -217,5 +227,5 @@
       "endAt": null
     }
   ],
-  "exportedAt": "2025-10-15T10:06:53.723Z"
+  "exportedAt": "2025-10-15T10:08:16.713Z"
 }
