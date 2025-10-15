@@ -18,6 +18,24 @@
       "amount": 70,
       "account": "كاش",
       "category": "مواصلات"
+    },
+    {
+      "id": "nb3wtqh9mgsfkzw4",
+      "date": "2025-10-15",
+      "desc": "سفر",
+      "type": "expense",
+      "amount": 30,
+      "account": "كاش",
+      "category": "مواصلات"
+    },
+    {
+      "id": "qyczvnvzmgsfp82h",
+      "date": "2025-10-15",
+      "desc": "الليثي (تحصيل)",
+      "type": "income",
+      "amount": 1300,
+      "account": "كاش",
+      "category": "تحصيلات شهرية"
     }
   ],
   "accounts": [
@@ -200,16 +218,6 @@
       "payments": {}
     }
   ],
-  "collections": [
-    {
-      "id": "r082zgremgozitd1",
-      "name": "الليثي",
-      "amount": 1300,
-      "firstDue": "2025-10-15",
-      "nextDue": "2025-10-15",
-      "recurring": false,
-      "endAt": null
-    }
-  ],
-  "updatedAt": "2025-10-15T14:15:01.157Z"
+  "collections": [],
+  "updatedAt": "2025-10-15T21:25:41.939Z"
 }
