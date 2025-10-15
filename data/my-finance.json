@@ -1,0 +1,164 @@
+{
+  "version": 1,
+  "exportedAt": "2025-10-15T07:03:17.695Z",
+  "ledger": [
+    {
+      "id": "f6t8d610mgqgqjsu",
+      "date": "2025-10-14",
+      "desc": "كاش",
+      "type": "income",
+      "amount": 95,
+      "account": "كاش",
+      "category": "دخل آخر"
+    },
+    {
+      "id": "i0u43h7omgqgrbfa",
+      "date": "2025-10-14",
+      "desc": "رصيد فودافون كاش",
+      "type": "income",
+      "amount": 933,
+      "account": "محفظة",
+      "category": "دخل آخر"
+    }
+  ],
+  "accounts": [
+    {
+      "name": "كاش",
+      "opening": 0
+    },
+    {
+      "name": "محفظة",
+      "opening": 0
+    },
+    {
+      "name": "إئتمان",
+      "opening": 0
+    },
+    {
+      "name": "حساب بنكي",
+      "opening": 0
+    }
+  ],
+  "categories": [
+    {
+      "name": "مرتب",
+      "type": "income"
+    },
+    {
+      "name": "دخل آخر",
+      "type": "income"
+    },
+    {
+      "name": "أكل وشرب",
+      "type": "expense"
+    },
+    {
+      "name": "مواصلات",
+      "type": "expense"
+    },
+    {
+      "name": "فواتير",
+      "type": "expense"
+    },
+    {
+      "name": "تسوق",
+      "type": "expense"
+    },
+    {
+      "name": "التزامات شهرية",
+      "type": "expense"
+    },
+    {
+      "name": "تحصيلات شهرية",
+      "type": "income"
+    },
+    {
+      "name": "تحويل صادر",
+      "type": "expense"
+    },
+    {
+      "name": "تحويل وارد",
+      "type": "income"
+    },
+    {
+      "name": "عمولة تحويل",
+      "type": "expense"
+    }
+  ],
+  "commitments": [
+    {
+      "id": "0w2lzxigmgozkaxi",
+      "name": "أوبر",
+      "amount": 1550,
+      "firstDue": "2025-11-12",
+      "nextDue": "2025-11-12",
+      "recurring": true,
+      "endAt": "2026-12-31"
+    },
+    {
+      "id": "3m2hp895mgozlmi6",
+      "name": "تأمين",
+      "amount": 420,
+      "firstDue": "2025-10-20",
+      "nextDue": "2025-10-20",
+      "recurring": true,
+      "endAt": "2030-12-31"
+    },
+    {
+      "id": "b9xam41amgoznubi",
+      "name": "اشتراكات",
+      "amount": 1100,
+      "firstDue": "2025-11-01",
+      "nextDue": "2025-11-01",
+      "recurring": true,
+      "endAt": "2026-12-31"
+    },
+    {
+      "id": "w6ivs7i5mgozqe72",
+      "name": "شحن",
+      "amount": 150,
+      "firstDue": "2025-10-05",
+      "nextDue": "2025-11-05",
+      "recurring": true,
+      "endAt": "2026-12-14"
+    },
+    {
+      "id": "9f7hf8w3mgozrj5i",
+      "name": "لله",
+      "amount": 300,
+      "firstDue": "2025-11-15",
+      "nextDue": "2025-11-15",
+      "recurring": true,
+      "endAt": "2026-12-31"
+    },
+    {
+      "id": "87dzatk4mgozsoba",
+      "name": "نت",
+      "amount": 280,
+      "firstDue": "2025-10-20",
+      "nextDue": "2025-10-20",
+      "recurring": true,
+      "endAt": "2026-12-31"
+    },
+    {
+      "id": "5ezkl2c1mgqfzaxx",
+      "name": "هشام",
+      "amount": 1400,
+      "firstDue": "2025-10-15",
+      "nextDue": "2025-10-15",
+      "recurring": false,
+      "endAt": null
+    }
+  ],
+  "collections": [
+    {
+      "id": "r082zgremgozitd1",
+      "name": "الليثي",
+      "amount": 1300,
+      "firstDue": "2025-10-15",
+      "nextDue": "2025-10-15",
+      "recurring": false,
+      "endAt": null
+    }
+  ]
+}
