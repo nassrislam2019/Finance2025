@@ -45,6 +45,16 @@
       "amount": 145,
       "account": "كاش",
       "category": "مواصلات"
+    },
+    {
+      "id": "0idc8hcqmgt56whb",
+      "date": "2025-10-15",
+      "desc": "هشام (سداد التزام)",
+      "type": "expense",
+      "amount": 1000,
+      "account": "كاش",
+      "category": "التزامات شهرية",
+      "linkCommitId": "5ezkl2c1mgqfzaxx"
     }
   ],
   "accounts": [
@@ -179,21 +189,6 @@
       "payments": {}
     },
     {
-      "id": "5ezkl2c1mgqfzaxx",
-      "name": "هشام",
-      "amount": 1400,
-      "firstDue": "2025-10-15",
-      "nextDue": "2025-10-15",
-      "recurring": false,
-      "endAt": null,
-      "paid": {
-        "2025-10": 400
-      },
-      "payments": {
-        "2025-10": 400
-      }
-    },
-    {
       "id": "cs7lzxi9mgrtufxt",
       "name": "اشتراك",
       "amount": 60,
@@ -228,5 +223,5 @@
     }
   ],
   "collections": [],
-  "updatedAt": "2025-10-16T08:14:47.922Z"
+  "updatedAt": "2025-10-16T08:31:34.827Z"
 }
