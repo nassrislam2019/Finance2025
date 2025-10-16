@@ -220,8 +220,18 @@
       "endAt": null,
       "paid": {},
       "payments": {}
+    },
+    {
+      "id": "a8qif69cmgt5xlfj",
+      "name": "تست",
+      "amount": 1700,
+      "firstDue": "2025-09-20",
+      "nextDue": "2025-09-20",
+      "recurring": false,
+      "endAt": null,
+      "payments": {}
     }
   ],
   "collections": [],
-  "updatedAt": "2025-10-16T08:32:26.881Z"
+  "updatedAt": "2025-10-16T08:33:32.929Z"
 }
