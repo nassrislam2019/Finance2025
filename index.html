@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -199,7 +198,7 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
 
   <div class="hr"></div>
 
-  <!-- (2) إدارة الحسابات  الفئات -->
+  <!-- (2) إدارة الحسابات + الفئات -->
   <div class="grid grid-2">
     <section class="card collapsed" id="card-accounts" data-collapsible>
       <div class="card-head"><h3>إدارة الحسابات</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
@@ -472,7 +471,6 @@ let collections=JSON.parse(localStorage.getItem(COL_KEY)||'[]');
 let ghCfg=JSON.parse(localStorage.getItem(GH_KEY)||'{}');
 
 /* افتراضات أولية */
-if(accounts.length===0){ accounts=[{name:'كاش',opening:0},{name:'حساب بنكي',opening:0},{name:'محفظة',opening:0}]; saveAccounts(); }
 function ensureBaseCategories(){
   const need=[
     {name:'التزامات شهرية',type:'expense'},
@@ -492,7 +490,6 @@ function ensureBaseCategories(){
   for(const n of need){ if(!categories.some(c=>c.name===n.name && c.type===n.type)){ categories.push(n); changed=true; } }
   if(changed) saveCategories();
 }
-ensureBaseCategories();
 
 /* DOM */
 const $=s=>document.querySelector(s);
@@ -523,22 +520,22 @@ const els={
   /* GitHub */
   ghUser:$('#ghUser'), ghRepo:$('#ghRepo'), ghBranch:$('#ghBranch'), ghPath:$('#ghPath'), ghToken:$('#ghToken'),
   ghAuto:$('#ghAuto'), ghSaveCfg:$('#ghSaveCfg'), ghTest:$('#ghTest'), ghPull:$('#ghPull'), ghPush:$('#ghPush'), ghStatus:$('#ghStatus'),
-  /* إجمالي الاستحقاقات  كروت الموبايل */
+  /* إجمالي الاستحقاقات + كروت الموبايل */
   dueTotalBadge:$('#dueTotalBadge'), dueNextTotalBadge:$('#dueNextTotalBadge'), dueSoonCards:$('#dueSoonCards')
 };
 ['saveTx','resetForm','addAccount','addCategory','exportJson','exportCsv','refreshReports','addCommitment','addCollect','execTransfer','resetTransfer','syncNow','ghSaveCfg','ghTest','ghPull','ghPush']
   .forEach(id=>document.getElementById(id)?.setAttribute('type','button'));
 
 /* Utils */
-const eid=()=>Math.random().toString(36).slice(2,10)Date.now().toString(36);
+const eid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36);
 const fmt=n=>Number(n).toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:2});
 const escapeHtml=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
 els.date.value=new Date().toISOString().slice(0,10);
 els.trDate.value=new Date().toISOString().slice(0,10);
-function formatLocalDate(d){const y=d.getFullYear(),m=String(d.getMonth()1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`;}
+function formatLocalDate(d){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`;}
 function parseLocalDate(str){const [y,m,d]=str.split('-').map(Number);const dt=new Date(y,m-1,d,0,0,0,0);dt.setHours(0,0,0,0);return dt;}
 function startOfToday(){const t=new Date();t.setHours(0,0,0,0);return t;}
-function addMonthsPreserveDOM(date,months){const d=new Date(date.getTime());const targetMonth=d.getMonth()months;const day=d.getDate(),y=d.getFullYear();const temp=new Date(y,targetMonth1,0);const lastDay=temp.getDate();d.setMonth(targetMonth,Math.min(day,lastDay));d.setHours(0,0,0,0);return d;}
+function addMonthsPreserveDOM(date,months){const d=new Date(date.getTime());const targetMonth=d.getMonth()+months;const day=d.getDate(),y=d.getFullYear();const temp=new Date(y,targetMonth+1,0);const lastDay=temp.getDate();d.setMonth(targetMonth,Math.min(day,lastDay));d.setHours(0,0,0,0);return d;}
 function daysBetween(a,b){const MS=24*60*60*1000;const da=new Date(a.getFullYear(),a.getMonth(),a.getDate());const db=new Date(b.getFullYear(),b.getMonth(),b.getDate());return Math.round((db-da)/MS);}
 const YM=()=>formatLocalDate(startOfToday()).slice(0,7);
 const addMonthsToYm=(ym, months)=>{
@@ -566,7 +563,7 @@ function refreshAccountSelects(){
   const optsAll = accounts.map(a=>`<option value="${escapeHtml(a.name)}">${escapeHtml(a.name)}</option>`).join('');
   if(els.account) els.account.innerHTML = optsAll;
   const fA=document.getElementById('fAccount');
-  if(fA) fA.innerHTML = `<option value="all" selected>كل الحسابات</option>`  optsAll;
+  if(fA) fA.innerHTML = `<option value="all" selected>كل الحسابات</option>` + optsAll;
 
   if(els.trFrom){
     const prevFrom = els.trFrom.value;
@@ -595,7 +592,7 @@ function refreshLinkCommitOptions(){
     })
     .map(c=>`<option value="${c.id}">${escapeHtml(c.name)} — أصل ${fmt(c.amount)} • مدفوع ${fmt(c.payments?.[ym]||0)} • متبقي ${fmt((c.amount)-(c.payments?.[ym]||0))}</option>`)
     .join('');
-  els.linkCommit.innerHTML = `<option value="">— بدون —</option>`  opts;
+  els.linkCommit.innerHTML = `<option value="">— بدون —</option>` + opts;
 }
 
 /* ===== التحويل ===== */
@@ -635,7 +632,7 @@ function computeBalances(){
   for(const t of sorted){
     const cur=bal.get(t.account)??0;
     const delta=(t.type==='income'?t.amount:-t.amount);
-    const next=curdelta;
+    const next=cur+delta;
     bal.set(t.account,next);
     after.set(t.id,next);
   }
@@ -652,7 +649,7 @@ function ensurePaymentsObj(c){ if(!c.payments) c.payments={}; }
 function addCommitPayment(commitId, ym, amount){
   const c=commitments.find(x=>x.id===commitId); if(!c) return;
   ensurePaymentsObj(c);
-  c.payments[ym]=(c.payments[ym]||0)amount;
+  c.payments[ym]=(c.payments[ym]||0)+amount;
   const total=Number(c.amount||0);
   if(c.payments[ym] >= total - 1e-9){
     const due=c.nextDue?parseLocalDate(c.nextDue):parseLocalDate(c.firstDue);
@@ -679,7 +676,7 @@ function sumCurrentMonthCommitments(){
     if(dueStr.slice(0,7)!==ym) continue;
     const paid=(c.payments?.[ym]||0);
     const remain=(Number(c.amount||0)-paid);
-    total = Math.max(remain,0);
+    total += Math.max(remain,0);
   }
   return total;
 }
@@ -689,25 +686,25 @@ function sumCurrentMonthCollections(){
   for(const c of collections){
     const dueStr=c.nextDue||c.firstDue; if(!dueStr) continue;
     if(dueStr.slice(0,7)!==ym) continue;
-    total = Number(c.amount||0);
+    total += Number(c.amount||0);
   }
   return total;
 }
 function sumCurrentMonthIncome(){
   const ym=YM();
   return ledger.filter(t=>!t.isTransfer && t.type==='income' && t.date.slice(0,7)===ym)
-               .reduce((s,t)=>st.amount,0);
+               .reduce((s,t)=>s+t.amount,0);
 }
 
-/* ===== إعادة الحساب  الملخص ===== */
+/* ===== إعادة الحساب + الملخص ===== */
 function recalc(){
-  const {bal}=computeBalances(); let total=0; for(const v of bal.values()) total=v;
+  const {bal}=computeBalances(); let total=0; for(const v of bal.values()) total+=v;
   const monthComRemain = sumCurrentMonthCommitments();
   const monthCol = sumCurrentMonthCollections();
   const monthInc = sumCurrentMonthIncome();
-  const afterCom = total - monthComRemain  monthCol;
+  const afterCom = total - monthComRemain + monthCol;
   if(els.totalBalance) els.totalBalance.textContent=fmt(total);
-  if(els.monthCommitTotal) els.monthCommitTotal.textContent='-'fmt(monthComRemain);
+  if(els.monthCommitTotal) els.monthCommitTotal.textContent='-'+fmt(monthComRemain);
   if(els.monthIncome) els.monthIncome.textContent=fmt(monthInc);
   if(els.balanceAfterCommit) els.balanceAfterCommit.textContent=fmt(afterCom);
   if(els.txCount) els.txCount.textContent=ledger.length.toString();
@@ -738,7 +735,7 @@ function render(){
       const tag = t.isTransfer ? ' <span style="font-size:11px;color:#666">↔︎ تحويل</span>' : '';
       return `<tr>
         <td>${t.date}</td><td>${escapeHtml(t.desc||'—')}${tag}</td><td>${escapeHtml(t.category||'—')}</td><td>${escapeHtml(t.account)}</td>
-        <td class="amount ${cls}">${t.type==='income'?'':'-'}${fmt(t.amount)}</td>
+        <td class="amount ${cls}">${t.type==='income'?'+':'-'}${fmt(t.amount)}</td>
         <td>${fmt(afterVal)}</td>
         <td><button class="btn btn-outline" onclick="editTx('${t.id}')">تعديل</button>
             <button class="btn btn-danger" onclick="delTx('${t.id}')">حذف</button></td>
@@ -833,7 +830,7 @@ document.getElementById('exportCsv')?.addEventListener('click',()=>{
   const csv=[header.join(','), ...rows.map(r=>r.join(','))].join('\n');
   download('transactions.csv', csv);
 });
-function escCsv(s){ const need=/[",\n]/.test(String(s)); return need ? '"'String(s).replace(/"/g,'""')'"' : String(s); }
+function escCsv(s){ const need=/[",\n]/.test(String(s)); return need ? '"'+String(s).replace(/"/g,'""')+'"' : String(s); }
 function download(name, content){ const blob=new Blob([content],{type:'text/plain;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click(); URL.revokeObjectURL(a.href); }
 document.getElementById('importFile')?.addEventListener('change', async (e)=>{
   const file=e.target.files?.[0]; if(!file) return;
@@ -847,7 +844,7 @@ document.getElementById('importFile')?.addEventListener('change', async (e)=>{
     saveLedger(); saveAccounts(); saveCategories(); saveCommitments(); saveCollections();
     drawCommitments(); drawCollections(); drawDueSoon(); render();
     alert('تم الاستيراد بنجاح');
-  }catch(err){ alert('خطأ أثناء الاستيراد: 'err.message); }
+  }catch(err){ alert('خطأ أثناء الاستيراد: '+err.message); }
   e.target.value='';
 });
 
@@ -857,7 +854,7 @@ function groupByMonth(){
   for(const t of ledger){
     if(t.isTransfer) continue;
     const k=t.date.slice(0,7); const v=map.get(k)||{inc:0,exp:0};
-    if(t.type==='income') v.inc=t.amount; else v.exp=t.amount; map.set(k,v);
+    if(t.type==='income') v.inc+=t.amount; else v.exp+=t.amount; map.set(k,v);
   }
   const keys=[...map.keys()].sort();
   return keys.map(k=>({month:k,inc:map.get(k).inc,exp:map.get(k).exp,net:map.get(k).inc-map.get(k).exp}));
@@ -882,8 +879,8 @@ function drawMonthly(){
       els.tbodyMonthly.innerHTML=data.map(d=>{
         const active=d.month===selected?' class="active"':'';
         const netCls=d.net>=0?'inc':'exp';
-        const netVal=d.net>=0?`${fmt(d.net)}`:`-${fmt(Math.abs(d.net))}`;
-        return `<tr data-month="${d.month}"${active}><td>${monthLabel(d.month)}</td><td class="amount inc">${fmt(d.inc)}</td><td class="amount exp">-${fmt(d.exp)}</td><td class="amount ${netCls}">${netVal}</td></tr>`;
+        const netVal=d.net>=0?`+${fmt(d.net)}`:`-${fmt(Math.abs(d.net))}`;
+        return `<tr data-month="${d.month}"${active}><td>${monthLabel(d.month)}</td><td class="amount inc">+${fmt(d.inc)}</td><td class="amount exp">-${fmt(d.exp)}</td><td class="amount ${netCls}">${netVal}</td></tr>`;
       }).join('');
     }
   }
@@ -920,11 +917,11 @@ function drawMonthlyChart(data, selected){
   ctx.font='11px system-ui';
   ctx.textAlign='right';
   ctx.fillStyle='#94a3b8';
-  for(let i=0;i<=gridLines;i){
-    const v=minVal(range*i/gridLines);
+  for(let i=0;i<=gridLines;i++){
+    const v=minVal+(range*i/gridLines);
     const y=toY(v);
     ctx.beginPath(); ctx.moveTo(pad,y); ctx.lineTo(w-pad,y); ctx.stroke();
-    ctx.fillText(fmt(v), pad-6, y4);
+    ctx.fillText(fmt(v), pad-6, y+4);
   }
 
   if(minVal<0){
@@ -933,10 +930,10 @@ function drawMonthlyChart(data, selected){
   }
 
   data.forEach((d,i)=>{
-    const xCenter=padi*barGroupbarGroup/2;
+    const xCenter=pad+i*barGroup+barGroup/2;
     if(d.month===selected){
       ctx.fillStyle='rgba(59,130,246,0.12)';
-      ctx.fillRect(xCenter-barGroup/24, pad, barGroup-8, innerH);
+      ctx.fillRect(xCenter-barGroup/2+4, pad, barGroup-8, innerH);
     }
     if(d.inc>0){
       const top=toY(d.inc);
@@ -948,7 +945,7 @@ function drawMonthlyChart(data, selected){
       const top=toY(d.exp);
       const height=Math.max(2, zeroY-top);
       ctx.fillStyle='#ef4444';
-      ctx.fillRect(xCenter4, top, barWidth, height);
+      ctx.fillRect(xCenter+4, top, barWidth, height);
     }
   });
 
@@ -956,7 +953,7 @@ function drawMonthlyChart(data, selected){
   ctx.lineWidth=2;
   ctx.beginPath();
   data.forEach((d,i)=>{
-    const xCenter=padi*barGroupbarGroup/2;
+    const xCenter=pad+i*barGroup+barGroup/2;
     const y=toY(d.net);
     if(i===0) ctx.moveTo(xCenter,y); else ctx.lineTo(xCenter,y);
   });
@@ -966,8 +963,8 @@ function drawMonthlyChart(data, selected){
   ctx.font='12px system-ui';
   ctx.textAlign='center';
   data.forEach((d,i)=>{
-    const xCenter=padi*barGroupbarGroup/2;
-    ctx.fillText(monthLabel(d.month), xCenter, h-pad18);
+    const xCenter=pad+i*barGroup+barGroup/2;
+    ctx.fillText(monthLabel(d.month), xCenter, h-pad+18);
   });
 }
 function monthTransactions(month){
@@ -982,9 +979,9 @@ function aggregateMonthCategories(month,type){
     if(t.date.slice(0,7)!==month) continue;
     const key=t.category?String(t.category):'غير مصنف';
     const prev=map.get(key)||0;
-    const val=prevt.amount;
+    const val=prev+t.amount;
     map.set(key,val);
-    total=t.amount;
+    total+=t.amount;
   }
   const items=[...map.entries()].map(([name,sum])=>({name,sum})).sort((a,b)=>b.sum-a.sum);
   return {total,items};
@@ -1008,14 +1005,14 @@ function renderBarList(el, agg, type){
 }
 function drawMonthSummary(month){
   const txs=monthTransactions(month);
-  const totalInc=txs.filter(t=>t.type==='income').reduce((s,t)=>st.amount,0);
-  const totalExp=txs.filter(t=>t.type==='expense').reduce((s,t)=>st.amount,0);
+  const totalInc=txs.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+  const totalExp=txs.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
   const net=totalInc-totalExp;
   const expenseDays=new Set(txs.filter(t=>t.type==='expense').map(t=>t.date)).size;
   const avg=expenseDays>0?totalExp/expenseDays:0;
   if(els.monthSelectedLabel) els.monthSelectedLabel.textContent=monthLabel(month);
   if(els.monthStatIncome){
-    const incTxt=totalInc>0?`${fmt(totalInc)}`:fmt(0);
+    const incTxt=totalInc>0?`+${fmt(totalInc)}`:fmt(0);
     els.monthStatIncome.textContent=incTxt;
   }
   if(els.monthStatExpense){
@@ -1023,7 +1020,7 @@ function drawMonthSummary(month){
     els.monthStatExpense.textContent=expTxt;
   }
   if(els.monthStatNet){
-    const netTxt=net>0?`${fmt(net)}`:net<0?`-${fmt(Math.abs(net))}`:fmt(0);
+    const netTxt=net>0?`+${fmt(net)}`:net<0?`-${fmt(Math.abs(net))}`:fmt(0);
     els.monthStatNet.textContent=netTxt;
     els.monthStatNet.classList.remove('pos','neg');
     if(net>0) els.monthStatNet.classList.add('pos');
@@ -1091,7 +1088,7 @@ window.delCommit=id=>{ if(!confirm('هل تريد حذف هذا الالتزام
 els.addCommitment?.addEventListener('click',()=>{
   const name=els.cName.value.trim(), amount=parseFloat(els.cAmount.value), firstDueStr=els.cFirstDue.value;
   const recurring=els.cRecurring.checked; const endAtStr=(els.cEndAt.value||'').trim();
-  if(!name || !amount || amount<=0 || !firstDueStr){ alert('أدخل اسم  مبلغ صحيح  تاريخ أول استحقاق'); return; }
+  if(!name || !amount || amount<=0 || !firstDueStr){ alert('أدخل اسم + مبلغ صحيح + تاريخ أول استحقاق'); return; }
   if(recurring && !endAtStr){ alert('عند التكرار يجب تحديد تاريخ النهاية'); return; }
   if(recurring && endAtStr && parseLocalDate(endAtStr) < parseLocalDate(firstDueStr)){ alert('تاريخ النهاية يجب أن يكون بعد تاريخ أول استحقاق'); return; }
 
@@ -1111,7 +1108,7 @@ els.addCommitment?.addEventListener('click',()=>{
 });
 function chooseAccount(){
   if(accounts.length===0){ alert('لا توجد حسابات لإتمام العملية'); return null; }
-  const menu=accounts.map((a,i)=>`${i1} - ${a.name}`).join('\n');
+  const menu=accounts.map((a,i)=>`${i+1} - ${a.name}`).join('\n');
   const ans=prompt(`اختَر الحساب:\n${menu}`);
   if(ans===null) return null;
   const idx=parseInt(ans,10)-1; if(Number.isNaN(idx)||idx<0||idx>=accounts.length){ alert('اختيار غير صحيح'); return null; }
@@ -1174,7 +1171,7 @@ els.coRecurring?.addEventListener('change', endRequiredToggleCollect);
 els.addCollect?.addEventListener('click',()=>{
   const name=els.coName.value.trim(), amount=parseFloat(els.coAmount.value), firstDueStr=els.coFirstDue.value;
   const recurring=els.coRecurring.checked; const endAtStr=(els.coEndAt.value||'').trim();
-  if(!name || !amount || amount<=0 || !firstDueStr){ alert('أدخل اسم  مبلغ صحيح  تاريخ أول استحقاق'); return; }
+  if(!name || !amount || amount<=0 || !firstDueStr){ alert('أدخل اسم + مبلغ صحيح + تاريخ أول استحقاق'); return; }
   if(recurring && !endAtStr){ alert('عند التكرار يجب تحديد تاريخ النهاية'); return; }
   if(recurring && endAtStr && parseLocalDate(endAtStr) < parseLocalDate(firstDueStr)){ alert('تاريخ النهاية يجب أن يكون بعد تاريخ أول استحقاق'); return; }
 
@@ -1212,7 +1209,7 @@ window.collectNow=id=>{
   saveCollections(); render();
 };
 
-/* ===== الاستحقاقات القريبة: جدول  بطاقات ===== */
+/* ===== الاستحقاقات القريبة: جدول + بطاقات ===== */
 function hasDueInMonth(commit, targetYm){
   const dueStr=commit.nextDue||commit.firstDue; if(!dueStr) return false;
   if(!targetYm || targetYm.indexOf('-')===-1) return false;
@@ -1236,7 +1233,7 @@ function hasDueInMonth(commit, targetYm){
     if(endDate && next > endDate) return false;
     if(next.getTime()===cursor.getTime()) break;
     cursor=next;
-    guard;
+    guard++;
   }
   return monthOf(cursor)===targetYm;
 }
@@ -1260,8 +1257,8 @@ function drawDueSoon(){
     return {...c,due,dueStr,paid,total,remaining,diff};
   }).filter(Boolean).sort((a,b)=> a.dueStr.localeCompare(b.dueStr));
 
-  const totalRemain = list.reduce((s,x)=>s  x.remaining, 0);
-  if(els.dueTotalBadge){ els.dueTotalBadge.textContent = 'إجمالي: '  fmt(totalRemain)  ' ج.م'; }
+  const totalRemain = list.reduce((s,x)=>s + x.remaining, 0);
+  if(els.dueTotalBadge){ els.dueTotalBadge.textContent = 'إجمالي: ' + fmt(totalRemain) + ' ج.م'; }
   if(els.dueNextTotalBadge){
     let nextTotal=0;
     if(nextYm){
@@ -1269,7 +1266,7 @@ function drawDueSoon(){
         if(!hasDueInMonth(c, nextYm)) continue;
         const paidNext=(c.payments?.[nextYm]||0);
         const remainNext=Math.max(0,(Number(c.amount||0)-paidNext));
-        nextTotal=remainNext;
+        nextTotal+=remainNext;
       }
     }
     const label=monthLabel(nextYm);
@@ -1395,11 +1392,11 @@ function readGhFormToCfg(){
   localStorage.setItem(GH_KEY, JSON.stringify(ghCfg));
 }
 function ghStatus(msg, ok){
-  if(els.ghStatus){ els.ghStatus.textContent='الحالة: 'msg; els.ghStatus.style.color= ok?'#0a0':'#900'; }
+  if(els.ghStatus){ els.ghStatus.textContent='الحالة: '+msg; els.ghStatus.style.color= ok?'#0a0':'#900'; }
 }
 async function gh_api(url, method='GET', body){
-  const headers={'Accept':'application/vnd.githubjson','X-GitHub-Api-Version':'2022-11-28'};
-  if(ghCfg.token) headers['Authorization']='Bearer 'ghCfg.token;
+  const headers={'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+  if(ghCfg.token) headers['Authorization']='Bearer '+ghCfg.token;
   if(body) headers['Content-Type']='application/json';
   const res=await fetch(url,{method,headers,body: body?JSON.stringify(body):undefined});
   if(!res.ok){
@@ -1462,7 +1459,7 @@ async function ghTest(){
   readGhFormToCfg();
   if(!ghCfg.user||!ghCfg.repo||!ghCfg.token){ ghStatus('أكمل الإعدادات أولاً',false); return; }
   try{ await gh_api(`https://api.github.com/repos/${ghCfg.user}/${ghCfg.repo}`,'GET'); ghStatus('الاتصال ناجح',true); }
-  catch(e){ ghStatus('فشل الاتصال: 'e.message,false); }
+  catch(e){ ghStatus('فشل الاتصال: '+e.message,false); }
 }
 async function ghPull(){
   readGhFormToCfg();
@@ -1482,7 +1479,7 @@ async function ghPull(){
     render(); drawDueSoon(); ghStatus('تم التحميل',true);
   }catch(e){
     const errMsg=e?.message||'خطأ غير معروف';
-    ghStatus('فشل التحميل: 'errMsg,false);
+    ghStatus('فشل التحميل: '+errMsg,false);
   }
 }
 async function ghPush(){
@@ -1515,6 +1512,15 @@ function refreshCategorySelect(){
   els.category.innerHTML = cats.map(c=>`<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`).join('');
 }
 function init(){
+  if(accounts.length===0){
+    accounts=[
+      {name:'كاش',opening:0},
+      {name:'حساب بنكي',opening:0},
+      {name:'محفظة',opening:0}
+    ];
+    saveAccounts();
+  }
+  ensureBaseCategories();
   initCollapsibles();
   commitments=commitments.map(c=>migrateCommit(c));
   collections=collections.map(c=>migrateCollect(c));
@@ -1536,8 +1542,3 @@ init();
 </script>
 </body>
 </html>
-
-```
- 
-EOF
-)
