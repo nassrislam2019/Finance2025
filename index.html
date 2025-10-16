@@ -8,12 +8,19 @@
 <meta name="theme-color" content="#ffffff" />
 <link rel="manifest" href="/my-finance/manifest.json" />
 <meta name="mobile-web-app-capable" content="yes" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&display=swap" rel="stylesheet">
+  
 <style>
 :root{
   --bg:#ffffff; --card:#f2f2f2; --muted:#555; --txt:#000;
   --brand:#0077cc; --brand-2:#3399ff; --danger:#ef4444; --warn:#f59e0b; --ok:#22c55e; --border:#d0d0d0;
   --radius:14px; --field-h:46px;
 }
+  body,h1,h2,h3,h4,h5,h6,p,div,span,li,a,button{
+      font-family: "Cairo", sans-serif !important;
+  }
 *{box-sizing:border-box}
 html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Noto Kufi Arabic",Tahoma,Arial,sans-serif}
