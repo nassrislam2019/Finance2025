@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -87,6 +88,7 @@ tbody tr td:last-child{border-left:1px solid var(--border);border-top-left-radiu
 .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .spacer{flex:1}
 .badge{display:inline-flex;gap:6px;align-items:center;background:#e6e6e6;color:var(--muted);border:1px solid var(--border);padding:6px 10px;border-radius:999px;font-size:12px;height:var(--field-h)}
+.badge-group{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
 .footer{margin-top:24px;color:var(--muted);font-size:12px;text-align:center}
 .note{color:var(--warn)}
 canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius);display:block;width:100%;height:320px}
@@ -173,7 +175,10 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
   <section class="card" id="card-dueSoon" style="margin-top:12px">
     <div class="card-head">
       <h3>استحقاقات قريبة</h3>
-      <span id="dueTotalBadge" class="badge" title="إجمالي المتبقّي لهذا الشهر">إجمالي: 0.00 ج.م</span>
+      <div class="badge-group">
+        <span id="dueTotalBadge" class="badge" title="إجمالي المتبقّي لهذا الشهر">إجمالي: 0.00 ج.م</span>
+        <span id="dueNextTotalBadge" class="badge" title="إجمالي الاستحقاقات للشهر القادم">الشهر القادم: 0.00 ج.م</span>
+      </div>
     </div>
     <div class="card-body">
       <!-- جدول للديسكتوب/التابلت -->
@@ -519,7 +524,7 @@ const els={
   ghUser:$('#ghUser'), ghRepo:$('#ghRepo'), ghBranch:$('#ghBranch'), ghPath:$('#ghPath'), ghToken:$('#ghToken'),
   ghAuto:$('#ghAuto'), ghSaveCfg:$('#ghSaveCfg'), ghTest:$('#ghTest'), ghPull:$('#ghPull'), ghPush:$('#ghPush'), ghStatus:$('#ghStatus'),
   /* إجمالي الاستحقاقات  كروت الموبايل */
-  dueTotalBadge:$('#dueTotalBadge'), dueSoonCards:$('#dueSoonCards')
+  dueTotalBadge:$('#dueTotalBadge'), dueNextTotalBadge:$('#dueNextTotalBadge'), dueSoonCards:$('#dueSoonCards')
 };
 ['saveTx','resetForm','addAccount','addCategory','exportJson','exportCsv','refreshReports','addCommitment','addCollect','execTransfer','resetTransfer','syncNow','ghSaveCfg','ghTest','ghPull','ghPush']
   .forEach(id=>document.getElementById(id)?.setAttribute('type','button'));
@@ -536,6 +541,14 @@ function startOfToday(){const t=new Date();t.setHours(0,0,0,0);return t;}
 function addMonthsPreserveDOM(date,months){const d=new Date(date.getTime());const targetMonth=d.getMonth()months;const day=d.getDate(),y=d.getFullYear();const temp=new Date(y,targetMonth1,0);const lastDay=temp.getDate();d.setMonth(targetMonth,Math.min(day,lastDay));d.setHours(0,0,0,0);return d;}
 function daysBetween(a,b){const MS=24*60*60*1000;const da=new Date(a.getFullYear(),a.getMonth(),a.getDate());const db=new Date(b.getFullYear(),b.getMonth(),b.getDate());return Math.round((db-da)/MS);}
 const YM=()=>formatLocalDate(startOfToday()).slice(0,7);
+const addMonthsToYm=(ym, months)=>{
+  const parts=(ym||'').split('-').map(Number);
+  const y=parts[0], m=parts[1];
+  if(!Number.isFinite(y)||!Number.isFinite(m)) return ym;
+  const base=new Date(y,m-1,1);
+  const next=addMonthsPreserveDOM(base, months);
+  return formatLocalDate(next).slice(0,7);
+};
 const monthLabel=ym=>{ if(!ym) return '—'; const [y,m]=ym.split('-').map(Number); if(!Number.isFinite(y)||!Number.isFinite(m)) return ym; const dt=new Date(y,m-1,1); return dt.toLocaleDateString('ar-EG',{month:'long',year:'numeric'}); };
 
 /* ===== حفظ ===== */
@@ -1200,6 +1213,33 @@ window.collectNow=id=>{
 };
 
 /* ===== الاستحقاقات القريبة: جدول  بطاقات ===== */
+function hasDueInMonth(commit, targetYm){
+  const dueStr=commit.nextDue||commit.firstDue; if(!dueStr) return false;
+  if(!targetYm || targetYm.indexOf('-')===-1) return false;
+  const targetStart=parseLocalDate(`${targetYm}-01`);
+  if(Number.isNaN(targetStart.getTime())) return false;
+  let endDate=null;
+  if(commit.endAt){
+    const tmp=parseLocalDate(commit.endAt);
+    if(!Number.isNaN(tmp.getTime())) endDate=tmp;
+  }
+  const dueDate=parseLocalDate(dueStr);
+  if(Number.isNaN(dueDate.getTime())) return false;
+  const monthOf=date=>formatLocalDate(date).slice(0,7);
+  if(monthOf(dueDate)===targetYm) return true;
+  if(!commit.recurring) return false;
+  if(endDate && endDate < targetStart) return false;
+  let cursor=new Date(dueDate.getTime());
+  let guard=0;
+  while(monthOf(cursor) < targetYm && guard < 120){
+    const next=addMonthsPreserveDOM(cursor,1);
+    if(endDate && next > endDate) return false;
+    if(next.getTime()===cursor.getTime()) break;
+    cursor=next;
+    guard;
+  }
+  return monthOf(cursor)===targetYm;
+}
 function drawDueSoon(){
   const wrap=document.getElementById('dueSoonWrap'),
         none=document.getElementById('noDueSoon'),
@@ -1208,6 +1248,7 @@ function drawDueSoon(){
   if(!wrap||!tbody||!cards) return;
 
   const ym=YM();
+  const nextYm=addMonthsToYm(ym,1);
   const today=startOfToday();
   const list=commitments.map(c=>{
     const dueStr=c.nextDue||c.firstDue; if(!dueStr) return null;
@@ -1221,6 +1262,22 @@ function drawDueSoon(){
 
   const totalRemain = list.reduce((s,x)=>s  x.remaining, 0);
   if(els.dueTotalBadge){ els.dueTotalBadge.textContent = 'إجمالي: '  fmt(totalRemain)  ' ج.م'; }
+  if(els.dueNextTotalBadge){
+    let nextTotal=0;
+    if(nextYm){
+      for(const c of commitments){
+        if(!hasDueInMonth(c, nextYm)) continue;
+        const paidNext=(c.payments?.[nextYm]||0);
+        const remainNext=Math.max(0,(Number(c.amount||0)-paidNext));
+        nextTotal=remainNext;
+      }
+    }
+    const label=monthLabel(nextYm);
+    const prefix=label && label!=='—' ? `الشهر القادم (${label})` : 'الشهر القادم';
+    els.dueNextTotalBadge.textContent = `${prefix}: ${fmt(nextTotal)} ج.م`;
+    const tip=label && label!=='—' ? `إجمالي الاستحقاقات لشهر ${label}` : 'إجمالي الاستحقاقات للشهر القادم';
+    els.dueNextTotalBadge.setAttribute('title', tip);
+  }
 
   if(list.length===0){
     wrap.classList.add('d-none');
@@ -1479,6 +1536,7 @@ init();
 </script>
 </body>
 </html>
+
 ```
  
 EOF
