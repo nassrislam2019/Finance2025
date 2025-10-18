@@ -55,6 +55,16 @@
       "account": "كاش",
       "category": "التزامات شهرية",
       "linkCommitId": "5ezkl2c1mgqfzaxx"
+    },
+    {
+      "id": "8vven1qamgwuc5c0",
+      "date": "2025-10-15",
+      "desc": "اشتراك (سداد التزام)",
+      "type": "expense",
+      "amount": 60,
+      "account": "إئتمان",
+      "category": "التزامات شهرية",
+      "linkCommitId": "cs7lzxi9mgrtufxt"
     }
   ],
   "accounts": [
@@ -193,11 +203,13 @@
       "name": "اشتراك",
       "amount": 60,
       "firstDue": "2025-10-15",
-      "nextDue": "2025-10-15",
+      "nextDue": "2025-11-15",
       "recurring": true,
       "endAt": "2026-12-31",
       "paid": {},
-      "payments": {}
+      "payments": {
+        "2025-10": 60
+      }
     },
     {
       "id": "ofpg6jkpmgruck82",
@@ -220,18 +232,8 @@
       "endAt": null,
       "paid": {},
       "payments": {}
-    },
-    {
-      "id": "a8qif69cmgt5xlfj",
-      "name": "تست",
-      "amount": 1700,
-      "firstDue": "2025-09-20",
-      "nextDue": "2025-09-20",
-      "recurring": false,
-      "endAt": null,
-      "payments": {}
     }
   ],
   "collections": [],
-  "updatedAt": "2025-10-18T22:19:33.278Z"
+  "updatedAt": "2025-10-18T22:21:04.174Z"
 }
