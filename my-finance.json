@@ -65,6 +65,15 @@
       "account": "إئتمان",
       "category": "التزامات شهرية",
       "linkCommitId": "cs7lzxi9mgrtufxt"
+    },
+    {
+      "id": "57ih8qqnmgwuekvj",
+      "date": "2025-10-18",
+      "desc": "موتور",
+      "type": "expense",
+      "amount": 150,
+      "account": "كاش",
+      "category": "التزامات شهرية"
     }
   ],
   "accounts": [
@@ -235,5 +244,5 @@
     }
   ],
   "collections": [],
-  "updatedAt": "2025-10-18T22:21:04.174Z"
+  "updatedAt": "2025-10-18T22:22:39.119Z"
 }
