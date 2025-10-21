@@ -74,6 +74,16 @@
       "amount": 150,
       "account": "كاش",
       "category": "التزامات شهرية"
+    },
+    {
+      "id": "hqv3ia4bmh03e9aa",
+      "date": "2025-10-20",
+      "desc": "نت (سداد التزام)",
+      "type": "expense",
+      "amount": 280,
+      "account": "محفظة",
+      "category": "التزامات شهرية",
+      "linkCommitId": "87dzatk4mgozsoba"
     }
   ],
   "accounts": [
@@ -201,11 +211,13 @@
       "name": "نت",
       "amount": 280,
       "firstDue": "2025-10-20",
-      "nextDue": "2025-10-20",
+      "nextDue": "2025-11-20",
       "recurring": true,
       "endAt": "2026-12-31",
       "paid": {},
-      "payments": {}
+      "payments": {
+        "2025-10": 280
+      }
     },
     {
       "id": "cs7lzxi9mgrtufxt",
@@ -230,19 +242,8 @@
       "endAt": "2026-12-31",
       "paid": {},
       "payments": {}
-    },
-    {
-      "id": "zp2468okmgruekz6",
-      "name": "لينكد ان",
-      "amount": 900,
-      "firstDue": "2025-10-23",
-      "nextDue": "2025-10-23",
-      "recurring": false,
-      "endAt": null,
-      "paid": {},
-      "payments": {}
     }
   ],
   "collections": [],
-  "updatedAt": "2025-10-21T04:56:12.233Z"
+  "updatedAt": "2025-10-21T05:00:40.679Z"
 }
