@@ -84,6 +84,15 @@
       "account": "محفظة",
       "category": "التزامات شهرية",
       "linkCommitId": "87dzatk4mgozsoba"
+    },
+    {
+      "id": "6f3dq8uhmh03lovk",
+      "date": "2025-10-21",
+      "desc": "كارم",
+      "type": "expense",
+      "amount": 48,
+      "account": "محفظة",
+      "category": "أكل وشرب"
     }
   ],
   "accounts": [
@@ -245,5 +254,5 @@
     }
   ],
   "collections": [],
-  "updatedAt": "2025-10-21T05:00:40.679Z"
+  "updatedAt": "2025-10-21T05:02:41.305Z"
 }
