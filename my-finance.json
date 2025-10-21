@@ -280,7 +280,25 @@
       "nextDue": "2025-11-01",
       "recurring": true,
       "endAt": "2033-12-31"
+    },
+    {
+      "id": "7svurhxhmh056uxp",
+      "name": "لله",
+      "amount": 300,
+      "firstDue": "2025-11-01",
+      "nextDue": "2025-11-01",
+      "recurring": true,
+      "endAt": "2026-12-31"
+    },
+    {
+      "id": "vkm7henamh057odj",
+      "name": "مصروف",
+      "amount": 2500,
+      "firstDue": "2025-11-01",
+      "nextDue": "2025-11-01",
+      "recurring": true,
+      "endAt": "2026-12-31"
     }
   ],
-  "updatedAt": "2025-10-21T05:46:09.144Z"
+  "updatedAt": "2025-10-21T05:47:46.649Z"
 }
