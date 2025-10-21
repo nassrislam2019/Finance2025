@@ -93,6 +93,24 @@
       "amount": 48,
       "account": "محفظة",
       "category": "أكل وشرب"
+    },
+    {
+      "id": "psloxyywmh03mn2x",
+      "date": "2025-10-21",
+      "desc": "مواصلات",
+      "type": "expense",
+      "amount": 40,
+      "account": "محفظة",
+      "category": "مواصلات"
+    },
+    {
+      "id": "iznncdrqmh0435nl",
+      "date": "2025-10-21",
+      "desc": "مواصلات",
+      "type": "expense",
+      "amount": 40,
+      "account": "كاش",
+      "category": "مواصلات"
     }
   ],
   "accounts": [
@@ -254,5 +272,5 @@
     }
   ],
   "collections": [],
-  "updatedAt": "2025-10-21T05:02:41.305Z"
+  "updatedAt": "2025-10-21T05:16:16.095Z"
 }
