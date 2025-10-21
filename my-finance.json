@@ -95,15 +95,6 @@
       "category": "أكل وشرب"
     },
     {
-      "id": "psloxyywmh03mn2x",
-      "date": "2025-10-21",
-      "desc": "مواصلات",
-      "type": "expense",
-      "amount": 40,
-      "account": "محفظة",
-      "category": "مواصلات"
-    },
-    {
       "id": "iznncdrqmh0435nl",
       "date": "2025-10-21",
       "desc": "مواصلات",
@@ -271,6 +262,16 @@
       "payments": {}
     }
   ],
-  "collections": [],
-  "updatedAt": "2025-10-21T05:43:24.777Z"
+  "collections": [
+    {
+      "id": "9nbs6tpcmh0543oj",
+      "name": "شحن و نت و ارضى",
+      "amount": 600,
+      "firstDue": "2025-11-01",
+      "nextDue": "2025-11-01",
+      "recurring": true,
+      "endAt": "2026-12-31"
+    }
+  ],
+  "updatedAt": "2025-10-21T05:45:04.004Z"
 }
