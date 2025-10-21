@@ -271,7 +271,16 @@
       "nextDue": "2025-11-01",
       "recurring": true,
       "endAt": "2026-12-31"
+    },
+    {
+      "id": "m4ep7fw4mh055kue",
+      "name": "وثيقه",
+      "amount": 450,
+      "firstDue": "2025-11-01",
+      "nextDue": "2025-11-01",
+      "recurring": true,
+      "endAt": "2033-12-31"
     }
   ],
-  "updatedAt": "2025-10-21T05:45:04.004Z"
+  "updatedAt": "2025-10-21T05:46:09.144Z"
 }
