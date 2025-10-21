@@ -102,6 +102,15 @@
       "amount": 40,
       "account": "كاش",
       "category": "مواصلات"
+    },
+    {
+      "id": "oz5kymbnmh0o9i0j",
+      "date": "2025-10-21",
+      "desc": "مصاريف تجاوز وشحن محفظه",
+      "type": "expense",
+      "amount": 270,
+      "account": "إئتمان",
+      "category": "أكل وشرب"
     }
   ],
   "accounts": [
@@ -300,5 +309,5 @@
       "endAt": "2026-12-31"
     }
   ],
-  "updatedAt": "2025-10-21T14:39:38.246Z"
+  "updatedAt": "2025-10-21T14:41:04.486Z"
 }
