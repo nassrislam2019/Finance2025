@@ -111,6 +111,24 @@
       "amount": 270,
       "account": "إئتمان",
       "category": "أكل وشرب"
+    },
+    {
+      "id": "a3sdd5ecmhdezoxi",
+      "date": "2025-11-01",
+      "desc": "مصروف (تحصيل)",
+      "type": "income",
+      "amount": 2300,
+      "account": "إئتمان",
+      "category": "تحصيلات شهرية"
+    },
+    {
+      "id": "38deimm5mhdf10lv",
+      "date": "2025-11-01",
+      "desc": "لله (تحصيل)",
+      "type": "income",
+      "amount": 300,
+      "account": "إئتمان",
+      "category": "تحصيلات شهرية"
     }
   ],
   "accounts": [
@@ -295,7 +313,7 @@
       "name": "لله",
       "amount": 300,
       "firstDue": "2025-11-01",
-      "nextDue": "2025-11-01",
+      "nextDue": "2025-12-01",
       "recurring": true,
       "endAt": "2026-12-31"
     },
@@ -304,10 +322,10 @@
       "name": "مصروف",
       "amount": 2300,
       "firstDue": "2025-11-01",
-      "nextDue": "2025-11-01",
+      "nextDue": "2025-12-01",
       "recurring": true,
       "endAt": "2026-12-31"
     }
   ],
-  "updatedAt": "2025-10-30T12:42:20.200Z"
+  "updatedAt": "2025-10-30T12:43:32.507Z"
 }
