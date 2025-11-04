@@ -129,6 +129,278 @@
       "amount": 300,
       "account": "إئتمان",
       "category": "تحصيلات شهرية"
+    },
+    {
+      "id": "w5c494w4mhdf16qf",
+      "date": "2025-11-01",
+      "desc": "وثيقه (تحصيل)",
+      "type": "income",
+      "amount": 450,
+      "account": "إئتمان",
+      "category": "تحصيلات شهرية"
+    },
+    {
+      "id": "eb7dt3ocmhdf22o8",
+      "date": "2025-11-01",
+      "desc": "شحن و نت و ارضى (تحصيل)",
+      "type": "income",
+      "amount": 600,
+      "account": "إئتمان",
+      "category": "تحصيلات شهرية"
+    },
+    {
+      "id": "gts0szsxmhdlyz4i",
+      "date": "2025-10-20",
+      "desc": "تأمين (سداد التزام)",
+      "type": "expense",
+      "amount": 420,
+      "account": "إئتمان",
+      "category": "التزامات شهرية",
+      "linkCommitId": "3m2hp895mgozlmi6"
+    },
+    {
+      "id": "5ooh04xfmhdlz5wo",
+      "date": "2025-10-25",
+      "desc": "اشتراك (سداد التزام)",
+      "type": "expense",
+      "amount": 40,
+      "account": "إئتمان",
+      "category": "التزامات شهرية",
+      "linkCommitId": "ofpg6jkpmgruck82"
+    },
+    {
+      "id": "kz74gyzbmhdm16mu",
+      "date": "2025-11-01",
+      "desc": "مرتب (تحصيل)",
+      "type": "income",
+      "amount": 2000,
+      "account": "إئتمان",
+      "category": "تحصيلات شهرية"
+    },
+    {
+      "id": "c0okmpb8mhf72tp7",
+      "date": "2025-11-01",
+      "desc": "اشتراك (سداد التزام)",
+      "type": "expense",
+      "amount": 250,
+      "account": "إئتمان",
+      "category": "التزامات شهرية",
+      "linkCommitId": "b9xam41amgoznubi"
+    },
+    {
+      "id": "0vh40lgzmhgyb3rf",
+      "date": "2025-11-01",
+      "desc": "كاش",
+      "type": "income",
+      "amount": 436,
+      "account": "إئتمان",
+      "category": "مرتب"
+    },
+    {
+      "id": "c7p4qgqimhgycr5p",
+      "date": "2025-11-01",
+      "desc": "كاش",
+      "type": "income",
+      "amount": 5254,
+      "account": "محفظة",
+      "category": "مرتب"
+    },
+    {
+      "id": "36sz9o3smhgyecze",
+      "date": "2025-11-01",
+      "desc": "للسفر و نقطة عمرو",
+      "type": "income",
+      "amount": 530,
+      "account": "كاش",
+      "category": "مرتب"
+    },
+    {
+      "id": "tv3nxfl3mhhnel6y",
+      "date": "2025-11-02",
+      "desc": "جمعية لرقم من ساره (سداد التزام)",
+      "type": "expense",
+      "amount": 1000,
+      "account": "محفظة",
+      "category": "التزامات شهرية",
+      "linkCommitId": "t6iuem1kmhgyises"
+    },
+    {
+      "id": "mhc758e9mhhnhc27",
+      "date": "2025-11-02",
+      "desc": "نقطة اكرم (سداد التزام)",
+      "type": "expense",
+      "amount": 300,
+      "account": "محفظة",
+      "category": "التزامات شهرية",
+      "linkCommitId": "con3mvigmhgykceh"
+    },
+    {
+      "id": "9mse7f5amhi8heat",
+      "date": "2025-11-02",
+      "desc": "جمعيه",
+      "type": "expense",
+      "amount": 850,
+      "account": "حساب بنكي",
+      "category": "أكل وشرب",
+      "linkCommitId": "20lhz81umhgyhdv7"
+    },
+    {
+      "id": "8e89l80xmhi8yf1y",
+      "date": "2025-11-02",
+      "desc": "نقطة كارم و هشام و على",
+      "type": "income",
+      "amount": 2000,
+      "account": "حساب بنكي",
+      "category": "تحويل وارد"
+    },
+    {
+      "id": "hajpllidmhi8zq2l",
+      "date": "2025-11-02",
+      "desc": "ساره (سداد التزام)",
+      "type": "expense",
+      "amount": 1250,
+      "account": "كاش",
+      "category": "التزامات شهرية",
+      "linkCommitId": "5zyqab2emhgyj1rw"
+    },
+    {
+      "id": "ws0l70ndmhi9elb9",
+      "date": "2025-11-05",
+      "desc": "شحن (سداد التزام)",
+      "type": "expense",
+      "amount": 150,
+      "account": "محفظة",
+      "category": "التزامات شهرية",
+      "linkCommitId": "w6ivs7i5mgozqe72"
+    },
+    {
+      "id": "tphb4e8zmhj9o69f",
+      "date": "2025-11-02",
+      "desc": "فاطمه (سداد التزام)",
+      "type": "expense",
+      "amount": 1000,
+      "account": "كاش",
+      "category": "التزامات شهرية",
+      "linkCommitId": "vmygftw0mhgyhqa2"
+    },
+    {
+      "id": "t5hghowmmhjcjacc",
+      "date": "2025-11-03",
+      "desc": "فاطمه",
+      "type": "expense",
+      "amount": 3800,
+      "account": "محفظة",
+      "category": "تحويل صادر"
+    },
+    {
+      "id": "cri3fp5vmhjcjkz8",
+      "date": "2025-11-03",
+      "desc": "فاطمه",
+      "type": "expense",
+      "amount": 1200,
+      "account": "كاش",
+      "category": "تحويل صادر"
+    },
+    {
+      "id": "duph1r6amhjcm8x0",
+      "link": "o3vinn0cmhjcm8x0",
+      "isTransfer": true,
+      "date": "2025-11-03",
+      "desc": "تحويل إلى كاش",
+      "type": "expense",
+      "amount": 1150,
+      "account": "حساب بنكي",
+      "category": "تحويل صادر"
+    },
+    {
+      "id": "mrubgug4mhjcm8x0",
+      "link": "o3vinn0cmhjcm8x0",
+      "isTransfer": true,
+      "date": "2025-11-03",
+      "desc": "تحويل من حساب بنكي",
+      "type": "income",
+      "amount": 1150,
+      "account": "كاش",
+      "category": "تحويل وارد"
+    },
+    {
+      "id": "e8heszvfmhjd0q9v",
+      "date": "2025-11-03",
+      "desc": "فلوس سيف +باقى فلوس",
+      "type": "income",
+      "amount": 1800,
+      "account": "كاش",
+      "category": "مرتب"
+    },
+    {
+      "id": "lpszgwlwmhl1xeli",
+      "date": "2025-11-03",
+      "desc": "سيف باشا (سداد التزام)",
+      "type": "expense",
+      "amount": 1500,
+      "account": "حساب بنكي",
+      "category": "التزامات شهرية",
+      "linkCommitId": "dptwtb3mmhjcxkhp"
+    },
+    {
+      "id": "2sodkugomhl1xwkp",
+      "link": "m0h84ba4mhl1xwkp",
+      "isTransfer": true,
+      "date": "2025-11-04",
+      "desc": "تحويل إلى حساب بنكي",
+      "type": "expense",
+      "amount": 1500,
+      "account": "إئتمان",
+      "category": "تحويل صادر"
+    },
+    {
+      "id": "f55bfpurmhl1xwkp",
+      "link": "m0h84ba4mhl1xwkp",
+      "isTransfer": true,
+      "date": "2025-11-04",
+      "desc": "تحويل من إئتمان",
+      "type": "income",
+      "amount": 1500,
+      "account": "حساب بنكي",
+      "category": "تحويل وارد"
+    },
+    {
+      "id": "dj44fttjmhl21b6f",
+      "link": "0z440y6wmhl21b6f",
+      "isTransfer": true,
+      "date": "2025-11-04",
+      "desc": "تحويل إلى كاش",
+      "type": "expense",
+      "amount": 350,
+      "account": "إئتمان",
+      "category": "تحويل صادر"
+    },
+    {
+      "id": "orr7o81pmhl21b6f",
+      "date": "2025-11-04",
+      "desc": "تحويل من إئتمان",
+      "type": "income",
+      "amount": 150,
+      "account": "كاش",
+      "category": "تحويل وارد"
+    },
+    {
+      "id": "uf4bdh4pmhl24j6y",
+      "date": "2025-11-04",
+      "desc": "شراء شفاط",
+      "type": "expense",
+      "amount": 600,
+      "account": "إئتمان",
+      "category": "أكل وشرب"
+    },
+    {
+      "id": "v24fbztsmhl25bwn",
+      "date": "2025-11-04",
+      "desc": "لله",
+      "type": "expense",
+      "amount": 100,
+      "account": "كاش",
+      "category": "أكل وشرب"
     }
   ],
   "accounts": [
@@ -212,33 +484,38 @@
       "name": "تأمين",
       "amount": 420,
       "firstDue": "2025-10-20",
-      "nextDue": "2025-10-20",
+      "nextDue": "2025-11-20",
       "recurring": true,
       "endAt": "2030-12-31",
       "paid": {},
-      "payments": {}
+      "payments": {
+        "2025-10": 420
+      }
     },
     {
       "id": "b9xam41amgoznubi",
       "name": "اشتراك",
-      "amount": 1000,
+      "amount": 250,
       "firstDue": "2025-11-01",
-      "nextDue": "2025-11-01",
+      "nextDue": "2025-12-01",
       "recurring": true,
       "endAt": "2026-12-31",
-      "paid": {},
-      "payments": {}
+      "payments": {
+        "2025-11": 250
+      }
     },
     {
       "id": "w6ivs7i5mgozqe72",
       "name": "شحن",
       "amount": 150,
       "firstDue": "2025-10-05",
-      "nextDue": "2025-11-05",
+      "nextDue": "2025-12-05",
       "recurring": true,
       "endAt": "2026-12-14",
       "paid": {},
-      "payments": {}
+      "payments": {
+        "2025-11": 150
+      }
     },
     {
       "id": "9f7hf8w3mgozrj5i",
@@ -282,11 +559,45 @@
       "name": "اشتراك",
       "amount": 40,
       "firstDue": "2025-10-25",
-      "nextDue": "2025-10-25",
+      "nextDue": "2025-11-25",
       "recurring": true,
       "endAt": "2026-12-31",
       "paid": {},
+      "payments": {
+        "2025-10": 40
+      }
+    },
+    {
+      "id": "fo3n9xtamhgxgu0a",
+      "name": "سفر",
+      "amount": 200,
+      "firstDue": "2025-11-07",
+      "nextDue": "2025-11-07",
+      "recurring": false,
+      "endAt": null,
       "payments": {}
+    },
+    {
+      "id": "a1zcxcgomhgxhr9r",
+      "name": "نقطة عمرو",
+      "amount": 500,
+      "firstDue": "2025-11-07",
+      "nextDue": "2025-11-07",
+      "recurring": false,
+      "endAt": null,
+      "payments": {}
+    },
+    {
+      "id": "20lhz81umhgyhdv7",
+      "name": "رشا",
+      "amount": 1650,
+      "firstDue": "2025-11-02",
+      "nextDue": "2025-11-02",
+      "recurring": false,
+      "endAt": null,
+      "payments": {
+        "2025-11": 850
+      }
     }
   ],
   "collections": [
@@ -295,7 +606,7 @@
       "name": "شحن و نت و ارضى",
       "amount": 600,
       "firstDue": "2025-11-01",
-      "nextDue": "2025-11-01",
+      "nextDue": "2025-12-01",
       "recurring": true,
       "endAt": "2026-12-31"
     },
@@ -304,7 +615,7 @@
       "name": "وثيقه",
       "amount": 450,
       "firstDue": "2025-11-01",
-      "nextDue": "2025-11-01",
+      "nextDue": "2025-12-01",
       "recurring": true,
       "endAt": "2026-12-31"
     },
@@ -325,7 +636,43 @@
       "nextDue": "2025-12-01",
       "recurring": true,
       "endAt": "2026-12-31"
+    },
+    {
+      "id": "dfy87ditmhdm0xhe",
+      "name": "مرتب",
+      "amount": 2000,
+      "firstDue": "2025-11-01",
+      "nextDue": "2025-12-01",
+      "recurring": true,
+      "endAt": "2026-12-31"
+    },
+    {
+      "id": "r8asqfvjmhjcncoc",
+      "name": "احمد رفعت",
+      "amount": 1000,
+      "firstDue": "2025-11-03",
+      "nextDue": "2025-11-03",
+      "recurring": false,
+      "endAt": null
+    },
+    {
+      "id": "1s13vpfamhjcnqey",
+      "name": "حسام",
+      "amount": 1000,
+      "firstDue": "2025-11-03",
+      "nextDue": "2025-11-03",
+      "recurring": false,
+      "endAt": null
+    },
+    {
+      "id": "yumzsbyfmhjcobou",
+      "name": "سحر",
+      "amount": 1000,
+      "firstDue": "2025-11-03",
+      "nextDue": "2025-11-03",
+      "recurring": false,
+      "endAt": null
     }
   ],
-  "updatedAt": "2025-11-04T21:19:58.501Z"
+  "updatedAt": "2025-11-04T21:20:47.959Z"
 }
