@@ -432,6 +432,15 @@
       "amount": 82,
       "account": "إئتمان",
       "category": "أكل وشرب"
+    },
+    {
+      "id": "19x0l5h1mhl52o6k",
+      "date": "2025-11-04",
+      "desc": "ضبط رصيد",
+      "type": "income",
+      "amount": 1016,
+      "account": "محفظة",
+      "category": "مرتب"
     }
   ],
   "accounts": [
@@ -705,5 +714,5 @@
       "endAt": null
     }
   ],
-  "updatedAt": "2025-11-04T22:15:30.129Z"
+  "updatedAt": "2025-11-04T22:27:03.974Z"
 }
