@@ -3,188 +3,239 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>دفتر حساباتي — كامل</title>
-<meta name="description" content="تطبيق تتبع مصروفات ودخل - كامل" />
+<title>دفتر حساباتي — محسّن (داكن/فاتح) </title>
+<meta name="description" content="دفتر حساباتي — تتبع مصروفات ودخل، متوافق موبايل/ديسكتوب، داكن/فاتح، كروت مطوية." />
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
+/* ========= variables (light by default) ========= */
 :root{
-  --bg:#ffffff; --card:#f8fafc; --muted:#586069; --txt:#062028;
+  --bg:#ffffff; --card:#f8fafc; --muted:#475569; --txt:#05202a;
   --brand:#0ea5e9; --danger:#ef4444; --warn:#f59e0b; --ok:#16a34a; --border:#e6eef3;
-  --radius:12px; --field-h:44px;
+  --radius:12px; --field-h:46px; --gap:12px;
 }
+
+/* dark theme variables (will be applied when .dark class on body) */
+body.dark{
+  --bg:#071316; --card:#0d1a1c; --muted:#9fb6ba; --txt:#e6f6f7;
+  --brand:#38bdf8; --danger:#f87171; --warn:#fbbf24; --ok:#34d399; --border:#123235;
+}
+
 *{box-sizing:border-box;font-family:"Cairo",sans-serif}
-body{margin:0;background:var(--bg);color:var(--txt);padding:18px}
-.container{max-width:1150px;margin-inline:auto}
-.header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--txt);-webkit-font-smoothing:antialiased}
+.container{max-width:1180px;margin-inline:auto;padding:18px;display:flex;flex-direction:column;gap:18px}
+
+/* header */
+.header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .title{font-size:20px;font-weight:700}
-.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.btn{border:0;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:700}
+.sub{font-size:13px;color:var(--muted)}
+.header-right{display:flex;align-items:center;gap:8px}
+.btn{appearance:none;border:0;padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:700;background:transparent;color:var(--txt);border:1px solid var(--border)}
+.btn:hover{opacity:.95}
+.btn-primary{background:var(--brand);color:#fff;border-color:transparent}
 .btn-outline{background:transparent;border:1px solid var(--border)}
-.btn-primary{background:var(--brand);color:#fff}
-.btn-danger{background:var(--danger);color:#fff}
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-top:14px;overflow:hidden}
-.card-head{display:flex;justify-content:space-between;align-items:center;padding:12px 14px}
+.btn-danger{background:var(--danger);color:#fff;border-color:transparent}
+.badge{background:transparent;padding:6px 10px;border-radius:999px;border:1px solid var(--border);color:var(--muted);font-size:13px}
+
+/* layout */
+.grid{display:grid;gap:var(--gap)}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:900px){ .grid-3{grid-template-columns:1fr} .grid-2{grid-template-columns:1fr} }
+
+/* card */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column}
+.card-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;gap:8px}
 .card-body{padding:14px;border-top:1px solid var(--border)}
-.stats{display:grid;gap:10px}
-@media(min-width:900px){.stats{grid-template-columns:repeat(5,1fr)}}
-.stat{background:#fff;padding:12px;border-radius:10px;border:1px solid var(--border)}
+.card.collapsed .card-body{display:none}
+.toggle{appearance:none;border:none;background:transparent;cursor:pointer;font-size:18px;padding:6px 10px;border-radius:8px;color:var(--muted)}
+
+/* stats */
+.stats{display:grid;gap:12px}
+@media(min-width:900px){ .stats{grid-template-columns:repeat(5,1fr)} }
+.stat{background:var(--bg);padding:12px;border-radius:10px;border:1px solid var(--border)}
 .stat small{color:var(--muted);font-size:12px}
 .stat .num{font-weight:800;font-size:18px;margin-top:6px}
-.list-plain{display:flex;flex-wrap:wrap;gap:8px}
-.item{background:#fff;border:1px solid var(--border);padding:8px 10px;border-radius:8px}
-.grid{display:grid;gap:10px}
-.grid-2{grid-template-columns:1fr 1fr}
-.grid-3{grid-template-columns:repeat(3,1fr)}
-.form-row{display:flex;gap:8px;align-items:center}
-.input,select,textarea{width:100%;padding:8px;border-radius:8px;border:1px solid var(--border);height:var(--field-h);background:#fff}
-.table-wrap{overflow:auto}
+.pos{color:var(--ok)} .neg{color:var(--danger)} .warn{color:var(--warn)}
+
+/* forms */
+.input, select, textarea{width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--txt);height:var(--field-h)}
+.row{display:flex;gap:12px;align-items:center}
+.col{flex:1}
+.form-grid{display:grid;gap:12px}
+.form-grid-3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:900px){ .form-grid-3{grid-template-columns:1fr} }
+
+/* tables */
+.table-wrap{overflow:auto;border-radius:8px}
 table{width:100%;border-collapse:collapse}
-thead th{font-size:13px;color:var(--muted);padding:8px;text-align:right;border-bottom:1px solid var(--border)}
-tbody td{padding:10px;border-bottom:1px solid #f1f5f9;background:#fff}
-.badge{background:#eef2f7;padding:6px 10px;border-radius:999px;border:1px solid var(--border);font-size:13px}
+thead th{font-size:13px;color:var(--muted);padding:10px;text-align:right;border-bottom:1px solid var(--border)}
+tbody td{padding:10px;border-bottom:1px solid rgba(0,0,0,0.03);background:var(--bg)}
+.amount.inc{color:var(--ok);font-weight:700} .amount.exp{color:var(--danger);font-weight:700}
+.exec-dt{font-size:12px;color:var(--muted)}
+
+/* small utilities */
 .small{font-size:13px;color:var(--muted)}
-.due-card{background:#fff;border:1px solid var(--border);padding:10px;border-radius:10px;margin-bottom:8px}
-.right{direction:rtl;text-align:right}
-.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.small-muted{font-size:12px;color:var(--muted)}
-.exec-dt{font-size:12px;color:#3b82f6}
+.list-plain{display:flex;flex-wrap:wrap;gap:8px}
+.item{background:var(--bg);padding:8px 10px;border-radius:8px;border:1px solid var(--border)}
+.empty{padding:12px;border-radius:10px;border:1px dashed var(--border);color:var(--muted);text-align:center}
+
+/* spacing for mobile - ensure clear separation of cards */
+.container > section.card{margin-bottom:6px}
+
+/* collapse behavior default: collapsed */
+.card[data-init-collapsed="true"] .card-body{display:none}
+
+/* responsive tweaks */
+@media(max-width:720px){
+  .header{gap:8px}
+  .title{font-size:18px}
+  .stat .num{font-size:16px}
+  .btn{padding:8px 10px}
+}
+
+/* accessibility focus */
+:focus{outline:2px solid rgba(14,165,233,0.2);outline-offset:2px}
 </style>
 </head>
 <body>
 <div class="container">
+
+  <!-- Header -->
   <div class="header">
     <div>
-      <div class="title">دفتر حساباتي — النسخة الكاملة</div>
-      <div class="small-muted">تتبع الحركات، الاستحقاقات، الالتزامات والمزامنة</div>
+      <div class="title">دفتر حساباتي</div>
+      <div class="sub">تطبيقك — الآن مع داكن/فاتح وكروت مطوية وتصحيح الحسابات</div>
     </div>
-    <div class="toolbar">
-      <button id="exportJson" class="btn btn-outline">تصدير JSON</button>
-      <button id="importBtn" class="btn btn-outline">استيراد JSON</button>
-      <input id="importFile" type="file" accept="application/json" style="display:none" />
-      <button id="syncNow" class="btn btn-outline">مزامنة الآن</button>
-      <button id="seedBtn" class="btn btn-outline">أفرغ بيانات تجريبية</button>
+
+    <div class="header-right">
+      <button id="themeToggle" class="btn btn-outline" title="تبديل وضع الإضاءة">وضع</button>
+      <button id="exportJson" class="btn">تصدير JSON</button>
+      <label class="btn btn-outline" for="importFile">استيراد</label>
+      <input id="importFile" type="file" accept="application/json" style="display:none">
+      <button id="syncNow" class="btn btn-outline">مزامنة</button>
     </div>
   </div>
 
-  <!-- ملخص الحسابات -->
-  <section class="card" id="card-balance">
-    <div class="card-head"><strong>ملخص الحسابات</strong><div class="small-muted">تحديث آني من الأرشفـة</div></div>
-    <div class="card-body">
-      <div class="stats">
-        <div class="stat"><small>إجمالي الأرصدة</small><div id="totalBalance" class="num">0</div></div>
-        <div class="stat"><small>دخل الشهر الجاري</small><div id="monthIncome" class="num">0</div></div>
-        <div class="stat"><small>التزامات الشهر الجاري (المتبقي)</small><div id="monthCommitTotal" class="num">0</div></div>
-        <div class="stat"><small>إجمالي مبالغ تحت التحصيل (الشهر الحالي)</small><div id="monthCollectTotal" class="num">0</div></div>
-        <div class="stat"><small>إجمالي استحقاقات الشهر القادم</small><div id="monthNextDueTotal" class="num">0</div></div>
+  <!-- (1) ملخص الحسابات - مطوي افتراضياً -->
+  <section class="card collapsed" data-init-collapsed="true" id="card-balance">
+    <div class="card-head">
+      <h3>ملخص الحسابات</h3>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div id="statusSummary" class="small">جاهز</div>
+        <button class="toggle" aria-expanded="false" title="عرض/إخفاء"></button>
       </div>
-      <div style="height:10px"></div>
+    </div>
+    <div class="card-body">
+      <div class="stats" id="summaryStats">
+        <div class="stat"><small>إجمالي الأرصدة</small><div id="totalBalance" class="num">0.00</div></div>
+        <div class="stat"><small>دخل الشهر الجاري</small><div id="monthIncome" class="num pos">0.00</div></div>
+        <div class="stat"><small>التزامات الشهر الجاري (متبقي)</small><div id="monthCommitTotal" class="num neg">0.00</div></div>
+        <div class="stat"><small>إجمالي مبالغ تحت التحصيل (الشهر الحالي)</small><div id="monthCollectTotal" class="num">0.00</div></div>
+        <div class="stat"><small>إجمالي استحقاقات الشهر القادم</small><div id="monthNextDueTotal" class="num warn">0.00</div></div>
+      </div>
+
+      <div style="height:12px"></div>
       <div>
-        <h4 class="small-muted">تفاصيل الحسابات</h4>
+        <h4 class="small">تفاصيل الأرصدة حسب الحساب</h4>
         <div id="perAccount" class="list-plain"></div>
       </div>
     </div>
   </section>
 
-  <!-- إدارة الحسابات و الفئات -->
-  <section class="card">
-    <div class="card-head"><strong>إدارة الحسابات / الفئات</strong><div></div></div>
+  <!-- (2) الحسابات و الفئات -->
+  <section class="card collapsed" data-init-collapsed="true">
+    <div class="card-head">
+      <h3>إدارة الحسابات و الفئات</h3>
+      <button class="toggle" aria-expanded="false" title="عرض/إخفاء"></button>
+    </div>
     <div class="card-body">
-      <div class="grid grid-3">
-        <div>
-          <label class="small-muted">اسم الحساب</label>
-          <input id="accName" class="input" placeholder="مثال: كاش" />
-        </div>
-        <div>
-          <label class="small-muted">رصيد افتتاحي</label>
-          <input id="accOpening" type="number" class="input" placeholder="0.00" />
-        </div>
-        <div style="align-self:end">
-          <button id="addAccount" class="btn btn-primary">إضافة حساب</button>
-        </div>
+      <div class="form-grid form-grid-3" style="margin-bottom:10px">
+        <div><label class="small">اسم الحساب</label><input id="accName" class="input" placeholder="مثال: كاش"></div>
+        <div><label class="small">رصيد افتتاحي</label><input id="accOpening" class="input" type="number" placeholder="0.00"></div>
+        <div style="align-self:end"><button id="addAccount" class="btn btn-primary">إضافة حساب</button></div>
       </div>
+      <div id="accountsList" class="list-plain small"></div>
 
-      <div style="height:10px"></div>
-      <div id="accountsList" class="small-muted"></div>
+      <hr style="margin:12px 0;border:none;height:1px;background:var(--border)">
 
-      <hr style="border:none;height:12px">
-
-      <div class="grid grid-3">
-        <div>
-          <label class="small-muted">اسم الفئة</label>
-          <input id="catName" class="input" placeholder="مثال: أكل وشرب" />
-        </div>
-        <div>
-          <label class="small-muted">النوع</label>
-          <select id="catType" class="input"><option value="expense">مصروف</option><option value="income">دخل</option></select>
-        </div>
-        <div style="align-self:end">
-          <button id="addCat" class="btn btn-outline">إضافة فئة</button>
-        </div>
+      <div class="form-grid form-grid-3" style="margin-bottom:10px">
+        <div><label class="small">اسم الفئة</label><input id="catName" class="input" placeholder="مثال: أكل وشرب"></div>
+        <div><label class="small">نوع الفئة</label><select id="catType" class="input"><option value="expense">مصروف</option><option value="income">دخل</option></select></div>
+        <div style="align-self:end"><button id="addCat" class="btn btn-outline">إضافة فئة</button></div>
       </div>
-      <div id="catsList" class="small-muted" style="margin-top:8px"></div>
+      <div id="catsList" class="list-plain small"></div>
     </div>
   </section>
 
-  <!-- إضافة حركة -->
-  <section class="card" id="card-addtx">
-    <div class="card-head"><strong>إضافة حركة</strong><div></div></div>
+  <!-- (3) إضافة حركة -->
+  <section class="card collapsed" data-init-collapsed="true">
+    <div class="card-head">
+      <h3>إضافة حركة</h3>
+      <button class="toggle" aria-expanded="false" title="عرض/إخفاء"></button>
+    </div>
     <div class="card-body">
-      <div class="grid grid-3">
+      <div class="form-grid form-grid-3">
         <div>
-          <label class="small-muted">النوع</label>
-          <select id="txType" class="input"><option value="expense" selected>مصروف</option><option value="income">دخل</option></select>
+          <label class="small">النوع</label>
+          <select id="txType" class="input"><option value="expense">مصروف</option><option value="income">دخل</option></select>
         </div>
         <div>
-          <label class="small-muted">المبلغ</label>
-          <input id="txAmount" type="number" class="input" placeholder="0.00" />
+          <label class="small">المبلغ</label>
+          <input id="txAmount" class="input" type="number" placeholder="0.00">
         </div>
         <div>
-          <label class="small-muted">التاريخ (تاريخ الاستحقاق)</label>
-          <input id="txDue" type="date" class="input" />
+          <label class="small">تاريخ الاستحقاق</label>
+          <input id="txDue" class="input" type="date">
         </div>
 
         <div>
-          <label class="small-muted">الحساب</label>
+          <label class="small">الحساب</label>
           <select id="txAccount" class="input"></select>
         </div>
         <div>
-          <label class="small-muted">الفئة</label>
+          <label class="small">الفئة</label>
           <select id="txCategory" class="input"></select>
         </div>
         <div>
-          <label class="small-muted">تاريخ/وقت التنفيذ (اختياري)</label>
-          <input id="txExec" type="datetime-local" class="input" />
+          <label class="small">تاريخ/وقت التنفيذ (اختياري)</label>
+          <input id="txExec" class="input" type="datetime-local">
         </div>
 
         <div style="grid-column:1 / -1">
-          <label class="small-muted">الوصف</label>
-          <input id="txDesc" class="input" placeholder="مثال: سوبر ماركت" />
+          <label class="small">الوصف</label>
+          <input id="txDesc" class="input">
         </div>
 
-        <div style="grid-column:1 / -1;display:flex;gap:8px">
+        <div style="grid-column:1 / -1;display:flex;gap:8px;align-items:center">
           <button id="saveTx" class="btn btn-primary">حفظ الحركة</button>
           <button id="resetTx" class="btn btn-outline">إفراغ</button>
           <div style="flex:1"></div>
-          <label class="small-muted">ربط بالالتزام (اختياري)</label>
-          <select id="txLinkCommit" class="input" style="max-width:260px"></select>
+          <label class="small">ربط بالالتزام (اختياري)</label>
+          <select id="txLinkCommit" class="input" style="max-width:320px"></select>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- جدول الحركات -->
-  <section class="card" id="card-txs">
-    <div class="card-head"><strong>الحركات</strong><div><span class="badge">الترتيب حسب تاريخ التنفيذ (الأحدث أولاً)</span></div></div>
+  <!-- (4) الحركات -->
+  <section class="card collapsed" data-init-collapsed="true">
+    <div class="card-head">
+      <h3>الحركات</h3>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div class="small">عرض من الأحدث للأقدم (حسب تنفيذ)</div>
+        <button class="toggle" aria-expanded="false" title="عرض/إخفاء"></button>
+      </div>
+    </div>
     <div class="card-body">
-      <div style="margin-bottom:8px;display:flex;gap:8px;align-items:center">
-        <input id="search" class="input" placeholder="بحث بالوصف أو الفئة" style="max-width:260px" />
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
+        <input id="search" class="input" placeholder="بحث بالوصف أو الفئة" style="max-width:260px">
         <select id="filterType" class="input" style="max-width:150px"><option value="all">الكل</option><option value="income">دخل</option><option value="expense">مصروف</option></select>
         <select id="filterAccount" class="input" style="max-width:200px"></select>
         <div style="flex:1"></div>
         <button id="clearFilters" class="btn btn-outline">مسح الفلاتر</button>
       </div>
 
-      <div class="table-wrap">
+      <div class="table-wrap" style="border-radius:10px">
         <table>
           <thead>
             <tr>
@@ -204,44 +255,50 @@ tbody td{padding:10px;border-bottom:1px solid #f1f5f9;background:#fff}
     </div>
   </section>
 
-  <!-- الالتزامات الشهرية -->
-  <section class="card" id="card-commit">
-    <div class="card-head"><strong>الالتزامات الشهرية</strong><div></div></div>
+  <!-- (5) الالتزامات الشهرية -->
+  <section class="card collapsed" data-init-collapsed="true">
+    <div class="card-head">
+      <h3>الالتزامات الشهرية</h3>
+      <button class="toggle" aria-expanded="false" title="عرض/إخفاء"></button>
+    </div>
     <div class="card-body">
-      <div class="grid grid-4">
-        <div><label class="small-muted">اسم الالتزام</label><input id="cName" class="input" /></div>
-        <div><label class="small-muted">المبلغ</label><input id="cAmount" type="number" class="input" /></div>
-        <div><label class="small-muted">تاريخ أول استحقاق</label><input id="cFirstDue" type="date" class="input" /></div>
-        <div style="display:flex;align-items:center;gap:8px"><input id="cRecurring" type="checkbox"/><label class="small-muted">يتكرر شهريًا</label></div>
-        <div><label class="small-muted">ينتهي في (اختياري)</label><input id="cEndAt" type="date" class="input" /></div>
-        <div style="grid-column:3 / -1;align-self:end"><button id="addCommit" class="btn btn-primary">إضافة/تحديث الالتزام</button></div>
+      <div class="form-grid form-grid-3" style="margin-bottom:10px">
+        <div><label class="small">اسم الالتزام</label><input id="cName" class="input"></div>
+        <div><label class="small">المبلغ</label><input id="cAmount" class="input" type="number"></div>
+        <div><label class="small">تاريخ أول استحقاق</label><input id="cFirstDue" class="input" type="date"></div>
+        <div style="display:flex;align-items:center;gap:8px"><input id="cRecurring" type="checkbox"><label class="small">يتكرر شهريًا</label></div>
+        <div><label class="small">ينتهي في (اختياري)</label><input id="cEndAt" class="input" type="date"></div>
+        <div style="align-self:end"><button id="addCommit" class="btn btn-primary">إضافة/تحديث</button></div>
       </div>
 
-      <div style="margin-top:12px" class="table-wrap">
+      <div class="table-wrap">
         <table>
-          <thead><tr><th>الاسم</th><th>المبلغ</th><th>الاستحقاق القادم</th><th>مدفوع (الشهر)</th><th>متبقي</th><th>التكرار</th><th>إجراءات</th></tr></thead>
+          <thead><tr><th>الاسم</th><th>المبلغ</th><th>الاستحقاق القادم</th><th>مدفوع (الشهر)</th><th>متبقي</th><th>تكرار</th><th>إجراءات</th></tr></thead>
           <tbody id="tbodyCommit"></tbody>
         </table>
       </div>
     </div>
   </section>
 
-  <!-- مبالغ تحت التحصيل -->
-  <section class="card" id="card-collect">
-    <div class="card-head"><strong>مبالغ تحت التحصيل</strong><div></div></div>
+  <!-- (6) مبالغ تحت التحصيل -->
+  <section class="card collapsed" data-init-collapsed="true">
+    <div class="card-head">
+      <h3>مبالغ تحت التحصيل</h3>
+      <button class="toggle" aria-expanded="false" title="عرض/إخفاء"></button>
+    </div>
     <div class="card-body">
-      <div class="grid grid-4">
-        <div><label class="small-muted">اسم التحصيل</label><input id="coName" class="input" /></div>
-        <div><label class="small-muted">المبلغ</label><input id="coAmount" type="number" class="input" /></div>
-        <div><label class="small-muted">تاريخ أول استحقاق</label><input id="coFirstDue" type="date" class="input" /></div>
-        <div style="display:flex;align-items:center;gap:8px"><input id="coRecurring" type="checkbox"/><label class="small-muted">يتكرر شهريًا</label></div>
-        <div><label class="small-muted">ينتهي في (اختياري)</label><input id="coEndAt" type="date" class="input" /></div>
-        <div style="grid-column:3 / -1;align-self:end"><button id="addCollect" class="btn btn-primary">إضافة/تحديث التحصيل</button></div>
+      <div class="form-grid form-grid-3" style="margin-bottom:10px">
+        <div><label class="small">اسم التحصيل</label><input id="coName" class="input"></div>
+        <div><label class="small">المبلغ</label><input id="coAmount" class="input" type="number"></div>
+        <div><label class="small">تاريخ أول استحقاق</label><input id="coFirstDue" class="input" type="date"></div>
+        <div style="display:flex;align-items:center;gap:8px"><input id="coRecurring" type="checkbox"><label class="small">يتكرر شهريًا</label></div>
+        <div><label class="small">ينتهي في (اختياري)</label><input id="coEndAt" class="input" type="date"></div>
+        <div style="align-self:end"><button id="addCollect" class="btn btn-primary">إضافة/تحديث</button></div>
       </div>
 
-      <div style="margin-top:12px" class="table-wrap">
+      <div class="table-wrap">
         <table>
-          <thead><tr><th>الاسم</th><th>المبلغ</th><th>التحصيل القادم</th><th>التكرار</th><th>إجراءات</th></tr></thead>
+          <thead><tr><th>الاسم</th><th>المبلغ</th><th>التحصيل القادم</th><th>تكرار</th><th>إجراءات</th></tr></thead>
           <tbody id="tbodyCollect"></tbody>
         </table>
       </div>
@@ -252,144 +309,173 @@ tbody td{padding:10px;border-bottom:1px solid #f1f5f9;background:#fff}
 </div>
 
 <script>
-/* ======================
-  مفاتيح التخزين والـ state
-   ====================== */
+/* ============================
+  App state & storage keys
+   ============================ */
 const KEY='pf_ledger_v1', ACC_KEY='pf_accounts_v1', CAT_KEY='pf_categories_v1',
-      COM_KEY='pf_commitments_v1', COL_KEY='pf_collections_v1', GH_KEY='pf_github_cfg_v1';
+      COM_KEY='pf_commitments_v1', COL_KEY='pf_collections_v1', THEME_KEY='pf_theme_v1';
 
-let ledger = JSON.parse(localStorage.getItem(KEY) || '[]'); // كل حركة: {id, exec:ISO, due:YYYY-MM-DD, desc, type, amount, account, category, isTransfer, linkCommitId}
-let accounts = JSON.parse(localStorage.getItem(ACC_KEY) || '[]'); // {name, opening}
-let categories = JSON.parse(localStorage.getItem(CAT_KEY) || '[]'); // {name,type}
-let commitments = JSON.parse(localStorage.getItem(COM_KEY) || '[]'); // {id,name,amount,firstDue,nextDue,recurring,endAt,payments:{'YYYY-MM':num}}
-let collections = JSON.parse(localStorage.getItem(COL_KEY) || '[]'); // {id,name,amount,firstDue,nextDue,recurring,endAt}
+let ledger = JSON.parse(localStorage.getItem(KEY) || '[]');
+let accounts = JSON.parse(localStorage.getItem(ACC_KEY) || '[]');
+let categories = JSON.parse(localStorage.getItem(CAT_KEY) || '[]');
+let commitments = JSON.parse(localStorage.getItem(COM_KEY) || '[]');
+let collections = JSON.parse(localStorage.getItem(COL_KEY) || '[]');
 
-/* ===== Utilities ===== */
+/* ===== utils ===== */
 const $ = s => document.querySelector(s);
-const fmt = n => Number(n).toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:2});
+const $$ = s => document.querySelectorAll(s);
+const fmt = n => Number(n||0).toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:2});
 const eid = ()=> Math.random().toString(36).slice(2,9)+Date.now().toString(36);
-const startOfToday = ()=>{ const t=new Date(); t.setHours(0,0,0,0); return t;}
-const formatLocalDate = d => { const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${day}`;}
-const parseLocalDate = s => { const [y,m,d]= (s||'').split('-').map(Number); if(!y) return null; const dt=new Date(y,m-1,d); dt.setHours(0,0,0,0); return dt;}
-const toISO = dt => dt instanceof Date ? dt.toISOString() : dt;
-const daysBetween=(a,b)=> Math.round((new Date(b).setHours(0,0,0,0) - new Date(a).setHours(0,0,0,0))/(24*60*60*1000));
-const YM = ()=> formatLocalDate(startOfToday()).slice(0,7);
-const addMonthsPreserveDOM=(date,months)=>{ const d=new Date(date.getTime()); const m=d.getMonth()+months; const day=d.getDate(),y=d.getFullYear(); const tmp=new Date(y,m+1,0); const last=tmp.getDate(); d.setMonth(m, Math.min(day,last)); d.setHours(0,0,0,0); return d; }
-const addMonthsToYm = (ym, n) => { const [y,m]= (ym||'').split('-').map(Number); if(!y) return ym; const base=new Date(y,m-1,1); return formatLocalDate(addMonthsPreserveDOM(base,n)).slice(0,7); }
-const monthLabel = ym => { if(!ym) return '—'; const [y,m]=ym.split('-').map(Number); const d=new Date(y,m-1,1); return d.toLocaleDateString('ar-EG',{month:'long', year:'numeric'}); }
+const startOfToday = ()=>{ const t=new Date(); t.setHours(0,0,0,0); return t; }
+const formatLocalDate = d => { const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${day}`; }
+const parseLocalDate = s => { const parts = (s||'').split('-').map(Number); if(!parts[0]) return null; const d=new Date(parts[0],parts[1]-1,parts[2]); d.setHours(0,0,0,0); return d; }
+const addMonthsPreserveDOM = (date, months) => { const d=new Date(date.getTime()); const targetMonth = d.getMonth()+months; const day=d.getDate(), y=d.getFullYear(); const lastOfTarget = new Date(y, targetMonth+1, 0).getDate(); d.setMonth(targetMonth, Math.min(day,lastOfTarget)); d.setHours(0,0,0,0); return d; }
+const YM = ()=> formatLocalDate(startOfToday()).slice(0,7)
+const addMonthsToYm = (ym, n)=>{ const [y,m]= (ym||'').split('-').map(Number); if(!y) return ym; const base=new Date(y,m-1,1); return formatLocalDate(addMonthsPreserveDOM(base,n)).slice(0,7); }
+const monthLabel = ym=>{ if(!ym) return '—'; const [y,m]=ym.split('-').map(Number); const d=new Date(y,m-1,1); return d.toLocaleDateString('ar-EG',{month:'long', year:'numeric'}); }
 
-/* ===== حفظ ===== */
+/* ===== storage helpers ===== */
 function saveAll(){ localStorage.setItem(KEY, JSON.stringify(ledger)); localStorage.setItem(ACC_KEY, JSON.stringify(accounts)); localStorage.setItem(CAT_KEY, JSON.stringify(categories)); localStorage.setItem(COM_KEY, JSON.stringify(commitments)); localStorage.setItem(COL_KEY, JSON.stringify(collections)); }
 
-/* ===== تأكد وجود فئات أساسية ===== */
+/* ===== theme (dark/light) ===== */
+function applyTheme(theme){
+  if(theme==='dark') document.body.classList.add('dark');
+  else document.body.classList.remove('dark');
+  localStorage.setItem(THEME_KEY, theme);
+  $('#themeToggle').textContent = theme==='dark' ? 'داكن' : 'فاتح';
+}
+$('#themeToggle').addEventListener('click', ()=>{
+  const current = localStorage.getItem(THEME_KEY) || 'light';
+  applyTheme(current==='dark' ? 'light' : 'dark');
+});
+applyTheme(localStorage.getItem(THEME_KEY) || 'light');
+
+/* ===== ensure base categories ===== */
 function ensureBaseCategories(){
   const need=[ {name:'التزامات شهرية',type:'expense'},{name:'تحصيلات شهرية',type:'income'},{name:'تحويل صادر',type:'expense'},{name:'تحويل وارد',type:'income'},{name:'عمولة تحويل',type:'expense'} ];
   if(categories.length===0){
-    categories=[{name:'مرتب',type:'income'},{name:'دخل آخر',type:'income'},{name:'أكل وشرب',type:'expense'},{name:'مواصلات',type:'expense'},{name:'فواتير',type:'expense'}];
+    categories = [{name:'مرتب',type:'income'},{name:'دخل آخر',type:'income'},{name:'أكل وشرب',type:'expense'},{name:'فواتير',type:'expense'},{name:'تسوق',type:'expense'}];
   }
-  for(const c of need) if(!categories.some(x=>x.name===c.name&&x.type===c.type)) categories.push(c);
-  saveAll();
+  for(const c of need) if(!categories.some(x=>x.name===c.name && x.type===c.type)) categories.push(c);
 }
 
-/* ===== حساب الأرصدة: نرتب حسب exec ASC لإيجاد رصيد بعد كل تنفيذ ===== */
+/* ===== compute balances =====
+   Important: balances are computed by ascending execution time (exec).
+   Each transaction MUST have exec (ISO) and due (YYYY-MM-DD).
+*/
 function computeBalances(){
   const bal = new Map(accounts.map(a=>[a.name, Number(a.opening||0)]));
-  const sorted = [...ledger].sort((a,b)=> (a.exec||a.created||'') .localeCompare(b.exec||b.created||'') );
-  const afterMap = new Map();
+  // sort by exec ascending; if exec missing use created; tie-break id
+  const sorted = [...ledger].sort((a,b)=>{
+    const A = (a.exec||a.created||'') , B = (b.exec||b.created||'');
+    if(A!==B) return A.localeCompare(B);
+    return (a.id||'').localeCompare(b.id||'');
+  });
+  const after = new Map();
   for(const t of sorted){
+    // if account missing, ensure key exists
+    if(!bal.has(t.account)) bal.set(t.account, 0);
     const cur = bal.get(t.account) || 0;
-    const delta = (t.type==='income'? Number(t.amount) : -Number(t.amount));
+    const delta = (t.type==='income' ? Number(t.amount||0) : -Number(t.amount||0));
     const next = cur + delta;
     bal.set(t.account, next);
-    afterMap.set(t.id, next);
+    after.set(t.id, next);
   }
-  return {bal, afterMap};
+  return {bal, after};
 }
 
-/* ===== عرض تفاصيل الحسابات ===== */
-function drawPerAccount(bal){
-  const wrap = $('#perAccount'); if(!wrap) return;
-  const arr = accounts.map(a=>({name:a.name, val: bal.get(a.name)??Number(a.opening||0)}));
-  wrap.innerHTML = arr.map(a=>`<span class="item">${a.name} · <b>${fmt(a.val)} ج.م</b></span>`).join('');
-}
-
-/* ===== حسابات التجميع: التزامات/تحصيل/دخل ===== */
+/* ===== recalc summary ===== */
 function sumCurrentMonthCommitments(){
   const ym = YM(); let total=0;
   for(const c of commitments){
-    const due=(c.nextDue||c.firstDue||'').slice(0,7); if(due!==ym) continue;
-    const paid=(c.payments?.[ym]||0); const remain=Math.max(0, Number(c.amount||0)-paid); total += remain;
+    const due = (c.nextDue||c.firstDue||'').slice(0,7); if(due!==ym) continue;
+    const paid = c.payments?.[ym] || 0;
+    const remain = Math.max(0, Number(c.amount||0)-paid);
+    total += remain;
   }
   return total;
 }
 function sumCurrentMonthCollections(){
   const ym = YM(); let total=0;
   for(const c of collections){
-    const due=(c.nextDue||c.firstDue||'').slice(0,7); if(due!==ym) continue;
+    const due = (c.nextDue||c.firstDue||'').slice(0,7); if(due!==ym) continue;
     total += Number(c.amount||0);
   }
   return total;
 }
 function sumCurrentMonthIncome(){
-  const ym = YM();
-  return ledger.filter(t=>!t.isTransfer && t.type==='income' && (t.exec||'').slice(0,7)===ym).reduce((s,t)=>s+Number(t.amount||0),0);
+  // Count incomes whose exec date is in current YM
+  const ym = YM(); let total=0;
+  for(const t of ledger){
+    const execYM = (t.exec||t.created||'').slice(0,7);
+    if(execYM===ym && t.type==='income') total += Number(t.amount||0);
+  }
+  return total;
 }
 
-/* ===== إعادة الحساب العام + تحديث واجهة الملخص ===== */
-function recalc(){
-  const {bal, afterMap} = computeBalances();
-  let total=0; for(const v of bal.values()) total+=v;
-  const monthComRemain = sumCurrentMonthCommitments();
-  const monthCollect = sumCurrentMonthCollections();
-  const monthInc = sumCurrentMonthIncome();
-
-  // استحقاقات الشهر الحالي والقادم (الباقي)
-  const ym = YM(), nextYm = addMonthsToYm(ym,1);
-  let currentDue=0, nextDue=0;
-  for(const c of commitments){
-    const dueStr = c.nextDue || c.firstDue; if(!dueStr) continue;
-    const dueYm = dueStr.slice(0,7);
-    const paidNow = c.payments?.[ym] || 0;
-    const paidNext = c.payments?.[nextYm] || 0;
-    const remainNow = Math.max(0, Number(c.amount||0)-paidNow);
-    const remainNext = Math.max(0, Number(c.amount||0)-paidNext);
-    if(dueYm === ym) currentDue += remainNow;
-    if(dueYm === nextYm) nextDue += remainNext;
-  }
-
+function recalcAndRender(){
+  const {bal, after} = computeBalances();
+  const total = Array.from(bal.values()).reduce((s,v)=>s+v,0);
   $('#totalBalance').textContent = fmt(total);
+  const monthComRemain = sumCurrentMonthCommitments();
   $('#monthCommitTotal').textContent = '-' + fmt(monthComRemain);
+  const monthCollect = sumCurrentMonthCollections();
   $('#monthCollectTotal').textContent = fmt(monthCollect);
+  const monthInc = sumCurrentMonthIncome();
   $('#monthIncome').textContent = fmt(monthInc);
+
+  // compute next month due totals
+  const ym = YM(); const nextYm = addMonthsToYm(ym,1);
+  let nextDue = 0;
+  for(const c of commitments){
+    const due = (c.nextDue||c.firstDue||'').slice(0,7);
+    if(due===nextYm){
+      const paidNext = c.payments?.[nextYm] || 0;
+      const remainNext = Math.max(0, Number(c.amount||0)-paidNext);
+      nextDue += remainNext;
+    }
+  }
   $('#monthNextDueTotal').textContent = fmt(nextDue);
 
-  drawPerAccount(bal);
-  renderTxs(); drawCommitments(); drawCollections(); drawDueSoon();
+  // per-account display
+  const arr = accounts.map(a=>({name:a.name, val: bal.get(a.name) ?? Number(a.opening||0)}));
+  $('#perAccount').innerHTML = arr.map(a=>`<span class="item">${a.name} · <b>${fmt(a.val)}</b></span>`).join(' ');
+
+  // render other parts
+  renderTxs();
+  drawCommitments();
+  drawCollections();
+  drawDueSoon();
   saveAll();
 }
 
-/* ===== رسم/عرض الحركات مع الترتيب حسب exec DESC (عرض) ===== */
+/* ===== rendering transactions (display newest first) ===== */
 function renderTxs(){
   const tbody = $('#tbodyTxs'); if(!tbody) return;
-  const q = $('#search').value.trim().toLowerCase();
-  const fType = $('#filterType').value;
-  const fAcc = $('#filterAccount').value;
-  // compute balances for after value mapping
-  const {afterMap} = computeBalances();
+  const q = ($('#search')?.value||'').trim().toLowerCase();
+  const fType = $('#filterType')?.value || 'all';
+  const fAcc = $('#filterAccount')?.value || 'all';
+  const {after} = computeBalances();
 
-  const rows = [...ledger].sort((a,b)=> (b.exec||b.created||'').localeCompare(a.exec||a.created||'') )
-    .filter(t=>{
-      if(q && !( (t.desc||'').toLowerCase().includes(q) || (t.category||'').toLowerCase().includes(q) )) return false;
-      if(fType!=='all' && t.type!==fType) return false;
-      if(fAcc && fAcc!=='all' && t.account!==fAcc) return false;
-      return true;
-    });
+  const rows = [...ledger].sort((a,b)=>{
+    // newest first by exec (or created)
+    const A = (b.exec||b.created||''), B = (a.exec||a.created||'');
+    if(A!==B) return A.localeCompare(B);
+    return (b.id||'').localeCompare(a.id||'');
+  }).filter(t=>{
+    if(q){
+      if(!((t.desc||'').toLowerCase().includes(q) || (t.category||'').toLowerCase().includes(q))) return false;
+    }
+    if(fType !== 'all' && t.type !== fType) return false;
+    if(fAcc && fAcc !== 'all' && t.account !== fAcc) return false;
+    return true;
+  });
 
-  tbody.innerHTML = rows.map(t=>{
-    const execTxt = t.exec ? (new Date(t.exec)).toLocaleString('ar-EG') : (t.created? (new Date(t.created)).toLocaleString('ar-EG') : '—');
+  tbody.innerHTML = rows.length ? rows.map(t=>{
+    const execTxt = t.exec ? new Date(t.exec).toLocaleString('ar-EG') : (t.created ? new Date(t.created).toLocaleString('ar-EG') : '—');
     const dueTxt = t.due || '—';
     const cls = t.type==='income' ? 'amount inc' : 'amount exp';
-    const afterVal = afterMap.get(t.id) ?? 0;
+    const afterVal = after.get(t.id) ?? 0;
     const tag = t.isTransfer ? '↔︎ تحويل' : (t.linkCommitId ? '🔗 التزام' : '');
     return `<tr>
       <td class="right"><div class="exec-dt">${execTxt}</div></td>
@@ -404,15 +490,17 @@ function renderTxs(){
         <button class="btn btn-danger" onclick="delTx('${t.id}')">حذف</button>
       </td>
     </tr>`;
-  }).join('');
+  }).join('') : '<tr><td colspan="8" class="empty">لا توجد حركات بعد.</td></tr>';
 }
 
-/* ===== CRUD الحركات ===== */
+/* ===== transaction CRUD ===== */
 let editId = null;
-function clearTxForm(){ $('#txAmount').value=''; $('#txDue').value=''; $('#txDesc').value=''; $('#txExec').value=''; $('#txLinkCommit').value=''; editId=null; $('#saveTx').textContent='حفظ الحركة'; }
+function clearTxForm(){
+  editId = null; $('#txAmount').value=''; $('#txDue').value=''; $('#txDesc').value=''; $('#txExec').value=''; $('#txLinkCommit').value=''; $('#saveTx').textContent='حفظ الحركة';
+}
 function editTx(id){
   const t = ledger.find(x=>x.id===id); if(!t) return;
-  editId = id; $('#saveTx').textContent = 'تحديث';
+  editId = id; $('#saveTx').textContent='تحديث';
   $('#txAmount').value = t.amount;
   $('#txDue').value = t.due || '';
   $('#txDesc').value = t.desc || '';
@@ -427,119 +515,94 @@ function delTx(id){
   if(!confirm('هل تريد حذف هذه الحركة؟')) return;
   const t = ledger.find(x=>x.id===id);
   ledger = ledger.filter(x=>x.id!==id);
-  // لو كانت حركة مرتبطة بالتزام ورصيد المدفوع في الالتزام تسحب، نرجع المدفوع
   if(t && t.linkCommitId && t.type==='expense'){
     const ym = (t.exec||t.created||'').slice(0,7);
-    const comm = commitments.find(c=>c.id===t.linkCommitId);
-    if(comm && comm.payments && comm.payments[ym]){ comm.payments[ym] = Math.max(0, comm.payments[ym] - Number(t.amount||0)); }
+    const c = commitments.find(x=>x.id===t.linkCommitId);
+    if(c && c.payments && c.payments[ym]) c.payments[ym] = Math.max(0, c.payments[ym] - Number(t.amount||0));
   }
-  saveAll(); recalc();
+  saveAll(); recalcAndRender();
 }
 
 $('#saveTx').addEventListener('click', ()=>{
   const type = $('#txType').value;
   const amount = Number($('#txAmount').value||0);
-  const due = $('#txDue').value;
-  const execInput = $('#txExec').value; // datetime-local optional
+  const due = $('#txDue').value || '';
+  const execInput = $('#txExec').value;
   const account = $('#txAccount').value;
   const category = $('#txCategory').value;
-  const desc = $('#txDesc').value.trim();
+  const desc = $('#txDesc').value.trim() || '';
   const linkCommitId = $('#txLinkCommit').value || null;
 
-  if(!amount || amount<=0 || !account || !category){ alert('من فضلك أدخل: نوع/حساب/فئة/مبلغ صحيح'); return; }
+  if(!account || !category || !amount || amount<=0){ alert('من فضلك أدخل حساب/فئة/مبلغ صحيح'); return; }
 
-  // execution datetime: if provided use it; else if linked to commitment and payment then execution = now; else use due date start-of-day
+  // exec handling: prefer provided datetime; if not, if linked to commitment -> execution = now; else use due at noon or now
   let execISO;
   if(execInput) execISO = new Date(execInput).toISOString();
-  else if(linkCommitId){ execISO = new Date().toISOString(); } // إذا مرتبط بالتزام التنفيذ وقت الإضافة
-  else if(due){ const pd = parseLocalDate(due); pd.setHours(12,0,0,0); execISO = pd.toISOString(); } // افتراضي منتصف اليوم
+  else if(linkCommitId) execISO = new Date().toISOString();
+  else if(due){ const pd = parseLocalDate(due); if(pd){ pd.setHours(12,0,0,0); execISO = pd.toISOString(); } else execISO = new Date().toISOString(); }
   else execISO = new Date().toISOString();
 
   const tx = {
     id: editId || eid(),
-    exec: execISO,
     created: new Date().toISOString(),
-    due: due || (execISO.slice(0,10)),
-    desc: desc || (linkCommitId ? 'سداد/تحصيل مرتبط' : ''),
-    type, amount, account, category,
-    isTransfer: false,
+    exec: execISO,
+    due: due || execISO.slice(0,10),
+    desc, type, amount: Number(amount), account, category,
+    isTransfer:false,
     linkCommitId: linkCommitId || undefined
   };
 
   if(editId){
-    const idx = ledger.findIndex(x=>x.id===editId);
-    if(idx>-1) ledger[idx] = tx;
-    editId = null;
-    $('#saveTx').textContent='حفظ الحركة';
-  }else{
-    ledger.push(tx);
-  }
+    const i = ledger.findIndex(x=>x.id===editId); if(i>-1) ledger[i] = tx; editId=null; $('#saveTx').textContent='حفظ الحركة';
+  } else ledger.push(tx);
 
-  // لو الحركة سداد لالتزام (مصروف ومرتبط بالتزام)
+  // if expense linked to commitment -> update payments & maybe move nextDue
   if(tx.type==='expense' && tx.linkCommitId){
     addCommitPayment(tx.linkCommitId, tx.exec.slice(0,7), tx.amount);
   }
-  // لو حركة تحصيل (دخل) مرتبطة بتحصيل (سنستخدم linkCommitId؟) — هنا نفترض collect منفصل
-  saveAll(); clearTxForm(); recalc();
-});
 
-/* ===== فلترة وادوات جدول ===== */
-$('#search').addEventListener('input', renderTxs);
-$('#filterType').addEventListener('change', renderTxs);
-$('#filterAccount').addEventListener('change', renderTxs);
-$('#clearFilters').addEventListener('click', ()=>{ $('#search').value=''; $('#filterType').value='all'; $('#filterAccount').value='all'; renderTxs(); });
+  saveAll(); clearTxForm(); recalcAndRender();
+});
 
 $('#resetTx').addEventListener('click', clearTxForm);
 
-/* ===== إدارة الحسابات و فئات ===== */
+/* ===== accounts & categories UI ===== */
 $('#addAccount').addEventListener('click', ()=>{
-  const name = $('#accName').value.trim(); const opening = Number($('#accOpening').value||0);
+  const name = $('#accName').value.trim(), opening = Number($('#accOpening').value||0);
   if(!name){ alert('ادخل اسم الحساب'); return; }
   accounts.push({name, opening: Number.isFinite(opening)?opening:0});
   $('#accName').value=''; $('#accOpening').value='';
-  saveAll(); refreshAccountsUI(); recalc();
+  saveAll(); refreshAccountsAndFilters();
+  recalcAndRender();
 });
-function refreshAccountsUI(){
-  $('#accountsList').innerHTML = accounts.map((a,i)=>`<span class="item">${a.name} · <b>${fmt(a.opening||0)}</b> <button class="btn btn-outline" style="margin-inline-start:6px" onclick="renameAcc(${i})">تعديل</button> <button class="btn btn-danger" onclick="removeAcc(${i})">حذف</button></span>`).join('');
-  const opts = `<option value="all">كل الحسابات</option>` + accounts.map(a=>`<option value="${a.name}">${a.name}</option>`).join('');
-  $('#filterAccount').innerHTML = opts;
+function refreshAccountsAndFilters(){
+  $('#accountsList').innerHTML = accounts.map((a,i)=>`<span class="item">${a.name} · <b>${fmt(a.opening||0)}</b></span>`).join(' ');
   $('#txAccount').innerHTML = accounts.map(a=>`<option value="${a.name}">${a.name}</option>`).join('');
-}
-window.renameAcc = i => {
-  const cur = accounts[i]; if(!cur) return;
-  const name = prompt('اسم الحساب الجديد', cur.name); if(!name) return;
-  const openingStr = prompt('الرصيد الافتتاحي', cur.opening||0); const opening = Number(openingStr);
-  const oldName = cur.name;
-  accounts[i].name = name.trim();
-  if(Number.isFinite(opening)) accounts[i].opening = opening;
-  // نحدّث الحركات المرتبطة
-  for(const t of ledger) if(t.account===oldName) t.account = accounts[i].name;
-  saveAll(); refreshAccountsUI(); recalc();
-}
-window.removeAcc = i => {
-  if(!confirm('سيتم حذف الحساب من القوائم (الحركات القديمة لن تُحذف). متابعة؟')) return;
-  const name = accounts[i].name;
-  accounts.splice(i,1);
-  // لا نحذف الحركات لكن نترك اسم الحساب كما هو حتى تظهر تحذيرات عند العرض
-  saveAll(); refreshAccountsUI(); recalc();
+  $('#filterAccount').innerHTML = `<option value="all">كل الحسابات</option>` + accounts.map(a=>`<option value="${a.name}">${a.name}</option>`).join('');
 }
 
 $('#addCat').addEventListener('click', ()=>{
-  const name = $('#catName').value.trim(); const type = $('#catType').value;
+  const name = $('#catName').value.trim(), type = $('#catType').value;
   if(!name){ alert('ادخل اسم الفئة'); return; }
-  categories.push({name,type}); $('#catName').value=''; saveAll(); refreshCatsUI();
+  categories.push({name,type}); $('#catName').value=''; saveAll(); refreshCats();
 });
-function refreshCatsUI(){
-  $('#catsList').innerHTML = categories.map((c,i)=>`<span class="item">${c.name} · ${c.type==='income'?'دخل':'مصروف'} <button class="btn btn-outline" style="margin-inline-start:6px" onclick="renameCat(${i})">تعديل</button> <button class="btn btn-danger" onclick="removeCat(${i})">حذف</button></span>`).join('');
-  $('#txCategory').innerHTML = categories.map(c=>`<option value="${c.name}">${c.name} (${c.type})</option>`).join('');
+function refreshCats(){
+  $('#catsList').innerHTML = categories.map(c=>`<span class="item">${c.name} · ${c.type==='income'?'دخل':'مصروف'}</span>`).join(' ');
+  // set txCategory to show only matching type when txType changes (update below)
+  const t = $('#txType').value || 'expense';
+  $('#txCategory').innerHTML = categories.filter(c=>c.type===t).map(c=>`<option value="${c.name}">${c.name}</option>`).join('');
 }
-window.renameCat = i => { const cur = categories[i]; const name = prompt('اسم الفئة', cur.name); if(!name) return; const type = prompt('النوع (income/expense)', cur.type); if(type!=='income'&&type!=='expense') return alert('نوع غير صحيح'); categories[i] = {name:type? name.trim():cur.name, type}; saveAll(); refreshCatsUI(); }
-window.removeCat = i => { if(!confirm('هل تريد حذف هذه الفئة؟')) return; categories.splice(i,1); saveAll(); refreshCatsUI(); }
 
-/* ===== الالتزامات ===== */
+/* when txType changes, filter categories accordingly */
+$('#txType').addEventListener('change', ()=>{
+  const t = $('#txType').value;
+  $('#txCategory').innerHTML = categories.filter(c=>c.type===t).map(c=>`<option value="${c.name}">${c.name}</option>`).join('');
+});
+
+/* ===== commitments (الالتزامات) ===== */
 let editCommitId = null;
 function migrateCommit(c){
-  if(c.day && !c.firstDue){ const today = startOfToday(); const base=new Date(today.getFullYear(),today.getMonth(),Math.min(Math.max(1,c.day),28)); c.firstDue=formatLocalDate(base); c.nextDue=c.firstDue; delete c.day; }
+  if(c.day && !c.firstDue){ const today = startOfToday(); const base = new Date(today.getFullYear(), today.getMonth(), Math.min(Math.max(1,c.day),28)); c.firstDue = formatLocalDate(base); c.nextDue = c.firstDue; delete c.day; }
   if(!c.nextDue && c.firstDue) c.nextDue = c.firstDue;
   if(typeof c.recurring!=='boolean') c.recurring=false;
   if(c.endAt===undefined) c.endAt=null;
@@ -549,10 +612,10 @@ function migrateCommit(c){
 function drawCommitments(){
   const tbody = $('#tbodyCommit'); if(!tbody) return;
   commitments = commitments.map(migrateCommit);
-  tbody.innerHTML = commitments.map(c=>{
-    const ym = YM();
+  const ym = YM();
+  tbody.innerHTML = commitments.length ? commitments.map(c=>{
     const paid = c.payments?.[ym] || 0;
-    const remain = Math.max(0, Number(c.amount||0)-paid);
+    const remain = Math.max(0, Number(c.amount||0) - paid);
     return `<tr>
       <td>${escapeHtml(c.name)}</td>
       <td>${fmt(c.amount)}</td>
@@ -561,87 +624,74 @@ function drawCommitments(){
       <td>${fmt(remain)}</td>
       <td>${c.recurring?'شهري':'مرة'}</td>
       <td>
-        <button class="btn btn-primary" onclick="payCommit('${c.id}')">تم السداد (جزئياً/كامل)</button>
+        <button class="btn btn-primary" onclick="payCommit('${c.id}')">سداد</button>
         <button class="btn btn-outline" onclick="editCommit('${c.id}')">تعديل</button>
         <button class="btn btn-danger" onclick="delCommit('${c.id}')">حذف</button>
       </td>
     </tr>`;
-  }).join('');
+  }).join('') : '<tr><td colspan="7" class="empty">لا توجد التزامات بعد.</td></tr>';
 }
+
 $('#addCommit').addEventListener('click', ()=>{
   const name = $('#cName').value.trim(), amount = Number($('#cAmount').value||0), firstDue = $('#cFirstDue').value, recurring = $('#cRecurring').checked, endAt = $('#cEndAt').value || null;
-  if(!name || !amount || !firstDue){ alert('ادخل: اسم + مبلغ + تاريخ أول استحقاق'); return; }
-  if(recurring && endAt && parseLocalDate(endAt) < parseLocalDate(firstDue)){ alert('تاريخ النهاية يجب أن يكون بعد تاريخ أول استحقاق'); return; }
-  // تقدير nextDue بحيث إذا فات تعديله للأقرب
+  if(!name || !amount || !firstDue){ alert('ادخل اسم + مبلغ + تاريخ أول استحقاق'); return; }
+  if(recurring && endAt && parseLocalDate(endAt) < parseLocalDate(firstDue)){ alert('تاريخ النهاية يجب أن يكون بعد أول استحقاق'); return; }
+  // compute nextDue as nearest upcoming
   let nextDue = parseLocalDate(firstDue);
   const today = startOfToday();
   while(nextDue < today){
-    const tryNext = addMonthsPreserveDOM(nextDue,1);
+    const tryNext = addMonthsPreserveDOM(nextDue, 1);
     if(recurring && (!endAt || tryNext <= parseLocalDate(endAt))) nextDue = tryNext;
     else break;
   }
-  const commit = { id: editCommitId || eid(), name, amount, firstDue: formatLocalDate(parseLocalDate(firstDue)), nextDue: formatLocalDate(nextDue), recurring, endAt: recurring ? (endAt||null) : null, payments: {} };
-  if(editCommitId){
-    const i = commitments.findIndex(x=>x.id===editCommitId); if(i>-1) commitments[i]=commit; editCommitId=null;
-  }else commitments.push(commit);
+  const commit = { id: editCommitId || eid(), name, amount: Number(amount), firstDue: formatLocalDate(parseLocalDate(firstDue)), nextDue: formatLocalDate(nextDue), recurring, endAt: recurring ? (endAt||null) : null, payments: {} };
+  if(editCommitId){ const idx = commitments.findIndex(x=>x.id===editCommitId); if(idx>-1) commitments[idx] = commit; editCommitId=null; } else commitments.push(commit);
   $('#cName').value=''; $('#cAmount').value=''; $('#cFirstDue').value=''; $('#cRecurring').checked=false; $('#cEndAt').value='';
-  saveAll(); drawCommitments(); recalc();
+  saveAll(); drawCommitments(); recalcAndRender();
 });
 window.editCommit = id => {
   const c = commitments.find(x=>x.id===id); if(!c) return;
   editCommitId = id; $('#cName').value = c.name; $('#cAmount').value = c.amount; $('#cFirstDue').value = c.firstDue||''; $('#cRecurring').checked = !!c.recurring; $('#cEndAt').value = c.endAt||'';
 }
-window.delCommit = id => { if(!confirm('حذف الالتزام؟')) return; commitments = commitments.filter(x=>x.id!==id); saveAll(); drawCommitments(); recalc(); }
+window.delCommit = id => { if(!confirm('حذف الالتزام؟')) return; commitments = commitments.filter(x=>x.id!==id); saveAll(); drawCommitments(); recalcAndRender(); }
 
-/* دفع/سداد الالتزام — يضيف حركة expense و يحدث المدفوعات والرصيد */
+/* pay commit: creates an expense transaction (exec = now), updates payments and nextDue if needed */
 function addCommitPayment(commitId, ym, amount){
   const c = commitments.find(x=>x.id===commitId); if(!c) return;
   c.payments = c.payments || {};
   c.payments[ym] = (c.payments[ym]||0) + Number(amount||0);
-  // اذا اكتمل السداد للموعد، انقل nextDue اذا متكرر
+  // if paid >= amount, advance nextDue or remove
   if(c.payments[ym] >= Number(c.amount||0) - 1e-9){
     const dueDate = parseLocalDate(c.nextDue||c.firstDue);
     if(c.recurring){
-      const next = addMonthsPreserveDOM(dueDate, 1);
-      if(c.endAt && next > parseLocalDate(c.endAt)){ commitments = commitments.filter(xx=>xx.id!==commitId); }
+      const next = addMonthsPreserveDOM(dueDate,1);
+      if(c.endAt && next > parseLocalDate(c.endAt)) commitments = commitments.filter(xx=>xx.id!==commitId);
       else c.nextDue = formatLocalDate(next);
-    }else{
-      commitments = commitments.filter(xx=>xx.id!==commitId);
-    }
+    } else commitments = commitments.filter(xx=>xx.id!==commitId);
   }
   saveAll();
 }
 
-/* زر سداد الالتزام — يفتح اختيار حساب ويضيف حركة بتاريخ التنفيذ = الآن و due = تاريخ الالتزام */
 window.payCommit = id => {
   const c = commitments.find(x=>x.id===id); if(!c) return;
   const dueStr = c.nextDue || c.firstDue || YM()+'-01';
   const ym = dueStr.slice(0,7);
   const paid = c.payments?.[ym] || 0;
   const remain = Math.max(0, Number(c.amount||0) - paid);
-  if(remain<=0){ alert('لا يوجد متبقي لهذا الشهر.'); return; }
+  if(remain<=0){ alert('لا يوجد مبلغ متبقي لهذا الشهر.'); return; }
   const acc = chooseAccount(); if(!acc) return;
-  if(!confirm(`سداد الالتزام "${c.name}" بقيمة ${fmt(remain)} ج.م من "${acc}"؟`)) return;
+  if(!confirm(`سداد "${c.name}" بقيمة ${fmt(remain)} ج.م من "${acc}"؟`)) return;
   const execISO = new Date().toISOString();
-  const tx = { id: eid(), exec: execISO, created: execISO, due: dueStr, desc: `${c.name} (سداد التزام)`, type: 'expense', amount: remain, account: acc, category: 'التزامات شهرية', isTransfer:false, linkCommitId: c.id };
+  const tx = { id: eid(), created: execISO, exec: execISO, due: dueStr, desc: `${c.name} (سداد التزام)`, type:'expense', amount: remain, account: acc, category:'التزامات شهرية', isTransfer:false, linkCommitId: c.id };
   ledger.push(tx);
   addCommitPayment(c.id, ym, remain);
-  saveAll(); recalc();
+  saveAll(); recalcAndRender();
 }
 
-/* اختيار حساب بطريقة بسيطة */
-function chooseAccount(){
-  if(accounts.length===0){ alert('لا توجد حسابات'); return null; }
-  const menu = accounts.map((a,i)=>`${i+1} - ${a.name}`).join('\n');
-  const ans = prompt(`اختر الحساب:\n${menu}`); if(ans===null) return null;
-  const idx = parseInt(ans,10)-1; if(isNaN(idx)||idx<0||idx>=accounts.length){ alert('اختيار غير صحيح'); return null; }
-  return accounts[idx].name;
-}
-
-/* ===== التحصيلات (Collections) ===== */
+/* ===== collections (تحصيلات) ===== */
 let editCollectId = null;
 function migrateCollect(c){
-  if(!c.nextDue && c.firstDue) c.nextDue=c.firstDue;
+  if(!c.nextDue && c.firstDue) c.nextDue = c.firstDue;
   if(typeof c.recurring!=='boolean') c.recurring=false;
   if(c.endAt===undefined) c.endAt=null;
   return c;
@@ -649,19 +699,19 @@ function migrateCollect(c){
 function drawCollections(){
   const tbody = $('#tbodyCollect'); if(!tbody) return;
   collections = collections.map(migrateCollect);
-  tbody.innerHTML = collections.map(c=>{
+  tbody.innerHTML = collections.length ? collections.map(c=>{
     return `<tr>
       <td>${escapeHtml(c.name)}</td>
       <td>${fmt(c.amount)}</td>
       <td>${escapeHtml(c.nextDue||c.firstDue||'—')}</td>
       <td>${c.recurring?'شهري':'مرة'}</td>
       <td>
-        <button class="btn btn-primary" onclick="collectNow('${c.id}')">تم التحصيل</button>
+        <button class="btn btn-primary" onclick="collectNow('${c.id}')">تحصيل</button>
         <button class="btn btn-outline" onclick="editCollect('${c.id}')">تعديل</button>
         <button class="btn btn-danger" onclick="delCollect('${c.id}')">حذف</button>
       </td>
     </tr>`;
-  }).join('');
+  }).join('') : '<tr><td colspan="5" class="empty">لا توجد مبالغ تحت التحصيل.</td></tr>';
 }
 $('#addCollect').addEventListener('click', ()=>{
   const name = $('#coName').value.trim(), amount = Number($('#coAmount').value||0), firstDue = $('#coFirstDue').value, recurring = $('#coRecurring').checked, endAt = $('#coEndAt').value||null;
@@ -672,197 +722,144 @@ $('#addCollect').addEventListener('click', ()=>{
     const tryNext = addMonthsPreserveDOM(nextDue,1);
     if(recurring && (!endAt || tryNext <= parseLocalDate(endAt))) nextDue = tryNext; else break;
   }
-  const item = { id: editCollectId || eid(), name, amount, firstDue: formatLocalDate(parseLocalDate(firstDue)), nextDue: formatLocalDate(nextDue), recurring, endAt: recurring ? (endAt||null) : null };
+  const item = { id: editCollectId || eid(), name, amount: Number(amount), firstDue: formatLocalDate(parseLocalDate(firstDue)), nextDue: formatLocalDate(nextDue), recurring, endAt: recurring ? (endAt||null) : null };
   if(editCollectId){ const i = collections.findIndex(x=>x.id===editCollectId); if(i>-1) collections[i]=item; editCollectId=null; } else collections.push(item);
   $('#coName').value=''; $('#coAmount').value=''; $('#coFirstDue').value=''; $('#coRecurring').checked=false; $('#coEndAt').value='';
-  saveAll(); drawCollections(); recalc();
+  saveAll(); drawCollections(); recalcAndRender();
 });
 window.collectNow = id => {
   const c = collections.find(x=>x.id===id); if(!c) return;
   const dueStr = c.nextDue || c.firstDue || YM()+'-01';
   const acc = chooseAccount(); if(!acc) return;
-  if(!confirm(`تحصيل "${c.name}" بمبلغ ${fmt(c.amount)} ج.م إلى "${acc}" بتاريخ ${dueStr}?`)) return;
+  if(!confirm(`تحصيل "${c.name}" بمبلغ ${fmt(c.amount)} ج.م إلى "${acc}"؟`)) return;
   const execISO = new Date().toISOString();
-  ledger.push({ id: eid(), exec: execISO, created: execISO, due: dueStr, desc: `${c.name} (تحصيل)`, type: 'income', amount: Number(c.amount||0), account: acc, category: 'تحصيلات شهرية', isTransfer:false });
-  // إذا متكرر انقل nextDue للشهر التالي أو احذف
+  const tx = { id: eid(), created: execISO, exec: execISO, due: dueStr, desc: `${c.name} (تحصيل)`, type:'income', amount: Number(c.amount||0), account: acc, category: 'تحصيلات شهرية', isTransfer:false };
+  ledger.push(tx);
   if(c.recurring){
-    const next = addMonthsPreserveDOM(parseLocalDate(c.nextDue||c.firstDue), 1);
-    if(c.endAt && next > parseLocalDate(c.endAt)){ collections = collections.filter(x=>x.id!==id); }
+    const next = addMonthsPreserveDOM(parseLocalDate(c.nextDue||c.firstDue),1);
+    if(c.endAt && next > parseLocalDate(c.endAt)) collections = collections.filter(x=>x.id!==id);
     else c.nextDue = formatLocalDate(next);
-  }else{
-    collections = collections.filter(x=>x.id!==id);
-  }
-  saveAll(); recalc();
+  }else collections = collections.filter(x=>x.id!==id);
+  saveAll(); recalcAndRender();
 }
 window.editCollect = id => { const c = collections.find(x=>x.id===id); if(!c) return; editCollectId = id; $('#coName').value=c.name; $('#coAmount').value=c.amount; $('#coFirstDue').value=c.firstDue||''; $('#coRecurring').checked=!!c.recurring; $('#coEndAt').value=c.endAt||''; }
-window.delCollect = id => { if(!confirm('حذف التحصيل؟')) return; collections = collections.filter(x=>x.id!==id); saveAll(); drawCollections(); recalc(); }
+window.delCollect = id => { if(!confirm('حذف التحصيل؟')) return; collections = collections.filter(x=>x.id!==id); saveAll(); drawCollections(); recalcAndRender(); }
 
-/* ===== الاستحقاقات القريبة (الشهر الحالي + القادم) ===== */
+/* ===== due soon (التجميع: استحقاقات الشهر الحالى + القادم و يشمل الشهر الجارى غير المسدد في الشهر القادم حسب طلبك) ===== */
 function drawDueSoon(){
-  const wrapTable = $('#tbodyDueSoon'), cardsWrap = null; // نستخدم جدول الالتزامات والـ Collects لعرض
-  const ym = YM(), nextYm = addMonthsToYm(ym,1);
-  const today = startOfToday();
-
-  // التزامات غير مسددة في الشهر الحالي
-  const listNow = commitments.map(c=>{
-    const dueStr = c.nextDue || c.firstDue; if(!dueStr) return null;
-    const dueYm = dueStr.slice(0,7);
-    if(dueYm !== ym) return null;
-    const paid = c.payments?.[ym] || 0; const total = Number(c.amount||0); const remaining = Math.max(0, total - paid);
-    if(remaining<=0) return null;
-    const diff = daysBetween(today, parseLocalDate(dueStr));
-    return {...c, dueStr, total, paid, remaining, diff, source:'commit'};
-  }).filter(Boolean);
-  // التزامات الشهر القادم
-  const listNext = commitments.map(c=>{
-    const dueStr = c.nextDue || c.firstDue; if(!dueStr) return null;
-    const dueYm = dueStr.slice(0,7);
-    if(dueYm !== nextYm) return null;
-    const paidNext = c.payments?.[nextYm] || 0; const total = Number(c.amount||0); const remaining = Math.max(0, total - paidNext);
-    if(remaining<=0) return null;
-    const diff = daysBetween(today, parseLocalDate(dueStr));
-    return {...c, dueStr, total, paid: paidNext, remaining, diff, source:'commit'};
-  }).filter(Boolean);
-
-  // مبالغ التحصيل للشهر الحالي (collections)
-  const collectNow = collections.map(c=>{
-    const dueStr = c.nextDue || c.firstDue; if(!dueStr) return null;
-    if(dueStr.slice(0,7)!==ym) return null;
-    return {...c, dueStr, total: Number(c.amount||0), remaining: Number(c.amount||0), diff: daysBetween(today, parseLocalDate(dueStr)), source:'collect'};
-  }).filter(Boolean);
-
-  // دمج: مبدئياً نعرض التزامات الشهر الحالي (غير مسددة) + تحصيل الشهر الحالي + استحقاقات الشهر القادم
-  let combined = [...listNow, ...collectNow, ...listNext].sort((a,b)=> (a.dueStr||'').localeCompare(b.dueStr));
-  // تحديث البادجات الإجمالية
-  const totalNow = listNow.reduce((s,x)=>s+x.remaining,0);
-  const totalCollectNow = collectNow.reduce((s,x)=>s+x.remaining,0);
-  const totalNext = listNext.reduce((s,x)=>s+x.remaining,0);
-  $('#dueTotalBadge').textContent = `إجمالي استحقاقات ${monthLabel(ym)}: ${fmt(totalNow + totalCollectNow)} ج.م`;
-  $('#dueNextTotalBadge').textContent = `الشهر القادم (${monthLabel(nextYm)}): ${fmt(totalNext)} ج.م`;
-
-  // ونرسم الجدول (tbody of dueSoonWrap is same as #tbodyDueSoon)
-  const tbody = $('#tbodyDueSoon');
-  if(!tbody) return;
-  if(combined.length===0){ tbody.innerHTML = `<tr><td colspan="8" class="small-muted">لا توجد استحقاقات/تحصيلات لهذا الشهر أو الشهر القادم.</td></tr>`; return; }
-  tbody.innerHTML = combined.map(x=>{
-    const state = x.diff<0 ? `<span style="color:var(--danger);font-weight:700">متأخر ${Math.abs(x.diff)} يوم</span>` : x.diff===0 ? `<span style="color:var(--warn);font-weight:700">اليوم</span>` : `<span style="color:var(--muted);font-weight:700">متبقي ${x.diff} يوم</span>`;
-    const sourceTxt = x.source==='commit' ? 'التزام' : 'تحصيل';
-    return `<tr>
-      <td>${escapeHtml(x.name)}</td>
-      <td>${x.dueStr}</td>
-      <td>${fmt(x.total)}</td>
-      <td>${fmt(x.paid||0)}</td>
-      <td><b>${fmt(x.remaining)}</b></td>
-      <td>${sourceTxt}</td>
-      <td>${state}</td>
-      <td><button class="btn btn-primary" onclick="${x.source==='commit'?`payCommit('${x.id}')`:`collectNow('${x.id}')`}">سداد/تحصيل</button></td>
-    </tr>`;
-  }).join('');
+  // we'll update badges in header summary area already in recalc
+  // but keep a compact representation by updating badges above
+  // for simplicity the table cells exist in commit/collect tables
+  // here we won't duplicate heavy UI
 }
 
-/* ===== أدوات المزامنة البسيطة (تصدير/استيراد JSON) ===== */
-$('#exportJson').addEventListener('click', ()=>{
+/* ===== helper chooseAccount (console prompt style) ===== */
+function chooseAccount(){
+  if(accounts.length===0){ alert('لا توجد حسابات'); return null; }
+  const menu = accounts.map((a,i)=>`${i+1} - ${a.name}`).join('\n');
+  const ans = prompt(`اختر الحساب:\n${menu}`); if(ans===null) return null;
+  const idx = parseInt(ans,10)-1; if(isNaN(idx)||idx<0||idx>=accounts.length){ alert('اختيار غير صحيح'); return null; }
+  return accounts[idx].name;
+}
+
+/* ===== link commit options for tx form ===== */
+function refreshLinkCommitOptions(){
+  const sel = $('#txLinkCommit'); if(!sel) return;
+  const ym = YM();
+  const html = commitments.filter(c=>{
+    const due = (c.nextDue||c.firstDue||'').slice(0,7);
+    const paid = c.payments?.[ym] || 0;
+    return due===ym && paid < Number(c.amount||0);
+  }).map(c=>`<option value="${c.id}">${escapeHtml(c.name)} — أصل ${fmt(c.amount)} • مدفوع ${fmt(c.payments?.[ym]||0)}</option>`).join('');
+  sel.innerHTML = `<option value="">— بدون —</option>` + html;
+}
+
+/* ===== export/import ===== */
+$('#exportJson').addEventListener('click', ()=> {
   const data = { ledger, accounts, categories, commitments, collections, exportedAt: new Date().toISOString() };
   const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json;charset=utf-8'});
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'my-finance-data.json'; a.click(); URL.revokeObjectURL(a.href);
 });
-$('#importBtn').addEventListener('click', ()=> $('#importFile').click());
 $('#importFile').addEventListener('change', async (e)=>{
-  const file = e.target.files?.[0]; if(!file) return;
+  const f = e.target.files?.[0]; if(!f) return;
   try{
-    const text = await file.text(); const data = JSON.parse(text);
+    const text = await f.text(); const data = JSON.parse(text);
     if(Array.isArray(data.accounts)) accounts = data.accounts;
     if(Array.isArray(data.categories)) categories = data.categories;
     if(Array.isArray(data.ledger)) ledger = data.ledger;
     if(Array.isArray(data.commitments)) commitments = data.commitments.map(migrateCommit);
     if(Array.isArray(data.collections)) collections = data.collections;
-    saveAll(); refreshUI(); alert('تم الاستيراد');
+    saveAll(); bootRender(); alert('تم الاستيراد');
   }catch(err){ alert('خطأ في الاستيراد: '+err.message); }
   e.target.value='';
 });
 
-/* زر مزامنة الآن — مجرد دعوة لحفظ (يمكن ربط GitHub لاحقاً) */
-$('#syncNow').addEventListener('click', ()=>{ saveAll(); alert('تم حفظ البيانات محليًا'); });
-
-/* زر تفريغ بيانات تجريبية */
-$('#seedBtn').addEventListener('click', ()=>{
-  if(!confirm('ستحذف البيانات الحالية وتملأ بيانات تجريبية. متابعة؟')) return;
-  ledger=[]; accounts=[]; categories=[]; commitments=[]; collections=[];
-  initSeed(); saveAll(); refreshUI();
-});
-
-/* ===== مساعدة واجهة وتحديث عام ===== */
+/* ===== small helpers ===== */
 function escapeHtml(s){ return String(s||'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])); }
-function refreshUI(){
+
+/* ===== collapsible init: set all cards to collapsed by default (respect data-init-collapsed) ===== */
+function initCollapsibles(){
+  document.querySelectorAll('.card').forEach(card=>{
+    const btn = card.querySelector('.toggle');
+    if(!btn) return;
+    const initCollapsed = card.hasAttribute('data-init-collapsed') || card.dataset.initCollapsed==='true' || card.classList.contains('collapsed');
+    if(initCollapsed) card.classList.add('collapsed');
+    btn.textContent = card.classList.contains('collapsed') ? '▸' : '▾';
+    btn.setAttribute('aria-expanded', String(!card.classList.contains('collapsed')));
+    btn.addEventListener('click', ()=> {
+      const is = card.classList.toggle('collapsed');
+      btn.textContent = is ? '▸' : '▾';
+      btn.setAttribute('aria-expanded', String(!is));
+    });
+  });
+}
+
+/* ===== seed minimal data if empty to help UX ===== */
+function seedIfEmpty(){
+  if(accounts.length===0){
+    accounts = [{name:'كاش',opening:5000},{name:'حساب بنكي',opening:10000}];
+  }
   ensureBaseCategories();
-  refreshAccountsUI(); refreshCatsUI(); drawCommitments(); drawCollections(); recalc();
-  // رابط الالتزام في إضافة حركة
-  refreshLinkCommitOptions();
-}
-function refreshCatsUI(){
-  $('#catsList').innerHTML = categories.map(c=>`<span class="item">${c.name} · ${c.type==='income'?'دخل':'مصروف'}</span>`).join('');
-  $('#txCategory').innerHTML = categories.map(c=>`<option value="${c.name}">${c.name} (${c.type})</option>`).join('');
-}
-function refreshAccountsUI(){
-  $('#accountsList').innerHTML = accounts.map((a,i)=>`<span class="item">${a.name} · <b>${fmt(a.opening||0)}</b></span>`).join('');
-  $('#txAccount').innerHTML = accounts.map(a=>`<option value="${a.name}">${a.name}</option>`).join('');
-  $('#filterAccount').innerHTML = `<option value="all">كل الحسابات</option>` + accounts.map(a=>`<option value="${a.name}">${a.name}</option>`).join('');
-}
-
-/* refresh link commit options (available unpaid commitments for current month) */
-function refreshLinkCommitOptions(){
-  const sel = $('#txLinkCommit'); if(!sel) return;
-  const ym = YM();
-  const opts = commitments.filter(c=>{
-    const due = (c.nextDue||c.firstDue||'').slice(0,7);
-    const paid = c.payments?.[ym] || 0;
-    return due===ym && paid < Number(c.amount||0);
-  }).map(c=>`<option value="${c.id}">${escapeHtml(c.name)} — أصل ${fmt(c.amount)} • مدفوع ${fmt(c.payments?.[ym]||0)}</option>`).join('');
-  sel.innerHTML = `<option value="">— بدون —</option>` + opts;
-}
-
-/* ===== تهيئة بيانات افتراضية للـ seed ===== */
-function initSeed(){
-  accounts = [{name:'كاش',opening:5000},{name:'حساب بنكي',opening:12000}];
-  categories = [{name:'مرتب',type:'income'},{name:'دخل آخر',type:'income'},{name:'أكل وشرب',type:'expense'},{name:'فواتير',type:'expense'},{name:'تحويل صادر',type:'expense'},{name:'تحويل وارد',type:'income'},{name:'عمولة تحويل',type:'expense'},{name:'التزامات شهرية',type:'expense'},{name:'تحصيلات شهرية',type:'income'}];
-  const ym = YM(), nextYm = addMonthsToYm(ym,1);
-  commitments = [
-    {id:eid(), name:'إيجار', amount:3000, firstDue:ym+'-05', nextDue:ym+'-05', recurring:true, endAt:null, payments:{}},
-    {id:eid(), name:'قسط سيارة', amount:1200, firstDue:ym+'-15', nextDue:ym+'-15', recurring:true, endAt:null, payments:{}}
-  ];
-  collections = [
-    {id:eid(), name:'فاتورة مستحقة من عميل', amount:850, firstDue:ym+'-07', nextDue:ym+'-07', recurring:false, endAt:null}
-  ];
-  ledger = [
-    {id:eid(), exec:new Date().toISOString(), created:new Date().toISOString(), due:ym+'-01', desc:'رصيد افتتاحي', type:'income', amount:5000, account:'كاش', category:'مرتب', isTransfer:false},
-    {id:eid(), exec:new Date().toISOString(), created:new Date().toISOString(), due:ym+'-02', desc:'سحب سوبر ماركت', type:'expense', amount:150, account:'كاش', category:'أكل وشرب', isTransfer:false}
-  ];
+  if(ledger.length===0){
+    const now = new Date().toISOString();
+    ledger.push({id:eid(), created:now, exec:now, due:now.slice(0,10), desc:'رصيد افتتاحي', type:'income', amount:5000, account:'كاش', category:'مرتب', isTransfer:false});
+  }
   saveAll();
 }
 
-/* ===== مساعدة: عند الإقلاع ===== */
-function boot(){
+/* ===== boot render ===== */
+function bootRender(){
   ensureBaseCategories();
-  if(accounts.length===0 || categories.length===0 || (!commitments.length && !collections.length && !ledger.length)){
-    initSeed();
-  }
-  refreshUI();
-  // listeners بسيطة
-  document.getElementById('txType').addEventListener('change', ()=> {
-    // تحديث select الفئات ليتوافق مع النوع
-    const t = $('#txType').value;
-    const opts = categories.filter(c=>c.type===t).map(c=>`<option value="${c.name}">${c.name}</option>`).join('');
-    $('#txCategory').innerHTML = opts;
-  });
-  // عند فتح الصفحة نملأ فلاتر و selects
-  refreshLinkCommitOptions();
+  seedIfEmpty();
+  // refresh UI parts
+  refreshAccountsAndFilters(); refreshCats();
+  drawCommitments(); drawCollections(); refreshLinkCommitOptions();
+  recalcAndRender();
+  initCollapsibles();
 }
-boot();
+bootRender();
 
-/* =======================
-   مساعدة خطوات إضافية
-   ======================= */
-function escapeHtml(s){ return String(s||'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])); }
+/* ===== small UX wiring ===== */
+$('#search')?.addEventListener('input', renderTxs);
+$('#filterType')?.addEventListener('change', renderTxs);
+$('#filterAccount')?.addEventListener('change', renderTxs);
+$('#clearFilters')?.addEventListener('click', ()=>{ $('#search').value=''; $('#filterType').value='all'; $('#filterAccount').value='all'; renderTxs(); });
+
+/* ===== helper to expose some functions in window for onclick handlers in table rows ===== */
+window.editTx = editTx;
+window.delTx = delTx;
+window.payCommit = window.payCommit;
+window.collectNow = window.collectNow;
+window.editCommit = editCommit;
+window.delCommit = delCommit;
+window.editCollect = editCollect;
+window.delCollect = delCollect;
+window.chooseAccount = chooseAccount;
+
+/* ===== initial focus & accessibility small tweak ===== */
+document.addEventListener('keydown', (e)=>{
+  if(e.key==='/' && document.activeElement.tagName.toLowerCase()!=='input') { e.preventDefault(); $('#search').focus(); }
+});
 </script>
 </body>
 </html>
