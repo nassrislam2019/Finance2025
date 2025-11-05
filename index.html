@@ -114,12 +114,6 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
   .transfer-grid{grid-template-columns:1fr}
 }
 
-/* ===== استحداث: pagination controls ===== */
-.tx-pagination{display:flex;gap:8px;align-items:center;justify-content:flex-start;margin-top:10px;flex-wrap:wrap}
-.tx-pagination .page-btn{appearance:none;border:1px solid var(--border);background:#fff;padding:6px 10px;border-radius:8px;cursor:pointer}
-.tx-pagination .page-btn.active{background:var(--brand);color:#fff;border-color:var(--brand)}
-.tx-pagination .page-info{color:var(--muted);font-size:13px;margin-inline-start:8px}
-
 /* ===== استحقاقات قريبة ===== */
 .d-none{display:none!important;} /* للتحكم من JS بدون كسر الميديا كويري */
 
@@ -306,10 +300,6 @@ canvas{background:#fff;border:1px solid var(--border);border-radius:var(--radius
         <span class="spacer"></span>
         <span class="badge">العملة: ج.م</span>
       </div>
-
-      <!-- pagination controls -->
-      <div id="txPagination" class="tx-pagination" aria-hidden="false" style="margin-bottom:8px"></div>
-
       <div style="overflow:auto">
         <table>
           <thead>
@@ -489,10 +479,6 @@ let commitments=JSON.parse(localStorage.getItem(COM_KEY)||'[]');  // {payments:{
 let collections=JSON.parse(localStorage.getItem(COL_KEY)||'[]');
 let ghCfg=JSON.parse(localStorage.getItem(GH_KEY)||'{}');
 
-/* ====== PAGINATION STATE for transactions ====== */
-let txPage = 1;
-const txPageSize = 10; // كل صفحة ١٠ معاملات
-
 /* ====== HELPERS ====== */
 const $=s=>document.querySelector(s);
 const $$=s=>document.querySelectorAll(s);
@@ -559,8 +545,7 @@ const els={ totalBalance:$('#totalBalance'), balanceAfterCommit:$('#balanceAfter
   execTransfer:$('#execTransfer'), resetTransfer:$('#resetTransfer'),
   ghUser:$('#ghUser'), ghRepo:$('#ghRepo'), ghBranch:$('#ghBranch'), ghPath:$('#ghPath'), ghToken:$('#ghToken'),
   ghAuto:$('#ghAuto'), ghSaveCfg:$('#ghSaveCfg'), ghTest:$('#ghTest'), ghPull:$('#ghPull'), ghPush:$('#ghPush'), ghStatus:$('#ghStatus'),
-  dueTotalBadge:$('#dueTotalBadge'), dueNextTotalBadge:$('#dueNextTotalBadge'), dueSoonCards:$('#dueSoonCards'),
-  txPagination:$('#txPagination')
+  dueTotalBadge:$('#dueTotalBadge'), dueNextTotalBadge:$('#dueNextTotalBadge'), dueSoonCards:$('#dueSoonCards')
 };
 ['saveTx','resetForm','addAccount','addCategory','exportJson','exportCsv','refreshReports','addCommitment','addCollect','execTransfer','resetTransfer','syncNow','ghSaveCfg','ghTest','ghPull','ghPush']
   .forEach(id=>document.getElementById(id)?.setAttribute('type','button'));
@@ -572,14 +557,12 @@ function formatExec(dt){ return dt ? new Date(dt).toLocaleString('ar-EG') : '—
 
 /* ====== BALANCES ====== */
 function computeBalances(){
-  // Compute balances per account following transactions order
   const bal = new Map(accounts.map(a=>[a.name, a.opening||0]));
-  // sort by exec/date/created ascending to apply in chronological order
   const sorted=[...ledger].sort((a,b)=> (a.exec||a.date||a.created||'').localeCompare(b.exec||b.date||b.created||'') || (a.id>b.id?1:-1));
   const after=new Map();
   for(const t of sorted){
     const cur=bal.get(t.account)??0;
-    const delta=(t.type==='income'?Number(t.amount):-Number(t.amount));
+    const delta=(t.type==='income'?t.amount:-t.amount);
     const next=cur+delta;
     bal.set(t.account,next);
     after.set(t.id,next);
@@ -660,68 +643,21 @@ function recalc(){
   refreshLinkCommitOptions();
 }
 
-/* ====== PAGINATION HELPERS ====== */
-function renderTxPagination(totalItems){
-  const pageCount = Math.max(1, Math.ceil(totalItems / txPageSize));
-  // clamp txPage
-  if(txPage > pageCount) txPage = pageCount;
-  if(txPage < 1) txPage = 1;
-  const wrap = els.txPagination;
-  if(!wrap) return;
-  // build controls: first, prev, numeric (up to 7), next, last, info
-  let html = '';
-  html += `<button class="page-btn" data-action="first" ${txPage===1?'disabled':''} title="الأول">⏮</button>`;
-  html += `<button class="page-btn" data-action="prev" ${txPage===1?'disabled':''} title="السابق">‹</button>`;
-
-  // numeric windows
-  const maxButtons = 7;
-  let start = Math.max(1, txPage - Math.floor(maxButtons/2));
-  let end = start + maxButtons -1;
-  if(end > pageCount){ end = pageCount; start = Math.max(1, end - maxButtons +1); }
-  for(let p=start;p<=end;p++){
-    html += `<button class="page-btn ${p===txPage?'active':''}" data-page="${p}">${p}</button>`;
-  }
-
-  html += `<button class="page-btn" data-action="next" ${txPage===pageCount?'disabled':''} title="التالي">›</button>`;
-  html += `<button class="page-btn" data-action="last" ${txPage===pageCount?'disabled':''} title="الأخير">⏭</button>`;
-  html += `<span class="page-info">صفحة ${txPage} من ${pageCount} — إجمالي معاملات ${totalItems}</span>`;
-  wrap.innerHTML = html;
-
-  // attach events
-  wrap.querySelectorAll('.page-btn').forEach(btn=>{
-    btn.addEventListener('click', (e)=>{
-      const act = btn.getAttribute('data-action');
-      if(act==='first'){ txPage = 1; }
-      else if(act==='prev'){ txPage = Math.max(1, txPage-1); }
-      else if(act==='next'){ txPage = Math.min(pageCount, txPage+1); }
-      else if(act==='last'){ txPage = pageCount; }
-      else if(btn.hasAttribute('data-page')){ txPage = Number(btn.getAttribute('data-page')); }
-      render(); // refresh table after page change
-      // scroll to transactions card top for clarity
-      const card = document.getElementById('card-txs');
-      if(card) card.scrollIntoView({behavior:'smooth'});
-    });
-  });
-}
-
-/* ====== RENDER MOVES with pagination ====== */
+/* ====== RENDER MOVES ====== */
 let editId=null;
 function render(){
-  // Apply filters
   const q=(els.search?.value||'').toLowerCase(),
         ft=document.getElementById('fType')?.value||'all',
         fa=document.getElementById('fAccount')?.value||'all',
         ff=document.getElementById('fFrom')?.value||'',
         fto=document.getElementById('fTo')?.value||'';
   const {after}=computeBalances();
-
-  // filter and sort (sorted descending by exec/date/created)
-  const filtered = [...ledger].filter(t=>{
+  const rows=[...ledger].filter(t=>{
     if(q && !((t.desc||'').toLowerCase().includes(q) || (t.category||'').toLowerCase().includes(q))) return false;
     if(ft!=='all' && t.type!==ft) return false;
     if(fa!=='all' && t.account!==fa) return false;
-    if(ff && (t.date || t.due || t.exec || t.created) < ff) return false;
-    if(fto && (t.date || t.due || t.exec || t.created) > fto) return false;
+    if(ff && t.date<ff) return false;
+    if(fto && t.date>fto) return false;
     return true;
   }).sort((a,b)=>{
     const A=(b.exec||b.date||b.created||'');
@@ -729,20 +665,8 @@ function render(){
     if(A!==B) return A.localeCompare(B);
     return (b.id||'').localeCompare(a.id||'');
   });
-
-  const totalItems = filtered.length;
-  // if filters changed, reset page to 1 for better UX
-  // (we detect that by ensuring txPage is within range)
-  const pageCount = Math.max(1, Math.ceil(totalItems / txPageSize));
-  if(txPage > pageCount) txPage = pageCount;
-  if(txPage < 1) txPage = 1;
-
-  // slice for current page
-  const startIdx = (txPage - 1) * txPageSize;
-  const pageRows = filtered.slice(startIdx, startIdx + txPageSize);
-
   if(els.tbody){
-    els.tbody.innerHTML=pageRows.map(t=>{
+    els.tbody.innerHTML=rows.map(t=>{
       const cls=t.type==='income'?'inc':'exp'; const afterVal=after.has(t.id)?after.get(t.id):0;
       const execTxt = t.exec?formatExec(t.exec):(t.created?formatExec(t.created):'—');
       const dueTxt = t.due||t.date||'—';
@@ -758,52 +682,23 @@ function render(){
       </tr>`;
     }).join('');
   }
-  // update pagination controls
-  renderTxPagination(totalItems);
-
   recalc(); drawMonthly();
 }
 window.editTx=id=>{ const t=ledger.find(x=>x.id===id); if(!t) return;
   editId=id; els.saveTx.textContent='تحديث';
   els.type.value=t.type; refreshCategorySelect(); els.amount.value=t.amount; els.date.value=t.due||t.date||''; els.desc.value=t.desc||'';
   els.account.value=t.account; els.category.value=t.category||''; els.linkCommit.value=t.linkCommitId||''; if(t.exec) document.getElementById('execAt').value = new Date(t.exec).toISOString().slice(0,16);
-  // navigate to add form for editing
-  const addCard = document.getElementById('card-addtx');
-  if(addCard && addCard.classList.contains('collapsed')){ addCard.classList.remove('collapsed'); addCard.querySelector('.toggle').textContent='▾'; addCard.querySelector('.toggle').setAttribute('aria-expanded','true'); }
   window.scrollTo({top:0,behavior:'smooth'});
 };
 window.delTx=id=>{ if(!confirm('هل تريد حذف هذه الحركة؟')) return; const was=ledger.find(t=>t.id===id);
   ledger=ledger.filter(t=>t.id!==id); saveLedger();
-  // update related commitments/payments if needed
   if(was && was.type==='expense' && was.linkCommitId){
     const ym=(was.exec||was.date||was.created||'').slice(0,7);
     const c=commitments.find(x=>x.id===was.linkCommitId);
     if(c && c.payments?.[ym]){ c.payments[ym]=Math.max(0,(c.payments[ym]-was.amount)); saveCommitments(); }
   }
-  // after delete, ensure current page is still valid
-  const totalItems = [...ledger].filter(t=>{ // apply same filters used in render
-    const q=(els.search?.value||'').toLowerCase();
-    const ft=document.getElementById('fType')?.value||'all';
-    const fa=document.getElementById('fAccount')?.value||'all';
-    const ff=document.getElementById('fFrom')?.value||'';
-    const fto=document.getElementById('fTo')?.value||'';
-    if(q && !((t.desc||'').toLowerCase().includes(q) || (t.category||'').toLowerCase().includes(q))) return false;
-    if(ft!=='all' && t.type!==ft) return false;
-    if(fa!=='all' && t.account!==fa) return false;
-    if(ff && (t.date || t.due || t.exec || t.created) < ff) return false;
-    if(fto && (t.date || t.due || t.exec || t.created) > fto) return false;
-    return true;
-  }).length;
-  const pageCount = Math.max(1, Math.ceil(totalItems / txPageSize));
-  if(txPage > pageCount) txPage = pageCount;
   render();
 };
-
-/* reset page when filters/search change to improve UX */
-els.search?.addEventListener('input', ()=>{ txPage = 1; render(); });
-['fType','fAccount','fFrom','fTo'].forEach(id=>document.getElementById(id)?.addEventListener('change',()=>{ txPage = 1; render(); }));
-
-/* saving txs */
 els.saveTx?.addEventListener('click',()=>{ 
   const type=els.type.value, amount=parseFloat(els.amount.value), date=els.date.value,
         desc=els.desc.value.trim(), account=els.account.value, category=els.category.value, linkCommitId=els.linkCommit.value||'';
@@ -817,16 +712,15 @@ els.saveTx?.addEventListener('click',()=>{
   saveLedger();
   if(type==='expense' && tx.linkCommitId){ addCommitPayment(tx.linkCommitId, tx.exec.slice(0,7), tx.amount); }
   els.desc.value=''; els.amount.value=''; els.linkCommit.value=''; document.getElementById('execAt').value='';
-  // after adding a new tx, go to the last page where newest items appear (sorted desc)
-  // compute the new total items count with current filters
-  const totalItems = [...ledger].filter(t=>{ const q=(els.search?.value||'').toLowerCase(); const ft=document.getElementById('fType')?.value||'all'; const fa=document.getElementById('fAccount')?.value||'all'; const ff=document.getElementById('fFrom')?.value||''; const fto=document.getElementById('fTo')?.value||''; if(q && !((t.desc||'').toLowerCase().includes(q) || (t.category||'').toLowerCase().includes(q))) return false; if(ft!=='all' && t.type!==ft) return false; if(fa!=='all' && t.account!==fa) return false; if(ff && (t.date || t.due || t.exec || t.created) < ff) return false; if(fto && (t.date || t.due || t.exec || t.created) > fto) return false; return true; }).length;
-  txPage = Math.max(1, Math.ceil(totalItems / txPageSize)); // go to last page
   render();
 });
 els.resetForm?.addEventListener('click',()=>{ editId=null; els.saveTx.textContent='حفظ'; els.type.value='expense'; els.amount.value=''; els.desc.value=''; els.linkCommit.value=''; refreshCategorySelect(); });
 
 /* ===== FILTERS ===== */
-// already wired above to reset page on change
+els.search?.addEventListener('input',render);
+['fType','fAccount','fFrom','fTo'].forEach(id=>document.getElementById(id)?.addEventListener('change',render));
+document.getElementById('clearFilters')?.addEventListener('click',()=>{ els.search.value=''; document.getElementById('fType').value='all'; document.getElementById('fAccount').value='all'; document.getElementById('fFrom').value=''; document.getElementById('fTo').value=''; render(); });
+els.type?.addEventListener('change', refreshCategorySelect);
 
 /* ===== ACCOUNTS & CATEGORIES ===== */
 function drawAccountsBadges(balMap){
