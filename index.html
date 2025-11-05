@@ -1,690 +1,790 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>دفتر حساباتي — Dashboard</title>
-<!-- Tailwind via CDN for quick styling -->
-<script src="https://cdn.tailwindcss.com"></script>
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<style>
-  /* tiny custom tweaks for RTL & components */
-  :root{--gap:0.75rem}
-  .sidebar { min-width:220px; max-width:260px; }
-  /* mobile bottom-nav */
-  @media(max-width:768px){
-    .sidebar { display:none }
-    .mobile-nav { display:flex }
-  }
-  @media(min-width:769px){
-    .mobile-nav { display:none }
-  }
-  /* dark tuning */
-  .dark .card { background:#0b1220; border-color:#163145 }
-  .dark body { background:#071227; color:#e6f0fb }
-  .card { background:var(--card-bg,#fff); border:1px solid var(--card-border,#e6eef8) }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>دفتر حساباتي</title>
+
+  <!-- Cairo font -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <!-- Tailwind CDN (Play) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Cairo', 'sans-serif']
+          },
+          colors: {
+            brand: '#0b84ff'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Small local tweaks */
+    html,body { height:100%; }
+    body { font-family: Cairo, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Kufi Arabic", Tahoma, Arial; }
+    /* Fix table overflow on small screens */
+    .table-fixed { overflow:auto; }
+    /* Collapsible caret rotation */
+    .toggle-rot { transform: rotate(90deg); transition: transform .18s ease; }
+    .toggle-rot.open { transform: rotate(270deg); }
+    /* Mobile bottom nav */
+    .mobile-nav { display:none; }
+    @media(max-width:768px){
+      .sidebar { display:none; }
+      .mobile-nav { display:flex; }
+    }
+  </style>
 </head>
-<body class="antialiased" id="appRoot">
-<div class="min-h-screen flex">
-  <!-- Sidebar -->
-  <aside class="sidebar bg-slate-50 dark:bg-slate-900 p-4 hidden md:block border-l">
-    <div class="mb-6 flex items-center justify-between">
-      <div>
-        <div class="text-xl font-extrabold">دفتر حساباتي</div>
-        <div class="text-sm text-slate-500 dark:text-slate-300">لوحة التحكم</div>
-      </div>
-      <button id="toggleTheme" class="px-2 py-1 border rounded text-sm">Dark</button>
-    </div>
-
-    <nav class="space-y-2 text-right">
-      <button data-page="dashboard" class="w-full text-right nav-btn px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800">🏠 لوحة البيانات</button>
-      <button data-page="transactions" class="w-full text-right nav-btn px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800">📋 الحركات</button>
-      <button data-page="add" class="w-full text-right nav-btn px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800">➕ إضافة</button>
-      <button data-page="settings" class="w-full text-right nav-btn px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800">⚙️ الإعدادات</button>
-    </nav>
-
-    <div class="mt-6 text-sm text-slate-500 dark:text-slate-400">
-      <div id="summaryBalance" class="mb-2">إجمالي الأرصدة: 0.00 ج.م</div>
-      <div id="summaryAfter" class="">الرصيد المتوقع: 0.00 ج.م</div>
-    </div>
-  </aside>
-
-  <!-- Main -->
-  <main class="flex-1 p-4">
-    <!-- Mobile bottom nav -->
-    <div class="mobile-nav fixed bottom-3 left-1/2 -translate-x-1/2 bg-white dark:bg-slate-900 border rounded-xl px-3 py-2 shadow-md z-50">
-      <div class="flex gap-2">
-        <button data-page="dashboard" class="px-3 py-2 nav-btn rounded">🏠</button>
-        <button data-page="transactions" class="px-3 py-2 nav-btn rounded">📋</button>
-        <button data-page="add" class="px-3 py-2 nav-btn rounded bg-blue-500 text-white">+</button>
-        <button data-page="settings" class="px-3 py-2 nav-btn rounded">⚙️</button>
-      </div>
-    </div>
-
-    <!-- Pages -->
-    <section id="page-dashboard" class="page">
-      <div class="flex justify-between items-center mb-4">
-        <h1 class="text-2xl font-extrabold">لوحة البيانات</h1>
-      </div>
-
-      <!-- Dashboard grid -->
-      <div class="grid gap-4 grid-cols-1 md:grid-cols-3">
-        <div class="md:col-span-2">
-          <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 mb-4">
-            <div class="card p-4 rounded-lg">
-              <div class="text-sm text-slate-500">إجمالي الأرصدة</div>
-              <div id="totalBalance" class="text-2xl font-bold mt-2">0.00 ج.م</div>
-              <div class="text-xs text-slate-400 mt-2">مجموع أرصدة كل الحسابات الآن</div>
-            </div>
-
-            <div class="card p-4 rounded-lg">
-              <div class="text-sm text-slate-500">الرصيد المتوقع</div>
-              <div id="balanceAfter" class="text-2xl font-bold mt-2">0.00 ج.م</div>
-              <div class="text-xs text-slate-400 mt-2">بعد المتبقي من الالتزامات و التحصيلات</div>
-            </div>
-
-            <div class="card p-4 rounded-lg">
-              <div class="text-sm text-slate-500">التزامات الشهر الحالي</div>
-              <div id="commitThis_total" class="text-xl font-bold mt-2">0.00 ج.م</div>
-              <div class="text-xs text-slate-400 mt-2">المتبقي: <span id="commitThis_remain">0.00</span></div>
-            </div>
-
-            <div class="card p-4 rounded-lg">
-              <div class="text-sm text-slate-500">تحصيلات الشهر الحالي</div>
-              <div id="collectThis_total" class="text-xl font-bold mt-2">0.00 ج.م</div>
-              <div class="text-xs text-slate-400 mt-2">لم يُحصّل: <span id="collectThis_remain">0.00</span></div>
-            </div>
-          </div>
-
-          <div class="card p-4 rounded-lg mb-4">
-            <div class="flex items-center justify-between">
-              <div class="font-semibold">آخر 5 حركات</div>
-              <div class="text-xs text-slate-400">مرتب حسب تنفيذ (الأحدث أولًا)</div>
-            </div>
-            <div id="latestTx" class="mt-3 space-y-2"></div>
-          </div>
-
-        </div>
-
-        <div>
-          <div class="card p-4 rounded-lg mb-4">
-            <div class="flex items-center justify-between">
-              <div class="font-semibold">استحقاقات قريبة</div>
-              <div class="text-xs text-slate-400">هذا الشهر / الشهر القادم</div>
-            </div>
-            <div id="dueSoonList" class="mt-3 space-y-2"></div>
-          </div>
-
-          <div class="card p-4 rounded-lg">
-            <div class="font-semibold">مصروفات الشهر</div>
-            <canvas id="pieChart" width="300" height="240"></canvas>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="page-transactions" class="page hidden">
-      <div class="flex items-center justify-between mb-4">
-        <h1 class="text-2xl font-extrabold">الحركات</h1>
-      </div>
-
-      <div class="card p-4 rounded-lg mb-4">
-        <div class="flex gap-2 flex-wrap mb-3">
-          <input id="filterSearch" placeholder="بحث بالوصف/الفئة" class="border p-2 rounded flex-1" />
-          <select id="filterType" class="border p-2 rounded"><option value="all">الكل</option><option value="income">دخل</option><option value="expense">مصروف</option></select>
-          <select id="filterAccount" class="border p-2 rounded"></select>
-          <input id="filterFrom" type="date" class="border p-2 rounded" />
-          <input id="filterTo" type="date" class="border p-2 rounded" />
-          <button id="clearFilters" class="px-3 py-2 bg-slate-100 rounded">مسح</button>
-        </div>
-
-        <div class="overflow-auto">
-          <table class="w-full text-right">
-            <thead><tr class="text-sm text-slate-500"><th>تاريخ التنفيذ</th><th>تاريخ الاستحقاق</th><th>الوصف</th><th>الفئة</th><th>الحساب</th><th>المبلغ</th><th>إجراءات</th></tr></thead>
-            <tbody id="txTableBody" class="align-top"></tbody>
-          </table>
-        </div>
-
-        <div class="flex items-center justify-center gap-2 mt-3">
-          <button id="prevPage" class="px-3 py-2 bg-slate-100 rounded">السابق</button>
-          <div id="pageInfo" class="text-sm text-slate-500">الصفحة 1</div>
-          <button id="nextPage" class="px-3 py-2 bg-slate-100 rounded">التالي</button>
-        </div>
-      </div>
-    </section>
-
-    <section id="page-add" class="page hidden">
-      <div class="flex items-center justify-between mb-4">
-        <h1 class="text-2xl font-extrabold">إضافة حركة</h1>
-      </div>
-
-      <div class="card p-4 rounded-lg">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <div>
-            <label class="text-sm">النوع</label>
-            <select id="add_type" class="border p-2 rounded w-full"><option value="expense">مصروف</option><option value="income">دخل</option></select>
-          </div>
-          <div>
-            <label class="text-sm">المبلغ</label>
-            <input id="add_amount" type="number" step="0.01" class="border p-2 rounded w-full" />
-          </div>
-          <div>
-            <label class="text-sm">تاريخ/وقت التنفيذ (اختياري)</label>
-            <input id="add_exec" type="datetime-local" class="border p-2 rounded w-full" />
-          </div>
-
-          <div>
-            <label class="text-sm">تاريخ الاستحقاق (سيملأ تلقائيا إذا مرتبط بالتزام)</label>
-            <input id="add_date" type="date" class="border p-2 rounded w-full" />
-          </div>
-          <div>
-            <label class="text-sm">الحساب</label>
-            <select id="add_account" class="border p-2 rounded w-full"></select>
-          </div>
-          <div>
-            <label class="text-sm">الفئة</label>
-            <select id="add_category" class="border p-2 rounded w-full"></select>
-          </div>
-
-          <div class="md:col-span-2">
-            <label class="text-sm">الوصف</label>
-            <input id="add_desc" class="border p-2 rounded w-full" />
-          </div>
-          <div>
-            <label class="text-sm">ربط الالتزام (اختياري)</label>
-            <select id="add_linkCommit" class="border p-2 rounded w-full"><option value="">— بدون —</option></select>
-          </div>
-
-          <div class="md:col-span-3 flex gap-2">
-            <button id="add_save" class="px-4 py-2 bg-blue-600 text-white rounded">حفظ الحركة</button>
-            <button id="add_reset" class="px-4 py-2 bg-slate-100 rounded">إفراغ</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="page-settings" class="page hidden">
-      <div class="flex items-center justify-between mb-4">
-        <h1 class="text-2xl font-extrabold">الإعدادات</h1>
-      </div>
-
-      <div class="grid md:grid-cols-2 gap-4">
-        <div class="card p-4 rounded-lg">
-          <h3 class="font-semibold mb-3">الحسابات</h3>
-          <div class="grid grid-cols-1 gap-2 mb-3">
-            <input id="acc_name" placeholder="اسم الحساب" class="border p-2 rounded" />
-            <input id="acc_open" placeholder="رصيد افتتاحي" type="number" class="border p-2 rounded" />
-            <div class="flex gap-2">
-              <button id="btn_add_acc" class="px-3 py-2 bg-slate-700 text-white rounded">إضافة</button>
-              <button id="btn_refresh_acc" class="px-3 py-2 bg-slate-100 rounded">تحديث</button>
-            </div>
-          </div>
-          <div id="accountsList" class="space-y-2 text-sm"></div>
-        </div>
-
-        <div class="card p-4 rounded-lg">
-          <h3 class="font-semibold mb-3">الفئات</h3>
-          <div class="grid grid-cols-1 gap-2 mb-3">
-            <input id="cat_name" placeholder="اسم الفئة" class="border p-2 rounded" />
-            <select id="cat_type" class="border p-2 rounded"><option value="expense">مصروف</option><option value="income">دخل</option></select>
-            <div class="flex gap-2">
-              <button id="btn_add_cat" class="px-3 py-2 bg-slate-700 text-white rounded">إضافة</button>
-              <button id="btn_refresh_cat" class="px-3 py-2 bg-slate-100 rounded">تحديث</button>
-            </div>
-          </div>
-          <div id="catsList" class="space-y-2 text-sm"></div>
-        </div>
-
-        <div class="card p-4 rounded-lg">
-          <h3 class="font-semibold mb-3">الالتزامات الشهرية</h3>
-          <div class="grid grid-cols-1 gap-2 mb-2">
-            <input id="c_name" placeholder="اسم الالتزام" class="border p-2 rounded" />
-            <input id="c_amount" type="number" placeholder="المبلغ" class="border p-2 rounded" />
-            <input id="c_first" type="date" class="border p-2 rounded" />
-            <div class="flex gap-2">
-              <label class="inline-flex items-center"><input id="c_rec" type="checkbox" class="mr-2"/>يتكرر شهريًا</label>
-              <input id="c_end" type="date" class="border p-2 rounded" placeholder="ينتهي في" />
-            </div>
-            <div class="flex gap-2">
-              <button id="btn_add_commit" class="px-3 py-2 bg-slate-700 text-white rounded">إضافة</button>
-              <button id="btn_refresh_commit" class="px-3 py-2 bg-slate-100 rounded">تحديث</button>
-            </div>
-          </div>
-          <div id="commitList" class="space-y-2 text-sm"></div>
-        </div>
-
-        <div class="card p-4 rounded-lg">
-          <h3 class="font-semibold mb-3">التحصيلات</h3>
-          <div class="grid grid-cols-1 gap-2 mb-2">
-            <input id="col_name" placeholder="اسم التحصيل" class="border p-2 rounded" />
-            <input id="col_amount" type="number" placeholder="المبلغ" class="border p-2 rounded" />
-            <input id="col_first" type="date" class="border p-2 rounded" />
-            <div class="flex gap-2">
-              <label class="inline-flex items-center"><input id="col_rec" type="checkbox" class="mr-2"/>يتكرر شهريًا</label>
-              <input id="col_end" type="date" class="border p-2 rounded" placeholder="ينتهي في" />
-            </div>
-            <div class="flex gap-2">
-              <button id="btn_add_col" class="px-3 py-2 bg-slate-700 text-white rounded">إضافة</button>
-              <button id="btn_refresh_col" class="px-3 py-2 bg-slate-100 rounded">تحديث</button>
-            </div>
-          </div>
-          <div id="collectList" class="space-y-2 text-sm"></div>
-        </div>
-      </div>
-
-    </section>
-
-  </main>
-</div>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
 
 <script>
-/* ===== Storage keys ===== */
-const KEY='pf_ledger_v2', ACC_KEY='pf_accounts_v2', CAT_KEY='pf_categories_v2', COM_KEY='pf_commitments_v2', COL_KEY='pf_collections_v2', THEME_KEY='pf_theme_v2';
-/* ===== Safe parse ===== */
-function safeParse(k, fallback){ try{ const s = localStorage.getItem(k); if(!s) return fallback; return JSON.parse(s); }catch(e){ console.warn('corrupt',k); localStorage.removeItem(k); return fallback; } }
-let ledger = safeParse(KEY, []);
-let accounts = safeParse(ACC_KEY, []);
-let categories = safeParse(CAT_KEY, []);
-let commitments = safeParse(COM_KEY, []);
-let collections = safeParse(COL_KEY, []);
-/* defaults */
-function ensureDefaults(){
-  if(!accounts.length){ accounts = [{name:'كاش',opening:0},{name:'حساب بنكي',opening:0}]; localSave(ACC_KEY, accounts); }
-  if(!categories.length){ categories = [{name:'مرتب',type:'income'},{name:'دخل آخر',type:'income'},{name:'أكل وشرب',type:'expense'},{name:'مواصلات',type:'expense'},{name:'فواتير',type:'expense'}]; localSave(CAT_KEY,categories); }
-}
-ensureDefaults();
+(function(){
+  'use strict';
 
-/* utils */
-const $ = s => document.querySelector(s);
-const $$ = s => Array.from(document.querySelectorAll(s));
-const eid = ()=> Math.random().toString(36).slice(2,9)+Date.now().toString(36);
-const fmt = n => Number(n||0).toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:2});
-function persist(key, obj){ try{ localStorage.setItem(key, JSON.stringify(obj)); }catch(e){ console.error(e); } }
-function localSave(k,v){ persist(k,v); }
+  /* ===== Keys & safe parser ===== */
+  const KEY='pf_ledger_v3', ACC_KEY='pf_accounts_v3', CAT_KEY='pf_categories_v3', COM_KEY='pf_commitments_v3', COL_KEY='pf_collections_v3', THEME_KEY='pf_theme_v3';
+  function safeParse(k, fallback){ try{ const s=localStorage.getItem(k); if(!s) return fallback; return JSON.parse(s); }catch(e){ console.warn('corrupt',k); localStorage.removeItem(k); return fallback; } }
+  function persist(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){ console.error(e); } }
 
-/* sorted ledger cache */
-let sortedLedger = []; let isLedgerDirty = true;
-function markDirty(){ isLedgerDirty = true; }
-function ensureSorted(){
-  if(!isLedgerDirty && sortedLedger.length) return;
-  sortedLedger = [...ledger].slice().sort((a,b)=>{
-    const aKey = (a.exec||a.created||a.date||'');
-    const bKey = (b.exec||b.created||b.date||'');
-    if(aKey === bKey) return (b.created||'').localeCompare(a.created||'');
-    return bKey.localeCompare(aKey);
-  });
-  isLedgerDirty = false;
-}
+  /* ===== State ===== */
+  let ledger = safeParse(KEY, []);
+  let accounts = safeParse(ACC_KEY, []);
+  let categories = safeParse(CAT_KEY, []);
+  let commitments = safeParse(COM_KEY, []);
+  let collections = safeParse(COL_KEY, []);
+  ensureDefaults();
 
-/* compute balances */
-let cachedBalances = null, cachedAfter = null;
-function computeBalances(){
-  ensureSorted();
-  const bal = new Map(accounts.map(a=>[a.name, Number(a.opening||0)]));
-  const after = new Map();
-  for(const t of sortedLedger){
-    const cur = bal.get(t.account) ?? 0;
-    const delta = t.type === 'income' ? Number(t.amount||0) : -Number(t.amount||0);
-    const next = cur + delta;
-    bal.set(t.account, next);
-    after.set(t.id, next);
-  }
-  cachedBalances = bal; cachedAfter = after;
-  return {bal,after};
-}
+  /* ===== Utils ===== */
+  const $ = s => document.querySelector(s);
+  const $$ = s => Array.from(document.querySelectorAll(s));
+  const eid = ()=> Math.random().toString(36).slice(2,9) + Date.now().toString(36);
+  const fmt = n => Number(n||0).toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:2});
+  function parseDateYmd(s){ if(!s) return null; const p=s.split('-').map(Number); if(p.length<3) return null; return new Date(p[0],p[1]-1,p[2]); }
+  function formatYmd(d){ if(!d) return ''; const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${day}`; }
+  function toISOLocalDatetime(date){ const t = new Date(date); const tz = t.getTimezoneOffset()*60000; return new Date(t - tz).toISOString().slice(0,16); }
 
-/* Commitment state - derived from ledger */
-function parseDateYmd(s){ if(!s) return null; const parts=s.split('-').map(Number); if(parts.length<3) return null; return new Date(parts[0],parts[1]-1,parts[2]); }
-function addMonthsPreserve(date, months){ const d=new Date(date.getTime()); const targetMonth=d.getMonth()+months; const day=d.getDate(), y=d.getFullYear(); const temp=new Date(y,targetMonth+1,0); const lastDay=temp.getDate(); d.setMonth(targetMonth, Math.min(day,lastDay)); d.setHours(0,0,0,0); return d; }
-function formatYmd(dt){ if(!dt) return ''; const y=dt.getFullYear(), m=String(dt.getMonth()+1).padStart(2,'0'), d=String(dt.getDate()).padStart(2,'0'); return `${y}-${m}-${d}`; }
-
-function getCommitmentState(c){
-  if(!c || !c.firstDue) return {done:true};
-  const amount = Number(c.amount||0);
-  const start = parseDateYmd(c.firstDue);
-  if(!start) return {done:true};
-  const endDate = c.endAt ? parseDateYmd(c.endAt) : null;
-  // collect payments per ym from ledger where linkCommitId === c.id
-  const payments = {};
-  for(const t of ledger){
-    if(t.linkCommitId !== c.id) continue;
-    const ym = (t.exec||t.created||t.date||'').slice(0,7);
-    if(!ym) continue;
-    payments[ym] = (payments[ym]||0) + Number(t.amount||0);
-  }
-  let cursor = new Date(start.getTime()); cursor.setHours(0,0,0,0);
-  for(let i=0;i<500;i++){
-    if(endDate && cursor > endDate) return {done:true};
-    const ym = formatYmd(cursor).slice(0,7);
-    const paidThis = payments[ym]||0;
-    if(paidThis + 1e-9 < amount){
-      return {currentDueYm: ym, paid: paidThis, remaining: Math.max(0, amount - paidThis)};
-    }
-    if(!c.recurring) return {done:true};
-    cursor = addMonthsPreserve(cursor, 1);
-  }
-  return {done:true};
-}
-
-/* Collections - get collected totals by ym */
-function collectedCollectionsForYm(ym){
-  let total = 0;
-  for(const t of ledger){
-    if(t.type !== 'income') continue;
-    const when = (t.exec||t.created||t.date||'').slice(0,7);
-    if(when !== ym) continue;
-    if(t.sourceCollectionId && String(t.sourceCollectionId).startsWith('collect_')) total += Number(t.amount||0);
-  }
-  return total;
-}
-
-/* Draw dashboard */
-let pieChart = null;
-function drawDashboard(){
-  computeBalances();
-  // totals
-  let totalBal = 0;
-  for(const v of (cachedBalances||new Map()).values()) totalBal += v;
-  $('#totalBalance').textContent = fmt(totalBal) + ' ج.م';
-
-  const ym = (new Date()).toISOString().slice(0,7);
-  const nextYm = (new Date(new Date().getFullYear(), new Date().getMonth()+1,1)).toISOString().slice(0,7);
-
-  // commit this month
-  let commitThis_total = 0, commitThis_remain = 0;
-  for(const c of commitments){
-    const st = getCommitmentState(c);
-    if(!st.done && st.currentDueYm === ym){
-      commitThis_total += Number(c.amount||0);
-      commitThis_remain += Number(st.remaining||0);
+  /* ===== Defaults ===== */
+  function ensureDefaults(){
+    if(!accounts.length){ accounts = [{name:'كاش',opening:0},{name:'حساب بنكي',opening:0},{name:'محفظة',opening:0}]; persist(ACC_KEY, accounts); }
+    if(!categories.length){
+      categories = [
+        {name:'مرتب',type:'income'},{name:'دخل آخر',type:'income'},
+        {name:'أكل وشرب',type:'expense'},{name:'مواصلات',type:'expense'},{name:'فواتير',type:'expense'},{name:'تسوق',type:'expense'}
+      ];
+      persist(CAT_KEY, categories);
     }
   }
 
-  // collections this month
-  let collectThis_target = 0;
-  for(const c of collections){
-    const dueYm = (c.nextDue||c.firstDue||'').slice(0,7);
-    if(dueYm === ym) collectThis_target += Number(c.amount||0);
+  /* ===== Sorted ledger caching ===== */
+  let sortedLedger = [], isLedgerDirty = true;
+  function markDirty(){ isLedgerDirty = true; }
+  function ensureSorted(){
+    if(!isLedgerDirty && sortedLedger.length) return;
+    sortedLedger = [...ledger].slice().sort((a,b)=>{
+      const aKey = (a.exec||a.created||a.date||'');
+      const bKey = (b.exec||b.created||b.date||'');
+      if(aKey === bKey) return (b.created||'').localeCompare(a.created||'');
+      return bKey.localeCompare(aKey);
+    });
+    isLedgerDirty = false;
   }
-  const collectedThis = collectedCollectionsForYm(ym);
-  const collectThis_not = Math.max(0, collectThis_target - collectedThis);
 
-  // next month commitments & collections
-  let commitNext_total = 0;
-  for(const c of commitments){
-    const st = getCommitmentState(c);
-    if(!st.done && st.currentDueYm === nextYm) commitNext_total += Number(st.remaining||0);
+  /* ===== Balances calculation ===== */
+  let cachedBalances = null, cachedAfter = null;
+  function computeBalances(){
+    ensureSorted();
+    const bal = new Map(accounts.map(a=>[a.name, Number(a.opening||0)]));
+    const after = new Map();
+    for(const t of sortedLedger){
+      const cur = bal.get(t.account) ?? 0;
+      const delta = t.type === 'income' ? Number(t.amount||0) : -Number(t.amount||0);
+      const next = cur + delta;
+      bal.set(t.account, next);
+      after.set(t.id, next);
+    }
+    cachedBalances = bal; cachedAfter = after;
+    return {bal,after};
   }
-  let collectNext_total = 0;
-  for(const c of collections){ const dueYm = (c.nextDue||c.firstDue||'').slice(0,7); if(dueYm===nextYm) collectNext_total += Number(c.amount||0); }
 
-  // balanceAfter = totalBal - commitThis_remain + collectThis_not
-  const after = totalBal - commitThis_remain + collectThis_not;
-
-  $('#balanceAfter').textContent = fmt(after) + ' ج.م';
-  $('#commitThis_total').textContent = fmt(commitThis_total) + ' ج.م';
-  $('#commitThis_remain').textContent = fmt(commitThis_remain) + ' ج.م';
-  $('#collectThis_total').textContent = fmt(collectThis_target) + ' ج.م';
-  $('#collectThis_remain').textContent = fmt(collectThis_not) + ' ج.م';
-  $('#summaryBalance').textContent = 'إجمالي الأرصدة: ' + fmt(totalBal) + ' ج.م';
-  $('#summaryAfter').textContent = 'الرصيد المتوقع: ' + fmt(after) + ' ج.م';
-
-  // latest 5 tx
-  ensureSorted();
-  const latest = sortedLedger.slice(0,5);
-  $('#latestTx').innerHTML = latest.map(t=> {
-    const execTxt = t.exec ? new Date(t.exec).toLocaleString('ar-EG') : (t.created? new Date(t.created).toLocaleString('ar-EG') : '—');
-    return `<div class="flex justify-between items-center"><div><div class="font-semibold">${t.desc||'—'}</div><div class="text-xs text-slate-500">${t.category||''} • ${t.account||''}</div></div><div class="text-right"><div class="${t.type==='income'?'text-green-600':'text-red-600'} font-bold">${t.type==='income'?'+':'-'}${fmt(t.amount)}</div><div class="text-xs text-slate-400">${execTxt}</div></div></div>`;
-  }).join('');
-
-  // due soon list
-  const dueList = commitments.map(c=>{
-    const st = getCommitmentState(c);
-    if(st.done) return null;
-    return { id:c.id, name:c.name, due:st.currentDueYm, remaining:st.remaining, paid:st.paid };
-  }).filter(Boolean).sort((a,b)=> (a.due||'').localeCompare(b.due||''));
-  $('#dueSoonList').innerHTML = dueList.slice(0,6).map(d=>`<div class="flex justify-between"><div><div class="font-semibold">${d.name}</div><div class="text-xs text-slate-500">${d.due}</div></div><div class="text-right"><div class="font-bold text-red-600">${fmt(d.remaining)} ج.م</div></div></div>`).join('');
-
-  // pie chart for expense categories this month
-  const agg = {};
-  const month = ym;
-  for(const t of ledger){
-    const when = (t.exec||t.created||t.date||'').slice(0,7);
-    if(when !== month) continue;
-    if(t.type !== 'expense') continue;
-    const key = t.category || 'غير مصنف';
-    agg[key] = (agg[key]||0) + Number(t.amount||0);
+  /* ===== Commitments state derived from ledger (single source of truth) ===== */
+  function addMonthsPreserve(date, months){
+    const d = new Date(date.getTime());
+    const targetMonth = d.getMonth() + months;
+    const day = d.getDate(), y = d.getFullYear();
+    const temp = new Date(y, targetMonth+1, 0);
+    const lastDay = temp.getDate();
+    d.setMonth(targetMonth, Math.min(day, lastDay));
+    d.setHours(0,0,0,0);
+    return d;
   }
-  const labels = Object.keys(agg);
-  const data = labels.map(l=>agg[l]);
-  const ctx = document.getElementById('pieChart').getContext('2d');
-  if(pieChart) pieChart.destroy();
-  pieChart = new Chart(ctx, { type:'pie', data:{ labels, datasets:[{data, backgroundColor: labels.map((_,i)=>['#ef4444','#f59e0b','#10b981','#0ea5e9','#7c3aed'][i%5]) }] }, options:{plugins:{legend:{position:'bottom'}}} );
-}
 
-/* Transactions page rendering with paging */
-let pageSize = 10, currentPage = 1;
-function refreshAccountFilter(){
-  $('#filterAccount').innerHTML = `<option value="all">كل الحسابات</option>` + accounts.map(a=>`<option value="${a.name}">${a.name}</option>`).join('');
-  $('#add_account').innerHTML = accounts.map(a=>`<option value="${a.name}">${a.name}</option>`).join('');
-  $('#accountsList').innerHTML = accounts.map((a,i)=>`<div class="flex justify-between items-center"><div>${a.name} · <span class="text-slate-500">${fmt(a.opening)} ج.م</span></div><div><button data-acc-index="${i}" class="btn-edit-acc text-xs px-2 py-1 bg-slate-100 rounded">تعديل</button> <button data-acc-del="${i}" class="btn-del-acc text-xs px-2 py-1 bg-red-100 rounded">حذف</button></div></div>`).join('');
-}
+  function getCommitmentState(c){
+    // returns { done:boolean, currentDueYm, paid, remaining }
+    if(!c || !c.firstDue) return {done:true};
+    const amount = Number(c.amount||0);
+    const start = parseDateYmd(c.firstDue);
+    if(!start) return {done:true};
+    const endDate = c.endAt ? parseDateYmd(c.endAt) : null;
+    // aggregate payments per ym from ledger where linkCommitId === c.id
+    const payments = {};
+    for(const t of ledger){
+      if(t.linkCommitId !== c.id) continue;
+      const ym = (t.exec||t.created||t.date||'').slice(0,7);
+      if(!ym) continue;
+      payments[ym] = (payments[ym]||0) + Number(t.amount||0);
+    }
+    let cursor = new Date(start.getTime()); cursor.setHours(0,0,0,0);
+    for(let i=0;i<240;i++){ // guard
+      if(endDate && cursor > endDate) return {done:true};
+      const ym = formatYmd(cursor).slice(0,7);
+      const paidThis = payments[ym]||0;
+      if(paidThis + 1e-9 < amount){
+        return {done:false, currentDueYm: ym, paid: paidThis, remaining: Math.max(0, amount - paidThis)};
+      }
+      if(!c.recurring) return {done:true};
+      cursor = addMonthsPreserve(cursor,1);
+    }
+    return {done:true};
+  }
 
-function refreshCatSelect(){
-  $('#add_category').innerHTML = categories.map(c=>`<option value="${c.name}">${c.name}</option>`).join('');
-  $('#catsList').innerHTML = categories.map((c,i)=>`<div class="flex justify-between items-center"><div>${c.name} · <span class="text-slate-500">${c.type}</span></div><div><button data-cat-index="${i}" class="btn-edit-cat text-xs px-2 py-1 bg-slate-100 rounded">تعديل</button> <button data-cat-del="${i}" class="btn-del-cat text-xs px-2 py-1 bg-red-100 rounded">حذف</button></div></div>`).join('');
-}
+  /* ===== Collections helper ===== */
+  function collectedCollectionsForYm(ym){
+    let total = 0;
+    for(const t of ledger){
+      if(t.type !== 'income') continue;
+      const when = (t.exec||t.created||t.date||'').slice(0,7);
+      if(when !== ym) continue;
+      if(t.sourceCollectionId && String(t.sourceCollectionId).startsWith('collect_')) total += Number(t.amount||0);
+    }
+    return total;
+  }
 
-function refreshCommitList(){
-  $('#commitList').innerHTML = commitments.map((c,i)=>{
-    const st = getCommitmentState(c);
-    const due = st.done ? '—' : (st.currentDueYm || c.firstDue.slice(0,7));
-    const rem = st.done ? 0 : (st.remaining||0);
-    return `<div class="flex justify-between items-center"><div><div class="font-semibold">${c.name} · ${fmt(c.amount)} ج.م</div><div class="text-xs text-slate-500">الاستحقاق: ${due}</div></div><div><button data-commit-del="${c.id}" class="px-2 py-1 bg-red-100 rounded text-xs">حذف</button></div></div>`;
-  }).join('');
-}
+  /* ===== UI: build layout (HTML) ===== */
+  document.body.innerHTML = `
+  <div class="flex h-screen" style="direction:rtl">
+    <aside class="sidebar w-64 bg-white dark:bg-gray-800 shadow-xl flex flex-col p-4 hidden md:flex">
+      <div class="flex items-center gap-3 mb-6">
+        <h1 id="appTitle" class="text-2xl font-bold text-brand">دفتر حساباتي</h1>
+      </div>
+      <nav class="flex-1">
+        <ul class="space-y-2">
+          <li><a href="#dashboard" data-page="dashboard" class="nav-link block p-2 rounded-lg bg-gray-100 dark:bg-gray-700 font-semibold">لوحة البيانات</a></li>
+          <li><a href="#transactions" data-page="transactions" class="nav-link block p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">الحركات</a></li>
+          <li><a href="#add" data-page="add" class="nav-link block p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">إضافة حركة</a></li>
+          <li><a href="#management" data-page="management" class="nav-link block p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">الإدارة</a></li>
+          <li><a href="#commitments" data-page="commitments" class="nav-link block p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">الالتزامات والتحصيلات</a></li>
+        </ul>
+      </nav>
+      <div class="mt-4">
+        <button id="darkToggle" class="w-full text-left p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">الوضع الليلي</button>
+      </div>
+    </aside>
 
-function refreshCollectList(){
-  $('#collectList').innerHTML = collections.map((c,i)=>{
-    return `<div class="flex justify-between items-center"><div><div class="font-semibold">${c.name} · ${fmt(c.amount)} ج.م</div><div class="text-xs text-slate-500">التحصيل القادم: ${(c.nextDue||c.firstDue||'—')}</div></div><div><button data-collect-del="${c.id}" class="px-2 py-1 bg-red-100 rounded text-xs">حذف</button></div></div>`;
-  }).join('');
-}
+    <main class="flex-1 p-6 overflow-auto">
+      <!-- Mobile nav -->
+      <div class="mobile-nav fixed bottom-4 left-1/2 -translate-x-1/2 bg-white dark:bg-gray-800 border rounded-xl px-3 py-2 shadow-md z-50 md:hidden flex gap-2">
+        <button data-page="dashboard" class="nav-link px-3 py-2 rounded">🏠</button>
+        <button data-page="transactions" class="nav-link px-3 py-2 rounded">📋</button>
+        <button data-page="add" class="nav-link px-3 py-2 rounded bg-brand text-white">+</button>
+        <button data-page="management" class="nav-link px-3 py-2 rounded">⚙️</button>
+      </div>
 
-function renderTransactions(){
-  ensureSorted();
-  const q = $('#filterSearch').value.trim().toLowerCase();
-  const ft = $('#filterType').value;
-  const fa = $('#filterAccount').value;
-  const ff = $('#filterFrom').value;
-  const fto = $('#filterTo').value;
-  const rows = sortedLedger.filter(t=>{
-    if(q && !((t.desc||'').toLowerCase().includes(q) || (t.category||'').toLowerCase().includes(q))) return false;
-    if(ft !== 'all' && t.type !== ft) return false;
-    if(fa !== 'all' && t.account !== fa) return false;
-    if(ff && (t.date||'') < ff) return false;
-    if(fto && (t.date||'') > fto) return false;
-    return true;
+      <!-- Sections -->
+      <section id="dashboard-section" class="page-section">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-2xl font-extrabold">لوحة البيانات</h2>
+          <div class="flex items-center gap-3">
+            <div id="summaryBalance" class="text-sm text-gray-500 dark:text-gray-300"></div>
+            <div id="summaryAfter" class="text-sm text-gray-500 dark:text-gray-300"></div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div class="card p-4 rounded-lg bg-white dark:bg-gray-800 shadow">
+            <small class="text-sm text-gray-500 dark:text-gray-400">إجمالي الأرصدة</small>
+            <div id="totalBalance" class="text-2xl font-bold mt-2">0.00 ج.م</div>
+          </div>
+
+          <div class="card p-4 rounded-lg bg-white dark:bg-gray-800 shadow">
+            <small class="text-sm text-gray-500 dark:text-gray-400">الرصيد المتوقع</small>
+            <div id="balanceAfter" class="text-2xl font-bold mt-2">0.00 ج.م</div>
+            <div class="text-xs text-gray-400 mt-2">الأساس: الأرصدة الآن - المتبقي من التزامات الشهر + ما لم يُحصَّل من التحصيلات</div>
+          </div>
+
+          <div class="card p-4 rounded-lg bg-white dark:bg-gray-800 shadow">
+            <small class="text-sm text-gray-500 dark:text-gray-400">الشهر المحدد</small>
+            <div id="monthLabel" class="text-xl font-bold mt-2"></div>
+          </div>
+        </div>
+
+        <!-- Grid two by two -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+          <div class="card p-4 rounded-lg bg-white dark:bg-gray-800 shadow">
+            <div class="flex justify-between items-center">
+              <div>
+                <div class="text-sm text-gray-500">إجمالي التزامات الشهر الحالي</div>
+                <div id="commitThis_total" class="text-xl font-bold mt-2">0.00 ج.م</div>
+                <div class="text-xs text-gray-400">المتبقي: <span id="commitThis_remain">0.00</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card p-4 rounded-lg bg-white dark:bg-gray-800 shadow">
+            <div class="text-sm text-gray-500">إجمالي تحصيلات الشهر الحالي</div>
+            <div id="collectThis_total" class="text-xl font-bold mt-2">0.00 ج.م</div>
+            <div class="text-xs text-gray-400">لم يُحصّل: <span id="collectThis_remain">0.00</span></div>
+          </div>
+
+          <div class="card p-4 rounded-lg bg-white dark:bg-gray-800 shadow">
+            <div class="text-sm text-gray-500">التزامات الشهر القادم (المتبقي)</div>
+            <div id="commitNext_total" class="text-xl font-bold mt-2">0.00 ج.م</div>
+          </div>
+
+          <div class="card p-4 rounded-lg bg-white dark:bg-gray-800 shadow">
+            <div class="text-sm text-gray-500">تحصيلات الشهر القادم</div>
+            <div id="collectNext_total" class="text-xl font-bold mt-2">0.00 ج.م</div>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-4">
+          <div class="md:col-span-2 card p-4 rounded-lg bg-white dark:bg-gray-800 shadow">
+            <div class="flex justify-between items-center mb-3">
+              <div class="font-semibold">آخر 5 حركات</div>
+              <div class="text-xs text-gray-400">مرتبة بحسب تنفيذ (الأحدث أولًا)</div>
+            </div>
+            <div id="latestTx" class="space-y-2"></div>
+          </div>
+
+          <div class="card p-4 rounded-lg bg-white dark:bg-gray-800 shadow">
+            <div class="flex justify-between items-center mb-3">
+              <div class="font-semibold">استحقاقات قريبة</div>
+              <div class="text-xs text-gray-400">هذا الشهر و الشهر القادم</div>
+            </div>
+            <div id="dueSoonList" class="space-y-2"></div>
+            <div class="mt-3">
+              <canvas id="pieChart" width="300" height="200"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Transactions -->
+      <section id="transactions-section" class="page-section hidden">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-2xl font-extrabold">الحركات</h2>
+        </div>
+
+        <div class="card p-4 rounded-lg bg-white dark:bg-gray-800 shadow mb-4">
+          <div class="flex gap-2 flex-wrap mb-3">
+            <input id="filterSearch" placeholder="بحث بالوصف/الفئة" class="border p-2 rounded flex-1" />
+            <select id="filterType" class="border p-2 rounded"><option value="all">الكل</option><option value="income">دخل</option><option value="expense">مصروف</option></select>
+            <select id="filterAccount" class="border p-2 rounded"></select>
+            <input id="filterFrom" type="date" class="border p-2 rounded" />
+            <input id="filterTo" type="date" class="border p-2 rounded" />
+            <button id="clearFilters" class="px-3 py-2 bg-gray-100 rounded">مسح</button>
+          </div>
+
+          <div class="table-fixed overflow-auto">
+            <table class="w-full text-right">
+              <thead><tr class="text-sm text-gray-500"><th class="p-2">تاريخ التنفيذ</th><th class="p-2">تاريخ الاستحقاق</th><th class="p-2">الوصف</th><th class="p-2">الفئة</th><th class="p-2">الحساب</th><th class="p-2">المبلغ</th><th class="p-2">إجراءات</th></tr></thead>
+              <tbody id="txTableBody"></tbody>
+            </table>
+          </div>
+
+          <div class="flex items-center justify-center gap-2 mt-3">
+            <button id="prevPage" class="px-3 py-2 bg-gray-100 rounded">السابق</button>
+            <div id="pageInfo" class="text-sm text-gray-500">الصفحة 1</div>
+            <button id="nextPage" class="px-3 py-2 bg-gray-100 rounded">التالي</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Add -->
+      <section id="add-section" class="page-section hidden">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-2xl font-extrabold">إضافة حركة</h2>
+        </div>
+
+        <div class="card p-4 rounded-lg bg-white dark:bg-gray-800 shadow">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div>
+              <label class="text-sm">النوع</label>
+              <select id="add_type" class="border p-2 rounded w-full"><option value="expense">مصروف</option><option value="income">دخل</option></select>
+            </div>
+            <div>
+              <label class="text-sm">المبلغ</label>
+              <input id="add_amount" type="number" step="0.01" class="border p-2 rounded w-full" />
+            </div>
+            <div>
+              <label class="text-sm">تاريخ/وقت التنفيذ (اختياري)</label>
+              <input id="add_exec" type="datetime-local" class="border p-2 rounded w-full" />
+            </div>
+
+            <div>
+              <label class="text-sm">تاريخ الاستحقاق</label>
+              <input id="add_date" type="date" class="border p-2 rounded w-full" />
+            </div>
+            <div>
+              <label class="text-sm">الحساب</label>
+              <select id="add_account" class="border p-2 rounded w-full"></select>
+            </div>
+            <div>
+              <label class="text-sm">الفئة</label>
+              <select id="add_category" class="border p-2 rounded w-full"></select>
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="text-sm">الوصف</label>
+              <input id="add_desc" class="border p-2 rounded w-full" />
+            </div>
+            <div>
+              <label class="text-sm">ربط الالتزام (اختياري)</label>
+              <select id="add_linkCommit" class="border p-2 rounded w-full"><option value="">— بدون —</option></select>
+            </div>
+
+            <div class="md:col-span-3 flex gap-2">
+              <button id="add_save" class="px-4 py-2 bg-brand text-white rounded">حفظ الحركة</button>
+              <button id="add_reset" class="px-4 py-2 bg-gray-100 rounded">إفراغ</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Management & Commitments -->
+      <section id="management-section" class="page-section hidden">
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="card p-4 rounded-lg bg-white dark:bg-gray-800 shadow">
+            <h3 class="font-semibold mb-3">الحسابات</h3>
+            <div class="grid grid-cols-1 gap-2 mb-3">
+              <input id="acc_name" placeholder="اسم الحساب" class="border p-2 rounded" />
+              <input id="acc_open" placeholder="رصيد افتتاحي" type="number" class="border p-2 rounded" />
+              <div class="flex gap-2">
+                <button id="btn_add_acc" class="px-3 py-2 bg-gray-800 text-white rounded">إضافة</button>
+                <button id="btn_refresh_acc" class="px-3 py-2 bg-gray-100 rounded">تحديث</button>
+              </div>
+            </div>
+            <div id="accountsList" class="space-y-2 text-sm"></div>
+          </div>
+
+          <div class="card p-4 rounded-lg bg-white dark:bg-gray-800 shadow">
+            <h3 class="font-semibold mb-3">الفئات</h3>
+            <div class="grid grid-cols-1 gap-2 mb-3">
+              <input id="cat_name" placeholder="اسم الفئة" class="border p-2 rounded" />
+              <select id="cat_type" class="border p-2 rounded"><option value="expense">مصروف</option><option value="income">دخل</option></select>
+              <div class="flex gap-2">
+                <button id="btn_add_cat" class="px-3 py-2 bg-gray-800 text-white rounded">إضافة</button>
+                <button id="btn_refresh_cat" class="px-3 py-2 bg-gray-100 rounded">تحديث</button>
+              </div>
+            </div>
+            <div id="catsList" class="space-y-2 text-sm"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="commitments-section" class="page-section hidden mt-4">
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="card p-4 rounded-lg bg-white dark:bg-gray-800 shadow">
+            <h3 class="font-semibold mb-3">الالتزامات الشهرية</h3>
+            <div class="grid grid-cols-1 gap-2 mb-3">
+              <input id="c_name" placeholder="اسم الالتزام" class="border p-2 rounded" />
+              <input id="c_amount" type="number" placeholder="المبلغ" class="border p-2 rounded" />
+              <input id="c_first" type="date" class="border p-2 rounded" />
+              <div class="flex gap-2 items-center">
+                <label class="inline-flex items-center"><input id="c_rec" type="checkbox" class="ml-2"/>يتكرر شهريًا</label>
+                <input id="c_end" type="date" class="border p-2 rounded" placeholder="ينتهي في" />
+              </div>
+              <div class="flex gap-2">
+                <button id="btn_add_commit" class="px-3 py-2 bg-gray-800 text-white rounded">إضافة</button>
+                <button id="btn_refresh_commit" class="px-3 py-2 bg-gray-100 rounded">تحديث</button>
+              </div>
+            </div>
+            <div id="commitList" class="space-y-2 text-sm"></div>
+          </div>
+
+          <div class="card p-4 rounded-lg bg-white dark:bg-gray-800 shadow">
+            <h3 class="font-semibold mb-3">التحصيلات</h3>
+            <div class="grid grid-cols-1 gap-2 mb-3">
+              <input id="col_name" placeholder="اسم التحصيل" class="border p-2 rounded" />
+              <input id="col_amount" type="number" placeholder="المبلغ" class="border p-2 rounded" />
+              <input id="col_first" type="date" class="border p-2 rounded" />
+              <div class="flex gap-2 items-center">
+                <label class="inline-flex items-center"><input id="col_rec" type="checkbox" class="ml-2"/>يتكرر شهريًا</label>
+                <input id="col_end" type="date" class="border p-2 rounded" placeholder="ينتهي في" />
+              </div>
+              <div class="flex gap-2">
+                <button id="btn_add_col" class="px-3 py-2 bg-gray-800 text-white rounded">إضافة</button>
+                <button id="btn_refresh_col" class="px-3 py-2 bg-gray-100 rounded">تحديث</button>
+              </div>
+            </div>
+            <div id="collectList" class="space-y-2 text-sm"></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+  `;
+
+  /* ===== Chart container setup (Chart.js) ===== */
+  let pieChart = null;
+
+  /* ===== Render / UI helpers ===== */
+  function refreshAccountDisplays(){
+    $('#accountsList').innerHTML = accounts.map((a,i)=>`<div class="flex justify-between items-center"><div>${a.name} · <span class="text-gray-500">${fmt(a.opening)} ج.م</span></div><div><button data-acc-index="${i}" class="btn-edit-acc text-xs px-2 py-1 bg-gray-100 rounded">تعديل</button> <button data-acc-del="${i}" class="btn-del-acc text-xs px-2 py-1 bg-red-100 rounded">حذف</button></div></div>`).join('');
+    $('#add_account').innerHTML = accounts.map(a=>`<option value="${a.name}">${a.name}</option>`).join('');
+    $('#filterAccount').innerHTML = `<option value="all">كل الحسابات</option>` + accounts.map(a=>`<option value="${a.name}">${a.name}</option>`).join('');
+  }
+
+  function refreshCatDisplays(){
+    $('#catsList').innerHTML = categories.map((c,i)=>`<div class="flex justify-between items-center"><div>${c.name} · <span class="text-gray-500">${c.type}</span></div><div><button data-cat-index="${i}" class="btn-edit-cat text-xs px-2 py-1 bg-gray-100 rounded">تعديل</button> <button data-cat-del="${i}" class="btn-del-cat text-xs px-2 py-1 bg-red-100 rounded">حذف</button></div></div>`).join('');
+    $('#add_category').innerHTML = categories.map(c=>`<option value="${c.name}">${c.name}</option>`).join('');
+  }
+
+  function refreshCommitDisplays(){
+    $('#commitList').innerHTML = commitments.map(c=>{
+      const st = getCommitmentState(c);
+      const due = st.done ? '—' : (st.currentDueYm || c.firstDue.slice(0,7));
+      const rem = st.done ? 0 : (st.remaining||0);
+      return `<div class="flex justify-between items-center"><div><div class="font-semibold">${c.name} · ${fmt(c.amount)} ج.م</div><div class="text-xs text-gray-500">الاستحقاق: ${due}</div></div><div><button data-commit-pay="${c.id}" class="px-2 py-1 bg-green-100 rounded text-xs">سداد</button> <button data-commit-del="${c.id}" class="px-2 py-1 bg-red-100 rounded text-xs">حذف</button></div></div>`;
+    }).join('');
+    // fill add_linkCommit options for current month
+    const ym = (new Date()).toISOString().slice(0,7);
+    const opts = commitments.filter(c=>{ const st=getCommitmentState(c); return !st.done && st.currentDueYm===ym; }).map(c=>`<option value="${c.id}">${c.name} — أصل ${fmt(c.amount)} • متبقي ${fmt(getCommitmentState(c).remaining||0)}</option>`).join('');
+    $('#add_linkCommit').innerHTML = `<option value="">— بدون —</option>` + opts;
+  }
+
+  function refreshCollectDisplays(){
+    $('#collectList').innerHTML = collections.map(c=>{
+      return `<div class="flex justify-between items-center"><div><div class="font-semibold">${c.name} · ${fmt(c.amount)} ج.م</div><div class="text-xs text-gray-500">التحصيل القادم: ${(c.nextDue||c.firstDue||'—')}</div></div><div><button data-collect-now="${c.id}" class="px-2 py-1 bg-blue-100 rounded text-xs">تحصيل الآن</button> <button data-collect-del="${c.id}" class="px-2 py-1 bg-red-100 rounded text-xs">حذف</button></div></div>`;
+    }).join('');
+  }
+
+  /* Draw Dashboard numbers and charts */
+  function drawDashboard(){
+    computeBalances();
+    let totalBal = 0;
+    for(const v of (cachedBalances||new Map()).values()) totalBal += v;
+    $('#totalBalance').textContent = fmt(totalBal) + ' ج.م';
+    $('#summaryBalance').textContent = 'إجمالي الأرصدة: ' + fmt(totalBal) + ' ج.م';
+
+    const now = new Date(); const ym = now.toISOString().slice(0,7);
+    const next = new Date(now.getFullYear(), now.getMonth()+1,1).toISOString().slice(0,7);
+
+    let commitThis_total = 0, commitThis_remain = 0;
+    for(const c of commitments){
+      const st = getCommitmentState(c);
+      if(!st.done && st.currentDueYm === ym){
+        commitThis_total += Number(c.amount||0);
+        commitThis_remain += Number(st.remaining||0);
+      }
+    }
+
+    let collectThis_target = 0;
+    for(const c of collections){ const dueYm = (c.nextDue||c.firstDue||'').slice(0,7); if(dueYm === ym) collectThis_target += Number(c.amount||0); }
+    const collectedThis = collectedCollectionsForYm(ym);
+    const collectThis_not = Math.max(0, collectThis_target - collectedThis);
+
+    let commitNext_total = 0;
+    for(const c of commitments){ const st = getCommitmentState(c); if(!st.done && st.currentDueYm === next) commitNext_total += Number(st.remaining||0); }
+    let collectNext_total = 0;
+    for(const c of collections){ const dueYm = (c.nextDue||c.firstDue||'').slice(0,7); if(dueYm === next) collectNext_total += Number(c.amount||0); }
+
+    const after = totalBal - commitThis_remain + collectThis_not;
+
+    $('#balanceAfter').textContent = fmt(after) + ' ج.م';
+    $('#commitThis_total').textContent = fmt(commitThis_total) + ' ج.م';
+    $('#commitThis_remain').textContent = fmt(commitThis_remain) + ' ج.م';
+    $('#collectThis_total').textContent = fmt(collectThis_target) + ' ج.م';
+    $('#collectThis_remain').textContent = fmt(collectThis_not) + ' ج.م';
+    $('#commitNext_total').textContent = fmt(commitNext_total) + ' ج.م';
+    $('#collectNext_total').textContent = fmt(collectNext_total) + ' ج.م';
+    $('#monthLabel').textContent = new Date().toLocaleDateString('ar-EG',{month:'long',year:'numeric'});
+
+    // latest 5
+    ensureSorted();
+    const latest = sortedLedger.slice(0,5);
+    $('#latestTx').innerHTML = latest.map(t=>{
+      const execTxt = t.exec ? new Date(t.exec).toLocaleString('ar-EG') : (t.created ? new Date(t.created).toLocaleString('ar-EG') : '—');
+      return `<div class="flex justify-between items-center border-b pb-2"><div><div class="font-semibold">${t.desc||'—'}</div><div class="text-xs text-gray-500">${t.category||''} • ${t.account||''}</div></div><div class="text-right"><div class="${t.type==='income'?'text-green-600':'text-red-600'} font-bold">${t.type==='income'?'+':'-'}${fmt(t.amount)}</div><div class="text-xs text-gray-400">${execTxt}</div></div></div>`;
+    }).join('');
+
+    // due soon list (this month + next)
+    const dueList = commitments.map(c=>{
+      const st = getCommitmentState(c);
+      if(st.done) return null;
+      return { id:c.id, name:c.name, due:st.currentDueYm, remaining:st.remaining };
+    }).filter(Boolean).sort((a,b)=> (a.due||'').localeCompare(b.due||''));
+    $('#dueSoonList').innerHTML = dueList.slice(0,8).map(d=>`<div class="flex justify-between items-center"><div><div class="font-semibold">${d.name}</div><div class="text-xs text-gray-500">${d.due}</div></div><div class="text-right"><div class="font-bold text-red-600">${fmt(d.remaining)} ج.م</div></div></div>`).join('');
+
+    // pie chart: expense categories this month
+    const agg = {};
+    for(const t of ledger){
+      const when = (t.exec||t.created||t.date||'').slice(0,7);
+      if(when !== ym) continue;
+      if(t.type !== 'expense') continue;
+      const key = t.category || 'غير مصنف';
+      agg[key] = (agg[key]||0) + Number(t.amount||0);
+    }
+    const labels = Object.keys(agg);
+    const data = labels.map(l=>agg[l]);
+    const ctx = document.getElementById('pieChart').getContext('2d');
+    if(pieChart) pieChart.destroy();
+    pieChart = new Chart(ctx, { type:'pie', data:{ labels, datasets:[{ data, backgroundColor: labels.map((_,i)=>['#ef4444','#f59e0b','#10b981','#0ea5e9','#7c3aed'][i%5]) }] }, options:{plugins:{legend:{position:'bottom'}}} );
+  }
+
+  /* ===== Transactions render with paging ===== */
+  let pageSize = 10, currentPage = 1;
+  function renderTransactions(){
+    ensureSorted();
+    const q = $('#filterSearch').value.trim().toLowerCase();
+    const ft = $('#filterType').value;
+    const fa = $('#filterAccount').value;
+    const ff = $('#filterFrom').value;
+    const fto = $('#filterTo').value;
+    const rows = sortedLedger.filter(t=>{
+      if(q && !((t.desc||'').toLowerCase().includes(q) || (t.category||'').toLowerCase().includes(q))) return false;
+      if(ft !== 'all' && t.type !== ft) return false;
+      if(fa !== 'all' && t.account !== fa) return false;
+      if(ff && (t.date||'') < ff) return false;
+      if(fto && (t.date||'') > fto) return false;
+      return true;
+    });
+    const total = rows.length;
+    const pages = Math.max(1, Math.ceil(total/pageSize));
+    if(currentPage > pages) currentPage = pages;
+    const start = (currentPage-1)*pageSize;
+    const pageRows = rows.slice(start, start+pageSize);
+    $('#txTableBody').innerHTML = pageRows.map(t=>{
+      const execTxt = t.exec ? new Date(t.exec).toLocaleString('ar-EG') : (t.created ? new Date(t.created).toLocaleString('ar-EG') : '—');
+      return `<tr class="border-b"><td class="p-2 align-top">${execTxt}</td><td class="p-2 align-top">${t.date||'—'}</td><td class="p-2 align-top">${t.desc||'—'}</td><td class="p-2 align-top">${t.category||'—'}</td><td class="p-2 align-top">${t.account||'—'}</td><td class="p-2 align-top font-bold ${t.type==='income'?'text-green-600':'text-red-600'}">${t.type==='income'?'+':'-'}${fmt(t.amount)}</td><td class="p-2 align-top"><button data-edit-id="${t.id}" class="px-2 py-1 bg-gray-100 rounded text-xs">تعديل</button> <button data-del-id="${t.id}" class="px-2 py-1 bg-red-100 rounded text-xs">حذف</button></td></tr>`;
+    }).join('');
+    $('#pageInfo').textContent = `الصفحة ${currentPage} من ${pages} — إجمالي ${total}`;
+  }
+
+  /* ===== Add transaction logic ===== */
+  $('#add_save').addEventListener('click', ()=>{
+    const type = $('#add_type').value;
+    const amount = Number($('#add_amount').value||0);
+    const execVal = $('#add_exec').value;
+    const exec = execVal ? new Date(execVal).toISOString() : null;
+    const date = $('#add_date').value || (exec? new Date(exec).toISOString().slice(0,10): new Date().toISOString().slice(0,10));
+    const account = $('#add_account').value;
+    const category = $('#add_category').value;
+    const desc = $('#add_desc').value || '';
+    const linkCommit = $('#add_linkCommit').value || '';
+    if(!account || !category || !amount || amount<=0){ alert('من فضلك تأكد من الحساب/الفئة/المبلغ'); return; }
+    const tx = { id:eid(), created: new Date().toISOString(), exec: exec || new Date().toISOString(), date: date, desc, type, amount: Number(amount), account, category };
+    if(linkCommit && type==='expense'){ tx.linkCommitId = linkCommit; }
+    ledger.push(tx); persist(KEY, ledger); markDirty(); renderAll();
+    // clear
+    $('#add_amount').value=''; $('#add_exec').value=''; $('#add_date').value=''; $('#add_desc').value=''; $('#add_linkCommit').value='';
+    gotoPage('transactions');
   });
-  const total = rows.length;
-  const pages = Math.max(1, Math.ceil(total/pageSize));
-  if(currentPage > pages) currentPage = pages;
-  const start = (currentPage-1)*pageSize;
-  const pageRows = rows.slice(start, start+pageSize);
-  $('#txTableBody').innerHTML = pageRows.map(t=>{
-    const execTxt = t.exec ? new Date(t.exec).toLocaleString('ar-EG') : (t.created? new Date(t.created).toLocaleString('ar-EG') : '—');
-    return `<tr class="border-b"><td class="p-2">${execTxt}</td><td class="p-2">${t.date||'—'}</td><td class="p-2">${t.desc||'—'}</td><td class="p-2">${t.category||'—'}</td><td class="p-2">${t.account||'—'}</td><td class="p-2 font-bold ${t.type==='income'?'text-green-600':'text-red-600'}">${t.type==='income'?'+':'-'}${fmt(t.amount)}</td><td class="p-2"><button data-edit-id="${t.id}" class="px-2 py-1 bg-slate-100 rounded text-xs">تعديل</button> <button data-del-id="${t.id}" class="px-2 py-1 bg-red-100 rounded text-xs">حذف</button></td></tr>`;
-  }).join('');
-  $('#pageInfo').textContent = `الصفحة ${currentPage} من ${pages} — إجمالي ${total}`;
-}
 
-/* add tx */
-$('#add_save').addEventListener('click', ()=>{
-  const type = $('#add_type').value;
-  const amount = Number($('#add_amount').value||0);
-  const exec = $('#add_exec').value ? new Date($('#add_exec').value).toISOString() : null;
-  const date = $('#add_date').value || (exec? new Date(exec).toISOString().slice(0,10) : new Date().toISOString().slice(0,10));
-  const account = $('#add_account').value;
-  const category = $('#add_category').value;
-  const desc = $('#add_desc').value || '';
-  const linkCommit = $('#add_linkCommit').value || '';
-  if(!account || !category || !amount || amount<=0){ alert('من فضلك تأكد من الحساب/الفئة/المبلغ'); return; }
-  const tx = { id:eid(), created: new Date().toISOString(), exec: exec || new Date().toISOString(), date: date, desc, type, amount: Number(amount), account, category };
-  if(linkCommit && type==='expense'){ tx.linkCommitId = linkCommit; }
-  // if linkCommit -> keep source of truth; payments inferred from ledger
-  ledger.push(tx); persist(KEY, ledger); markDirty(); renderAll();
-  // clear
-  $('#add_amount').value=''; $('#add_exec').value=''; $('#add_date').value=''; $('#add_desc').value=''; $('#add_linkCommit').value='';
-});
+  $('#add_reset').addEventListener('click', ()=>{
+    $('#add_amount').value=''; $('#add_exec').value=''; $('#add_date').value=''; $('#add_desc').value=''; $('#add_linkCommit').value='';
+  });
 
-/*Paging and filters events*/
-$('#filterSearch').addEventListener('input', ()=>{ currentPage = 1; renderTransactions(); });
-$('#filterType').addEventListener('change', ()=>{ currentPage = 1; renderTransactions(); });
-$('#filterAccount').addEventListener('change', ()=>{ currentPage = 1; renderTransactions(); });
-$('#filterFrom').addEventListener('change', ()=>{ currentPage = 1; renderTransactions(); });
-$('#filterTo').addEventListener('change', ()=>{ currentPage = 1; renderTransactions(); });
-$('#clearFilters').addEventListener('click', ()=>{ $('#filterSearch').value=''; $('#filterType').value='all'; $('#filterAccount').value='all'; $('#filterFrom').value=''; $('#filterTo').value=''; currentPage=1; renderTransactions(); });
-$('#prevPage').addEventListener('click', ()=>{ if(currentPage>1) currentPage--; renderTransactions(); });
-$('#nextPage').addEventListener('click', ()=>{ currentPage++; renderTransactions(); });
+  /* ===== Filters & paging events ===== */
+  $('#filterSearch').addEventListener('input', ()=>{ currentPage=1; renderTransactions(); });
+  $('#filterType').addEventListener('change', ()=>{ currentPage=1; renderTransactions(); });
+  $('#filterAccount').addEventListener('change', ()=>{ currentPage=1; renderTransactions(); });
+  $('#filterFrom').addEventListener('change', ()=>{ currentPage=1; renderTransactions(); });
+  $('#filterTo').addEventListener('change', ()=>{ currentPage=1; renderTransactions(); });
+  $('#clearFilters').addEventListener('click', ()=>{ $('#filterSearch').value=''; $('#filterType').value='all'; $('#filterAccount').value='all'; $('#filterFrom').value=''; $('#filterTo').value=''; currentPage=1; renderTransactions(); });
+  $('#prevPage').addEventListener('click', ()=>{ if(currentPage>1) currentPage--; renderTransactions(); });
+  $('#nextPage').addEventListener('click', ()=>{ currentPage++; renderTransactions(); });
 
-/* edit / del via delegation */
-document.addEventListener('click', (e)=>{
-  const del = e.target.closest('[data-del-id]');
-  const edit = e.target.closest('[data-edit-id]');
-  if(del){ const id = del.getAttribute('data-del-id'); if(confirm('حذف الحركة؟')){ ledger = ledger.filter(t=>t.id!==id); persist(KEY, ledger); markDirty(); renderAll(); } }
-  if(edit){ const id = edit.getAttribute('data-edit-id'); const tx = ledger.find(t=>t.id===id); if(!tx) return; // populate add form for editing
-    $('#add_type').value = tx.type; $('#add_amount').value = tx.amount; if(tx.exec) { const d = new Date(tx.exec); const tz = d.getTimezoneOffset()*60000; const local = new Date(d - tz).toISOString().slice(0,16); $('#add_exec').value = local; } else $('#add_exec').value=''; $('#add_date').value = tx.date || ''; $('#add_account').value = tx.account || ''; $('#add_category').value = tx.category || ''; $('#add_desc').value = tx.desc || ''; $('#add_linkCommit').value = tx.linkCommitId||''; // remove old and open add page to edit - simpler: delete old and user saves new
-    if(confirm('ستفتح نافذة التعديل: سيتم حذف الحركة القديمة وإدخال نسخة جديدة عند الضغط على حفظ. موافق؟')){ ledger = ledger.filter(t=>t.id!==id); persist(KEY, ledger); markDirty(); renderAll(); gotoPage('add'); } }
-});
+  /* ===== Global click delegation for edit/delete + commitments/collections actions ===== */
+  document.addEventListener('click', (e)=>{
+    const del = e.target.closest('[data-del-id]');
+    const edit = e.target.closest('[data-edit-id]');
+    if(del){ const id = del.getAttribute('data-del-id'); if(confirm('حذف الحركة؟')){ ledger = ledger.filter(t=>t.id!==id); persist(KEY, ledger); markDirty(); renderAll(); } }
+    if(edit){ const id = edit.getAttribute('data-edit-id'); const tx = ledger.find(t=>t.id===id); if(!tx) return;
+      // populate add form and remove old tx (simple edit flow)
+      $('#add_type').value = tx.type; $('#add_amount').value = tx.amount; if(tx.exec){ const d=new Date(tx.exec); const tz=d.getTimezoneOffset()*60000; $('#add_exec').value = new Date(d - tz).toISOString().slice(0,16); } else $('#add_exec').value='';
+      $('#add_date').value = tx.date || ''; $('#add_account').value = tx.account || ''; $('#add_category').value = tx.category || ''; $('#add_desc').value = tx.desc || ''; $('#add_linkCommit').value = tx.linkCommitId||'';
+      if(confirm('ستفتح صفحة الإضافة لتعديل الحركة. سيتم حذف النسخة القديمة الآن. موافق؟')){ ledger = ledger.filter(t=>t.id!==id); persist(KEY, ledger); markDirty(); renderAll(); gotoPage('add'); }
+    }
 
-/* accounts management */
-$('#btn_add_acc').addEventListener('click', ()=>{
-  const name = $('#acc_name').value.trim(); const opening = Number($('#acc_open').value||0);
-  if(!name){ alert('ادخل اسم الحساب'); return; }
-  accounts.push({name, opening: Number(opening||0)}); persist(ACC_KEY, accounts); refreshAccountFilter(); renderAll();
-  $('#acc_name').value=''; $('#acc_open').value='';
-});
+    // accounts deletion
+    const accDel = e.target.closest('[data-acc-del]');
+    if(accDel){ const i = Number(accDel.getAttribute('data-acc-del')); if(confirm('حذف الحساب؟ (الحركات القديمة ستبقى)')){ accounts.splice(i,1); persist(ACC_KEY, accounts); refreshAccountDisplays(); renderAll(); } }
+    // categories deletion
+    const catDel = e.target.closest('[data-cat-del]');
+    if(catDel){ const i = Number(catDel.getAttribute('data-cat-del')); if(confirm('حذف الفئة؟')){ categories.splice(i,1); persist(CAT_KEY, categories); refreshCatDisplays(); renderAll(); } }
+    // commit delete
+    const commitDel = e.target.closest('[data-commit-del]');
+    if(commitDel){ const id = commitDel.getAttribute('data-commit-del'); if(confirm('حذف الالتزام؟ (ستبقى أي دفعات سُجلت في الحركات)')){ commitments = commitments.filter(c=>c.id!==id); persist(COM_KEY, commitments); refreshCommitDisplays(); renderAll(); } }
+    // commit pay -> create ledger expense for remaining and advance nextDue (handled by derived state)
+    const commitPay = e.target.closest('[data-commit-pay]');
+    if(commitPay){
+      const id = commitPay.getAttribute('data-commit-pay');
+      const c = commitments.find(x=>x.id===id); if(!c) return;
+      const st = getCommitmentState(c); if(st.done){ alert('لا يوجد مبلغ متبقٍ لهذا الالتزام.'); return; }
+      // choose account
+      const accIndex = prompt('اختر رقم الحساب للسداد:\n' + accounts.map((a,i)=>`${i+1}. ${a.name}`).join('\n'));
+      if(!accIndex) return;
+      const idx = parseInt(accIndex,10)-1; if(isNaN(idx)||!accounts[idx]){ alert('اختيار غير صحيح'); return; }
+      const accName = accounts[idx].name;
+      const dateStr = st.currentDueYm + '-01';
+      const remain = st.remaining;
+      if(!confirm(`سداد ${fmt(remain)} ج.م من "${accName}" للالتزام "${c.name}"؟`)) return;
+      // create expense tx linked to commit
+      const tx = { id:eid(), created: new Date().toISOString(), exec: new Date().toISOString(), date: dateStr, desc: `${c.name} (سداد الالتزام)`, type:'expense', amount: remain, account: accName, category:'التزامات شهرية', linkCommitId:c.id };
+      ledger.push(tx); persist(KEY, ledger); markDirty();
+      // no manual nextDue update here — state is derived from ledger
+      renderAll();
+    }
 
-/* categories */
-$('#btn_add_cat').addEventListener('click', ()=>{
-  const name = $('#cat_name').value.trim(); const type = $('#cat_type').value;
-  if(!name){ alert('ادخل اسم الفئة'); return; }
-  categories.push({name,type}); persist(CAT_KEY, categories); refreshCatSelect(); renderAll();
-  $('#cat_name').value='';
-});
+    // collect now
+    const collectNow = e.target.closest('[data-collect-now]');
+    if(collectNow){
+      const id = collectNow.getAttribute('data-collect-now');
+      const c = collections.find(x=>x.id===id); if(!c) return;
+      const accIndex = prompt('اختر رقم الحساب للتحصيل إليه:\n' + accounts.map((a,i)=>`${i+1}. ${a.name}`).join('\n'));
+      if(!accIndex) return;
+      const idx = parseInt(accIndex,10)-1; if(isNaN(idx)||!accounts[idx]){ alert('اختيار غير صحيح'); return; }
+      const accName = accounts[idx].name;
+      const execISO = new Date().toISOString();
+      const due = c.nextDue || c.firstDue || execISO.slice(0,10);
+      ledger.push({ id:eid(), created: new Date().toISOString(), exec: execISO, date: due, desc: `${c.name} (تحصيل)`, type:'income', amount:c.amount, account:accName, category:'تحصيلات شهرية', sourceCollectionId:`collect_${c.id}` });
+      persist(KEY, ledger); markDirty();
+      // advance nextDue if recurring
+      if(c.recurring){
+        const next = addMonthsPreserve(parseDateYmd(c.nextDue||c.firstDue),1);
+        if(c.endAt && next > parseDateYmd(c.endAt)){ collections = collections.filter(x=>x.id!==id); } else { const it = collections.find(x=>x.id===id); if(it) it.nextDue = formatYmd(next); }
+      } else { collections = collections.filter(x=>x.id!==id); }
+      persist(COL_KEY, collections);
+      refreshCollectDisplays(); renderAll();
+    }
 
-/* commitments */
-$('#btn_add_commit').addEventListener('click', ()=>{
-  const name = $('#c_name').value.trim(); const amount = Number($('#c_amount').value||0); const first = $('#c_first').value; const rec = $('#c_rec').checked; const end = $('#c_end').value||null;
-  if(!name || !amount || !first){ alert('ادخل اسم + مبلغ + تاريخ'); return; }
-  // compute nextDue as first or advanced to current month
-  let firstDate = parseDateYmd(first);
-  let next = new Date(firstDate.getTime()); next.setHours(0,0,0,0);
-  const today = new Date(); today.setHours(0,0,0,0);
-  while(next < today){
-    const candidate = addMonthsPreserve(next,1);
-    if(rec && end && candidate > parseDateYmd(end)) break;
-    next = candidate;
-    if(!rec) break;
+    // collect delete
+    const collectDel = e.target.closest('[data-collect-del]');
+    if(collectDel){ const id = collectDel.getAttribute('data-collect-del'); if(confirm('حذف التحصيل؟')){ collections = collections.filter(x=>x.id!==id); persist(COL_KEY, collections); refreshCollectDisplays(); renderAll(); } }
+  });
+
+  /* ===== Accounts / categories / commit / collect add handlers ===== */
+  $('#btn_add_acc').addEventListener('click', ()=>{
+    const name = $('#acc_name').value.trim(); const opening = Number($('#acc_open').value||0);
+    if(!name){ alert('ادخل اسم الحساب'); return; }
+    accounts.push({name, opening: Number(opening||0)}); persist(ACC_KEY, accounts); refreshAccountDisplays(); renderAll();
+    $('#acc_name').value=''; $('#acc_open').value='';
+  });
+
+  $('#btn_add_cat').addEventListener('click', ()=>{
+    const name = $('#cat_name').value.trim(); const type = $('#cat_type').value;
+    if(!name){ alert('ادخل اسم الفئة'); return; }
+    categories.push({name,type}); persist(CAT_KEY, categories); refreshCatDisplays(); renderAll();
+    $('#cat_name').value='';
+  });
+
+  $('#btn_add_commit').addEventListener('click', ()=>{
+    const name = $('#c_name').value.trim(); const amount = Number($('#c_amount').value||0); const first = $('#c_first').value; const rec = $('#c_rec').checked; const end = $('#c_end').value||null;
+    if(!name || !amount || !first){ alert('ادخل اسم + مبلغ + تاريخ'); return; }
+    let firstDate = parseDateYmd(first); let next = new Date(firstDate.getTime()); next.setHours(0,0,0,0);
+    const today = new Date(); today.setHours(0,0,0,0);
+    while(next < today){ const candidate = addMonthsPreserve(next,1); if(rec && end && candidate > parseDateYmd(end)) break; next = candidate; if(!rec) break; }
+    const commit = { id:eid(), name, amount: Number(amount), firstDue: formatYmd(firstDate), recurring: !!rec, endAt: rec ? (end||null): null, nextDue: formatYmd(next) };
+    commitments.push(commit); persist(COM_KEY, commitments); refreshCommitDisplays(); renderAll();
+    $('#c_name').value=''; $('#c_amount').value=''; $('#c_first').value=''; $('#c_rec').checked=false; $('#c_end').value='';
+  });
+
+  $('#btn_add_col').addEventListener('click', ()=>{
+    const name = $('#col_name').value.trim(); const amount = Number($('#col_amount').value||0); const first = $('#col_first').value; const rec = $('#col_rec').checked; const end = $('#col_end').value||null;
+    if(!name || !amount || !first){ alert('ادخل اسم + مبلغ + تاريخ'); return; }
+    let firstDate = parseDateYmd(first); let next = new Date(firstDate.getTime()); next.setHours(0,0,0,0);
+    const today = new Date(); today.setHours(0,0,0,0);
+    while(next < today){ const candidate = addMonthsPreserve(next,1); if(rec && end && candidate > parseDateYmd(end)) break; next = candidate; if(!rec) break; }
+    const item = { id:eid(), name, amount: Number(amount), firstDue: formatYmd(firstDate), recurring: !!rec, endAt: rec ? (end||null): null, nextDue: formatYmd(next) };
+    collections.push(item); persist(COL_KEY, collections); refreshCollectDisplays(); renderAll();
+    $('#col_name').value=''; $('#col_amount').value=''; $('#col_first').value=''; $('#col_rec').checked=false; $('#col_end').value='';
+  });
+
+  /* ===== Navigation + Collapsibles + Theme ===== */
+  function gotoPage(p){
+    currentPage = 1;
+    $('#filterSearch').value=''; $('#filterType').value='all'; $('#filterAccount').value='all'; $('#filterFrom').value=''; $('#filterTo').value='';
+    $$('.page-section').forEach(el=>el.classList.add('hidden'));
+    const mapping = { dashboard:'dashboard-section', transactions:'transactions-section', add:'add-section', management:'management-section', commitments:'commitments-section' };
+    const id = mapping[p] || 'dashboard-section';
+    const el = document.getElementById(id);
+    if(el) el.classList.remove('hidden');
+    // set active link style
+    $$('.nav-link').forEach(n=>n.classList.remove('bg-gray-100','dark:bg-gray-700','font-semibold'));
+    $$('.nav-link[data-page="'+p+'"]').forEach(n=>n.classList.add('bg-gray-100','dark:bg-gray-700','font-semibold'));
   }
-  const commit = { id: eid(), name, amount: Number(amount), firstDue: formatYmd(firstDate), recurring: !!rec, endAt: rec ? (end||null): null, nextDue: formatYmd(next) };
-  commitments.push(commit); persist(COM_KEY, commitments); refreshCommitList(); renderAll();
-  $('#c_name').value=''; $('#c_amount').value=''; $('#c_first').value=''; $('#c_rec').checked=false; $('#c_end').value='';
-});
-
-/* collections */
-$('#btn_add_col').addEventListener('click', ()=>{
-  const name = $('#col_name').value.trim(); const amount = Number($('#col_amount').value||0); const first = $('#col_first').value; const rec = $('#col_rec').checked; const end = $('#col_end').value||null;
-  if(!name || !amount || !first){ alert('ادخل اسم + مبلغ + تاريخ'); return; }
-  let firstDate = parseDateYmd(first);
-  let next = new Date(firstDate.getTime()); next.setHours(0,0,0,0);
-  const today = new Date(); today.setHours(0,0,0,0);
-  while(next < today){
-    const candidate = addMonthsPreserve(next,1);
-    if(rec && end && candidate > parseDateYmd(end)) break;
-    next = candidate;
-    if(!rec) break;
+  function setupNavigation(){
+    $$('.nav-link').forEach(b=>{
+      b.addEventListener('click', (ev)=>{
+        ev.preventDefault();
+        const page = b.getAttribute('data-page');
+        gotoPage(page);
+      });
+    });
   }
-  const item = { id: eid(), name, amount: Number(amount), firstDue: formatYmd(firstDate), recurring: !!rec, endAt: rec ? (end||null): null, nextDue: formatYmd(next) };
-  collections.push(item); persist(COL_KEY, collections); refreshCollectList(); renderAll();
-  $('#col_name').value=''; $('#col_amount').value=''; $('#col_first').value=''; $('#col_rec').checked=false; $('#col_end').value='';
-});
 
-/* handle deletions from lists */
-document.addEventListener('click', (e)=>{
-  const accDel = e.target.closest('[data-acc-del]');
-  if(accDel){ const i=Number(accDel.getAttribute('data-acc-del')); if(confirm('حذف الحساب؟ لن تُحذف الحركات القديمة.')){ accounts.splice(i,1); persist(ACC_KEY, accounts); refreshAccountFilter(); renderAll(); } }
-  const catDel = e.target.closest('[data-cat-del]');
-  if(catDel){ const i=Number(catDel.getAttribute('data-cat-del')); if(confirm('حذف الفئة؟')){ categories.splice(i,1); persist(CAT_KEY,categories); refreshCatSelect(); renderAll(); } }
-  const commitDel = e.target.closest('[data-commit-del]');
-  if(commitDel){ const id = commitDel.getAttribute('data-commit-del'); if(confirm('حذف الالتزام؟ (سيبقى أي دفعات سُجلت في الحركات كما هي)')){ commitments = commitments.filter(c=>c.id!==id); persist(COM_KEY, commitments); refreshCommitList(); renderAll(); } }
-  const collectDel = e.target.closest('[data-collect-del]');
-  if(collectDel){ const id = collectDel.getAttribute('data-collect-del'); if(confirm('حذف التحصيل؟')){ collections = collections.filter(c=>c.id!==id); persist(COL_KEY, collections); refreshCollectList(); renderAll(); } }
-});
-
-/* collect now action: converts collection to ledger income and advances nextDue or removes */
-document.addEventListener('click', (e)=>{
-  const btn = e.target.closest('[data-collect-now]');
-  if(btn){
-    const id = btn.getAttribute('data-collect-now');
-    const c = collections.find(x=>x.id===id); if(!c) return;
-    const accIndex = prompt('اختر رقم الحساب للتحصيل إليه:\n' + accounts.map((a,i)=>`${i+1}. ${a.name}`).join('\n'));
-    if(!accIndex) return;
-    const idx = parseInt(accIndex,10)-1; if(isNaN(idx)||!accounts[idx]){ alert('اختيار غير صحيح'); return; }
-    const accName = accounts[idx].name;
-    const execISO = new Date().toISOString();
-    const due = c.nextDue || c.firstDue || execISO.slice(0,10);
-    ledger.push({ id:eid(), created: new Date().toISOString(), exec: execISO, date: due, desc: `${c.name} (تحصيل)`, type:'income', amount:c.amount, account:accName, category:'تحصيلات شهرية', sourceCollectionId:`collect_${c.id}`});
-    persist(KEY, ledger); markDirty();
-    if(c.recurring){ const next = addMonthsPreserve(parseDateYmd(c.nextDue||c.firstDue),1); if(c.endAt && next > parseDateYmd(c.endAt)){ collections = collections.filter(x=>x.id!==id); } else { const it = collections.find(x=>x.id===id); if(it) it.nextDue = formatYmd(next); } } else { collections = collections.filter(x=>x.id!==id); }
-    persist(COL_KEY, collections); refreshCollectList(); renderAll();
+  function initCollapsibles(){
+    $$('.card-body').forEach(b=>b.classList.add('hidden'));
+    $$('.card-head').forEach(h=>{
+      h.addEventListener('click', ()=>{
+        const body = h.nextElementSibling;
+        if(!body) return;
+        body.classList.toggle('hidden');
+        const btn = h.querySelector('.toggle');
+        if(btn) btn.classList.toggle('open');
+      });
+    });
   }
-});
 
-/* "pay commit" buttons in lists handled via add transaction by linking commit on add form for simplicity */
+  function applyTheme(){
+    const t = localStorage.getItem(THEME_KEY) || 'light';
+    if(t === 'dark'){ document.documentElement.classList.add('dark'); $('#darkToggle').textContent = 'وضع فاتح'; }
+    else { document.documentElement.classList.remove('dark'); $('#darkToggle').textContent = 'الوضع الليلي'; }
+  }
+  $('#darkToggle').addEventListener('click', ()=>{
+    const dark = document.documentElement.classList.toggle('dark');
+    localStorage.setItem(THEME_KEY, dark? 'dark': 'light');
+    applyTheme();
+  });
 
-/* navigation */
-function gotoPage(p){
-  $$('.page').forEach(el=>el.classList.add('hidden'));
-  $(`#page-${p}`).classList.remove('hidden');
-}
-$$('.nav-btn').forEach(b=>b.addEventListener('click', ()=>{ gotoPage(b.getAttribute('data-page')); }));
+  /* ===== Collapsible init (if present) ===== */
+  function init(){
+    applyTheme();
+    setupNavigation();
+    initCollapsibles();
+    refreshAccountDisplays();
+    refreshCatDisplays();
+    refreshCommitDisplays();
+    refreshCollectDisplays();
+    markDirty();
+    renderAll();
+    gotoPage('dashboard');
+    // periodically refresh link options (for newly added commitments)
+    setInterval(()=>{ refreshCommitDisplays(); }, 1500);
+  }
 
-/* theme toggle */
-function initTheme(){
-  const t = localStorage.getItem(THEME_KEY) || 'light';
-  if(t === 'dark') document.documentElement.classList.add('dark'), $('#toggleTheme').textContent='Light';
-  else document.documentElement.classList.remove('dark'), $('#toggleTheme').textContent='Dark';
-}
-$('#toggleTheme').addEventListener('click', ()=>{
-  const dark = document.documentElement.classList.toggle('dark');
-  localStorage.setItem(THEME_KEY, dark? 'dark':'light');
-  $('#toggleTheme').textContent = dark? 'Light':'Dark';
-});
+  /* ===== Render everything ===== */
+  function renderAll(){
+    markDirty(); ensureSorted(); computeBalances(); drawDashboard(); refreshAccountDisplays(); refreshCatDisplays(); refreshCommitDisplays(); refreshCollectDisplays(); renderTransactions();
+  }
 
-/* initial render helpers */
-function markDirty(){ isLedgerDirty=true; }
-function renderAll(){
-  markDirty(); ensureSorted(); computeBalances(); drawDashboard(); refreshAccountFilter(); refreshCatSelect(); refreshCommitList(); refreshCollectList(); renderTransactions();
-}
-initTheme();
-renderAll();
+  /* ===== Initialize handlers for edit/delete in lists (delegation already handles) ===== */
 
-/* initial page */
-gotoPage('dashboard');
+  /* ===== init call ===== */
+  init();
 
-/* small housekeeping: fill add_linkCommit with current month's available commitments */
-function refreshLinkCommitOptions(){
-  const ym = (new Date()).toISOString().slice(0,7);
-  const opts = commitments.filter(c=>{ const st = getCommitmentState(c); return !st.done && st.currentDueYm === ym; }).map(c => `<option value="${c.id}">${c.name} — أصل ${fmt(c.amount)} • متبقي ${fmt(getCommitmentState(c).remaining||0)}</option>`).join('');
-  $('#add_linkCommit').innerHTML = `<option value="">— بدون —</option>` + opts;
-}
-setInterval(refreshLinkCommitOptions, 2000);
+  /* expose for debugging */
+  window._pf = { ledger, accounts, categories, commitments, collections, persist, renderAll, getCommitmentState };
 
-/* expose a global save for debugging (optional) */
-window.app = { ledger, accounts, categories, commitments, collections, persist, renderAll };
-
+})(); // IIFE end
 </script>
 </body>
 </html>
