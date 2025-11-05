@@ -91,6 +91,7 @@ tbody td{padding:10px;border-top:1px solid var(--border);border-bottom:1px solid
 .list-plain{display:flex;flex-wrap:wrap;gap:8px}
 .list-plain .item{background:var(--card);border:1px solid var(--border);padding:8px 10px;border-radius:10px}
 
+/* (CSS: تم إضافة هذا الكود) */
 /* Styles for Transfer Form Grid */
 .transfer-grid {
   display: grid;
@@ -100,12 +101,13 @@ tbody td{padding:10px;border-top:1px solid var(--border);border-bottom:1px solid
 .transfer-grid .full {
   grid-column: 1 / -1; /* لجعل الأزرار تمتد بعرض كامل */
 }
+/* (نهاية الكود المضاف) */
 
 
 /* responsive */
 @media(max-width:900px){ .grid-3{grid-template-columns:1fr 1fr 1fr} }
 
-/* ===== (CSS: تم تعديل هذا الجزء) ===== */
+/* (CSS: تم تعديل هذا الجزء) */
 @media(max-width:720px){
   /* جعل كل الجريد عمود واحد على الموبايل */
   .grid-2, .grid-3, .grid-4, .transfer-grid {
@@ -114,7 +116,7 @@ tbody td{padding:10px;border-top:1px solid var(--border);border-bottom:1px solid
   .badge{height:auto}
   .card-head h3{font-size:15px}
 }
-/* ===== (نهاية الجزء المعدل) ===== */
+/* (نهاية الجزء المعدل) */
 
 /* due-cards on mobile */
 #dueSoonCards{display:none}
@@ -471,10 +473,10 @@ function recalc(){
   const commitsNext = totalCommitmentsAmountForYm(nextYm);
   const collectionsNextTotal = totalCollectionsForYm(nextYm);
 
-  /* ===== (JS: تم تعديل هذا الجزء - حساب الرصيد) ===== */
+  /* (JS: تم تعديل هذا الجزء - حساب الرصيد) */
   // الحساب هو: الرصيد الحالي - (مازلت مدين به) + (مازلت أتوقع تحصيله)
   const afterCom = total - commitsThis.remaining + notCollected;
-  /* ===== (نهاية الجزء المعدل) ===== */
+  /* (نهاية الجزء المعدل) */
 
   if($('#totalBalance')) $('#totalBalance').textContent=fmt(total);
   if($('#balanceAfterCommit')) $('#balanceAfterCommit').textContent=fmt(afterCom);
@@ -507,7 +509,7 @@ function render(){
     if(fto && (t.date||'') > fto) return false;
     return true;
   }).sort((a,b)=>{
-    /* ===== (JS: تم تعديل هذا الجزء - ترتيب المعاملات) ===== */
+    /* (JS: تم تعديل هذا الجزء - ترتيب المعاملات) */
     // الترتيب يجب أن يكون فقط بتاريخ التنفيذ الفعلي أو تاريخ الإنشاء
     const aKey=(a.exec||a.created||'');
     const bKey=(b.exec||b.created||'');
@@ -519,7 +521,7 @@ function render(){
     if(!bKey) return -1; // ضع الحركات بدون تاريخ في النهاية
 
     return bKey.localeCompare(aKey); // الترتيب تنازلياً (الأحدث أولاً)
-    /* ===== (نهاية الجزء المعدل) ===== */
+    /* (نهاية الجزء المعدل) */
   });
 
   const total=rows.length;
@@ -579,7 +581,7 @@ window.delTx=id=>{ if(!confirm('هل تريد حذف هذه الحركة؟')) re
   render();
 };
 
-/* ===== (JS: تم تعديل هذا الجزء - إصلاح خطأ تعديل الالتزام) ===== */
+/* (JS: تم تعديل هذا الجزء - إصلاح خطأ تعديل الالتزام) */
 /* save tx */
 $('#saveTx')?.addEventListener('click', ()=>{
   const type=$('#type').value, amount=parseFloat($('#amount').value), date=$('#date').value, desc=$('#desc').value.trim(), account=$('#account').value, category=$('#category').value, linkCommitId=$('#linkCommit').value||'';
@@ -617,7 +619,7 @@ $('#saveTx')?.addEventListener('click', ()=>{
   $('#desc').value=''; $('#amount').value=''; $('#linkCommit').value=''; document.getElementById('execAt').value='';
   currentPage=1; render();
 });
-/* ===== (نهاية الجزء المعدل) ===== */
+/* (نهاية الجزء المعدل) */
 
 
 /* filters */
@@ -653,7 +655,7 @@ $('#cRecurring')?.addEventListener('change', ()=>{ $('#cEndAt')?.toggleAttribute
 
 let editCommitId=null;
 window.editCommit=id=>{ const c=commitments.find(x=>x.id===id); if(!c) return; editCommitId=id; $('#cName').value=c.name; $('#cAmount').value=c.amount; $('#cFirstDue').value=c.firstDue||''; $('#cRecurring').checked=!!c.recurring; $('#cEndAt').value=c.endAt||''; $('#addCommitment').textContent='تحديث الالتزام'; };
-window.delCommit=id=>{ const c=commitments.find(x=>x.id===id); if(!c) return; const linked = ledger.filter(t=>t.linkCommitId===id); if(linked.length>0){ if(!confirm(`يوجد ${linked.length} حركة مرتبطة بهذا الالتزام. حذف الالتزام سيترك الحركات بدون مرجع. هل تريد حذف الالتزام مع الإبقاء على الحركات كغير مرتبطة؟ (موافق) أو إلغاء الحذف (إلغاء)`)){ return; } } else { if(!confirm('هل تريد حذف هذا الالتزام؟')) return; } commitments = commitments.filter(x=>x.id!==id); persist(COM_KEY, commitments); alert('تم حذف الالتزام. الحركات المرتبطة ستبقى لكنها ستكون بدون مرجع.'); drawCommitments(); drawDueSoon(); recalc(); };
+window.delCommit=id=>{ const c=commitments.find(x=>x.id===id); if(!c) return; const linked = ledger.filter(t=>t.linkCommitId===id); if(linked.length>0){ if(!confirm(`يوجد ${linked.length} حركة مرتبطة بهذا الالتزام. حذف الالتزام سيترك الحركات بدون مرجع. هل تريد حذف الالتزام مع الإبقاء على الحركات كغير مرتبطة؟ (موافق) أو إلغاء الحذف (إلغاء)`)){ return; } } else { if(!confirm('هل تريد حذف هذا الالتزام؟')) return; } commitments = commitments.filter(x=>x.id!==id); persist(COM_KEY, commitments); alert('تم حذف الالتزام. الحركات المرطبة ستبقى لكنها ستكون بدون مرجع.'); drawCommitments(); drawDueSoon(); recalc(); };
 
 $('#addCommitment')?.addEventListener('click', ()=>{ const name=$('#cName').value.trim(), amount=parseFloat($('#cAmount').value), firstDueStr=$('#cFirstDue').value; const recurring=$('#cRecurring').checked; const endAtStr=($('#cEndAt').value||'').trim(); if(!name || !amount || amount<=0 || !firstDueStr){ alert('أدخل اسم + مبلغ صحيح + تاريخ أول استحقاق'); return; } if(recurring && !endAtStr){ alert('عند التكرار يجب تحديد تاريخ النهاية'); return; } if(recurring && endAtStr && parseLocalDate(endAtStr) < parseLocalDate(firstDueStr)){ alert('تاريخ النهاية يجب أن يكون بعد تاريخ أول استحقاق'); return; } let firstDue=parseLocalDate(firstDueStr), nextDue=parseLocalDate(firstDueStr); const today=startOfToday(); while(nextDue<today){ const tryNext=addMonthsPreserveDOM(nextDue,1); if(recurring && (!endAtStr || tryNext<=parseLocalDate(endAtStr))) nextDue=tryNext; else break; } const commit={ id:editCommitId||eid(), name, amount, firstDue:formatLocalDate(firstDue), nextDue:formatLocalDate(nextDue), recurring, endAt:(recurring?(endAtStr||null):null), payments:{} }; if(editCommitId){ const i=commitments.findIndex(c=>c.id===editCommitId); if(i>-1) commitments[i]=commit; editCommitId=null; $('#addCommitment').textContent='إضافة/تحديث'; } else commitments.push(commit); $('#cName').value=''; $('#cAmount').value=''; $('#cFirstDue').value=''; $('#cRecurring').checked=false; $('#cEndAt').value=''; persist(COM_KEY,commitments); drawCommitments(); drawDueSoon(); recalc(); });
 
@@ -689,7 +691,7 @@ let editCollectId=null;
 window.editCollect=id=>{ const c=collections.find(x=>x.id===id); if(!c) return; editCollectId=id; $('#coName').value=c.name; $('#coAmount').value=c.amount; $('#coFirstDue').value=c.firstDue||''; $('#coRecurring').checked=!!c.recurring; $('#coEndAt').value=c.endAt||''; $('#addCollect').textContent='تحديث التحصيل'; };
 window.delCollect=id=>{ if(!confirm('هل تريد حذف هذا التحصيل؟')) return; collections=collections.filter(c=>c.id!==id); persist(COL_KEY,collections); drawCollections(); };
 
-$('#addCollect')?.addEventListener('click', ()=>{ const name=$('#coName').value.trim(), amount=parseFloat($('#coAmount').value), firstDueStr=$('#coFirstDue').value; const recurring=$('#coRecurring').checked; const endAtStr=($('#coEndAt').value||'').trim(); if(!name || !amount || amount<=0 || !firstDueStr){ alert('أدخل اسم + مبلغ صحيح + تاريخ أول استحقاق'); return; } if(recurring && !endAtStr){ alert('عند التكرار يجب تحديد تاريخ النهاية'); return; } if(recurring && endAtStr && parseLocalDate(endAtStr) < parseLocalDate(firstDueStr)){ alert('تاريخ النهاية يجب أن يكون بعد تاريخ أول استحقاق'); return; } let firstDue=parseLocalDate(firstDueStr), nextDue=parseLocalDate(firstDueStr); const today=startOfToday(); while(nextDue<today){ const tryNext=addMonthsPreserveDOM(nextDue,1); if(recurring && (!endAtStr || tryNext<=parseLocalDate(endAtStr))) nextDue=tryNext; else break; } const item={ id:editCollectId||eid(), name, amount, firstDue:formatLocalDate(firstDue), nextDue:formatLocalDate(nextDue), recurring, endAt:(recurring?(endAtStr||null):null) }; if(editCollectId){ const i=collections.findIndex(c=>c.id===editCollectId); if(i>-1) collections[i]=item; editCollectId=null; $('#addCollect').textContent='إضافة/تحديث'; } else collections.push(item); $('#coName').value=''; $('#coAmount').value=''; $('#coFirstDue').value=''; $('#coRecurring').checked=false; $('#coEndAt').value=''; persist(COL_KEY,collections); drawCollections(); });
+$('#addCollect')?.addEventListener('click', ()=>{ const name=$('#coName').value.trim(), amount=parseFloat($('#coAmount').value), firstDueStr=$('#coFirstDue').value; const recurring=$('#coRecurring').checked; const endAtStr=($('#coEndAt').value||'').trim(); if(!name || !amount || amount<=0 || !firstDueStr){ alert('أدخل اسم + مبلغ صحيح + تاريخ أول استحقاق'); return; } if(recurring && !endAtStr){ alert('عند التكرار يجب تحديد تاريخ النهاية'); return; } if(recurring && endAtStr && parseLocalDate(endAtStr) < parseLocalDate(firstDueStr)){ alert('تاريخ النهاية يجب أن يكون بعد تاريخ أول استحقاق'); return; } let firstDue=parseLocalDate(firstDueStr), nextDue=parseLocalDate(firstDueStr); const today=startOfToday(); while(nextDue<today){ const tryNext=addMonthsPreserveDOM(nextDue,1); if(recurring && (!endAtStr || tryNext<=parseLocalDate(endAtStr))) nextDue=tryNext; else break; } const item={ id:editCommitId||eid(), name, amount, firstDue:formatLocalDate(firstDue), nextDue:formatLocalDate(nextDue), recurring, endAt:(recurring?(endAtStr||null):null) }; if(editCollectId){ const i=collections.findIndex(c=>c.id===editCollectId); if(i>-1) collections[i]=item; editCollectId=null; $('#addCollect').textContent='إضافة/تحديث'; } else collections.push(item); $('#coName').value=''; $('#coAmount').value=''; $('#coFirstDue').value=''; $('#coRecurring').checked=false; $('#coEndAt').value=''; persist(COL_KEY,collections); drawCollections(); });
 
 window.collectNow=id=>{ const c=collections.find(x=>x.id===id); if(!c) return; const due=c.nextDue?parseLocalDate(c.nextDue):parseLocalDate(c.firstDue); const dateStr=formatLocalDate(due); const accName=chooseAccount(); if(!accName) return; if(!confirm(`تأكيد تحصيل "${c.name}" بمبلغ ${fmt(c.amount)} ج.م إلى حساب "${accName}" بتاريخ ${dateStr}؟`)) return; const execISO=new Date().toISOString(); ledger.push({ id:eid(), created:execISO, exec:execISO, date:dateStr, due:dateStr, desc:`${c.name} (تحصيل)`, type:'income', amount:c.amount, account:accName, category:'تحصيلات شهرية', sourceCollectionId:`collect_${c.id}` }); persist(KEY,ledger); if(c.recurring){ const next=addMonthsPreserveDOM(due,1); if(c.endAt && next>parseLocalDate(c.endAt)){ collections=collections.filter(x=>x.id!==id); } else{ c.nextDue=formatLocalDate(next); } } else{ collections=collections.filter(x=>x.id!==id); } persist(COL_KEY,collections); currentPage=1; render(); };
 
