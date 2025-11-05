@@ -91,7 +91,6 @@ tbody td{padding:10px;border-top:1px solid var(--border);border-bottom:1px solid
 .list-plain{display:flex;flex-wrap:wrap;gap:8px}
 .list-plain .item{background:var(--card);border:1px solid var(--border);padding:8px 10px;border-radius:10px}
 
-/* ===== (تمت إضافة هذا الكود) ===== */
 /* Styles for Transfer Form Grid */
 .transfer-grid {
   display: grid;
@@ -101,13 +100,12 @@ tbody td{padding:10px;border-top:1px solid var(--border);border-bottom:1px solid
 .transfer-grid .full {
   grid-column: 1 / -1; /* لجعل الأزرار تمتد بعرض كامل */
 }
-/* ===== (نهاية الكود المضاف) ===== */
 
 
 /* responsive */
 @media(max-width:900px){ .grid-3{grid-template-columns:1fr 1fr 1fr} }
 
-/* ===== (تم تعديل هذا الجزء) ===== */
+/* ===== (CSS: تم تعديل هذا الجزء) ===== */
 @media(max-width:720px){
   /* جعل كل الجريد عمود واحد على الموبايل */
   .grid-2, .grid-3, .grid-4, .transfer-grid {
@@ -473,7 +471,7 @@ function recalc(){
   const commitsNext = totalCommitmentsAmountForYm(nextYm);
   const collectionsNextTotal = totalCollectionsForYm(nextYm);
 
-  /* ===== (تم تعديل هذا الجزء) ===== */
+  /* ===== (JS: تم تعديل هذا الجزء - حساب الرصيد) ===== */
   // الحساب هو: الرصيد الحالي - (مازلت مدين به) + (مازلت أتوقع تحصيله)
   const afterCom = total - commitsThis.remaining + notCollected;
   /* ===== (نهاية الجزء المعدل) ===== */
@@ -509,7 +507,7 @@ function render(){
     if(fto && (t.date||'') > fto) return false;
     return true;
   }).sort((a,b)=>{
-    /* ===== (تم تعديل هذا الجزء) ===== */
+    /* ===== (JS: تم تعديل هذا الجزء - ترتيب المعاملات) ===== */
     // الترتيب يجب أن يكون فقط بتاريخ التنفيذ الفعلي أو تاريخ الإنشاء
     const aKey=(a.exec||a.created||'');
     const bKey=(b.exec||b.created||'');
@@ -581,6 +579,7 @@ window.delTx=id=>{ if(!confirm('هل تريد حذف هذه الحركة؟')) re
   render();
 };
 
+/* ===== (JS: تم تعديل هذا الجزء - إصلاح خطأ تعديل الالتزام) ===== */
 /* save tx */
 $('#saveTx')?.addEventListener('click', ()=>{
   const type=$('#type').value, amount=parseFloat($('#amount').value), date=$('#date').value, desc=$('#desc').value.trim(), account=$('#account').value, category=$('#category').value, linkCommitId=$('#linkCommit').value||'';
@@ -588,14 +587,38 @@ $('#saveTx')?.addEventListener('click', ()=>{
   const execAtInput = document.getElementById('execAt')?.value;
   const exec = execAtInput ? new Date(execAtInput).toISOString() : new Date().toISOString();
   const created = new Date().toISOString();
+
+  // [بداية الكود المضاف لإصلاح خطأ التعديل]
+  if(editId){
+    const oldTx = ledger.find(t => t.id === editId);
+    // إذا كانت الحركة القديمة مرتبطة بالتزام، قم بإلغاء (طرح) قيمتها القديمة أولاً
+    if (oldTx && oldTx.type === 'expense' && oldTx.linkCommitId) {
+      const oldYm = (oldTx.exec || oldTx.date || oldTx.created || '').slice(0, 7);
+      const c = commitments.find(x => x.id === oldTx.linkCommitId);
+      // تأكد من وجود الالتزام وسجل الدفعات
+      if (c && c.payments && c.payments[oldYm]) {
+        // اطرح القيمة القديمة بأمان
+        c.payments[oldYm] = Math.max(0, (c.payments[oldYm] - Number(oldTx.amount || 0)));
+        // ملاحظة: لا تقم بالحفظ (persist) هنا، لأن دالة addCommitPayment ستقوم بالحفظ بعد قليل
+      }
+    }
+  }
+  // [نهاية الكود المضاف]
+
   const tx = { id: editId||eid(), created, exec, date, desc, due:date, type, amount:Number(amount), account:account.trim(), category:category.trim(), linkCommitId: (type==='expense' && linkCommitId)?linkCommitId:undefined };
   if(editId){ const i=ledger.findIndex(t=>t.id===editId); if(i>-1) ledger[i]=tx; editId=null; $('#saveTx').textContent='حفظ'; }
   else ledger.push(tx);
+  
   persist(KEY, ledger);
+  
+  // هذا السطر سيقوم الآن بإضافة القيمة "الجديدة" إلى القيمة المصححة
   if(type==='expense' && tx.linkCommitId){ addCommitPayment(tx.linkCommitId, tx.exec.slice(0,7), tx.amount); }
+  
   $('#desc').value=''; $('#amount').value=''; $('#linkCommit').value=''; document.getElementById('execAt').value='';
   currentPage=1; render();
 });
+/* ===== (نهاية الجزء المعدل) ===== */
+
 
 /* filters */
 $('#search')?.addEventListener('input', ()=>{ currentPage=1; render(); });
