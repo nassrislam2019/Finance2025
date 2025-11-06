@@ -24,7 +24,7 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:"Cairo",sans-ser
 .container{max-width:1180px;margin-inline:auto;padding:18px}
 
 /* Header */
-.header-top{display:flex;align:items-center;gap:12px;justify-content:space-between;margin-bottom:8px}
+.header-top{display:flex;align-items:center;gap:12px;justify-content:space-between;margin-bottom:8px}
 .title-wrap{display:flex;align-items:center;gap:10px}
 .title-wrap .title{font-weight:800;font-size:20px}
 .color-btn{min-width:70px}
@@ -33,7 +33,7 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:"Cairo",sans-ser
 .header-tools{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
 
 /* Cards */
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:0;overflow:hidden;margin-bottom:0}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:0;overflow:hidden;margin-bottom:0} /* تم إزالة margin-bottom الافتراضي */
 .card-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px}
 .card-head h3{margin:0;font-size:16px;display:flex;align-items:center;gap:10px}
 .card-body{padding:14px;border-top:1px solid var(--border)}
@@ -406,7 +406,7 @@ tbody td{padding:10px;border-top:1px solid var(--border);border-bottom:1px solid
           <div><label>المبلغ (ج.م)</label><input id="coAmount" type="number" step="0.01" placeholder="0.00" /></div>
           <div><label>تاريخ أول استحقاق</label><input id="coFirstDue" type="date" required /></div>
           <div class="checkbox-row"><input id="coRecurring" type="checkbox" /><label for="coRecurring" style="margin:0">يتكرر شهريًا</label></div>
-          <div style="grid-column:1/span 2"><label>ينتهي في (إجباري عند التكرار)</label><input id="coEndAt" type="date" /></div>
+          <div style="grid-column:1/span 2"><label>ينتهي في (إجباري عند التكرار)</label><input id="cEndAt" type="date" /></div>
         </div>
         <div class="toolbar" style="margin-top:10px">
           <button id="addCollect" class="btn btn-outline" type="button">إضافة/تحديث</button>
@@ -650,7 +650,15 @@ $('#prevPage')?.addEventListener('click', ()=>{ if(currentPage>1){ currentPage--
 $('#nextPage')?.addEventListener('click', ()=>{ const pages=totalPages(ledger.length); if(currentPage<pages){ currentPage++; render(); }});
 
 /* edit/delete tx */
-window.editTx=id=>{ const t=ledger.find(x=>x.id===id); if(!t) return; editId=id; $('#saveTx').textContent='تحديث'; $('#type').value=t.type; refreshCategorySelect(); $('#amount').value=t.amount; $('#date').value=t.date||t.due||''; $('#desc').value=t.desc||''; $('#account').value=t.account; $('#category').value=t.category||''; $('#linkCommit').value=t.linkCommitId||''; if(t.exec) document.getElementById('execAt').value = new Date(t.exec).toISOString().slice(0,16); showScreen('dashboard'); window.scrollTo({top:0,behavior:'smooth'}); };
+window.editTx=id=>{ const t=ledger.find(x=>x.id===id); if(!t) return; editId=id; $('#saveTx').textContent='تحديث'; $('#type').value=t.type; refreshCategorySelect(); $('#amount').value=t.amount; $('#date').value=t.date||t.due||''; $('#desc').value=t.desc||''; $('#account').value=t.account; $('#category').value=t.category||''; $('#linkCommit').value=t.linkCommitId||''; if(t.exec) document.getElementById('execAt').value = new Date(t.exec).toISOString().slice(0,16); 
+  /* (JS: تعديل) عند الضغط على "تعديل"، انتقل إلى الشاشة الرئيسية وافتح الكارت */
+  showScreen('dashboard'); 
+  const addTxCard = $('#card-addtx');
+  if(addTxCard.classList.contains('collapsed')) {
+    addTxCard.querySelector('.toggle').click();
+  }
+  window.scrollTo({top: addTxCard.offsetTop, behavior:'smooth'}); 
+};
 
 /* (JS: تم تعديل هذا الجزء - مزامنة الحذف) */
 window.delTx=id=>{ if(!confirm('هل تريد حذف هذه الحركة؟')) return; const was=ledger.find(t=>t.id===id); ledger=ledger.filter(t=>t.id!==id); persist(KEY, ledger);
