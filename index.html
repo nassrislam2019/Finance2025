@@ -29,7 +29,6 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:"Cairo",sans-ser
 .title-wrap .title{font-weight:800;font-size:20px}
 .color-btn{min-width:70px}
 
-/* toolbar row (تم إزالة الأزرار منها ونقلها) */
 .header-tools{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
 
 /* Cards */
@@ -107,7 +106,7 @@ tbody td{padding:10px;border-top:1px solid var(--border);border-bottom:1px solid
 /* (نهاية كود تقسيم لوحة البيانات) */
 
 
-/* ===== (CSS: كود التنقل والشاشات المضاف) ===== */
+/* (CSS: كود التنقل والشاشات) */
 .app-nav {
   background: var(--card);
   border-bottom: 1px solid var(--border);
@@ -141,82 +140,102 @@ tbody td{padding:10px;border-top:1px solid var(--border);border-bottom:1px solid
   background: var(--border);
 }
 
-/* منطق إخفاء وإظهار الشاشات */
-[data-screen] {
-  display: none; /* إخفاء كل الشاشات افتراضياً */
+[data-screen] { display: none; }
+[data-screen].active { display: block; }
+[data-screen="management"] { display: none; flex-direction: column; gap: 12px; }
+[data-screen="management"].active { display: flex; }
+/* (CSS: نهاية كود التنقل) */
+
+
+/* (CSS: تلوين مبالغ الاستحقاقات) */
+.due-amount { font-weight: 600; transition: all 0.2s; }
+.due-amount.amount-overdue { color: var(--danger); font-weight: 800; }
+.due-amount.amount-today { color: var(--warn); font-weight: 800; }
+.due-amount.amount-soon { color: var(--warn); font-weight: 600; }
+.due-amount.amount-far { color: var(--muted); font-weight: 500; }
+.due-card .remain { /* (تم تعديل هذا) */ }
+/* (نهاية كود التلوين) */
+
+
+/* ===== (CSS: بداية كود تحسين عرض الجداول للموبايل) ===== */
+/* كروت الموبايل المصغرة (للاستحقاقات والحركات) */
+.due-card, .tx-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
 }
-[data-screen].active {
-  display: block; /* إظهار الشاشة النشطة فقط */
-}
-/* تنسيق شاشة الإدارة ليكون بها مسافات */
-[data-screen="management"] {
-  display: none;
-  flex-direction: column;
-  gap: 12px;
-}
-[data-screen="management"].active {
+.due-card .row, .tx-card .row {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
 }
-/* ===== (CSS: نهاية الكود المضاف) ===== */
-
-
-/* ===== (CSS: تم إضافة هذا الكود - تلوين مبالغ الاستحقاقات) ===== */
-.due-amount {
-  font-weight: 600; /* وزن الخط الافتراضي للمبلغ */
-  transition: all 0.2s;
+.due-card .name, .tx-card .desc {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--txt);
+  flex: 1;
 }
-.due-amount.amount-overdue {
-  color: var(--danger);
-  font-weight: 800; /* أحمر وواضح */
+.due-card .remain, .tx-card .amount {
+  font-weight: 800;
+  font-size: 15px;
 }
-.due-amount.amount-today {
+.due-card .meta, .tx-card .meta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.due-card .state {
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 6px;
   color: var(--warn);
-  font-weight: 800; /* برتقالي وواضح */
 }
-.due-amount.amount-soon {
-  color: var(--warn); /* نفس اللون البرتقالي، لكن بوزن خط أخف */
-  font-weight: 600; 
+.due-card .state.over {
+  color: var(--danger);
 }
-.due-amount.amount-far {
-  color: var(--muted); /* رمادي باهت (أكثر من 3 أيام) */
-  font-weight: 500;
+.due-card .actions, .tx-card .actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
 }
-
-/* تعديل بسيط لضمان ظهور اللون في كروت الموبايل */
-.due-card .remain {
-  /* سيتم إضافة الفئات اللونية هنا أيضاً */
-}
-/* ===== (نهاية الكود المضاف) ===== */
+/* ===== (CSS: نهاية كود تحسين العرض) ===== */
 
 
 /* responsive */
 @media(max-width:900px){ 
   .grid-3{grid-template-columns:1fr 1fr 1fr} 
-
-  /* (CSS: كود مضاف) - اجعل اللوحة عمود واحد على الشاشات المتوسطة */
   .dashboard-layout {
     grid-template-columns: 1fr;
   }
 }
 
-/* (CSS: تم تعديل هذا الجزء) */
 @media(max-width:720px){
-  /* جعل كل الجريد عمود واحد على الموبايل */
   .grid-2, .grid-3, .grid-4, .transfer-grid {
     grid-template-columns: 1fr; 
   }
   .badge{height:auto}
   .card-head h3{font-size:15px}
-  .nav-btn { font-size: 13px; padding: 8px 10px; } /* تحسين أزرار التنقل للموبايل */
+  .nav-btn { font-size: 13px; padding: 8px 10px; }
+  
+  /* (CSS: إخفاء الجداول وإظهار الكروت على الموبايل) */
+  #dueSoonWrap, #txTableWrap {
+    display: none;
+  }
+  #dueSoonCards, #txCards {
+    display: block;
+  }
+  /* (نهاية التعديل) */
 }
-/* (نهاية الجزء المعدل) */
 
-/* due-cards on mobile */
-#dueSoonCards{display:none}
-@media(max-width:720px){
-  #dueSoonWrap{display:none}
-  #dueSoonCards{display:block}
+/* (CSS: إخفاء كروت الموبايل على الديسكتوب) */
+#dueSoonCards, #txCards {
+  display: none;
 }
+/* (نهاية التعديل) */
+
 
 /* pager */
 .pager{display:flex;gap:8px;align-items:center;margin-top:10px;justify-content:center}
@@ -231,6 +250,7 @@ tbody td{padding:10px;border-top:1px solid var(--border);border-bottom:1px solid
     <button type="button" class="nav-btn" data-nav="management">الإدارة والإعدادات</button>
   </div>
 </nav>
+
 <div class="container">
 
   <div class="header-top">
@@ -254,14 +274,11 @@ tbody td{padding:10px;border-top:1px solid var(--border);border-bottom:1px solid
           <div class="stat"><small>إجمالي الأرصدة</small><div id="totalBalance" class="num">0.00</div></div>
           <div class="stat"><small>بعد التحصيلات والالتزامات</small><div id="balanceAfterCommit" class="num">0.00</div></div>
         </div>
-
         <div style="height:12px"></div>
-
         <div class="stats">
           <div class="stat"><small>المبالغ تحت التحصيل (الشهر الحالي)</small><div id="totalCollectionsThisMonth" class="num">0.00</div></div>
           <div class="stat"><small>مجموع استحقاقات الشهر الحالي</small><div id="totalCommitmentsThisMonth" class="num neg">0.00</div></div>
         </div>
-
         <div class="hr"></div>
         <div>
           <h3 style="margin:0 0 8px;font-size:14px;color:var(--muted)">تفاصيل الأرصدة بالحساب</h3>
@@ -310,7 +327,7 @@ tbody td{padding:10px;border-top:1px solid var(--border);border-bottom:1px solid
               <span class="badge">العملة: ج.م</span>
             </div>
 
-            <div style="overflow:auto">
+            <div id="txTableWrap" style="overflow:auto">
               <table>
                 <thead>
                   <tr>
@@ -327,6 +344,8 @@ tbody td{padding:10px;border-top:1px solid var(--border);border-bottom:1px solid
                 <tbody id="tbody"></tbody>
               </table>
             </div>
+            
+            <div id="txCards"></div>
 
             <div class="pager" id="pager">
               <button id="prevPage" class="btn btn-outline" type="button">السابق</button>
@@ -610,6 +629,7 @@ function recalc(){
 let pageSize=10, currentPage=1, editId=null;
 function totalPages(count){ return Math.max(1, Math.ceil(count/pageSize)); }
 
+/* ===== (JS: تم تعديل دالة render بالكامل) ===== */
 function render(){
   const q=($('#search')?.value||'').toLowerCase(),
         ft=document.getElementById('fType')?.value||'all',
@@ -626,14 +646,12 @@ function render(){
     if(fto && (t.date||'') > fto) return false;
     return true;
   }).sort((a,b)=>{
-    /* (JS: تم تعديل هذا الجزء - ترتيب المعاملات) */
     const aKey=(a.exec||a.created||'');
     const bKey=(b.exec||b.created||'');
     if(aKey===bKey) return (b.id||'').localeCompare(a.id||'');
     if(!aKey) return 1;
     if(!bKey) return -1;
     return bKey.localeCompare(aKey);
-    /* (نهاية الجزء المعدل) */
   });
 
   const total=rows.length;
@@ -642,8 +660,12 @@ function render(){
   const start=(currentPage-1)*pageSize;
   const pageRows=rows.slice(start, start+pageSize);
 
-  if($('#tbody')){
-    $('#tbody').innerHTML = pageRows.map(t=>{
+  const tbodyEl = $('#tbody');
+  const txCardsEl = $('#txCards');
+
+  // 1. ملء الجدول (لليسك توب)
+  if(tbodyEl){
+    tbodyEl.innerHTML = pageRows.map(t=>{
       const cls=t.type==='income'?'inc':'exp';
       const afterVal=after.has(t.id)?after.get(t.id):0;
       const execTxt = t.exec? new Date(t.exec).toLocaleString('ar-EG') : (t.created? new Date(t.created).toLocaleString('ar-EG'):'—');
@@ -663,16 +685,42 @@ function render(){
     }).join('');
   }
 
+  // 2. ملء الكروت (للموبايل)
+  if(txCardsEl) {
+    txCardsEl.innerHTML = pageRows.map(t => {
+      const cls=t.type==='income'?'inc':'exp';
+      const execTxt = t.exec? new Date(t.exec).toLocaleString('ar-EG', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'}) : (t.created? new Date(t.created).toLocaleString('ar-EG'):'—');
+      const tag = t.isTransfer ? ' ↔︎' : '';
+
+      return `
+        <div class="tx-card">
+          <div class="row">
+            <div class="desc">${escapeHtml(t.desc||'—')}${tag}</div>
+            <div class="amount ${cls}">${t.type==='income'?'+':'-'}${fmt(t.amount)}</div>
+          </div>
+          <div class="row meta">
+            <span>${escapeHtml(t.category||'—')} / ${escapeHtml(t.account||'—')}</span>
+            <span>${escapeHtml(execTxt)}</span>
+          </div>
+          <div class="actions">
+            <button class="btn btn-outline" onclick="editTx('${t.id}')" type="button" style="flex:1">تعديل</button>
+            <button class="btn btn-danger" onclick="delTx('${t.id}')" type="button" style="flex:1">حذف</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
   if($('#pageInfo')) $('#pageInfo').textContent=`الصفحة ${currentPage} من ${pages} — إجمالي: ${total} عملية`;
   $('#prevPage').disabled = currentPage<=1;
   $('#nextPage').disabled = currentPage>=pages;
 
   recalc();
 
-  /* (JS: تم إضافة هذا الكود - مزامنة كارت الحسابات) */
   drawAccountsBadges();
-  /* (نهاية الكود المضاف) */
 }
+/* ===== (نهاية تعديل دالة render) ===== */
+
 
 /* pager handlers */
 $('#prevPage')?.addEventListener('click', ()=>{ if(currentPage>1){ currentPage--; render(); }});
@@ -760,8 +808,6 @@ window.delTx=id=>{
       const recreated = { 
         id: was.linkCommitId, 
         name: nameGuess, 
-        // لا يمكننا معرفة المبلغ الأصلي، فقط الدفعة. هذا خلل في التصميم
-        // لكننا سنستخدم منطق الكود القديم كحل مؤقت
         amount: was.amount, 
         firstDue: originalDueDate, 
         nextDue: originalDueDate, // أصبح مستحقاً مرة أخرى
@@ -1227,6 +1273,7 @@ function drawDueSoon(){
   }).join('');
 }
 /* ===== (نهاية الدالة المحدثة) ===== */
+
 
 /* helper functions already used elsewhere */
 function refreshAllSelects(){ refreshAccountSelects(); refreshCategorySelect(); refreshLinkCommitOptions(); }
