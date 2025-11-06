@@ -33,7 +33,7 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:"Cairo",sans-ser
 .header-tools{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
 
 /* Cards */
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:0;overflow:hidden;margin-bottom:12px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:0;overflow:hidden;margin-bottom:0} /* تم إزالة margin-bottom الافتراضي */
 .card-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px}
 .card-head h3{margin:0;font-size:16px;display:flex;align-items:center;gap:10px}
 .card-body{padding:14px;border-top:1px solid var(--border)}
@@ -91,7 +91,6 @@ tbody td{padding:10px;border-top:1px solid var(--border);border-bottom:1px solid
 .list-plain{display:flex;flex-wrap:wrap;gap:8px}
 .list-plain .item{background:var(--card);border:1px solid var(--border);padding:8px 10px;border-radius:10px}
 
-/* (CSS: تم إضافة هذا الكود) */
 /* Styles for Transfer Form Grid */
 .transfer-grid {
   display: grid;
@@ -101,11 +100,35 @@ tbody td{padding:10px;border-top:1px solid var(--border);border-bottom:1px solid
 .transfer-grid .full {
   grid-column: 1 / -1; /* لجعل الأزرار تمتد بعرض كامل */
 }
+
+/* ===== (CSS: كود تقسيم لوحة البيانات المضاف) ===== */
+#card-balance { margin-bottom: 12px; } /* إضافة مسافة بعد كارت الملخص فقط */
+
+.dashboard-layout {
+  display: grid;
+  /* (العمود الرئيسي أعرض من الجانبي) */
+  grid-template-columns: 2fr 1fr; 
+  gap: 12px; /* مسافة فاصلة بين العمودين */
+}
+
+.dashboard-main,
+.dashboard-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* هذا يضمن المسافات بين الكروت داخل كل عمود */
+}
 /* (نهاية الكود المضاف) */
 
 
 /* responsive */
-@media(max-width:900px){ .grid-3{grid-template-columns:1fr 1fr 1fr} }
+@media(max-width:900px){ 
+  .grid-3{grid-template-columns:1fr 1fr 1fr} 
+
+  /* (CSS: كود مضاف) - اجعل اللوحة عمود واحد على الشاشات المتوسطة */
+  .dashboard-layout {
+    grid-template-columns: 1fr;
+  }
+}
 
 /* (CSS: تم تعديل هذا الجزء) */
 @media(max-width:720px){
@@ -171,180 +194,184 @@ tbody td{padding:10px;border-top:1px solid var(--border);border-bottom:1px solid
     </div>
   </section>
 
-  <section class="card" id="card-dueSoon" data-collapsible>
-    <div class="card-head"><h3>استحقاقات قريبة</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
-    <div class="card-body">
-      <div class="badge-group" style="margin-bottom:8px">
-        <span id="dueTotalBadge" class="badge">إجمالي: 0.00 ج.م</span>
-        <span id="dueNextTotalBadge" class="badge">الشهر القادم: 0.00 ج.م</span>
-      </div>
-      <div id="dueSoonWrap">
-        <table>
-          <thead><tr><th>الاسم</th><th>التاريخ</th><th>الأصل</th><th>المدفوع</th><th>المتبقي</th><th>الحالة</th><th>إجراءات</th></tr></thead>
-          <tbody id="tbodyDueSoon"></tbody>
-        </table>
-      </div>
-      <div id="dueSoonCards"></div>
-      <div id="noDueSoon" class="d-none" style="color:var(--muted)">لا توجد استحقاقات هذا الشهر غير مسددة.</div>
-    </div>
-  </section>
-
-  <div class="grid grid-2">
-    <section class="card" id="card-accounts" data-collapsible>
-      <div class="card-head"><h3>إدارة الحسابات</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
-      <div class="card-body">
-        <div class="grid grid-3">
-          <div><label>اسم الحساب</label><input id="newAccountName" placeholder="مثال: كاش/محفظة" /></div>
-          <div><label>رصيد افتتاحي</label><input id="newAccountOpening" type="number" step="0.01" placeholder="0.00" /></div>
-          <div><label>&nbsp;</label><button id="addAccount" class="btn btn-outline" type="button">إضافة حساب</button></div>
+  <div class="dashboard-layout">
+  
+    <main class="dashboard-main">
+      
+      <section class="card" id="card-dueSoon" data-collapsible>
+        <div class="card-head"><h3>استحقاقات قريبة</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
+        <div class="card-body">
+          <div class="badge-group" style="margin-bottom:8px">
+            <span id="dueTotalBadge" class="badge">إجمالي: 0.00 ج.م</span>
+            <span id="dueNextTotalBadge" class="badge">الشهر القادم: 0.00 ج.م</span>
+          </div>
+          <div id="dueSoonWrap">
+            <table>
+              <thead><tr><th>الاسم</th><th>التاريخ</th><th>الأصل</th><th>المدفوع</th><th>المتبقي</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+              <tbody id="tbodyDueSoon"></tbody>
+            </table>
+          </div>
+          <div id="dueSoonCards"></div>
+          <div id="noDueSoon" class="d-none" style="color:var(--muted)">لا توجد استحقاقات هذا الشهر غير مسددة.</div>
         </div>
-        <div id="accountsList" class="toolbar" style="margin-top:8px;flex-wrap:wrap"></div>
-      </div>
-    </section>
+      </section>
 
-    <section class="card" id="card-cats" data-collapsible>
-      <div class="card-head"><h3>إدارة الفئات</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
-      <div class="card-body">
-        <div class="grid grid-3">
-          <div><label>اسم الفئة</label><input id="newCatName" placeholder="مثال: أكل" /></div>
-          <div><label>النوع</label><select id="newCatType"><option value="expense" selected>مصروف</option><option value="income">دخل</option></select></div>
-          <div><label>&nbsp;</label><button id="addCategory" class="btn btn-outline" type="button">إضافة فئة</button></div>
+      <section class="card" id="card-txs" data-collapsible>
+        <div class="card-head"><h3>الحركات</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
+        <div class="card-body">
+          <div class="toolbar" style="margin-bottom:8px">
+            <input id="search" placeholder="بحث بالوصف" style="max-width:220px"/>
+            <select id="fType" style="max-width:150px">
+              <option value="all" selected>الكل</option>
+              <option value="income">دخل فقط</option>
+              <option value="expense">مصروف فقط</option>
+            </select>
+            <select id="fAccount" style="max-width:180px"></select>
+            <input id="fFrom" type="date" />
+            <input id="fTo" type="date" />
+            <button id="clearFilters" class="btn btn-outline" type="button">مسح الفلاتر</button>
+            <span class="spacer"></span>
+            <span class="badge">العملة: ج.م</span>
+          </div>
+
+          <div style="overflow:auto">
+            <table>
+              <thead>
+                <tr>
+                  <th>تاريخ التنفيذ</th>
+                  <th>تاريخ الاستحقاق</th>
+                  <th>الوصف</th>
+                  <th>الفئة</th>
+                  <th>الحساب</th>
+                  <th>المبلغ</th>
+                  <th>رصيد الحساب بعد العملية</th>
+                  <th>إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+
+          <div class="pager" id="pager">
+            <button id="prevPage" class="btn btn-outline" type="button">السابق</button>
+            <div id="pageInfo" style="min-width:140px;text-align:center;color:var(--muted)"></div>
+            <button id="nextPage" class="btn btn-outline" type="button">التالي</button>
+          </div>
         </div>
-        <div id="catsList" class="toolbar" style="margin-top:8px;flex-wrap:wrap"></div>
-      </div>
-    </section>
-  </div>
+      </section>
 
-  <section class="card" id="card-transfer" data-collapsible>
-    <div class="card-head"><h3>تحويل بين الحسابات</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
-    <div class="card-body">
-      <div class="transfer-grid">
-        <div><label>من حساب</label><select id="trFrom"></select></div>
-        <div><label>إلى حساب</label><select id="trTo"></select></div>
-        <div><label>المبلغ (ج.م)</label><input id="trAmount" type="number" step="0.01" placeholder="0.00" /></div>
-        <div><label>عمولة التحويل (اختياري)</label><input id="trFee" type="number" step="0.01" placeholder="0.00" /></div>
-        <div><label>التاريخ</label><input id="trDate" type="date" /></div>
-        <div><label>ملاحظة</label><input id="trDesc" type="text" placeholder="مثال: تحويل لمحفظة"/></div>
-        <div class="full" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <button id="execTransfer" class="btn btn-primary" type="button">تنفيذ التحويل</button>
-          <button id="resetTransfer" class="btn btn-outline" type="button">إفراغ</button>
+      <section class="card" id="card-commit" data-collapsible data-start-collapsed>
+        <div class="card-head"><h3>الالتزامات الشهرية</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
+        <div class="card-body">
+          <div class="grid grid-4">
+            <div><label>اسم الالتزام</label><input id="cName" placeholder="مثال: إيجار، إنترنت" /></div>
+            <div><label>المبلغ (ج.م)</label><input id="cAmount" type="number" step="0.01" placeholder="0.00" /></div>
+            <div><label>تاريخ أول استحقاق</label><input id="cFirstDue" type="date" required /></div>
+            <div class="checkbox-row"><input id="cRecurring" type="checkbox" /><label for="cRecurring" style="margin:0">يتكرر شهريًا</label></div>
+            <div style="grid-column:1/span 2"><label>ينتهي في (إجباري عند التكرار)</label><input id="cEndAt" type="date" /></div>
+          </div>
+          <div class="toolbar" style="margin-top:10px">
+            <button id="addCommitment" class="btn btn-outline" type="button">إضافة/تحديث</button>
+            <span class="spacer"></span><span class="badge">يمكن السداد جزئيًا من "إضافة حركة"</span>
+          </div>
+          <div style="overflow:auto;margin-top:8px">
+            <table>
+              <thead><tr><th>الاسم</th><th>المبلغ</th><th>استحقاق</th><th>مدفوع (الشهر)</th><th>متبقّي</th><th>التكرار</th><th>ينتهي في</th><th>إجراءات</th></tr></thead>
+              <tbody id="tbodyCommit"></tbody>
+            </table>
+          </div>
         </div>
-      </div>
-      <div style="margin-top:8px;color:var(--muted);font-size:12px">ملاحظة: التحويلات لا تُحسب ضمن إجمالي الدخل/المصروف، لكن العمولة تُحسب كمصروف.</div>
-    </div>
-  </section>
+      </section>
 
-  <section class="card" id="card-addtx" data-collapsible>
-    <div class="card-head"><h3>إضافة حركة</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
-    <div class="card-body">
-      <div class="grid grid-3">
-        <div><label>النوع</label><select id="type"><option value="income">دخل</option><option value="expense" selected>مصروف</option></select></div>
-        <div><label>المبلغ (ج.م)</label><input id="amount" type="number" step="0.01" placeholder="0.00" /></div>
-        <div><label>تاريخ الاستحقاق</label><input id="date" type="date" /></div>
-        <div><label>الوصف</label><input id="desc" type="text" placeholder="مثال: سوبر ماركت" /></div>
-        <div><label>الحساب</label><select id="account"></select></div>
-        <div><label>الفئة</label><select id="category"></select></div>
-        <div><label>تاريخ/وقت التنفيذ (اختياري — إن لم يُدخل يُستخدم وقت الإضافة)</label><input id="execAt" type="datetime-local" /></div>
-        <div><label>ربط الالتزام (اختياري لمصروفات)</label><select id="linkCommit"></select></div>
-        <div class="grid grid-2" style="grid-column:1/-1">
-          <button id="saveTx" class="btn btn-primary" type="button">حفظ</button>
-          <button id="resetForm" class="btn btn-outline" type="button">إفراغ</button>
+      <section class="card" id="card-collect" data-collapsible data-start-collapsed>
+        <div class="card-head"><h3>مبالغ تحت التحصيل</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
+        <div class="card-body">
+          <div class="grid grid-4">
+            <div><label>اسم التحصيل</label><input id="coName" placeholder="مثال: إيجار مستلم، مبيعات آجل" /></div>
+            <div><label>المبلغ (ج.م)</label><input id="coAmount" type="number" step="0.01" placeholder="0.00" /></div>
+            <div><label>تاريخ أول استحقاق</label><input id="coFirstDue" type="date" required /></div>
+            <div class="checkbox-row"><input id="coRecurring" type="checkbox" /><label for="coRecurring" style="margin:0">يتكرر شهريًا</label></div>
+            <div style="grid-column:1/span 2"><label>ينتهي في (إجباري عند التكرار)</label><input id="cEndAt" type="date" /></div>
+          </div>
+          <div class="toolbar" style="margin-top:10px">
+            <button id="addCollect" class="btn btn-outline" type="button">إضافة/تحديث</button>
+            <span class="spacer"></span><span class="badge">لا يظهر في الحركات إلا بعد "تم التحصيل"</span>
+          </div>
+          <div style="overflow:auto;margin-top:8px">
+            <table>
+              <thead><tr><th>الاسم</th><th>المبلغ</th><th>التحصيل القادم</th><th>التكرار</th><th>ينتهي في</th><th>إجراءات</th></tr></thead>
+              <tbody id="tbodyCollect"></tbody>
+            </table>
+          </div>
         </div>
-      </div>
-    </div>
-  </section>
+      </section>
 
-  <section class="card" id="card-txs" data-collapsible>
-    <div class="card-head"><h3>الحركات</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
-    <div class="card-body">
-      <div class="toolbar" style="margin-bottom:8px">
-        <input id="search" placeholder="بحث بالوصف" style="max-width:220px"/>
-        <select id="fType" style="max-width:150px">
-          <option value="all" selected>الكل</option>
-          <option value="income">دخل فقط</option>
-          <option value="expense">مصروف فقط</option>
-        </select>
-        <select id="fAccount" style="max-width:180px"></select>
-        <input id="fFrom" type="date" />
-        <input id="fTo" type="date" />
-        <button id="clearFilters" class="btn btn-outline" type="button">مسح الفلاتر</button>
-        <span class="spacer"></span>
-        <span class="badge">العملة: ج.م</span>
-      </div>
+    </main> <aside class="dashboard-sidebar">
+    
+      <section class="card" id="card-addtx" data-collapsible>
+        <div class="card-head"><h3>إضافة حركة</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
+        <div class="card-body">
+          <div class="grid grid-3">
+            <div><label>النوع</label><select id="type"><option value="income">دخل</option><option value="expense" selected>مصروف</option></select></div>
+            <div><label>المبلغ (ج.م)</label><input id="amount" type="number" step="0.01" placeholder="0.00" /></div>
+            <div><label>تاريخ الاستحقاق</label><input id="date" type="date" /></div>
+            <div><label>الوصف</label><input id="desc" type="text" placeholder="مثال: سوبر ماركت" /></div>
+            <div><label>الحساب</label><select id="account"></select></div>
+            <div><label>الفئة</label><select id="category"></select></div>
+            <div><label>تاريخ/وقت التنفيذ (اختياري — إن لم يُدخل يُستخدم وقت الإضافة)</label><input id="execAt" type="datetime-local" /></div>
+            <div><label>ربط الالتزام (اختياري لمصروفات)</label><select id="linkCommit"></select></div>
+            <div class="grid grid-2" style="grid-column:1/-1">
+              <button id="saveTx" class="btn btn-primary" type="button">حفظ</button>
+              <button id="resetForm" class="btn btn-outline" type="button">إفراغ</button>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <section class="card" id="card-transfer" data-collapsible data-start-collapsed>
+        <div class="card-head"><h3>تحويل بين الحسابات</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
+        <div class="card-body">
+          <div class="transfer-grid">
+            <div><label>من حساب</label><select id="trFrom"></select></div>
+            <div><label>إلى حساب</label><select id="trTo"></select></div>
+            <div><label>المبلغ (ج.م)</label><input id="trAmount" type="number" step="0.01" placeholder="0.00" /></div>
+            <div><label>عمولة التحويل (اختياري)</label><input id="trFee" type="number" step="0.01" placeholder="0.00" /></div>
+            <div><label>التاريخ</label><input id="trDate" type="date" /></div>
+            <div><label>ملاحظة</label><input id="trDesc" type="text" placeholder="مثال: تحويل لمحفظة"/></div>
+            <div class="full" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <button id="execTransfer" class="btn btn-primary" type="button">تنفيذ التحويل</button>
+              <button id="resetTransfer" class="btn btn-outline" type="button">إفراغ</button>
+            </div>
+          </div>
+          <div style="margin-top:8px;color:var(--muted);font-size:12px">ملاحظة: التحويلات لا تُحسب ضمن إجمالي الدخل/المصروف، لكن العمولة تُحسب كمصروف.</div>
+        </div>
+      </section>
 
-      <div style="overflow:auto">
-        <table>
-          <thead>
-            <tr>
-              <th>تاريخ التنفيذ</th>
-              <th>تاريخ الاستحقاق</th>
-              <th>الوصف</th>
-              <th>الفئة</th>
-              <th>الحساب</th>
-              <th>المبلغ</th>
-              <th>رصيد الحساب بعد العملية</th>
-              <th>إجراءات</th>
-            </tr>
-          </thead>
-          <tbody id="tbody"></tbody>
-        </table>
-      </div>
+      <section class="card" id="card-accounts" data-collapsible data-start-collapsed>
+        <div class="card-head"><h3>إدارة الحسابات</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
+        <div class="card-body">
+          <div class="grid grid-3">
+            <div><label>اسم الحساب</label><input id="newAccountName" placeholder="مثال: كاش/محفظة" /></div>
+            <div><label>رصيد افتتاحي</label><input id="newAccountOpening" type="number" step="0.01" placeholder="0.00" /></div>
+            <div><label>&nbsp;</label><button id="addAccount" class="btn btn-outline" type="button">إضافة حساب</button></div>
+          </div>
+          <div id="accountsList" class="toolbar" style="margin-top:8px;flex-wrap:wrap"></div>
+        </div>
+      </section>
 
-      <div class="pager" id="pager">
-        <button id="prevPage" class="btn btn-outline" type="button">السابق</button>
-        <div id="pageInfo" style="min-width:140px;text-align:center;color:var(--muted)"></div>
-        <button id="nextPage" class="btn btn-outline" type="button">التالي</button>
-      </div>
-    </div>
-  </section>
+      <section class="card" id="card-cats" data-collapsible data-start-collapsed>
+        <div class="card-head"><h3>إدارة الفئات</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
+        <div class="card-body">
+          <div class="grid grid-3">
+            <div><label>اسم الفئة</label><input id="newCatName" placeholder="مثال: أكل" /></div>
+            <div><label>النوع</label><select id="newCatType"><option value="expense" selected>مصروف</option><option value="income">دخل</option></select></div>
+            <div><label>&nbsp;</label><button id="addCategory" class="btn btn-outline" type="button">إضافة فئة</button></div>
+          </div>
+          <div id="catsList" class="toolbar" style="margin-top:8px;flex-wrap:wrap"></div>
+        </div>
+      </section>
 
-  <section class="card" id="card-commit" data-collapsible>
-    <div class="card-head"><h3>الالتزامات الشهرية</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
-    <div class="card-body">
-      <div class="grid grid-4">
-        <div><label>اسم الالتزام</label><input id="cName" placeholder="مثال: إيجار، إنترنت" /></div>
-        <div><label>المبلغ (ج.م)</label><input id="cAmount" type="number" step="0.01" placeholder="0.00" /></div>
-        <div><label>تاريخ أول استحقاق</label><input id="cFirstDue" type="date" required /></div>
-        <div class="checkbox-row"><input id="cRecurring" type="checkbox" /><label for="cRecurring" style="margin:0">يتكرر شهريًا</label></div>
-        <div style="grid-column:1/span 2"><label>ينتهي في (إجباري عند التكرار)</label><input id="cEndAt" type="date" /></div>
-      </div>
-      <div class="toolbar" style="margin-top:10px">
-        <button id="addCommitment" class="btn btn-outline" type="button">إضافة/تحديث</button>
-        <span class="spacer"></span><span class="badge">يمكن السداد جزئيًا من "إضافة حركة"</span>
-      </div>
-      <div style="overflow:auto;margin-top:8px">
-        <table>
-          <thead><tr><th>الاسم</th><th>المبلغ</th><th>استحقاق</th><th>مدفوع (الشهر)</th><th>متبقّي</th><th>التكرار</th><th>ينتهي في</th><th>إجراءات</th></tr></thead>
-          <tbody id="tbodyCommit"></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <section class="card" id="card-collect" data-collapsible>
-    <div class="card-head"><h3>مبالغ تحت التحصيل</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
-    <div class="card-body">
-      <div class="grid grid-4">
-        <div><label>اسم التحصيل</label><input id="coName" placeholder="مثال: إيجار مستلم، مبيعات آجل" /></div>
-        <div><label>المبلغ (ج.م)</label><input id="coAmount" type="number" step="0.01" placeholder="0.00" /></div>
-        <div><label>تاريخ أول استحقاق</label><input id="coFirstDue" type="date" required /></div>
-        <div class="checkbox-row"><input id="coRecurring" type="checkbox" /><label for="coRecurring" style="margin:0">يتكرر شهريًا</label></div>
-        <div style="grid-column:1/span 2"><label>ينتهي في (إجباري عند التكرار)</label><input id="coEndAt" type="date" /></div>
-      </div>
-      <div class="toolbar" style="margin-top:10px">
-        <button id="addCollect" class="btn btn-outline" type="button">إضافة/تحديث</button>
-        <span class="spacer"></span><span class="badge">لا يظهر في الحركات إلا بعد "تم التحصيل"</span>
-      </div>
-      <div style="overflow:auto;margin-top:8px">
-        <table>
-          <thead><tr><th>الاسم</th><th>المبلغ</th><th>التحصيل القادم</th><th>التكرار</th><th>ينتهي في</th><th>إجراءات</th></tr></thead>
-          <tbody id="tbodyCollect"></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-</div>
+    </aside> </div> </div>
 
 <script>
 /* ===== مفاتيح التخزين ===== */
@@ -474,7 +501,6 @@ function recalc(){
   const collectionsNextTotal = totalCollectionsForYm(nextYm);
 
   /* (JS: تم تعديل هذا الجزء - حساب الرصيد) */
-  // الحساب هو: الرصيد الحالي - (مازلت مدين به) + (مازلت أتوقع تحصيله)
   const afterCom = total - commitsThis.remaining + notCollected;
   /* (نهاية الجزء المعدل) */
 
@@ -510,17 +536,12 @@ function render(){
     return true;
   }).sort((a,b)=>{
     /* (JS: تم تعديل هذا الجزء - ترتيب المعاملات) */
-    // الترتيب يجب أن يكون فقط بتاريخ التنفيذ الفعلي أو تاريخ الإنشاء
     const aKey=(a.exec||a.created||'');
     const bKey=(b.exec||b.created||'');
-    
     if(aKey===bKey) return (b.id||'').localeCompare(a.id||'');
-    
-    // هذا الجزء للضمان (إذا كانت إحدى الحركات قديمة جداً بدون تاريخ تنفيذ)
-    if(!aKey) return 1;  // ضع الحركات بدون تاريخ في النهاية
-    if(!bKey) return -1; // ضع الحركات بدون تاريخ في النهاية
-
-    return bKey.localeCompare(aKey); // الترتيب تنازلياً (الأحدث أولاً)
+    if(!aKey) return 1;
+    if(!bKey) return -1;
+    return bKey.localeCompare(aKey);
     /* (نهاية الجزء المعدل) */
   });
 
@@ -556,6 +577,10 @@ function render(){
   $('#nextPage').disabled = currentPage>=pages;
 
   recalc();
+
+  /* (JS: تم إضافة هذا الكود - مزامنة كارت الحسابات) */
+  drawAccountsBadges();
+  /* (نهاية الكود المضاف) */
 }
 
 /* pager handlers */
@@ -565,6 +590,7 @@ $('#nextPage')?.addEventListener('click', ()=>{ const pages=totalPages(ledger.le
 /* edit/delete tx */
 window.editTx=id=>{ const t=ledger.find(x=>x.id===id); if(!t) return; editId=id; $('#saveTx').textContent='تحديث'; $('#type').value=t.type; refreshCategorySelect(); $('#amount').value=t.amount; $('#date').value=t.date||t.due||''; $('#desc').value=t.desc||''; $('#account').value=t.account; $('#category').value=t.category||''; $('#linkCommit').value=t.linkCommitId||''; if(t.exec) document.getElementById('execAt').value = new Date(t.exec).toISOString().slice(0,16); window.scrollTo({top:0,behavior:'smooth'}); };
 
+/* (JS: تم تعديل هذا الجزء - مزامنة الحذف) */
 window.delTx=id=>{ if(!confirm('هل تريد حذف هذه الحركة؟')) return; const was=ledger.find(t=>t.id===id); ledger=ledger.filter(t=>t.id!==id); persist(KEY, ledger);
   if(was && was.type==='expense' && was.linkCommitId){
     const ym=(was.exec||was.date||was.created||'').slice(0,7);
@@ -578,10 +604,19 @@ window.delTx=id=>{ if(!confirm('هل تريد حذف هذه الحركة؟')) re
       alert('تم إعادة إنشاء الالتزام المرتبط بالحركة المحذوفة حتى لا يفقد المرجع.');
     }
   }
+
+  // [بداية الكود المضاف]
+  // إجبار الكروت المرتبطة (الالتزامات) على التحديث
+  drawCommitments();
+  drawDueSoon();
+  // [نهاية الكود المضاف]
+  
   render();
 };
+/* (نهاية الجزء المعدل) */
 
-/* (JS: تم تعديل هذا الجزء - إصلاح خطأ تعديل الالتزام) */
+
+/* (JS: تم تعديل هذا الجزء - إصلاح خطأ تعديل الالتزام + مزامنة الحفظ) */
 /* save tx */
 $('#saveTx')?.addEventListener('click', ()=>{
   const type=$('#type').value, amount=parseFloat($('#amount').value), date=$('#date').value, desc=$('#desc').value.trim(), account=$('#account').value, category=$('#category').value, linkCommitId=$('#linkCommit').value||'';
@@ -593,15 +628,11 @@ $('#saveTx')?.addEventListener('click', ()=>{
   // [بداية الكود المضاف لإصلاح خطأ التعديل]
   if(editId){
     const oldTx = ledger.find(t => t.id === editId);
-    // إذا كانت الحركة القديمة مرتبطة بالتزام، قم بإلغاء (طرح) قيمتها القديمة أولاً
     if (oldTx && oldTx.type === 'expense' && oldTx.linkCommitId) {
       const oldYm = (oldTx.exec || oldTx.date || oldTx.created || '').slice(0, 7);
       const c = commitments.find(x => x.id === oldTx.linkCommitId);
-      // تأكد من وجود الالتزام وسجل الدفعات
       if (c && c.payments && c.payments[oldYm]) {
-        // اطرح القيمة القديمة بأمان
         c.payments[oldYm] = Math.max(0, (c.payments[oldYm] - Number(oldTx.amount || 0)));
-        // ملاحظة: لا تقم بالحفظ (persist) هنا، لأن دالة addCommitPayment ستقوم بالحفظ بعد قليل
       }
     }
   }
@@ -613,11 +644,18 @@ $('#saveTx')?.addEventListener('click', ()=>{
   
   persist(KEY, ledger);
   
-  // هذا السطر سيقوم الآن بإضافة القيمة "الجديدة" إلى القيمة المصححة
   if(type==='expense' && tx.linkCommitId){ addCommitPayment(tx.linkCommitId, tx.exec.slice(0,7), tx.amount); }
   
   $('#desc').value=''; $('#amount').value=''; $('#linkCommit').value=''; document.getElementById('execAt').value='';
-  currentPage=1; render();
+  
+  // [بداية الكود المضاف]
+  // إجبار الكروت المرتبطة (الالتزامات) على التحديث
+  drawCommitments();
+  drawDueSoon();
+  // [نهاية الكود المضاف]
+
+  currentPage=1; 
+  render();
 });
 /* (نهاية الجزء المعدل) */
 
@@ -655,7 +693,7 @@ $('#cRecurring')?.addEventListener('change', ()=>{ $('#cEndAt')?.toggleAttribute
 
 let editCommitId=null;
 window.editCommit=id=>{ const c=commitments.find(x=>x.id===id); if(!c) return; editCommitId=id; $('#cName').value=c.name; $('#cAmount').value=c.amount; $('#cFirstDue').value=c.firstDue||''; $('#cRecurring').checked=!!c.recurring; $('#cEndAt').value=c.endAt||''; $('#addCommitment').textContent='تحديث الالتزام'; };
-window.delCommit=id=>{ const c=commitments.find(x=>x.id===id); if(!c) return; const linked = ledger.filter(t=>t.linkCommitId===id); if(linked.length>0){ if(!confirm(`يوجد ${linked.length} حركة مرتبطة بهذا الالتزام. حذف الالتزام سيترك الحركات بدون مرجع. هل تريد حذف الالتزام مع الإبقاء على الحركات كغير مرتبطة؟ (موافق) أو إلغاء الحذف (إلغاء)`)){ return; } } else { if(!confirm('هل تريد حذف هذا الالتزام؟')) return; } commitments = commitments.filter(x=>x.id!==id); persist(COM_KEY, commitments); alert('تم حذف الالتزام. الحركات المرطبة ستبقى لكنها ستكون بدون مرجع.'); drawCommitments(); drawDueSoon(); recalc(); };
+window.delCommit=id=>{ const c=commitments.find(x=>x.id===id); if(!c) return; const linked = ledger.filter(t=>t.linkCommitId===id); if(linked.length>0){ if(!confirm(`يوجد ${linked.length} حركة مرتبطة بهذا الالتزام. حذف الالتزام سيترك الحركات بدون مرجع. هل تريد حذف الالتزام مع الإبقاء على الحركات كغير مرتبطة؟ (موافق) أو إلغاء الحذف (إلغاء)`)){ return; } } else { if(!confirm('هل تريد حذف هذا الالتزام؟')) return; } commitments = commitments.filter(x=>x.id!==id); persist(COM_KEY, commitments); alert('تم حذف الالتزام. الحركات المرتبطة ستبقى لكنها ستكون بدون مرجع.'); drawCommitments(); drawDueSoon(); recalc(); };
 
 $('#addCommitment')?.addEventListener('click', ()=>{ const name=$('#cName').value.trim(), amount=parseFloat($('#cAmount').value), firstDueStr=$('#cFirstDue').value; const recurring=$('#cRecurring').checked; const endAtStr=($('#cEndAt').value||'').trim(); if(!name || !amount || amount<=0 || !firstDueStr){ alert('أدخل اسم + مبلغ صحيح + تاريخ أول استحقاق'); return; } if(recurring && !endAtStr){ alert('عند التكرار يجب تحديد تاريخ النهاية'); return; } if(recurring && endAtStr && parseLocalDate(endAtStr) < parseLocalDate(firstDueStr)){ alert('تاريخ النهاية يجب أن يكون بعد تاريخ أول استحقاق'); return; } let firstDue=parseLocalDate(firstDueStr), nextDue=parseLocalDate(firstDueStr); const today=startOfToday(); while(nextDue<today){ const tryNext=addMonthsPreserveDOM(nextDue,1); if(recurring && (!endAtStr || tryNext<=parseLocalDate(endAtStr))) nextDue=tryNext; else break; } const commit={ id:editCommitId||eid(), name, amount, firstDue:formatLocalDate(firstDue), nextDue:formatLocalDate(nextDue), recurring, endAt:(recurring?(endAtStr||null):null), payments:{} }; if(editCommitId){ const i=commitments.findIndex(c=>c.id===editCommitId); if(i>-1) commitments[i]=commit; editCommitId=null; $('#addCommitment').textContent='إضافة/تحديث'; } else commitments.push(commit); $('#cName').value=''; $('#cAmount').value=''; $('#cFirstDue').value=''; $('#cRecurring').checked=false; $('#cEndAt').value=''; persist(COM_KEY,commitments); drawCommitments(); drawDueSoon(); recalc(); });
 
@@ -691,7 +729,7 @@ let editCollectId=null;
 window.editCollect=id=>{ const c=collections.find(x=>x.id===id); if(!c) return; editCollectId=id; $('#coName').value=c.name; $('#coAmount').value=c.amount; $('#coFirstDue').value=c.firstDue||''; $('#coRecurring').checked=!!c.recurring; $('#coEndAt').value=c.endAt||''; $('#addCollect').textContent='تحديث التحصيل'; };
 window.delCollect=id=>{ if(!confirm('هل تريد حذف هذا التحصيل؟')) return; collections=collections.filter(c=>c.id!==id); persist(COL_KEY,collections); drawCollections(); };
 
-$('#addCollect')?.addEventListener('click', ()=>{ const name=$('#coName').value.trim(), amount=parseFloat($('#coAmount').value), firstDueStr=$('#coFirstDue').value; const recurring=$('#coRecurring').checked; const endAtStr=($('#coEndAt').value||'').trim(); if(!name || !amount || amount<=0 || !firstDueStr){ alert('أدخل اسم + مبلغ صحيح + تاريخ أول استحقاق'); return; } if(recurring && !endAtStr){ alert('عند التكرار يجب تحديد تاريخ النهاية'); return; } if(recurring && endAtStr && parseLocalDate(endAtStr) < parseLocalDate(firstDueStr)){ alert('تاريخ النهاية يجب أن يكون بعد تاريخ أول استحقاق'); return; } let firstDue=parseLocalDate(firstDueStr), nextDue=parseLocalDate(firstDueStr); const today=startOfToday(); while(nextDue<today){ const tryNext=addMonthsPreserveDOM(nextDue,1); if(recurring && (!endAtStr || tryNext<=parseLocalDate(endAtStr))) nextDue=tryNext; else break; } const item={ id:editCommitId||eid(), name, amount, firstDue:formatLocalDate(firstDue), nextDue:formatLocalDate(nextDue), recurring, endAt:(recurring?(endAtStr||null):null) }; if(editCollectId){ const i=collections.findIndex(c=>c.id===editCollectId); if(i>-1) collections[i]=item; editCollectId=null; $('#addCollect').textContent='إضافة/تحديث'; } else collections.push(item); $('#coName').value=''; $('#coAmount').value=''; $('#coFirstDue').value=''; $('#coRecurring').checked=false; $('#coEndAt').value=''; persist(COL_KEY,collections); drawCollections(); });
+$('#addCollect')?.addEventListener('click', ()=>{ const name=$('#coName').value.trim(), amount=parseFloat($('#coAmount').value), firstDueStr=$('#coFirstDue').value; const recurring=$('#coRecurring').checked; const endAtStr=($('#coEndAt').value||'').trim(); if(!name || !amount || amount<=0 || !firstDueStr){ alert('أدخل اسم + مبلغ صحيح + تاريخ أول استحقاق'); return; } if(recurring && !endAtStr){ alert('عند التكرار يجب تحديد تاريخ النهاية'); return; } if(recurring && endAtStr && parseLocalDate(endAtStr) < parseLocalDate(firstDueStr)){ alert('تاريخ النهاية يجب أن يكون بعد تاريخ أول استحقاق'); return; } let firstDue=parseLocalDate(firstDueStr), nextDue=parseLocalDate(firstDueStr); const today=startOfToday(); while(nextDue<today){ const tryNext=addMonthsPreserveDOM(nextDue,1); if(recurring && (!endAtStr || tryNext<=parseLocalDate(endAtStr))) nextDue=tryNext; else break; } const item={ id:editCommitId||eid(), name, amount, firstDue:formatLocalDate(firstDue), nextDue:formatLocalDate(nextDue), recurring, endAt:(recurring?(endAtStr||null):null) }; if(editCommitId){ const i=collections.findIndex(c=>c.id===editCollectId); if(i>-1) collections[i]=item; editCollectId=null; $('#addCollect').textContent='إضافة/تحديث'; } else collections.push(item); $('#coName').value=''; $('#coAmount').value=''; $('#coFirstDue').value=''; $('#coRecurring').checked=false; $('#coEndAt').value=''; persist(COL_KEY,collections); drawCollections(); });
 
 window.collectNow=id=>{ const c=collections.find(x=>x.id===id); if(!c) return; const due=c.nextDue?parseLocalDate(c.nextDue):parseLocalDate(c.firstDue); const dateStr=formatLocalDate(due); const accName=chooseAccount(); if(!accName) return; if(!confirm(`تأكيد تحصيل "${c.name}" بمبلغ ${fmt(c.amount)} ج.م إلى حساب "${accName}" بتاريخ ${dateStr}؟`)) return; const execISO=new Date().toISOString(); ledger.push({ id:eid(), created:execISO, exec:execISO, date:dateStr, due:dateStr, desc:`${c.name} (تحصيل)`, type:'income', amount:c.amount, account:accName, category:'تحصيلات شهرية', sourceCollectionId:`collect_${c.id}` }); persist(KEY,ledger); if(c.recurring){ const next=addMonthsPreserveDOM(due,1); if(c.endAt && next>parseLocalDate(c.endAt)){ collections=collections.filter(x=>x.id!==id); } else{ c.nextDue=formatLocalDate(next); } } else{ collections=collections.filter(x=>x.id!==id); } persist(COL_KEY,collections); currentPage=1; render(); };
 
@@ -745,7 +783,7 @@ function refreshLinkCommitOptions(){
 function applyDarkFromStorage(){ const saved = localStorage.getItem(DARK_KEY); if(saved === '1'){ document.documentElement.classList.add('dark'); $('#darkToggle').textContent='Light'; } else { document.documentElement.classList.remove('dark'); $('#darkToggle').textContent='Dark'; } }
 $('#darkToggle')?.addEventListener('click', ()=>{ const isDark = document.documentElement.classList.toggle('dark'); localStorage.setItem(DARK_KEY, isDark ? '1' : '0'); $('#darkToggle').textContent = isDark ? 'Light' : 'Dark'; });
 
-/* ===== Collapsibles init (مطوية افتراضياً) ===== */
+/* ===== (JS: تم تحسين هذا الجزء - طي اختياري) ===== */
 function initCollapsibles(){
   $$('[data-collapsible]').forEach(sec=>{
     const btn = sec.querySelector('.toggle');
@@ -756,14 +794,27 @@ function initCollapsibles(){
       }
     }
   });
+  
   $$('[data-collapsible]').forEach(sec=>{
     const btn = sec.querySelector('.toggle'); if(!btn) return;
-    sec.classList.add('collapsed');
-    btn.textContent='▸';
-    btn.setAttribute('aria-expanded','false');
+
+    // --- (المنطق الجديد) ---
+    // تحقق إذا كان الكارت يجب أن يبدأ مطوياً
+    const startCollapsed = sec.hasAttribute('data-start-collapsed');
+    if (startCollapsed) {
+      sec.classList.add('collapsed');
+    }
+    
+    // اقرأ الحالة الحالية (سواء كانت مطوية من الكود أو لا)
+    const isCollapsed = sec.classList.contains('collapsed');
+    btn.textContent = isCollapsed ? '▸' : '▾';
+    btn.setAttribute('aria-expanded', String(!isCollapsed));
+    // --- (نهاية المنطق الجديد) ---
+
     btn.addEventListener('click', ()=>{ const isCollapsed = sec.classList.toggle('collapsed'); btn.textContent = isCollapsed ? '▸' : '▾'; btn.setAttribute('aria-expanded', String(!isCollapsed)); });
   });
 }
+/* ===== (نهاية الجزء المعدل) ===== */
 
 /* ===== UI refresh helpers ===== */
 function refreshAccountSelects(){
