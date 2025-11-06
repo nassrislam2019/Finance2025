@@ -160,6 +160,35 @@ tbody td{padding:10px;border-top:1px solid var(--border);border-bottom:1px solid
 /* ===== (CSS: نهاية الكود المضاف) ===== */
 
 
+/* ===== (CSS: تم إضافة هذا الكود - تلوين مبالغ الاستحقاقات) ===== */
+.due-amount {
+  font-weight: 600; /* وزن الخط الافتراضي للمبلغ */
+  transition: all 0.2s;
+}
+.due-amount.amount-overdue {
+  color: var(--danger);
+  font-weight: 800; /* أحمر وواضح */
+}
+.due-amount.amount-today {
+  color: var(--warn);
+  font-weight: 800; /* برتقالي وواضح */
+}
+.due-amount.amount-soon {
+  color: var(--warn); /* نفس اللون البرتقالي، لكن بوزن خط أخف */
+  font-weight: 600; 
+}
+.due-amount.amount-far {
+  color: var(--muted); /* رمادي باهت (أكثر من 3 أيام) */
+  font-weight: 500;
+}
+
+/* تعديل بسيط لضمان ظهور اللون في كروت الموبايل */
+.due-card .remain {
+  /* سيتم إضافة الفئات اللونية هنا أيضاً */
+}
+/* ===== (نهاية الكود المضاف) ===== */
+
+
 /* responsive */
 @media(max-width:900px){ 
   .grid-3{grid-template-columns:1fr 1fr 1fr} 
@@ -406,7 +435,7 @@ tbody td{padding:10px;border-top:1px solid var(--border);border-bottom:1px solid
           <div><label>المبلغ (ج.م)</label><input id="coAmount" type="number" step="0.01" placeholder="0.00" /></div>
           <div><label>تاريخ أول استحقاق</label><input id="coFirstDue" type="date" required /></div>
           <div class="checkbox-row"><input id="coRecurring" type="checkbox" /><label for="coRecurring" style="margin:0">يتكرر شهريًا</label></div>
-          <div style="grid-column:1/span 2"><label>ينتهي في (إجباري عند التكرار)</label><input id="coEndAt" type="date" /></div>
+          <div style="grid-column:1/span 2"><label>ينتهي في (إجباري عند التكرار)</label><input id="cEndAt" type="date" /></div>
         </div>
         <div class="toolbar" style="margin-top:10px">
           <button id="addCollect" class="btn btn-outline" type="button">إضافة/تحديث</button>
@@ -675,6 +704,7 @@ window.editTx=id=>{
   window.scrollTo({top: cardTop, behavior:'smooth'}); 
 };
 
+
 /* =================================================================== */
 /* ===== (JS: تم تعديل هذا الجزء - إصلاح خطأ إرجاع تاريخ الاستحقاق) ===== */
 /* =================================================================== */
@@ -887,7 +917,7 @@ let editCollectId=null;
 window.editCollect=id=>{ const c=collections.find(x=>x.id===id); if(!c) return; editCollectId=id; $('#coName').value=c.name; $('#coAmount').value=c.amount; $('#coFirstDue').value=c.firstDue||''; $('#coRecurring').checked=!!c.recurring; $('#coEndAt').value=c.endAt||''; $('#addCollect').textContent='تحديث التحصيل'; };
 window.delCollect=id=>{ if(!confirm('هل تريد حذف هذا التحصيل؟')) return; collections=collections.filter(c=>c.id!==id); persist(COL_KEY,collections); drawCollections(); };
 
-$('#addCollect')?.addEventListener('click', ()=>{ const name=$('#coName').value.trim(), amount=parseFloat($('#coAmount').value), firstDueStr=$('#coFirstDue').value; const recurring=$('#coRecurring').checked; const endAtStr=($('#coEndAt').value||'').trim(); if(!name || !amount || amount<=0 || !firstDueStr){ alert('أدخل اسم + مبلغ صحيح + تاريخ أول استحقاق'); return; } if(recurring && !endAtStr){ alert('عند التكرار يجب تحديد تاريخ النهاية'); return; } if(recurring && endAtStr && parseLocalDate(endAtStr) < parseLocalDate(firstDueStr)){ alert('تاريخ النهاية يجب أن يكون بعد تاريخ أول استحقاق'); return; } let firstDue=parseLocalDate(firstDueStr), nextDue=parseLocalDate(firstDueStr); const today=startOfToday(); while(nextDue<today){ const tryNext=addMonthsPreserveDOM(nextDue,1); if(recurring && (!endAtStr || tryNext<=parseLocalDate(endAtStr))) nextDue=tryNext; else break; } const item={ id:editCommitId||eid(), name, amount, firstDue:formatLocalDate(firstDue), nextDue:formatLocalDate(nextDue), recurring, endAt:(recurring?(endAtStr||null):null) }; if(editCollectId){ const i=collections.findIndex(c=>c.id===editCollectId); if(i>-1) collections[i]=item; editCollectId=null; $('#addCollect').textContent='إضافة/تحديث'; } else collections.push(item); $('#coName').value=''; $('#coAmount').value=''; $('#coFirstDue').value=''; $('#coRecurring').checked=false; $('#coEndAt').value=''; persist(COL_KEY,collections); drawCollections(); });
+$('#addCollect')?.addEventListener('click', ()=>{ const name=$('#coName').value.trim(), amount=parseFloat($('#coAmount').value), firstDueStr=$('#coFirstDue').value; const recurring=$('#coRecurring').checked; const endAtStr=($('#cEndAt').value||'').trim(); if(!name || !amount || amount<=0 || !firstDueStr){ alert('أدخل اسم + مبلغ صحيح + تاريخ أول استحقاق'); return; } if(recurring && !endAtStr){ alert('عند التكرار يجب تحديد تاريخ النهاية'); return; } if(recurring && endAtStr && parseLocalDate(endAtStr) < parseLocalDate(firstDueStr)){ alert('تاريخ النهاية يجب أن يكون بعد تاريخ أول استحقاق'); return; } let firstDue=parseLocalDate(firstDueStr), nextDue=parseLocalDate(firstDueStr); const today=startOfToday(); while(nextDue<today){ const tryNext=addMonthsPreserveDOM(nextDue,1); if(recurring && (!endAtStr || tryNext<=parseLocalDate(endAtStr))) nextDue=tryNext; else break; } const item={ id:editCommitId||eid(), name, amount, firstDue:formatLocalDate(firstDue), nextDue:formatLocalDate(nextDue), recurring, endAt:(recurring?(endAtStr||null):null) }; if(editCollectId){ const i=collections.findIndex(c=>c.id===editCollectId); if(i>-1) collections[i]=item; editCollectId=null; $('#addCollect').textContent='إضافة/تحديث'; } else collections.push(item); $('#coName').value=''; $('#coAmount').value=''; $('#coFirstDue').value=''; $('#coRecurring').checked=false; $('#coEndAt').value=''; persist(COL_KEY,collections); drawCollections(); });
 
 window.collectNow=id=>{ const c=collections.find(x=>x.id===id); if(!c) return; const due=c.nextDue?parseLocalDate(c.nextDue):parseLocalDate(c.firstDue); const dateStr=formatLocalDate(due); const accName=chooseAccount(); if(!accName) return; if(!confirm(`تأكيد تحصيل "${c.name}" بمبلغ ${fmt(c.amount)} ج.م إلى حساب "${accName}" بتاريخ ${dateStr}؟`)) return; const execISO=new Date().toISOString(); ledger.push({ id:eid(), created:execISO, exec:execISO, date:dateStr, due:dateStr, desc:`${c.name} (تحصيل)`, type:'income', amount:c.amount, account:accName, category:'تحصيلات شهرية', sourceCollectionId:`collect_${c.id}` }); persist(KEY,ledger); if(c.recurring){ const next=addMonthsPreserveDOM(due,1); if(c.endAt && next>parseLocalDate(c.endAt)){ collections=collections.filter(x=>x.id!==id); } else{ c.nextDue=formatLocalDate(next); } } else{ collections=collections.filter(x=>x.id!==id); } persist(COL_KEY,collections); currentPage=1; render(); };
 
@@ -1119,7 +1149,8 @@ function init(){
 }
 init();
 
-/* drawDueSoon & helpers */
+
+/* ===== (JS: تم تحديث هذه الدالة بالكامل لإضافة تلوين المبالغ) ===== */
 function drawDueSoon(){
   const wrap=document.getElementById('dueSoonWrap'), none=document.getElementById('noDueSoon'), tbody=document.getElementById('tbodyDueSoon'), cards=document.getElementById('dueSoonCards');
   if(!wrap||!tbody||!cards) return;
@@ -1148,25 +1179,45 @@ function drawDueSoon(){
   }
   if(list.length===0){ wrap.classList.add('d-none'); cards.classList.add('d-none'); none.classList.remove('d-none'); tbody.innerHTML=''; cards.innerHTML=''; return; }
   none.classList.add('d-none'); wrap.classList.remove('d-none'); cards.classList.remove('d-none');
+  
+  // --- (هذا هو المنطق المضاف) ---
+  const getAmountClass = (diff) => {
+    let amountClass = 'due-amount';
+    if (diff < 0) {
+      amountClass += ' amount-overdue'; // مر
+    } else if (diff === 0) {
+      amountClass += ' amount-today';  // اليوم
+    } else if (diff <= 3) {
+      amountClass += ' amount-soon';   // اقترب (خلال 3 أيام)
+    } else { // diff > 3
+      amountClass += ' amount-far';    // لايزال بعيد
+    }
+    return amountClass;
+  };
+  // --- (نهاية المنطق المضاف) ---
+
+  // تطبيق الفئات على عرض الجدول (الديسكتوب)
   tbody.innerHTML=list.map(x=>{
     const state = x.diff<0 ? `<span style="color:var(--danger);font-weight:700">متأخر ${Math.abs(x.diff)} يوم</span>` : x.diff===0 ? `<span style="color:var(--warn);font-weight:700">اليوم</span>` : `<span style="color:var(--warn);font-weight:700">متبقي ${x.diff} يوم</span>`;
+    const amountClass = getAmountClass(x.diff); // <-- تطبيق المنطق
     return `<tr>
       <td>${escapeHtml(x.name)}</td>
       <td>${x.dueStr}</td>
       <td>${fmt(x.total)}</td>
       <td>${fmt(x.paid)}</td>
-      <td><b>${fmt(x.remaining)}</b></td>
-      <td>${state}</td>
+      <td class="${amountClass}"><b>${fmt(x.remaining)}</b></td> <td>${state}</td>
       <td class="actions"><button class="btn btn-primary" onclick='payCommit("${x.id}")' type="button">سداد الآن</button></td>
     </tr>`;
   }).join('');
+  
+  // تطبيق الفئات على عرض الكروت (الموبايل)
   cards.innerHTML = list.map(x=>{
     const over = x.diff<0;
     const state = over ? `متأخر ${Math.abs(x.diff)} يوم` : (x.diff===0 ? 'اليوم' : `متبقي ${x.diff} يوم`);
+    const amountClass = getAmountClass(x.diff); // <-- تطبيق المنطق
     return `
       <div class="due-card">
-        <div class="row"><div class="name">${escapeHtml(x.name)}</div><div class="remain">${fmt(x.remaining)} ج.م</div></div>
-        <div class="row meta"><div>الأصل: ${fmt(x.total)} · المدفوع: ${fmt(x.paid)}</div><div>${x.dueStr}</div></div>
+        <div class="row"><div class="name">${escapeHtml(x.name)}</div><div class="remain ${amountClass}">${fmt(x.remaining)} ج.م</div></div> <div class="row meta"><div>الأصل: ${fmt(x.total)} · المدفوع: ${fmt(x.paid)}</div><div>${x.dueStr}</div></div>
         <div class="${over? 'state over':'state'}">${state}</div>
         <div class="actions">
           <button class="btn btn-primary" onclick='payCommit("${x.id}")' type="button" style="flex:1">سداد الآن</button>
@@ -1175,6 +1226,7 @@ function drawDueSoon(){
     `;
   }).join('');
 }
+/* ===== (نهاية الدالة المحدثة) ===== */
 
 /* helper functions already used elsewhere */
 function refreshAllSelects(){ refreshAccountSelects(); refreshCategorySelect(); refreshLinkCommitOptions(); }
