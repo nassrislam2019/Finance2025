@@ -91,7 +91,7 @@ input[type="date"],input[type="month"]{direction:ltr;text-align:center;font-vari
 
 /* Stats (ملخص الحسابات) */
 .stats{display:grid;gap:10px}
-@media(min-width:720px){.stats{grid-template-columns:repeat(5,1fr)}}
+@media(min-width:720px){.stats{grid-template-columns:repeat(6,1fr)}}
 .stat{
   background:#0b162a;border:1px solid var(--border);border-radius:var(--radius);padding:14px; text-align:center;
   box-shadow:var(--shadow)
@@ -209,6 +209,7 @@ canvas{background:#0b162a;border:1px solid var(--border);border-radius:var(--rad
         <div class="stat"><small>إجمالي الأرصدة</small><div id="totalBalance" class="num">0</div></div>
         <div class="stat"><small>إجمالي التزامات الشهر الحالي</small><div id="monthCommitTotal" class="num neg">0</div></div>
         <div class="stat"><small>إجمالي مبالغ تحت التحصيل (الشهر الحالي)</small><div id="currentMonthCollections" class="num pos">0</div></div>
+        <div class="stat"><small>الرصيد بعد خصم الالتزامات الحالية</small><div id="balanceAfterCommitments" class="num">0</div></div>
         <div class="stat"><small>التزامات الشهر القادم (شامل متبقي الحالي)</small><div id="nextCommitWithCarry" class="num neg">0</div></div>
         <div class="stat"><small>إجمالي مبالغ تحت التحصيل الشهر القادم</small><div id="nextMonthCollections" class="num pos">0</div></div>
       </div>
@@ -521,6 +522,8 @@ const $=s=>document.querySelector(s);
 const els={
   totalBalance:$('#totalBalance'),
   monthCommitTotal:$('#monthCommitTotal'),
+  currentMonthCollections:$('#currentMonthCollections'),
+  balanceAfterCommitments:$('#balanceAfterCommitments'),
   nextCommitWithCarry:$('#nextCommitWithCarry'),
   nextMonthCollections:$('#nextMonthCollections'),
   perAccount:$('#perAccount'),
@@ -727,6 +730,7 @@ function sumCurrentMonthCollections(){
   for(const c of collections){
     const dueStr=c.nextDue||c.firstDue; if(!dueStr) continue;
     if(dueStr.slice(0,7)!==ym) continue;
+    // collections are removed/advanced when collected; so what's left here is "not yet collected"
     total += Number(c.amount||0);
   }
   return total;
@@ -815,10 +819,28 @@ function recalc(){
   // قيَم إضافية (موجودة تاريخياً)
   const monthCol = sumCurrentMonthCollections();
   const monthInc = sumCurrentMonthIncome();
-  const afterCom = total - monthComRemain + monthCol;
+
+  // الرصيد بعد خصم التزامات الشهر الحالي
+  const balanceAfter = total - monthComRemain;
 
   if(els.totalBalance) els.totalBalance.textContent=fmt(total);
   if(els.monthCommitTotal) els.monthCommitTotal.textContent='-'+fmt(monthComRemain);
+  if(els.currentMonthCollections) els.currentMonthCollections.textContent=fmt(monthCol);
+
+  // عرض الرصيد بعد الخصم وتلوين حسب القيمة
+  if(els.balanceAfterCommitments){
+    if(balanceAfter>0){
+      els.balanceAfterCommitments.classList.remove('neg'); els.balanceAfterCommitments.classList.add('pos');
+      els.balanceAfterCommitments.textContent='+'+fmt(balanceAfter);
+    }else if(balanceAfter<0){
+      els.balanceAfterCommitments.classList.remove('pos'); els.balanceAfterCommitments.classList.add('neg');
+      els.balanceAfterCommitments.textContent='-'+fmt(Math.abs(balanceAfter));
+    }else{
+      els.balanceAfterCommitments.classList.remove('pos','neg');
+      els.balanceAfterCommitments.textContent=fmt(0);
+    }
+  }
+
   if(els.nextCommitWithCarry) els.nextCommitWithCarry.textContent='-'+fmt(nextWithCarry);
   if(els.nextMonthCollections) els.nextMonthCollections.textContent=fmt(nextCol);
 
@@ -1193,7 +1215,7 @@ els.addCommitment?.addEventListener('click',()=>{
   const recurring=els.cRecurring.checked; const endAtStr=(els.cEndAt.value||'').trim();
   if(!name || !amount || amount<=0 || !firstDueStr){ alert('أدخل اسم + مبلغ صحيح + تاريخ أول استحقاق'); return; }
   if(recurring && !endAtStr){ alert('عند التكرار يجب تحديد تاريخ النهاية'); return; }
-  if(recurring && endAtStr && parseLocalDate(endAtStr) < parseLocalDate(firstDueStr)){ alert('تاريخ النهاية يجب أن يكون بعد تاريخ أول استحقاق'); return; }
+  if(recurring && endAtStr && parseLocalDate(endAtStr) < parseLocalDate(firstDueStr){ alert('تاريخ النهاية يجب أن يكون بعد تاريخ أول استحقاق'); return; }
 
   let firstDue=parseLocalDate(firstDueStr), nextDue=parseLocalDate(firstDueStr);
   const today=startOfToday();
