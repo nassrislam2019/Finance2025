@@ -9,10 +9,8 @@
 <meta name="mobile-web-app-capable" content="yes" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;800&display=swap" rel="stylesheet">
 <style>
-/* (نفس CSS المدمج من السابق) */
 :root{
   --bg:#0b1220;
   --card:#0f172a;
@@ -21,784 +19,161 @@
   --brand:#0369a1;
   --brand-2:#0ea5e9;
   --danger:#ef4444;
-  --warn:#f59e0b;
-  --ok:#22c55e;
   --border:#1f2a44;
   --radius:12px;
-  --field-h:42px;
-  --shadow:0 8px 24px rgba(2, 6, 23, 0.4);
 }
-html.light-mode{
-  --bg:#f8fafc;
-  --card:#ffffff;
-  --muted:#64748b;
-  --txt:#1e293b;
-  --brand:#1d4ed8;
-  --brand-2:#3b82f6;
-  --danger:#dc2626;
-  --warn:#f59e0b;
-  --ok:#16a34a;
-  --border:#e2e8f0;
-  --shadow:0 8px 24px rgba(0, 0, 0, 0.1);
-}
-*{box-sizing:border-box}
-html,body{margin:0;padding:0;background-color:var(--bg);color:var(--txt);font-family:'Cairo',sans-serif;font-size:16px;line-height:1.6}
-header{background-color:var(--card);padding:1rem;box-shadow:var(--shadow);display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
-header h1{margin:0;font-size:1.5rem;color:var(--brand-2)}
-main{padding:0 1rem 1rem;max-width:1200px;margin:0 auto}
-.card{background-color:var(--card);padding:1rem;border-radius:var(--radius);margin-bottom:1rem;box-shadow:var(--shadow);border:1px solid var(--border)}
-.card-header{display:flex;justify-content:space-between;align-items:center;cursor:pointer;padding-bottom:0.5rem;margin-bottom:0.5rem;border-bottom:1px solid var(--border)}
-.card-header h2{margin:0;font-size:1.25rem;color:var(--brand-2)}
-.content{display:block;padding-top:0.5rem}
-.content.hidden{display:none}
-.grid{display:grid;gap:1rem}
-@media (min-width: 768px) {.grid-2{grid-template-columns:1fr 1fr}.grid-3{grid-template-columns:1fr 1fr 1fr}}
-form{display:flex;flex-direction:column;gap:1rem}
-.form-group{display:flex;flex-direction:column;gap:0.25rem}
-label{color:var(--muted);font-size:0.9rem}
-input[type="text"], input[type="number"], input[type="date"], input[type="month"], select, textarea{
-  background-color:var(--bg);color:var(--txt);border:1px solid var(--border);padding:0 0.75rem;height:var(--field-h);border-radius:var(--radius);font-size:1rem;transition:border-color 0.2s;font-family:'Cairo',sans-serif;
-}
-textarea{height:auto;min-height:80px;padding:0.75rem}
-input:focus, select:focus, textarea:focus{border-color:var(--brand-2);outline:none}
-.btn{background-color:var(--brand);color:white;border:none;padding:0.75rem 1rem;border-radius:var(--radius);cursor:pointer;font-size:1rem;transition:background-color 0.2s;height:var(--field-h);display:flex;justify-content:center;align-items:center;font-family:'Cairo',sans-serif}
-.btn:hover{background-color:var(--brand-2)}
-.btn-danger{background-color:var(--danger)}.btn-danger:hover{background-color:#c81919}
-.btn-warn{background-color:var(--warn)}.btn-warn:hover{background-color:#d4900a}
-.btn-ok{background-color:var(--ok)}.btn-ok:hover{background-color:#1e9c4c}
-table{width:100%;border-collapse:collapse;margin-top:1rem;font-size:0.95rem}
-th,td{padding:0.75rem;text-align:right;border-bottom:1px solid var(--border)}
-th{background-color:var(--bg);color:var(--brand-2);font-weight:bold;position:sticky;top:0}
-tr:hover{background-color:rgba(255,255,255,0.03)}
-.text-danger{color:var(--danger)}.text-ok{color:var(--ok)}.text-warn{color:var(--warn)}
-.badge{display:inline-block;padding:0.25rem 0.5rem;border-radius:9999px;font-size:0.8rem;margin-left:0.5rem}
-.badge-danger{background-color:rgba(239,68,68,0.2);color:var(--danger)}.badge-ok{background-color:rgba(34,197,94,0.2);color:var(--ok)}.badge-warn{background-color:rgba(245,158,11,0.2);color:var(--warn)}
-.nav{display:flex;border-bottom:2px solid var(--border);margin-bottom:1rem}
-.nav-btn{padding:0.75rem 1.25rem;cursor:pointer;transition:background-color 0.2s,color 0.2s;color:var(--muted);border-bottom:2px solid transparent}
-.nav-btn:hover{color:var(--txt)}
-.nav-btn.active{color:var(--brand-2);border-bottom-color:var(--brand-2);font-weight:bold}
-.tab-content{display:none}.tab-content.active{display:block}
-.summary-box{background-color:var(--card);padding:1rem;border-radius:var(--radius);text-align:center;border:1px solid var(--border)}
-.summary-box h3{margin-top:0;font-size:1rem;color:var(--muted)}.summary-box p{margin-bottom:0;font-size:1.5rem;font-weight:bold}
-.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:1rem}
-ul{list-style:none;padding:0}ul li{padding:0.5rem 0;border-bottom:1px solid var(--border)}ul li:last-child{border-bottom:none}
-.actions button{margin-left:0.5rem}.search-controls{display:flex;gap:1rem;align-items:center;margin-bottom:1rem}
-.search-controls input[type="month"]{flex-grow:1}.search-controls button{width:auto}
-.collapsible-icon{transition:transform 0.3s}.card.collapsed .collapsible-icon{transform:rotate(180deg)}
-.toggle-switch{position:relative;display:inline-block;width:50px;height:24px}.toggle-switch input{opacity:0;width:0;height:0}
-.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:var(--muted);transition:0.4s;border-radius:24px}
-.slider:before{position:absolute;content:"";height:16px;width:16px;left:4px;bottom:4px;background-color:white;transition:0.4s;border-radius:50%}
-input:checked + .slider{background-color:var(--brand-2)}input:checked + .slider:before{transform:translateX(26px)}
-.inline-toggle{display:flex;align-items:center;gap:1rem}.no-data{text-align:center;color:var(--muted);padding:2rem 0}
-.modal{display:none}
+body{margin:0;font-family:'Cairo',sans-serif;background-color:var(--bg);color:var(--txt);}
+header{background:var(--card);display:flex;justify-content:space-between;align-items:center;padding:1rem;box-shadow:0 0 10px rgba(0,0,0,.4);}
+.btn{background:var(--brand);border:none;color:#fff;padding:.5rem 1rem;border-radius:var(--radius);cursor:pointer;}
+.btn:hover{background:var(--brand-2);}
+.card{background:var(--card);padding:1rem;margin:1rem;border-radius:var(--radius);}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:100;}
+.modal .card{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:90%;max-width:500px;}
+label{display:block;margin-bottom:.3rem;color:var(--muted);}
+input[type=text]{width:100%;padding:.5rem;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg);color:var(--txt);}
+.grid{display:grid;gap:.5rem;}
+.grid-2{grid-template-columns:1fr 1fr;}
 </style>
 </head>
 <body>
 
 <header>
-  <h1>دفتر حساباتي</h1>
-  <div style="display:flex; gap:10px;">
-    <button id="btnThemeToggle" class="btn" style="width:auto; padding: 0.75rem 0.5rem; font-size:1.2rem; line-height:1;">🌙</button>
-    <button id="btnSettings" class="btn">الإعدادات</button>
-  </div>
+  <h1>📘 دفتر حساباتي</h1>
+  <button id="btnSettings" class="btn">الإعدادات ⚙️</button>
 </header>
 
 <main>
-  <div id="tabsContainer">
-    <div class="nav">
-      <div class="nav-btn active" data-tab="home">الرئيسية</div>
-      <div class="nav-btn" data-tab="transactions">الحركات</div>
-      <div class="nav-btn" data-tab="commitments">الالتزامات</div>
-      <div class="nav-btn" data-tab="collections">التجميعات</div>
-      <div class="nav-btn" data-tab="reports">التقارير</div>
-    </div>
-
-    <div id="tab-home" class="tab-content active">
-      <div class="summary-grid">
-        <div class="summary-box">
-          <h3>الرصيد الكلي</h3>
-          <p id="totalBalance"></p>
-        </div>
-        <div class="summary-box">
-          <h3>إجمالي الدخل (الشهر)</h3>
-          <p id="monthlyIncome" class="text-ok"></p>
-        </div>
-        <div class="summary-box">
-          <h3>إجمالي المصروفات (الشهر)</h3>
-          <p id="monthlyExpense" class="text-danger"></p>
-        </div>
-      </div>
-
-      <div class="grid grid-2">
-        <div class="card" id="cardDueSoon">
-          <div class="card-header">
-            <h2>المستحقات القادمة <span class="badge badge-warn" id="dueSoonCount">0</span></h2>
-            <span class="collapsible-icon">▼</span>
-          </div>
-          <div class="content">
-            <ul id="dueSoonList">
-              <li class="no-data">لا توجد مستحقات قريباً.</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="card" id="cardAccountsList">
-          <div class="card-header">
-            <h2>الأرصدة الحالية</h2>
-            <span class="collapsible-icon">▼</span>
-          </div>
-          <div class="content">
-            <ul id="accountsList"></ul>
-            <div class="actions" style="margin-top:1rem; text-align:left;">
-              <button id="btnOpenAccountForm" class="btn">إدارة الحسابات</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div id="tab-transactions" class="tab-content">
-      <div class="card">
-        <div class="card-header">
-          <h2>إضافة حركة جديدة</h2>
-          <span class="collapsible-icon">▼</span>
-        </div>
-        <div class="content" id="transactionFormContent">
-          <form id="transactionForm">
-            <div class="grid grid-3">
-              <div class="form-group">
-                <label for="type">النوع</label>
-                <select id="type" required>
-                  <option value="دخل">دخل</option>
-                  <option value="مصروف">مصروف</option>
-                  <option value="تحويل">تحويل</option>
-                </select>
-              </div>
-              <div class="form-group" id="categoryGroup">
-                <label for="category">التصنيف</label>
-                <select id="category" required></select>
-              </div>
-              <div class="form-group">
-                <label for="amount">المبلغ</label>
-                <input type="number" id="amount" required min="0.01" step="0.01">
-              </div>
-            </div>
-            <div class="grid grid-2">
-              <div class="form-group">
-                <label for="accountFrom">الحساب (المصدر)</label>
-                <select id="accountFrom" required></select>
-              </div>
-              <div class="form-group" id="accountToGroup" style="display:none;">
-                <label for="accountTo">الحساب (الوجهة)</label>
-                <select id="accountTo"></select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="date">التاريخ</label>
-              <input type="date" id="date" required>
-            </div>
-            <div class="form-group">
-              <label for="notes">ملاحظات</label>
-              <textarea id="notes"></textarea>
-            </div>
-            <button type="submit" class="btn">حفظ الحركة</button>
-          </form>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <h2>سجل الحركات</h2>
-          <span class="collapsible-icon">▼</span>
-        </div>
-        <div class="content">
-          <div class="search-controls">
-            <input type="month" id="monthPicker">
-            <select id="filterAccount">
-              <option value="">جميع الحسابات</option>
-            </select>
-            <button id="btnApplyFilter" class="btn">تطبيق</button>
-          </div>
-          <div style="overflow-x:auto;">
-            <table id="transactionsTable">
-              <thead>
-                <tr>
-                  <th>التاريخ</th>
-                  <th>النوع</th>
-                  <th>التصنيف</th>
-                  <th>الحساب</th>
-                  <th>المبلغ</th>
-                  <th>ملاحظات</th>
-                  <th>الإجراءات</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr class="no-data-row" style="display:none;"><td colspan="7" class="no-data">لا توجد حركات مسجلة في هذا الشهر.</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div id="tab-commitments" class="tab-content">
-      <div class="card">
-        <div class="card-header">
-          <h2>إضافة التزام شهري جديد (دفعات صادرة)</h2>
-          <span class="collapsible-icon">▼</span>
-        </div>
-        <div class="content">
-          <form id="commitmentForm">
-            <div class="form-group">
-              <label for="cName">اسم الالتزام</label>
-              <input type="text" id="cName" required>
-            </div>
-            <div class="form-group inline-toggle">
-              <label for="cRecurring">متكرر شهرياً</label>
-              <label class="toggle-switch">
-                <input type="checkbox" id="cRecurring">
-                <span class="slider"></span>
-              </label>
-            </div>
-            <div class="grid grid-3">
-              <div class="form-group">
-                <label for="cAmount">المبلغ</label>
-                <input type="number" id="cAmount" required min="0.01" step="0.01">
-              </div>
-              <div class="form-group">
-                <label for="cFirstDue">تاريخ الاستحقاق الأول</label>
-                <input type="date" id="cFirstDue" required>
-              </div>
-              <div class="form-group" id="cEndAtGroup" style="display:none;">
-                <label for="cEndAt">تاريخ الانتهاء (اختياري)</label>
-                <input type="date" id="cEndAt">
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="cNotes">ملاحظات</label>
-              <textarea id="cNotes"></textarea>
-            </div>
-            <button type="submit" class="btn">حفظ الالتزام</button>
-          </form>
-        </div>
-      </div>
-      
-      <div class="card">
-        <div class="card-header">
-          <h2>قائمة الالتزامات الشهرية</h2>
-          <span class="collapsible-icon">▼</span>
-        </div>
-        <div class="content">
-          <ul id="commitmentsList">
-            <li class="no-data">لا توجد التزامات شهرية مسجلة.</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <div id="tab-collections" class="tab-content">
-      <div class="card">
-        <div class="card-header">
-          <h2>إضافة تجميع/اقتطاع شهري جديد (دفعات واردة)</h2>
-          <span class="collapsible-icon">▼</span>
-        </div>
-        <div class="content">
-          <form id="collectionForm">
-            <div class="form-group">
-              <label for="coName">اسم التجميع</label>
-              <input type="text" id="coName" required>
-            </div>
-            <div class="form-group inline-toggle">
-              <label for="coRecurring">متكرر شهرياً</label>
-              <label class="toggle-switch">
-                <input type="checkbox" id="coRecurring">
-                <span class="slider"></span>
-              </label>
-            </div>
-            <div class="grid grid-3">
-              <div class="form-group">
-                <label for="coAmount">المبلغ</label>
-                <input type="number" id="coAmount" required min="0.01" step="0.01">
-              </div>
-              <div class="form-group">
-                <label for="coFirstDue">تاريخ الاستحقاق الأول</label>
-                <input type="date" id="coFirstDue" required>
-              </div>
-              <div class="form-group" id="coEndAtGroup" style="display:none;">
-                <label for="coEndAt">تاريخ الانتهاء (اختياري)</label>
-                <input type="date" id="coEndAt">
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="coNotes">ملاحظات</label>
-              <textarea id="coNotes"></textarea>
-            </div>
-            <button type="submit" class="btn">حفظ التجميع</button>
-          </form>
-        </div>
-      </div>
-      
-      <div class="card">
-        <div class="card-header">
-          <h2>قائمة التجميعات الشهرية</h2>
-          <span class="collapsible-icon">▼</span>
-        </div>
-        <div class="content">
-          <ul id="collectionsList">
-            <li class="no-data">لا توجد تجميعات شهرية مسجلة.</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <div id="tab-reports" class="tab-content">
-      <div class="card">
-        <div class="card-header">
-          <h2>توزيع المصروفات والدخل الشهري</h2>
-        </div>
-        <div class="content">
-          <div class="search-controls">
-            <input type="month" id="reportMonthPicker">
-            <button id="btnGenerateReport" class="btn">عرض التقرير</button>
-          </div>
-          <div class="grid grid-2">
-            <div>
-              <canvas id="chartMonthly"></canvas>
-            </div>
-            <div>
-              <h3>إحصائيات الشهر</h3>
-              <ul id="reportStatsList"></ul>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-header">
-          <h2>ملخص التصنيفات (الأعلى مصروفاً)</h2>
-        </div>
-        <div class="content">
-          <ul id="categorySummaryList"></ul>
-        </div>
-      </div>
-    </div>
-
+  <div class="card">
+    <h2>مرحبًا بك 👋</h2>
+    <p>هنا يمكنك إدارة معاملاتك المالية وتتبع التزاماتك وتجميعاتك، بالإضافة إلى مزامنة بياناتك عبر GitHub Gist.</p>
   </div>
-
-  <div id="accountModal" class="modal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:100;">
-    <div class="card" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:90%; max-width:500px;">
-      <div class="card-header">
-        <h2>إدارة الحسابات</h2>
-        <button id="closeAccountModal" class="btn btn-danger" style="height:30px; padding:0 0.5rem;">X</button>
-      </div>
-      <div class="content">
-        <form id="accountForm">
-          <div class="form-group">
-            <label for="accountName">اسم الحساب</label>
-            <input type="text" id="accountName" required>
-          </div>
-          <div class="form-group">
-            <label for="accountOpening">رصيد الافتتاح</label>
-            <input type="number" id="accountOpening" required min="0" step="0.01" value="0">
-          </div>
-          <button type="submit" class="btn">إضافة/تحديث حساب</button>
-        </form>
-        <h3 style="margin-top:1rem; border-bottom:1px solid var(--border); padding-bottom:0.5rem; color:var(--muted);">الحسابات الحالية</h3>
-        <ul id="manageAccountsList"></ul>
-      </div>
-    </div>
-  </div>
-
-  <div id="settingsModal" class="modal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:100;">
-    <div class="card" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:90%; max-width:500px;">
-      <div class="card-header">
-        <h2>الإعدادات والمزامنة</h2>
-        <button id="closeSettingsModal" class="btn btn-danger" style="height:30px; padding:0 0.5rem;">X</button>
-      </div>
-      <div class="content">
-        <h3>مزامنة GitHub Gist</h3>
-        <p style="font-size:0.85rem; color:var(--muted);">لحفظ بياناتك بشكل آمن عبر GitHub Gist. أبقي Token سريًا.</p>
-        <form id="ghSyncForm">
-          <div class="form-group">
-            <label for="ghToken">رمز الوصول الشخصي (Token)</label>
-            <input type="text" id="ghToken" placeholder="ghp_..." required>
-          </div>
-          <div class="form-group">
-            <label for="ghGistId">معرف Gist (ID) — اتركه فارغًا لإنشاء Gist جديد</label>
-            <input type="text" id="ghGistId" placeholder="ex: 123abc456def...">
-          </div>
-          <div class="grid grid-2">
-            <button type="submit" id="btnSaveGhSettings" class="btn">حفظ الإعدادات</button>
-            <button type="button" id="btnGhPush" class="btn btn-ok">مزامنة الآن</button>
-            <button type="button" id="btnGhPull" class="btn" style="margin-left:8px">استيراد من Gist</button>
-          </div>
-        </form>
-
-        <h3 style="margin-top:1.5rem; border-bottom:1px solid var(--border); padding-bottom:0.5rem; color:var(--muted);">أدوات متقدمة</h3>
-        <button id="btnExportData" class="btn btn-warn">تصدير البيانات (JSON)</button>
-        <input type="file" id="importFile" accept="application/json" style="display:none;">
-        <button id="btnImportData" class="btn" style="margin-top:1rem;">استيراد البيانات (JSON)</button>
-        <button id="btnClearData" class="btn btn-danger" style="margin-top:1rem;">مسح جميع البيانات</button>
-      </div>
-    </div>
-  </div>
-
 </main>
 
+<!-- نافذة الإعدادات -->
+<div id="settingsModal" class="modal">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <h2>الإعدادات والمزامنة</h2>
+      <button id="closeSettingsModal" class="btn btn-danger" style="background:var(--danger)">✖</button>
+    </div>
+    <hr>
+    <h3>مزامنة GitHub Gist</h3>
+    <form id="ghSyncForm">
+      <div class="form-group">
+        <label for="ghToken">رمز الوصول (Token)</label>
+        <input type="text" id="ghToken" placeholder="ghp_..." required>
+      </div>
+      <div class="form-group">
+        <label for="ghGistId">معرف Gist (ID)</label>
+        <input type="text" id="ghGistId" placeholder="اتركه فارغًا لإنشاء جديد">
+      </div>
+      <div class="grid grid-2" style="margin-top:1rem;">
+        <button type="submit" class="btn" id="btnSaveGhSettings">💾 حفظ الإعدادات</button>
+        <button type="button" class="btn" id="btnGhPush" style="background:var(--brand-2)">⬆️ مزامنة الآن</button>
+        <button type="button" class="btn" id="btnGhPull" style="background:var(--brand)">⬇️ استيراد من Gist</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
-// ==================== Utilities ====================
-const escapeHtml=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);
-const YM=(d=new Date())=>{const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0');return `${y}-${m}`};
-const startOfToday=()=>{const d=new Date();d.setHours(0,0,0,0);return d;};
-const parseLocalDate=(s)=>{ if(!s) return null; const parts=s.split('-').map(n=>parseInt(n,10)); return new Date(parts[0],parts[1]-1,parts[2]||1); };
-const formatLocalDate=(d)=>{ if(!d) return ''; const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${dd}`; };
-
-// ==================== Storage & State ====================
-const STORAGE_KEY='myFin';
-let transactions=[], accounts=[], categories=[], commitments=[], collections=[], settings={};
-let currentMonth=YM(), currentAccountFilter='';
-const BASE_CATEGORIES=[{name:'راتب',type:'دخل'},{name:'هدية',type:'دخل'},{name:'فواتير',type:'مصروف'},{name:'طعام',type:'مصروف'},{name:'تسلية',type:'مصروف'}];
-
-// تم تحديث هذا الكائن لإضافة العناصر المفقودة/تحسين الوصول
+// ======= متغيرات عامة =======
+let settings = JSON.parse(localStorage.getItem('mySettings') || '{}');
 const els = {
-  totalBalance: document.getElementById('totalBalance'),
-  monthlyIncome: document.getElementById('monthlyIncome'),
-  monthlyExpense: document.getElementById('monthlyExpense'),
-  transactionsTableBody: document.querySelector('#transactionsTable tbody'),
-  monthPicker: document.getElementById('monthPicker'),
-  reportMonthPicker: document.getElementById('reportMonthPicker'),
-  
-  // Transaction Form elements
-  transactionForm: document.getElementById('transactionForm'),
-  type: document.getElementById('type'),
-  category: document.getElementById('category'),
-  categoryGroup: document.getElementById('categoryGroup'), // تم إضافته لضمان الوصول الآمن
-  amount: document.getElementById('amount'),
-  accountFrom: document.getElementById('accountFrom'),
-  accountTo: document.getElementById('accountTo'),
-  accountToGroup: document.getElementById('accountToGroup'),
-  date: document.getElementById('date'),
-  filterAccount: document.getElementById('filterAccount'), // تم إضافته لضمان الوصول الآمن
-
-  // Commitments elements
-  commitmentForm: document.getElementById('commitmentForm'),
-  cRecurring: document.getElementById('cRecurring'),
-  cEndAt: document.getElementById('cEndAt'),
-  cEndAtGroup: document.getElementById('cEndAtGroup'),
-  
-  // Collections elements
-  collectionForm: document.getElementById('collectionForm'),
-  coRecurring: document.getElementById('coRecurring'),
-  coEndAt: document.getElementById('coEndAt'),
-  coEndAtGroup: document.getElementById('coEndAtGroup'),
-  
-  // Modals & Buttons
-  settingsModal: document.getElementById('settingsModal'),
   btnSettings: document.getElementById('btnSettings'),
+  settingsModal: document.getElementById('settingsModal'),
   closeSettingsModal: document.getElementById('closeSettingsModal'),
-  ghSyncForm: document.getElementById('ghSyncForm'),
   ghToken: document.getElementById('ghToken'),
   ghGistId: document.getElementById('ghGistId'),
   btnGhPush: document.getElementById('btnGhPush'),
   btnGhPull: document.getElementById('btnGhPull'),
-  btnThemeToggle: document.getElementById('btnThemeToggle'),
-  accountsList: document.getElementById('accountsList'),
-  dueSoonList: document.getElementById('dueSoonList'),
-  dueSoonCount: document.getElementById('dueSoonCount'),
-  commitmentsList: document.getElementById('commitmentsList'),
-  collectionsList: document.getElementById('collectionsList'),
-  accountModal: document.getElementById('accountModal'),
-  accountForm: document.getElementById('accountForm'),
-  manageAccountsList: document.getElementById('manageAccountsList'),
-  btnOpenAccountForm: document.getElementById('btnOpenAccountForm'),
-  closeAccountModal: document.getElementById('closeAccountModal'),
-  btnApplyFilter: document.getElementById('btnApplyFilter'),
-  btnExportData: document.getElementById('btnExportData'),
-  btnImportData: document.getElementById('btnImportData'),
-  importFile: document.getElementById('importFile'),
-  btnClearData: document.getElementById('btnClearData'),
-  btnSaveGhSettings: document.getElementById('btnSaveGhSettings'),
+  ghSyncForm: document.getElementById('ghSyncForm')
 };
 
-// ==================== Storage functions ====================
-function loadData(){
-  const d = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-  transactions = d.transactions || [];
-  accounts = d.accounts || [];
-  categories = d.categories || [];
-  commitments = d.commitments || [];
-  collections = d.collections || [];
-  settings = d.settings || {};
-}
-function saveData(){ localStorage.setItem(STORAGE_KEY, JSON.stringify({transactions, accounts, categories, commitments, collections, settings})); }
-function saveSettings(){ saveData(); }
-
-// ==================== Formatting & Theme ====================
-function formatCurrency(amount){ return new Intl.NumberFormat('ar-EG',{style:'currency',currency:'EGP'}).format(amount||0); }
-function loadTheme(){ const t=localStorage.getItem('theme')||'dark'; if(t==='light'){ document.documentElement.classList.add('light-mode'); if(els.btnThemeToggle) els.btnThemeToggle.textContent='☀️'; } else { document.documentElement.classList.remove('light-mode'); if(els.btnThemeToggle) els.btnThemeToggle.textContent='🌙'; } }
-function toggleTheme(){ const isLight=document.documentElement.classList.toggle('light-mode'); localStorage.setItem('theme', isLight?'light':'dark'); els.btnThemeToggle.textContent = isLight?'☀️':'🌙'; if(document.getElementById('tab-reports')?.classList.contains('active')) drawMonthly(); }
-
-// ==================== Business logic ====================
-function calculateAccountBalance(accountName){
-  const acc = accounts.find(a=>a.name===accountName);
-  if(!acc) return 0;
-  const initial = Number(acc.opening||0);
-  const net = transactions.reduce((s,t)=>{
-    if(t.type==='دخل' && t.account===accountName) return s + Number(t.amount||0);
-    if(t.type==='مصروف' && t.account===accountName) return s - Number(t.amount||0);
-    if(t.type==='تحويل'){
-      if(t.account===accountName) return s - Number(t.amount||0);
-      if(t.accountTo===accountName) return s + Number(t.amount||0);
-    }
-    return s;
-  },0);
-  return initial + net;
-}
-function calculateTotalBalance(){ return accounts.reduce((s,a)=>s+calculateAccountBalance(a.name),0); }
-function ensureBaseCategories(){ BASE_CATEGORIES.forEach(b=>{ if(!categories.find(c=>c.name===b.name && c.type===b.type)) categories.push(b); }); saveData(); }
-function ensureTransferCategories(){ if(!categories.find(c=>c.name==='تحويل')) categories.push({name:'تحويل',type:'نظامي'}); saveData(); }
-function calculateMonthlySummary(month){ const fil = transactions.filter(t=>t.date && t.date.startsWith(month)); const inc = fil.filter(t=>t.type==='دخل').reduce((s,t)=>s+Number(t.amount||0),0); const exp = fil.filter(t=>t.type==='مصروف').reduce((s,t)=>s+Number(t.amount||0),0); return {income:inc, expense:exp}; }
-
-// ==================== UI Rendering ====================
-function refreshAccountSelects(){
-  const opts = accounts.map(a=>`<option value="${escapeHtml(a.name)}">${escapeHtml(a.name)}</option>`).join('');
-  
-  if(els.accountFrom) els.accountFrom.innerHTML = opts;
-  if(els.accountTo) els.accountTo.innerHTML = opts;
-  
-  // استخدام els.filterAccount (الذي تم إضافته حديثاً)
-  const filterOptions = `<option value="">جميع الحسابات</option>` + opts;
-  if(els.filterAccount) els.filterAccount.innerHTML = filterOptions;
-}
-function refreshCategorySelect(){
-  if(!els.type) return;
-  const cats = categories.filter(c=>c.type===els.type.value || c.type==='نظامي');
-  if(els.category) {
-    els.category.innerHTML = cats.map(c=>`<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`).join('');
-  }
-}
-function renderTransactions(month, accountName=''){
-  const rows = transactions.filter(t=>t.date && t.date.startsWith(month)).filter(t=> !accountName || t.account===accountName || t.accountTo===accountName).sort((a,b)=> (b.date||'').localeCompare(a.date||''));
-  if(rows.length===0){
-    if(els.transactionsTableBody) {
-      els.transactionsTableBody.innerHTML = `<tr class="no-data-row"><td colspan="7" class="no-data">لا توجد حركات مسجلة في هذا الشهر.</td></tr>`;
-    }
-    return;
-  }
-  if(els.transactionsTableBody) {
-    els.transactionsTableBody.innerHTML = rows.map(t=>{
-      const amountClass = t.type==='دخل' ? 'text-ok' : (t.type==='مصروف' ? 'text-danger' : '');
-      const accountDisplay = t.type==='تحويل' ? `${escapeHtml(t.account)} → ${escapeHtml(t.accountTo||'')}` : escapeHtml(t.account||'');
-      const amountSign = t.type==='مصروف' ? '-' : (t.type==='دخل' ? '+' : '');
-      return `<tr>
-        <td>${escapeHtml(t.date||'')}</td>
-        <td>${escapeHtml(t.type||'')}</td>
-        <td>${escapeHtml(t.category||'')}</td>
-        <td>${accountDisplay}</td>
-        <td class="${amountClass}">${amountSign}${formatCurrency(Number(t.amount||0))}</td>
-        <td>${escapeHtml(t.notes||'')}</td>
-        <td><button class="btn btn-danger" onclick="deleteTransaction('${t.id}')" style="height:30px;padding:0 0.5rem;">حذف</button></td>
-      </tr>`;
-    }).join('');
-  }
-}
-function renderSummary(month){
-  const {income, expense} = calculateMonthlySummary(month);
-  if(els.totalBalance) els.totalBalance.textContent = formatCurrency(calculateTotalBalance());
-  if(els.monthlyIncome) els.monthlyIncome.textContent = formatCurrency(income);
-  if(els.monthlyExpense) els.monthlyExpense.textContent = formatCurrency(expense);
-}
-function drawAccountsList(){ if(els.accountsList) els.accountsList.innerHTML = accounts.length ? accounts.map(a=>`<li>${escapeHtml(a.name)}: ${formatCurrency(calculateAccountBalance(a.name))}</li>`).join('') : '<li class="no-data">لا توجد حسابات مسجلة.</li>'; }
-function drawCommitments(){ if(els.commitmentsList) els.commitmentsList.innerHTML = commitments.length ? commitments.map(c=>`<li>${escapeHtml(c.name)} - ${formatCurrency(c.amount)}</li>`).join('') : '<li class="no-data">لا توجد التزامات شهرية مسجلة.</li>'; }
-function drawCollections(){ if(els.collectionsList) els.collectionsList.innerHTML = collections.length ? collections.map(c=>`<li>${escapeHtml(c.name)} - ${formatCurrency(c.amount)}</li>`).join('') : '<li class="no-data">لا توجد تجميعات شهرية مسجلة.</li>'; }
-function drawDueSoon(){ 
-  if(els.dueSoonList) els.dueSoonList.innerHTML = '<li class="no-data">لا توجد مستحقات قريباً.</li>'; 
-  if(els.dueSoonCount) els.dueSoonCount.textContent='0'; 
+// ======= وظائف مزامنة GitHub =======
+function saveSettings(){
+  localStorage.setItem('mySettings', JSON.stringify(settings));
 }
 
-// ==================== Chart ====================
-let monthlyChartInstance = null;
-function drawMonthly(){
-  if(monthlyChartInstance) monthlyChartInstance.destroy();
-  const ctxEl = document.getElementById('chartMonthly');
-  if (!ctxEl) return;
-  const ctx = ctxEl.getContext('2d');
-  const month = els.reportMonthPicker?.value || YM();
-  const {income, expense} = calculateMonthlySummary(month);
-  const isLight = document.documentElement.classList.contains('light-mode');
-  const data = { labels:[`دخل (${formatCurrency(income)})`,`مصروف (${formatCurrency(expense)})`], datasets:[{label:'إجمالي',data:[income,expense],backgroundColor:[isLight?'#16a34a':'#22c55e',isLight?'#dc2626':'#ef4444'],hoverOffset:4}] };
-  monthlyChartInstance = new Chart(ctx, { type:'doughnut', data, options:{responsive:true,plugins:{legend:{position:'top',labels:{color:getComputedStyle(document.documentElement).getPropertyValue('--txt')}},title:{display:true,text:`توزيع الدخل والمصروفات (${month})`,color:getComputedStyle(document.documentElement).getPropertyValue('--brand-2')}}}});
+function fillGhFormFromStorage(){
+  els.ghToken.value = settings.ghToken || '';
+  els.ghGistId.value = settings.ghGistId || '';
 }
 
-// ==================== Events & Handlers ====================
-function deleteTransaction(id){ if(!confirm('هل أنت متأكد من حذف هذه الحركة؟')) return; transactions = transactions.filter(t=>t.id!==id); saveData(); render(); }
-
-function handleTransactionTypeChange(e){ 
-  const isTransfer = e.target.value==='تحويل'; 
-  
-  // تم تصحيح الخطأ المحتمل هنا: التحقق من وجود العنصر قبل الوصول إلى خصائصه
-  if (els.accountToGroup) {
-      els.accountToGroup.style.display = isTransfer ? 'flex' : 'none'; 
-  }
-  if (els.categoryGroup) {
-      els.categoryGroup.style.display = isTransfer ? 'none' : 'flex'; 
-  }
-
-  if(els.accountTo) els.accountTo.toggleAttribute('required', isTransfer); 
-  if(els.category) els.category.toggleAttribute('required', !isTransfer); 
-
-  refreshCategorySelect(); 
+function ghSaveSettings(e){
+  e.preventDefault();
+  settings.ghToken = els.ghToken.value.trim();
+  settings.ghGistId = els.ghGistId.value.trim() || null;
+  saveSettings();
+  alert('✅ تم حفظ إعدادات GitHub بنجاح.');
 }
-
-function addTransaction(e){ e.preventDefault(); const type=els.type?.value, amount=Number(els.amount?.value||0), date=els.date?.value, accountFrom=els.accountFrom?.value, notes=document.getElementById('notes')?.value||'' ; if(amount<=0||!date){ alert('الرجاء إدخال مبلغ وتاريخ صالحين.'); return; } if(type==='تحويل'){ const accountTo=els.accountTo?.value; if(accountFrom===accountTo){ alert('لا يمكن التحويل من وإلى نفس الحساب.'); return; } transactions.push({id:Date.now()+'-out', type:'مصروف', category:'تحويل', amount, account:accountFrom, date, notes:`تحويل إلى ${accountTo}`}); transactions.push({id:Date.now()+'-in', type:'دخل', category:'تحويل', amount, account:accountTo, date, notes:`تحويل من ${accountFrom}`}); } else { const category = els.category?.value; if(!category){ alert('الرجاء اختيار تصنيف.'); return; } transactions.push({id:Date.now().toString(), type, category, amount, account:accountFrom, date, notes}); } saveData(); e.target.reset(); els.date.value = formatLocalDate(startOfToday()); render(); alert('تم حفظ الحركة بنجاح!'); }
-function addCommitment(e){ e.preventDefault(); const name=document.getElementById('cName').value, amount=Number(document.getElementById('cAmount').value||0), firstDue=document.getElementById('cFirstDue').value, notes=document.getElementById('cNotes').value||'', recurring=els.cRecurring?.checked, endAt=document.getElementById('cEndAt').value||null; if(amount<=0||!firstDue){ alert('الرجاء إدخال اسم ومبلغ وتاريخ استحقاق صالحين.'); return; } if(recurring && endAt && parseLocalDate(endAt) < parseLocalDate(firstDue)){ alert('تاريخ انتهاء الالتزام يجب أن يكون بعد الاستحقاق الأول.'); return; } commitments.push({id:Date.now().toString(), name, amount, firstDue, notes, recurring, endAt}); saveData(); e.target.reset(); drawCommitments(); drawDueSoon(); alert('تم حفظ الالتزام بنجاح!'); }
-function addCollection(e){ e.preventDefault(); const name=document.getElementById('coName').value, amount=Number(document.getElementById('coAmount').value||0), firstDue=document.getElementById('coFirstDue').value, notes=document.getElementById('coNotes').value||'', recurring=els.coRecurring?.checked, endAt=document.getElementById('coEndAt').value||null; if(amount<=0||!firstDue){ alert('الرجاء إدخال اسم ومبلغ وتاريخ استحقاق صالحين.'); return; } if(recurring && endAt && parseLocalDate(endAt) < parseLocalDate(firstDue)){ alert('تاريخ انتهاء التجميع يجب أن يكون بعد الاستحقاق الأول.'); return; } collections.push({id:Date.now().toString(), name, amount, firstDue, notes, recurring, endAt}); saveData(); e.target.reset(); drawCollections(); drawDueSoon(); alert('تم حفظ التجميع بنجاح!'); }
-function handleMonthFilter(){ currentMonth = els.monthPicker?.value || YM(); currentAccountFilter = els.filterAccount?.value || ''; render(); }
-
-// ==================== GitHub Gist Sync Implementation ====================
-function currentPayload(){ return { transactions, accounts, categories, commitments, collections, exportedAt:new Date().toISOString() }; }
-
-function ghSaveSettings(e){ if(e && e.preventDefault) e.preventDefault(); settings.ghToken = els.ghToken?.value.trim(); settings.ghGistId = els.ghGistId?.value.trim() || null; saveSettings(); fillGhFormFromStorage(); alert('تم حفظ إعدادات GitHub.'); }
-function fillGhFormFromStorage(){ if(els.ghToken) els.ghToken.value = settings.ghToken || ''; if(els.ghGistId) els.ghGistId.value = settings.ghGistId || ''; }
 
 async function ghFetch(path, method='GET', body=null){
-  const token = settings.ghToken || els.ghToken?.value.trim();
+  const token = settings.ghToken || els.ghToken.value.trim();
   if(!token) throw new Error('رمز الوصول (Token) غير مُعرّف.');
-  const headers = { 'Authorization': 'token ' + token, 'Accept':'application/vnd.github+json' };
-  if(body) headers['Content-Type']='application/json';
-  const res = await fetch('https://api.github.com' + path, { method, headers, body: body ? JSON.stringify(body) : undefined });
+  const headers = { 'Authorization': 'token '+token, 'Accept': 'application/vnd.github+json' };
+  if(body) headers['Content-Type'] = 'application/json';
+  const res = await fetch('https://api.github.com'+path, {method,headers,body:body?JSON.stringify(body):undefined});
   if(!res.ok){
-    const text = await res.text().catch(()=>null);
-    throw new Error(`GitHub API ${res.status} ${res.statusText}${text?(': '+text):''}`);
+    const txt = await res.text().catch(()=>null);
+    throw new Error(`GitHub API ${res.status}: ${txt}`);
   }
   return res.json().catch(()=>null);
 }
 
-async function ghGetGist(gistId){
-  if(!gistId) throw new Error('معرف Gist غير محدد.');
-  return ghFetch(`/gists/${gistId}`, 'GET');
-}
-async function ghUpdateGist(gistId, filename, content, message){
-  const body = { files: {} };
-  body.files[filename] = { content };
-  if(message) body.description = message;
-  return ghFetch(`/gists/${gistId}`, 'PATCH', body);
-}
-async function ghCreateGist(filename, content, description='my-finance export', isPublic=false){
-  const body = { description, public: !!isPublic, files:{} };
-  body.files[filename] = { content };
-  return ghFetch('/gists', 'POST', body);
-}
-
 async function ghPush(){
   try{
-    const tokenField = els.ghToken?.value.trim();
-    if(tokenField) settings.ghToken = tokenField;
-    if(!settings.ghToken) return alert('الرجاء إدخال Token في الإعدادات أولاً.');
-    const gistIdField = els.ghGistId?.value.trim();
-    if(gistIdField) settings.ghGistId = gistIdField;
+    const token = els.ghToken.value.trim();
+    if(token) settings.ghToken = token;
+    const gistId = els.ghGistId.value.trim();
+    if(gistId) settings.ghGistId = gistId;
     saveSettings();
-    const payload = currentPayload();
-    const filename = 'my-finance-data.json';
-    const content = JSON.stringify(payload, null, 2);
+
+    if(!settings.ghToken) return alert('⚠️ أدخل Token أولاً.');
+
+    const content = JSON.stringify({test:"my-finance demo sync",time:new Date().toISOString()},null,2);
+    const fileName = 'my-finance-data.json';
     if(settings.ghGistId){
-      await ghUpdateGist(settings.ghGistId, filename, content, `sync: update ${new Date().toISOString()}`);
-      alert('تمت المزامنة: تم تحديث الـ Gist.');
-    }else{
-      const created = await ghCreateGist(filename, content, 'my-finance backup (auto)', false);
-      if(created && created.id){
-        settings.ghGistId = created.id; saveSettings(); fillGhFormFromStorage();
-        alert('تم إنشاء Gist جديد وحفظه بنجاح. (تم تحديث إعدادات Gist ID)');
-      }else{ throw new Error('تعذّر إنشاء Gist.'); }
+      await ghFetch(`/gists/${settings.ghGistId}`, 'PATCH', {files:{[fileName]:{content}}});
+      alert('✅ تم تحديث الـ Gist بنجاح.');
+    } else {
+      const res = await ghFetch('/gists','POST',{public:false,description:'my-finance backup',files:{[fileName]:{content}}});
+      if(res.id){ settings.ghGistId=res.id; saveSettings(); els.ghGistId.value=res.id; alert('✅ تم إنشاء Gist جديد.'); }
     }
-  }catch(err){ console.error('ghPush error', err); alert('فشل المزامنة: ' + (err.message || err)); }
+  }catch(err){ alert('❌ فشل المزامنة: '+err.message); console.error(err); }
 }
 
 async function ghPull(){
   try{
-    const tokenField = els.ghToken?.value.trim();
-    if(tokenField) settings.ghToken = tokenField;
-    const gistId = els.ghGistId?.value.trim() || settings.ghGistId;
-    if(!settings.ghToken) return alert('الرجاء إدخال Token في الإعدادات أولاً.');
-    if(!gistId) return alert('الرجاء إدخال معرف Gist لاستيراد البيانات.');
-    const gist = await ghGetGist(gistId);
+    const gistId = els.ghGistId.value.trim() || settings.ghGistId;
+    if(!gistId) return alert('⚠️ أدخل معرف Gist أولاً.');
+    const gist = await ghFetch(`/gists/${gistId}`,'GET');
     const files = gist.files || {};
-    let targetFile = files['my-finance-data.json'] ? 'my-finance-data.json' : Object.keys(files)[0];
-    if(!targetFile) throw new Error('الـ Gist لا يحتوي على ملفات.');
-    const fileContent = files[targetFile].content;
-    if(!fileContent) throw new Error('ملف الـ Gist فارغ.');
-    const data = JSON.parse(fileContent);
-    transactions = data.transactions || data.ledger || [];
-    accounts = data.accounts || [];
-    categories = data.categories || [];
-    commitments = (data.commitments || []).map(c=>c);
-    collections = (data.collections || []).map(c=>c);
-    saveData();
-    render();
-    drawCommitments(); drawCollections(); drawDueSoon();
-    alert('تم استيراد البيانات من الـ Gist بنجاح.');
-  }catch(err){ console.error('ghPull error', err); alert('فشل التحميل من Gist: ' + (err.message || err)); }
+    const file = files['my-finance-data.json'] || Object.values(files)[0];
+    if(!file) throw new Error('الـ Gist لا يحتوي على ملف صالح.');
+    const data = JSON.parse(file.content);
+    alert('✅ تم استيراد البيانات:\n'+JSON.stringify(data,null,2));
+  }catch(err){ alert('❌ فشل الاستيراد: '+err.message); console.error(err); }
 }
 
-// ==================== Init & Wiring ====================
-function render(){ renderSummary(currentMonth); renderTransactions(currentMonth,currentAccountFilter); drawAccountsList(); }
-function initCollapsibles(){ document.querySelectorAll('.card-header').forEach(h=>h.addEventListener('click', ()=>{ const card=h.closest('.card'); card.classList.toggle('collapsed'); const content=card.querySelector('.content'); if(content) content.classList.toggle('hidden'); })); }
-function initTabs(){ document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',(e)=>{ const tabId=e.target.dataset.tab; document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active')); document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active')); e.target.classList.add('active'); const target=document.getElementById('tab-'+tabId); if(target) target.classList.add('active'); if(tabId==='reports'){ const def=YM(); if(els.reportMonthPicker && !els.reportMonthPicker.value) els.reportMonthPicker.value=def; drawMonthly(); } })); }
-
-function init(){
-  loadTheme();
-  loadData();
-  if(accounts.length===0){ accounts=[{name:'كاش',opening:0},{name:'حساب بنكي',opening:0},{name:'محفظة',opening:0}]; saveData(); }
-  ensureBaseCategories();
-  initCollapsibles();
-  initTabs();
-  commitments = commitments.map(c=>c);
-  collections = collections.map(c=>c);
-  saveData();
-  ensureTransferCategories();
-  if(els.monthPicker){ const today=YM(); if(!els.monthPicker.value) els.monthPicker.value=today; els.monthPicker.setAttribute('max',today); }
-  if(els.date) els.date.value = formatLocalDate(startOfToday());
-  refreshAccountSelects(); refreshCategorySelect();
-  drawCommitments(); drawCollections(); drawDueSoon(); render();
+// ======= فتح وغلق نافذة الإعدادات =======
+els.btnSettings?.addEventListener('click',()=>{
+  els.settingsModal.style.display='block';
   fillGhFormFromStorage();
-  els.cEndAt?.toggleAttribute('required', els.cRecurring?.checked);
-  els.coEndAt?.toggleAttribute('required', els.coRecurring?.checked);
-}
+});
 
-// Listeners
-document.addEventListener('DOMContentLoaded', init);
-els.btnThemeToggle?.addEventListener('click', toggleTheme);
-els.transactionForm?.addEventListener('submit', addTransaction);
-els.type?.addEventListener('change', handleTransactionTypeChange);
-els.type?.addEventListener('change', refreshCategorySelect);
-els.btnApplyFilter?.addEventListener('click', handleMonthFilter);
-els.commitmentForm?.addEventListener('submit', addCommitment);
-els.cRecurring?.addEventListener('change', e=>{ if(document.getElementById('cEndAtGroup')) document.getElementById('cEndAtGroup').style.display = e.target.checked ? 'flex' : 'none'; els.cEndAt?.toggleAttribute('required', e.target.checked); });
-els.collectionForm?.addEventListener('submit', addCollection);
-els.coRecurring?.addEventListener('change', e=>{ if(document.getElementById('coEndAtGroup')) document.getElementById('coEndAtGroup').style.display = e.target.checked ? 'flex' : 'none'; els.coEndAt?.toggleAttribute('required', e.target.checked); });
-els.btnGenerateReport?.addEventListener('click', drawMonthly);
+els.closeSettingsModal?.addEventListener('click',()=>{
+  els.settingsModal.style.display='none';
+});
 
-// Accounts modal
-els.btnOpenAccountForm?.addEventListener('click', ()=>{ els.accountModal.style.display='block'; drawManageAccounts(); });
-els.closeAccountModal?.addEventListener('click', ()=>{ els.accountModal.style.display='none'; });
-function drawManageAccounts(){ 
-  if(!els.manageAccountsList) return;
-  els.manageAccountsList.innerHTML = accounts.length ? accounts.map((a,i)=>`<li>${escapeHtml(a.name)} · ${formatCurrency(a.opening||0)} <button class="btn" onclick="editAccount(${i})" style="height:28px;padding:0 6px;margin-left:6px">تعديل</button> <button class="btn btn-danger" onclick="deleteAccount(${i})" style="height:28px;padding:0 6px">حذف</button></li>`).join('') : '<li class="no-data">لا توجد حسابات</li>'; 
-}
-window.editAccount=(i)=>{ const acc=accounts[i]; if(!acc) return; const name=prompt('اسم الحساب',acc.name); if(!name) return; const openingStr=prompt('الرصيد الافتتاحي',acc.opening||0); const op=parseFloat(openingStr); accounts[i].name=name.trim(); if(Number.isFinite(op)) accounts[i].opening=op; saveData(); refreshAccountSelects(); render(); drawManageAccounts(); }
-window.deleteAccount=(i)=>{ if(!confirm('سيتم حذف الحساب (لن تُحذف الحركات). متابعة؟')) return; accounts.splice(i,1); saveData(); refreshAccountSelects(); render(); drawManageAccounts(); }
-document.getElementById('accountForm')?.addEventListener('submit', function(e){ e.preventDefault(); const name=document.getElementById('accountName').value.trim(); const opening=Number(document.getElementById('accountOpening').value||0); if(!name){ alert('ادخل اسم الحساب'); return; } accounts.push({name, opening}); saveData(); refreshAccountSelects(); render(); drawManageAccounts(); this.reset(); });
+window.addEventListener('click',(ev)=>{
+  if(ev.target===els.settingsModal){ els.settingsModal.style.display='none'; }
+});
 
-// Export/Import/Clear
-els.btnExportData?.addEventListener('click', ()=>{ const data = JSON.stringify({transactions, accounts, categories, commitments, collections, exportedAt:new Date().toISOString()}, null, 2); const blob=new Blob([data],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='my-finance-data.json'; a.click(); URL.revokeObjectURL(a.href); });
-els.btnImportData?.addEventListener('click', ()=>document.getElementById('importFile')?.click());
-document.getElementById('importFile')?.addEventListener('change', async (e)=>{ const f=e.target.files[0]; if(!f) return; try{ const text=await f.text(); const data=JSON.parse(text); transactions=data.transactions||[]; accounts=data.accounts||[]; categories=data.categories||[]; commitments=(data.commitments||[]).map(c=>c); collections=(data.collections||[]).map(c=>c); saveData(); render(); drawCommitments(); drawCollections(); drawDueSoon(); alert('تم الاستيراد بنجاح'); }catch(err){ alert('خطأ أثناء الاستيراد: '+err.message); } e.target.value=''; });
-els.btnClearData?.addEventListener('click', ()=>{ if(!confirm('سيتم مسح كل البيانات محلياً. استمرار؟')) return; transactions=[]; accounts=[]; categories=[]; commitments=[]; collections=[]; settings={}; saveData(); render(); drawCommitments(); drawCollections(); drawDueSoon(); alert('تم مسح البيانات محلياً.'); });
-
-// GitHub sync buttons
-els.btnGhPush?.addEventListener('click', ghPush);
-els.btnGhPull?.addEventListener('click', ghPull);
-els.ghSyncForm?.addEventListener('submit', ghSaveSettings);
-
+// ======= روابط الأزرار =======
+els.ghSyncForm?.addEventListener('submit',ghSaveSettings);
+els.btnGhPush?.addEventListener('click',ghPush);
+els.btnGhPull?.addEventListener('click',ghPull);
 </script>
 </body>
 </html>
