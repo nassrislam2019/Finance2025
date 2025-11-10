@@ -523,6 +523,25 @@
       "amount": 390,
       "account": "إئتمان",
       "category": "تحويل وارد"
+    },
+    {
+      "id": "zdrzgpk6mht247c7",
+      "date": "2025-11-15",
+      "desc": "اشتراك (سداد التزام)",
+      "type": "expense",
+      "amount": 60,
+      "account": "إئتمان",
+      "category": "التزامات شهرية",
+      "linkCommitId": "cs7lzxi9mgrtufxt"
+    },
+    {
+      "id": "gwwmp8vfmht25vjc",
+      "date": "2025-11-10",
+      "desc": "ظبط",
+      "type": "expense",
+      "amount": 68,
+      "account": "إئتمان",
+      "category": "أكل وشرب"
     }
   ],
   "accounts": [
@@ -670,12 +689,13 @@
       "name": "اشتراك",
       "amount": 60,
       "firstDue": "2025-10-15",
-      "nextDue": "2025-11-15",
+      "nextDue": "2025-12-15",
       "recurring": true,
       "endAt": "2026-12-31",
       "paid": {},
       "payments": {
-        "2025-10": 60
+        "2025-10": 60,
+        "2025-11": 60
       }
     },
     {
@@ -768,5 +788,5 @@
       "endAt": null
     }
   ],
-  "updatedAt": "2025-11-10T11:25:49.984Z"
+  "updatedAt": "2025-11-10T11:27:44.261Z"
 }
