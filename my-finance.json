@@ -469,6 +469,38 @@
       "account": "كاش",
       "category": "التزامات شهرية",
       "linkCommitId": "20lhz81umhgyhdv7"
+    },
+    {
+      "id": "9ffbvr9kmht1q5hw",
+      "date": "2025-11-15",
+      "desc": "لله (سداد التزام)",
+      "type": "expense",
+      "amount": 300,
+      "account": "إئتمان",
+      "category": "التزامات شهرية",
+      "linkCommitId": "9f7hf8w3mgozrj5i"
+    },
+    {
+      "id": "e93kslppmht1vqpv",
+      "link": "t8mcojg5mht1vqpv",
+      "isTransfer": true,
+      "date": "2025-11-10",
+      "desc": "تحويل إلى كاش",
+      "type": "expense",
+      "amount": 600,
+      "account": "محفظة",
+      "category": "تحويل صادر"
+    },
+    {
+      "id": "cacw079kmht1vqpv",
+      "link": "t8mcojg5mht1vqpv",
+      "isTransfer": true,
+      "date": "2025-11-10",
+      "desc": "تحويل من محفظة",
+      "type": "income",
+      "amount": 600,
+      "account": "كاش",
+      "category": "تحويل وارد"
     }
   ],
   "accounts": [
@@ -590,11 +622,13 @@
       "name": "لله",
       "amount": 300,
       "firstDue": "2025-11-15",
-      "nextDue": "2025-11-15",
+      "nextDue": "2025-12-15",
       "recurring": true,
       "endAt": "2026-12-31",
       "paid": {},
-      "payments": {}
+      "payments": {
+        "2025-11": 300
+      }
     },
     {
       "id": "87dzatk4mgozsoba",
@@ -712,5 +746,5 @@
       "endAt": null
     }
   ],
-  "updatedAt": "2025-11-10T11:15:10.046Z"
+  "updatedAt": "2025-11-10T11:19:49.982Z"
 }
