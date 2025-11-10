@@ -542,6 +542,15 @@
       "amount": 68,
       "account": "إئتمان",
       "category": "أكل وشرب"
+    },
+    {
+      "id": "qk582niqmht2l2jf",
+      "date": "2025-11-10",
+      "desc": "ضبط رصيد تحت التحصيل",
+      "type": "expense",
+      "amount": 1000,
+      "account": "حساب بنكي",
+      "category": "أكل وشرب"
     }
   ],
   "accounts": [
@@ -788,5 +797,5 @@
       "endAt": null
     }
   ],
-  "updatedAt": "2025-11-10T11:27:44.261Z"
+  "updatedAt": "2025-11-10T11:39:31.829Z"
 }
