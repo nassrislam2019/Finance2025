@@ -441,6 +441,34 @@
       "amount": 1006,
       "account": "محفظة",
       "category": "مرتب"
+    },
+    {
+      "id": "vej2n9qcmht1pfqr",
+      "date": "2025-11-03",
+      "desc": "احمد رفعت (تحصيل)",
+      "type": "income",
+      "amount": 1000,
+      "account": "حساب بنكي",
+      "category": "تحصيلات شهرية"
+    },
+    {
+      "id": "a9t896rfmht1pjum",
+      "date": "2025-11-03",
+      "desc": "سحر (تحصيل)",
+      "type": "income",
+      "amount": 1000,
+      "account": "كاش",
+      "category": "تحصيلات شهرية"
+    },
+    {
+      "id": "mo7ewxg1mht1pqvk",
+      "date": "2025-11-02",
+      "desc": "رشا (سداد التزام)",
+      "type": "expense",
+      "amount": 800,
+      "account": "كاش",
+      "category": "التزامات شهرية",
+      "linkCommitId": "20lhz81umhgyhdv7"
     }
   ],
   "accounts": [
@@ -626,18 +654,6 @@
       "recurring": false,
       "endAt": null,
       "payments": {}
-    },
-    {
-      "id": "20lhz81umhgyhdv7",
-      "name": "رشا",
-      "amount": 1650,
-      "firstDue": "2025-11-02",
-      "nextDue": "2025-11-02",
-      "recurring": false,
-      "endAt": null,
-      "payments": {
-        "2025-11": 850
-      }
     }
   ],
   "collections": [
@@ -687,15 +703,6 @@
       "endAt": "2026-12-31"
     },
     {
-      "id": "r8asqfvjmhjcncoc",
-      "name": "احمد رفعت",
-      "amount": 1000,
-      "firstDue": "2025-11-03",
-      "nextDue": "2025-11-03",
-      "recurring": false,
-      "endAt": null
-    },
-    {
       "id": "1s13vpfamhjcnqey",
       "name": "حسام",
       "amount": 1000,
@@ -703,16 +710,7 @@
       "nextDue": "2025-11-03",
       "recurring": false,
       "endAt": null
-    },
-    {
-      "id": "yumzsbyfmhjcobou",
-      "name": "سحر",
-      "amount": 1000,
-      "firstDue": "2025-11-03",
-      "nextDue": "2025-11-03",
-      "recurring": false,
-      "endAt": null
     }
   ],
-  "updatedAt": "2025-11-10T11:14:03.621Z"
+  "updatedAt": "2025-11-10T11:15:10.046Z"
 }
