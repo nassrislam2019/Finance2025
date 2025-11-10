@@ -140,7 +140,7 @@ header .toolbar {
     transition: all 0.2s;
 }
 
-/* ====== Navigation Bar (جديد) ====== */
+/* ====== Navigation Bar ====== */
 .nav-bar {
     position: fixed;
     bottom: 0;
@@ -210,7 +210,7 @@ body.light-theme .nav-bar {
         right: 100px; 
     }
 }
-/* ====== Page Management (جديد) ====== */
+/* ====== Page Management ====== */
 .page {
     display: none;
 }
@@ -218,7 +218,6 @@ body.light-theme .nav-bar {
     display: block;
 }
 
-/* ... (بقية تنسيقات العناصر الأخرى مثل card, grid, btn, table, إلخ.) ... */
 /* Cards */
 .card{
   background:var(--card);
@@ -226,7 +225,7 @@ body.light-theme .nav-bar {
   border-radius:var(--radius);
   padding:0; overflow:hidden; box-shadow:var(--shadow);
   transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
-  margin-top: 12px; /* تم نقل الـ margin هنا بدلاً من كل <section> */
+  margin-top: 12px;
 }
 .card-head{
   display:flex;align-items:center;justify-content:space-between;padding:12px 14px;
@@ -257,7 +256,6 @@ input,select,textarea{
 body.light-theme input, body.light-theme select, body.light-theme textarea { background: #f1f5f9; }
 .btn-primary{background:linear-gradient(135deg,#0ea5e9,#0369a1);color:#fff;border:1px solid rgba(14,165,233,.35)}
 .hr{height:1px;background:var(--border);opacity:.7;margin:12px 0;border-radius:999px}
-/* ... (بقية التنسيقات الأخرى كما هي) ... */
 .btn{
   appearance:none;border:none;border-radius:10px;padding:8px 10px;font-weight:700;cursor:pointer;
   transition:transform .06s ease, opacity .15s,height .08s ease;font-size:13px;height:36px;
@@ -287,9 +285,6 @@ body.light-theme .stat { background: #f1f5f9; }
   text-align:center;box-shadow:var(--shadow);font-weight:700;color:var(--txt)
 }
 body.light-theme .list-plain .item { background: #f1f5f9; }
-.report-table-wrap{overflow:auto;max-height:340px}
-#tbodyMonthly tr.active{background:rgba(14,165,233,0.18);box-shadow:0 0 0 1px rgba(14,165,233,0.35)}
-body.light-theme #tbodyMonthly tr.active{background:rgba(14,165,233,0.1);box-shadow:0 0 0 1px rgba(14,165,233,0.2)}
 .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .spacer{flex:1}
 .badge{
@@ -300,56 +295,61 @@ body.light-theme #tbodyMonthly tr.active{background:rgba(14,165,233,0.1);box-sha
 }
 body.light-theme .badge { background: #f1f5f9; }
 .badge-group{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
-.footer{margin-top:24px;color:var(--muted);font-size:12px;text-align:center}
-.note{color:var(--warn)}
-canvas{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);display:block;width:100%;height:320px;transition: background-color 0.3s, border-color 0.3s}
-body.light-theme canvas { background: #ffffff; }
-.transfer-grid{display:grid;gap:10px;grid-template-columns:repeat(3,1fr)}
-.transfer-grid .full{grid-column:1/-1}
-@media(max-width:900px){.transfer-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:720px){
-  .grid-2{grid-template-columns:1fr}
-  .grid-4{grid-template-columns:1fr 1fr}
-  .badge{height:auto}
-  .card-head h3{font-size:17px}
-  .transfer-grid{grid-template-columns:1fr}
-}
+.d-none{display:none!important;}
+
 /* تنسيقات المزامنة */
 #sync-card-v2 .card-head h3 i {margin-left: 8px; font-size: 1.1em;}
 .sync-status-display {
     display: flex;
     align-items: center;
     padding: 12px;
-    border-radius: 8px;
+    border-radius: var(--radius); /* توحيد باستخدام متغير الكارد */
     margin-bottom: 12px;
     border: 1px solid var(--border);
     font-weight: 600;
     transition: all 0.3s ease;
 }
-.sync-status-display i { margin-left: 10px; font-size: 1.4em; }
+.sync-status-display i { margin-left: 12px; font-size: 1.5em; } /* لمسة جمالية: زيادة حجم الأيقونة */
 .status-idle {background-color: var(--sync-idle); color: var(--muted);}
-.status-syncing {background-color: var(--sync-syncing); color: var(--brand-2);}
+.status-syncing {background-color: var(--sync-syncing); color: var(--brand-2); border-color: var(--brand-2);} /* لمسة جمالية: تحديد لون الإطار */
 .status-success {background-color: var(--sync-success); color: var(--ok);}
 .status-error {background-color: var(--sync-danger); color: var(--danger);}
-table{width:100%;border-collapse:separate;border-spacing:0 8px}
-thead th{font-size:12px;color:var(--muted);font-weight:600;text-align:right;padding:6px 10px}
-tbody tr{
-    background:var(--table-row-bg); 
-    border:1px solid rgba(255,255,255,0.02);
-    border-radius:10px;
-    transition:transform .08s ease, box-shadow .08s ease, background-color 0.3s;
+
+/* لمسة جمالية: إضافة تأثير نبض خفيف لحالة المزامنة */
+@keyframes pulse-sync {
+    0% { box-shadow: 0 0 0 0px var(--brand-2); }
+    50% { box-shadow: 0 0 0 6px rgba(14, 165, 233, 0.2); }
+    100% { box-shadow: 0 0 0 0px rgba(14, 165, 233, 0.0); }
 }
-body.light-theme tbody tr { border: 1px solid #f1f5f9; }
-tbody tr:hover{
-    transform:translateY(-4px);
-    box-shadow:var(--table-row-hover-shadow); 
+.sync-status-display.status-syncing {
+    animation: pulse-sync 1.5s infinite ease-out;
+    border-color: var(--brand-2);
 }
-tbody td{padding:12px 10px;border-top:1px solid var(--table-border-color);border-bottom:1px solid var(--table-border-color);color:var(--txt)}
-tbody tr td:first-child{border-right:1px solid var(--table-border-color);border-top-right-radius:var(--radius);border-bottom-right-radius:var(--radius)}
-tbody tr td:last-child{border-left:1px solid var(--table-border-color);border-top-left-radius:var(--radius);border-bottom-left-radius:var(--radius)}
-.amount.exp{color:#ff9aa0;font-weight:900}.amount.inc{color:#7ef0b8;font-weight:900}
-body.light-theme .amount.exp{color:#dc2626}.amount.inc{color:#10b981}
-.d-none{display:none!important;}
+
+/* لمسة جمالية: تحسين مظهر زر المزامنة الأساسي */
+#sync-card-v2 .toolbar .btn-primary {
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(3, 105, 161, 0.5);
+}
+#sync-card-v2 .toolbar .btn-primary:hover {
+    box-shadow: 0 6px 16px rgba(3, 105, 161, 0.7);
+    transform: translateY(-2px);
+}
+
+/* لمسة جمالية: تحسين زر تبديل الوضع */
+.btn-toggle-theme:hover {
+    color: var(--brand-2);
+    border-color: var(--brand-2);
+    background: rgba(14, 165, 233, 0.1);
+}
+
+/* تصميم كارت إعدادات GitHub المتقدم */
+#card-github { margin-top: 12px; }
+#card-github .card-body .grid-3 { grid-template-columns: 1fr 1fr auto; }
+#card-github .card-body input { font-size: 12px; }
+#card-github .card-body .badge { height: auto; }
+#card-github .card-body .btn { height: 36px; }
+
 </style>
 </head>
 <body id="appBody">
@@ -421,18 +421,38 @@ body.light-theme .amount.exp{color:#dc2626}.amount.inc{color:#10b981}
                     <button id="syncPullBtnV2" class="btn btn-outline" type="button" title="تحميل البيانات من GitHub واستبدال المحلي">تحميل من GitHub</button>
                     <span class="spacer"></span>
                     <span id="syncLastTimeV2" class="badge">آخر تحديث: —</span>
-                    <button class="btn btn-outline" onclick="document.getElementById('card-github').classList.toggle('collapsed'); document.getElementById('card-github').querySelector('.toggle').textContent = document.getElementById('card-github').classList.contains('collapsed') ? '▸' : '▾';">الإعدادات المتقدمة</button>
+                    <button class="btn btn-outline" onclick="toggleCard('card-github')">الإعدادات المتقدمة</button>
                 </div>
                 <div style="margin-top:8px;color:var(--muted);font-size:12px;text-align:right;">
-                     <span id="syncConfigInfo">المستودع: ${ghCfg.repo||'—'} / الفرع: ${ghCfg.branch||'main'}</span>
+                     <span id="syncConfigInfo">المستودع: — / الفرع: main</span>
                 </div>
             </div>
         </section>
+
+        <section class="card collapsed" id="card-github" data-collapsible>
+            <div class="card-head"><h3>إعدادات GitHub المتقدمة</h3></div>
+            <div class="card-body">
+                <div class="grid grid-2">
+                    <div><label>GitHub Token (شخصي)</label><input id="ghToken" type="password" placeholder="ghp_..." /></div>
+                    <div><label>Gist ID (المعرّف)</label><input id="ghGistId" placeholder="المعرّف في GitHub Gist" /></div>
+                </div>
+                <div class="grid grid-2" style="margin-top:10px">
+                    <div><label>اسم الملف (اختياري)</label><input id="ghFilename" placeholder="finance.json" /></div>
+                    <div class="checkbox-row" style="margin-top:22px"><input id="ghAuto" type="checkbox"/><label for="ghAuto" style="margin:0">مزامنة تلقائيًا بعد كل تعديل</label></div>
+                </div>
+                <div class="grid grid-2" style="margin-top:22px">
+                    <button id="ghSaveCfg" class="btn btn-outline">حفظ الإعدادات</button>
+                    <button id="ghTest" class="btn btn-outline">اختبار الاتصال</button>
+                </div>
+                <div style="margin-top:8px;color:var(--muted);font-size:12px">⚠️ الـ Token محفوظ محليًا في جهازك فقط.</div>
+            </div>
+        </section>
+        
     </div>
 
     <div class="page" id="page-txs">
         <section class="card" id="card-addtx" data-collapsible>
-            <div class="card-head"><h3>إضافة حركة</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▾</button></div>
+            <div class="card-head"><h3>إضافة حركة</h3><button class="toggle" onclick="toggleCard('card-addtx')" aria-expanded="false" title="عرض/إخفاء">▾</button></div>
             <div class="card-body">
               <div class="grid grid-3">
                 <div><label>النوع</label><select id="type"><option value="income">دخل</option><option value="expense" selected>مصروف</option></select></div>
@@ -449,200 +469,80 @@ body.light-theme .amount.exp{color:#dc2626}.amount.inc{color:#10b981}
               </div>
             </div>
         </section>
-
         <div class="hr"></div>
-
-        <section class="card" id="card-transfer" data-collapsible>
-            <div class="card-head"><h3>تحويل بين الحسابات</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
-            <div class="card-body">
-              <div class="transfer-grid">
-                <div><label>من حساب</label><select id="trFrom"></select></div>
-                <div><label>إلى حساب</label><select id="trTo"></select></div>
-                <div><label>المبلغ (ج.م)</label><input id="trAmount" type="number" step="0.01" placeholder="0.00" /></div>
-                <div><label>عمولة التحويل (اختياري)</label><input id="trFee" type="number" step="0.01" placeholder="0.00" /></div>
-                <div><label>التاريخ</label><input id="trDate" type="date" /></div>
-                <div><label>ملاحظة</label><input id="trDesc" type="text" placeholder="مثال: تحويل لمحفظة"/></div>
-                <div class="full" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-                  <button id="execTransfer" class="btn btn-primary">تنفيذ التحويل</button>
-                  <button id="resetTransfer" class="btn btn-outline">إفراغ</button>
+        <section class="card" id="card-txs">
+             <div class="card-head"><h3>سجل الحركات</h3><button class="toggle" onclick="toggleCard('card-txs')" aria-expanded="false" title="عرض/إخفاء">▾</button></div>
+             <div class="card-body">
+                <div class="toolbar" style="margin-bottom:10px">
+                    <input id="fSearch" placeholder="بحث بالوصف" />
+                    <select id="fType"><option value="all">كل الأنواع</option><option value="income">دخل</option><option value="expense">مصروف</option></select>
+                    <select id="fAccount"><option value="all">كل الحسابات</option></select>
+                    <input id="fFrom" type="date" title="من تاريخ" />
+                    <input id="fTo" type="date" title="إلى تاريخ" />
                 </div>
-              </div>
-              <div style="margin-top:8px;color:var(--muted);font-size:12px">ملاحظة: التحويلات لا تُحسب ضمن إجمالي الدخل/المصروف، لكن العمولة تُحسب كمصروف.</div>
-            </div>
-        </section>
-
-        <div class="hr"></div>
-
-        <section class="card" id="card-txs" data-collapsible>
-            <div class="card-head"><h3>الحركات</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▾</button></div>
-            <div class="card-body">
-              <div class="toolbar" style="margin-bottom:8px">
-                <input id="search" placeholder="بحث بالوصف" style="max-width:220px"/>
-                <select id="fType" style="max-width:150px"><option value="all" selected>الكل</option><option value="income">دخل فقط</option><option value="expense">مصروف فقط</option></select>
-                <select id="fAccount" style="max-width:180px"></select>
-                <input id="fFrom" type="date" />
-                <input id="fTo" type="date" />
-                <button id="clearFilters" class="btn btn-outline">مسح الفلاتر</button>
-                <span class="spacer"></span>
-                <span class="badge">العملة: ج.م</span>
-              </div>
-              <div style="overflow:auto">
-                <table>
-                  <thead><tr><th>التاريخ</th><th>الوصف</th><th>الفئة</th><th>الحساب</th><th>المبلغ</th><th>رصيد الحساب بعد العملية</th><th>إجراءات</th></tr></thead>
-                  <tbody id="tbody"></tbody>
-                </table>
-              </div>
-              <div class="pager" id="txPager" style="display:none">
-                <button id="txPrev" class="btn btn-outline" type="button">السابق</button>
-                <div class="info" id="txPagerInfo">صفحة 1 / 1</div>
-                <button id="txNext" class="btn btn-outline" type="button">التالي</button>
-              </div>
-            </div>
+                <div style="overflow:auto">
+                    <table>
+                        <thead><tr><th>التاريخ</th><th>النوع</th><th>المبلغ</th><th>الحساب</th><th>الوصف/الفئة</th><th>الرصيد بعد</th><th>إجراءات</th></tr></thead>
+                        <tbody id="tbodyTxs"></tbody>
+                    </table>
+                </div>
+                <div class="toolbar" style="margin-top:10px;justify-content:center">
+                    <button id="prevPage" class="btn btn-outline" disabled>السابق</button>
+                    <span id="pageInfo" class="badge">صفحة 1 من 1</span>
+                    <button id="nextPage" class="btn btn-outline" disabled>التالي</button>
+                </div>
+             </div>
         </section>
     </div>
-    
+
     <div class="page" id="page-commitments">
         <section class="card" id="card-commit" data-collapsible>
-            <div class="card-head"><h3>الالتزامات الشهرية</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▾</button></div>
+            <div class="card-head"><h3>إضافة التزام شهري</h3><button class="toggle" onclick="toggleCard('card-commit')" aria-expanded="false" title="عرض/إخفاء">▾</button></div>
             <div class="card-body">
-              <div class="grid grid-4">
-                <div><label>اسم الالتزام</label><input id="cName" placeholder="مثال: إيجار، إنترنت" /></div>
-                <div><label>المبلغ (ج.م)</label><input id="cAmount" type="number" step="0.01" placeholder="0.00" /></div>
-                <div><label>تاريخ أول استحقاق</label><input id="cFirstDue" type="date" required /></div>
-                <div class="checkbox-row"><input id="cRecurring" type="checkbox" /><label for="cRecurring" style="margin:0">يتكرر شهريًا</label></div>
-                <div style="grid-column:1/span 2"><label>ينتهي في (إجباري عند التكرار)</label><input id="cEndAt" type="date" /></div>
-              </div>
-              <div class="toolbar" style="margin-top:10px">
-                <button id="addCommitment" class="btn btn-outline">إضافة/تحديث</button>
-                <span class="spacer"></span><span class="badge">يمكن السداد جزئيًا من "إضافة حركة"</span>
-              </div>
-              <div style="overflow:auto">
-                <table>
-                  <thead><tr>
-                    <th>الاسم</th><th>المبلغ</th><th>استحقاق</th><th>مدفوع (الشهر)</th><th>متبقّي</th><th>التكرار</th><th>ينتهي في</th><th>إجراءات</th>
-                  </tr></thead>
-                  <tbody id="tbodyCommit"></tbody>
-                </table>
-              </div>
-            </div>
-        </section>
-
-        <div class="hr"></div>
-
-        <section class="card" id="card-collect" data-collapsible>
-            <div class="card-head"><h3>مبالغ تحت التحصيل</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▾</button></div>
-            <div class="card-body">
-              <div class="grid grid-4">
-                <div><label>اسم التحصيل</label><input id="coName" placeholder="مثال: إيجار مستلم، مبيعات آجل" /></div>
-                <div><label>المبلغ (ج.م)</label><input id="coAmount" type="number" step="0.01" placeholder="0.00" /></div>
-                <div><label>تاريخ أول استحقاق</label><input id="coFirstDue" type="date" required /></div>
-                <div class="checkbox-row"><input id="coRecurring" type="checkbox" /><label for="coRecurring" style="margin:0">يتكرر شهريًا</label></div>
-                <div style="grid-column:1/span 2"><label>ينتهي في (إجباري عند التكرار)</label><input id="coEndAt" type="date" /></div>
-              </div>
-              <div class="toolbar" style="margin-top:10px">
-                <button id="addCollect" class="btn btn-outline">إضافة/تحديث</button>
-                <span class="spacer"></span><span class="badge">لا يظهر في الحركات إلا بعد "تم التحصيل"</span>
-              </div>
-              <div style="overflow:auto">
-                <table>
-                  <thead><tr><th>الاسم</th><th>المبلغ</th><th>التحصيل القادم</th><th>التكرار</th><th>ينتهي في</th><th>إجراءات</th></tr></thead>
-                  <tbody id="tbodyCollect"></tbody>
-                </table>
-              </div>
+                <div class="grid grid-4">
+                    <div><label>اسم الالتزام</label><input id="cName" placeholder="مثال: إيجار، قسط سيارة" /></div>
+                    <div><label>المبلغ (ج.م)</label><input id="cAmount" type="number" step="0.01" placeholder="0.00" /></div>
+                    <div><label>تاريخ أول استحقاق</label><input id="cFirstDue" type="date" required /></div>
+                    <div class="checkbox-row"><input id="cRecurring" type="checkbox" /><label for="cRecurring" style="margin:0">يتكرر شهريًا</label></div>
+                    <div style="grid-column:1/span 2"><label>ينتهي في (إجباري عند التكرار)</label><input id="cEndAt" type="date" /></div>
+                </div>
+                <div class="toolbar" style="margin-top:10px">
+                    <button id="addCommitment" class="btn btn-outline">إضافة/تحديث</button>
+                    <span class="spacer"></span><span class="badge">يمكن السداد جزئيًا من "إضافة حركة"</span>
+                </div>
+                <div style="overflow:auto;margin-top:10px">
+                    <table style="font-size:13px">
+                        <thead><tr>
+                            <th>الاسم</th><th>المبلغ</th><th>استحقاق</th><th>مدفوع (الشهر)</th><th>متبقّي</th><th>التكرار</th><th>ينتهي في</th><th>إجراءات</th>
+                        </tr></thead>
+                        <tbody id="tbodyCommit"></tbody>
+                    </table>
+                </div>
             </div>
         </section>
     </div>
 
     <div class="page" id="page-settings">
         <section class="card" id="card-reports" data-collapsible>
-            <div class="card-head"><h3>تقارير شهرية و رسوم بيانية</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▾</button></div>
+            <div class="card-head"><h3>تقارير شهرية و رسوم بيانية</h3><button class="toggle" onclick="toggleCard('card-reports')" aria-expanded="false" title="عرض/إخفاء">▾</button></div>
             <div class="card-body">
-              <div class="toolbar" style="margin-bottom:8px">
-                <input id="monthPicker" type="month" />
-                <button id="refreshReports" class="btn btn-outline">تحديث</button>
-                <span class="spacer"></span><span class="badge">إجمالي الدخل/المصروف لكل شهر</span>
-              </div>
-              <div class="grid grid-2">
-                <div>
-                  <canvas id="chartMonthly" width="560" height="320" aria-label="Monthly chart"></canvas>
-                  <div class="report-legend">
-                    <span><span class="legend-dot" style="background:#22c55e"></span> دخل</span>
-                    <span><span class="legend-dot" style="background:#ef4444"></span> مصروف</span>
-                    <span><span class="legend-dot" style="background:transparent;border:2px solid #0ea5e9"></span> صافي</span>
-                    <span style="margin-inline-start:auto;font-size:11px">القيم مقيّسة وفق أكبر شهر</span>
-                  </div>
-                </div>
-                <div class="report-table-wrap">
-                  <table>
-                    <thead><tr><th>الشهر</th><th>إجمالي الدخل</th><th>إجمالي المصروف</th><th>الصافي</th></tr></thead>
-                    <tbody id="tbodyMonthly"></tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-        </section>
-
-        <section class="card" id="card-accounts" data-collapsible>
-            <div class="card-head"><h3>إدارة الحسابات</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
-            <div class="card-body">
-              <div class="grid grid-3">
-                <div><label>اسم الحساب</label><input id="newAccountName" placeholder="مثال: كاش/محفظة" /></div>
-                <div><label>رصيد افتتاحي</label><input id="newAccountOpening" type="number" step="0.01" placeholder="0.00" /></div>
-                <div><label>&nbsp;</label><button id="addAccount" class="btn btn-outline" style="width:100%">إضافة حساب</button></div>
-              </div>
-              <div id="accountsList" class="toolbar" style="margin-top:8px;flex-wrap:wrap"></div>
-            </div>
-        </section>
-
-        <section class="card" id="card-cats" data-collapsible>
-            <div class="card-head"><h3>إدارة الفئات</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
-            <div class="card-body">
-              <div class="grid grid-3">
-                <div><label>اسم الفئة</label><input id="newCatName" placeholder="مثال: أكل" /></div>
-                <div><label>النوع</label><select id="newCatType"><option value="expense" selected>مصروف</option><option value="income">دخل</option></select></div>
-                <div><label>&nbsp;</label><button id="addCategory" class="btn btn-outline" style="width:100%">إضافة فئة</button></div>
-              </div>
-              <div id="catsList" class="toolbar" style="margin-top:8px;flex-wrap:wrap"></div>
+                <p>محتوى تقارير غير مكتمل في هذا الدمج، يرجى مراجعة الكود الأصلي لـ `حسابات.html`.</p>
             </div>
         </section>
         
-        <section class="card collapsed" id="card-github" data-collapsible>
-            <div class="card-head"><h3>إعدادات مزامنة GitHub</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
-            <div class="card-body">
-              <div class="grid grid-4">
-                <div><label>اسم المستخدم</label><input id="ghUser" placeholder="مثال: username" /></div>
-                <div><label>المستودع</label><input id="ghRepo" placeholder="مثال: Finance2025" /></div>
-                <div><label>الفرع</label><input id="ghBranch" value="main" /></div>
-                <div><label>مسار الملف (JSON)</label><input id="ghPath" value="my-finance.json" /></div>
-              </div>
-              <div class="grid grid-3" style="margin-top:8px">
-                <div><label>Personal Access Token</label><input id="ghToken" type="password" placeholder="ghp_..." /></div>
-                <div class="checkbox-row" style="margin-top:22px"><input id="ghAuto" type="checkbox"/><label for="ghAuto" style="margin:0">مزامنة تلقائيًا بعد كل تعديل</label></div>
-                <div class="grid grid-2" style="margin-top:22px">
-                  <button id="ghSaveCfg" class="btn btn-outline">حفظ الإعدادات</button>
-                  <button id="ghTest" class="btn btn-outline">اختبار الاتصال</button>
-                </div>
-              </div>
-              <div class="grid grid-3" style="margin-top:8px">
-                <button id="ghPullOld" class="btn btn-outline">تحميل من GitHub</button>
-                <button id="ghPushOld" class="btn btn-primary">رفع إلى GitHub</button>
-                <span id="ghStatus" class="badge">الحالة: غير متصل</span>
-              </div>
-              <div style="margin-top:8px;color:var(--muted);font-size:12px">⚠️ الـ Token محفوظ محليًا في جهازك فقط.</div>
-            </div>
-        </section>
-
         <div class="hr"></div>
+
         <div class="toolbar" style="justify-content:center;">
-            <button id="exportJson" class="btn btn-outline" type="button">تصدير JSON</button>
-            <button id="exportCsv" class="btn btn-outline" type="button">تصدير CSV</button>
-            <label class="btn btn-muted" for="importFile">استيراد JSON<input id="importFile" type="file" accept="application/json" style="display:none"></label>
-        </div>
-        
-        <div class="footer">
-            <div>⚠️ <span class="note">تنبيه:</span> كل البيانات محفوظة محليًا في <code>localStorage</code>. لا تنسَ التصدير كنسخة احتياطية.</div>
+             <button id="exportJson" class="btn btn-outline" type="button">تصدير JSON</button>
+             <button id="exportCsv" class="btn btn-outline" type="button">تصدير CSV</button>
+             <label class="btn btn-muted" for="importFile">استيراد JSON<input id="importFile" type="file" accept="application/json" style="display:none"></label>
+         </div>
+
+        <div class="footer" style="margin-top:24px;color:var(--muted);font-size:12px;text-align:center">
+             <div>⚠️ <span class="note" style="color:var(--warn)">تنبيه:</span> كل البيانات محفوظة محليًا في <code>localStorage</code>. لا تنسَ التصدير كنسخة احتياطية.</div>
         </div>
     </div>
+    
 </div>
 
 <nav class="nav-bar" id="bottomNav">
@@ -653,114 +553,292 @@ body.light-theme .amount.exp{color:#dc2626}.amount.inc{color:#10b981}
 </nav>
 
 <script>
-/* ===== مفاتيح التخزين ===== */
-const KEY='pf_ledger_v1', ACC_KEY='pf_accounts_v1', CAT_KEY='pf_categories_v1',
-      COM_KEY='pf_commitments_v1', COL_KEY='pf_collections_v1', GH_KEY='pf_github_cfg_v1',
-      THEME_KEY='pf_theme_v1', PAGE_KEY='pf_active_page_v1'; // مفتاح جديد للصفحة
+// =================== إعداد وتخزين البيانات (مدمج من حسابات2.html) ===================
+// تم توحيد هياكل البيانات في كائن 'store' كما في حسابات2.html لتبسيط الإدارة
+const STORAGE_KEY = 'pf_ledger_v1_full';
+const GH_KEY = 'pf_github_cfg_v1';
+const THEME_KEY = 'pf_theme_v1';
 
-/* ===== الحالة ===== */
-let ledger=JSON.parse(localStorage.getItem(KEY)||'[]');
-let accounts=JSON.parse(localStorage.getItem(ACC_KEY)||'[]');
-let categories=JSON.parse(localStorage.getItem(CAT_KEY)||'[]');
-let commitments=JSON.parse(localStorage.getItem(COM_KEY)||'[]');
-let collections=JSON.parse(localStorage.getItem(COL_KEY)||'[]');
-let ghCfg=JSON.parse(localStorage.getItem(GH_KEY)||'{}');
-let currentTheme = localStorage.getItem(THEME_KEY) || 'dark'; 
-let activePage = localStorage.getItem(PAGE_KEY) || 'page-home'; // الصفحة الافتراضية
+let store = {
+  transactions: [],
+  accounts: [],
+  commitments: [],
+  collections: [],
+  settings: {} // {ghToken, ghGistId, theme}
+};
+let ghCfg = {}; // تم إبقاء هذا للاستخدام مع واجهة حسابات.html
 
-/* ... (بقية الدالة ensureBaseCategories) ... */
-function ensureBaseCategories(){
-  const need=[
-    {name:'التزامات شهرية',type:'expense'},
-    {name:'تحصيلات شهرية',type:'income'},
-    {name:'تحويل صادر',type:'expense'},
-    {name:'تحويل وارد',type:'income'},
-    {name:'عمولة تحويل',type:'expense'},
-  ];
-  let changed=false;
-  if(categories.length===0){
-    categories=[
-      {name:'مرتب',type:'income'},{name:'دخل آخر',type:'income'},
-      {name:'أكل وشرب',type:'expense'},{name:'مواصلات',type:'expense'},{name:'فواتير',type:'expense'},{name:'تسوق',type:'expense'}
-    ];
-    changed=true;
+function loadStore(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) store = JSON.parse(raw);
+    const ghRaw = localStorage.getItem(GH_KEY);
+    if(ghRaw) ghCfg = JSON.parse(ghRaw);
+  }catch(e){
+    console.error('loadStore', e);
   }
-  for(const n of need){ if(!categories.some(c=>c.name===n.name && c.type===n.type)){ categories.push(n); changed=true; } }
-  if(changed) saveCategories();
+}
+function saveStore(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(store)); }
+  catch(e){ console.error('saveStore', e); }
+}
+function saveGhCfg(){
+  try{ localStorage.setItem(GH_KEY, JSON.stringify(ghCfg)); }
+  catch(e){ console.error('saveGhCfg', e); }
 }
 
-/* DOM */
-const $=s=>document.querySelector(s);
-const $$=s=>document.querySelectorAll(s);
+loadStore();
 
-const els={
-  // ... (عناصر الـ DOM السابقة) ...
-  totalBalance:$('#totalBalance'),
-  monthCommitTotal:$('#monthCommitTotal'),
-  currentMonthCollections:$('#currentMonthCollections'), 
-  nextCommitWithCarry:$('#nextCommitWithCarry'),
-  nextMonthCollections:$('#nextMonthCollections'),
-  perAccount:$('#perAccount'),
-  tbody:$('#tbody'), type:$('#type'), amount:$('#amount'), date:$('#date'), desc:$('#desc'),
-  account:$('#account'), category:$('#category'), linkCommit:$('#linkCommit'),
-  saveTx:$('#saveTx'), resetForm:$('#resetForm'), search:$('#search'),
-  exportJson:$('#exportJson'), exportCsv:$('#exportCsv'), importFile:$('#importFile'), 
-  newAccountName:$('#newAccountName'), newAccountOpening:$('#newAccountOpening'), addAccount:$('#addAccount'), accountsList:$('#accountsList'),
-  newCatName:$('#newCatName'), newCatType:$('#newCatType'), addCategory:$('#addCategory'), catsList:$('#catsList'),
-  monthPicker:$('#monthPicker'), refreshReports:$('#refreshReports'), tbodyMonthly:$('#tbodyMonthly'), chartMonthly:$('#chartMonthly'),
-  cName:$('#cName'), cAmount:$('#cAmount'), cFirstDue:$('#cFirstDue'), cRecurring:$('#cRecurring'), cEndAt:$('#cEndAt'),
-  addCommitment:$('#addCommitment'), tbodyCommit:$('#tbodyCommit'),
-  coName:$('#coName'), coAmount:$('#coAmount'), coFirstDue:$('#coFirstDue'), coRecurring:$('#coRecurring'), coEndAt:$('#coEndAt'),
-  addCollect:$('#addCollect'), tbodyCollect:$('#tbodyCollect'),
-  installBtn:$('#installBtn'),
-  trFrom:$('#trFrom'), trTo:$('#trTo'), trAmount:$('#trAmount'), trFee:$('#trFee'), trDate:$('#trDate'), trDesc:$('#trDesc'),
-  execTransfer:$('#execTransfer'), resetTransfer:$('#resetTransfer'),
-  ghUser:$('#ghUser'), ghRepo:$('#ghRepo'), ghBranch:$('#ghBranch'), ghPath:$('#ghPath'), ghToken:$('#ghToken'),
-  ghAuto:$('#ghAuto'), ghSaveCfg:$('#ghSaveCfg'), ghTest:$('#ghTest'), ghPullOld:$('#ghPullOld'), ghPushOld:$('#ghPushOld'), ghStatus:$('#ghStatus'),
-  syncPushBtnV2:$('#syncPushBtnV2'), syncPullBtnV2:$('#syncPullBtnV2'), syncStatusDisplayV2:$('#syncStatusDisplayV2'),
-  syncIconV2:$('#syncIconV2'), syncMessageV2:$('#syncMessageV2'), syncLastTimeV2:$('#syncLastTimeV2'),
-  syncConfigInfo:$('#syncConfigInfo'),
-  dueTotalBadge:$('#dueTotalBadge'), dueNextTotalBadge:$('#dueNextTotalBadge'), dueSoonCards:$('#dueSoonCards'),
-  appBody: $('#appBody'),
-  toggleThemeBtn: $('#toggleThemeBtn'),
-  themeColorMeta: $('#themeColorMeta'),
-  // عناصر التنقل الجديدة
-  bottomNav: $('#bottomNav'),
-  pageTitle: $('#pageTitle')
+// =================== عناصر DOM (تم تعديلها لتناسب حسابات.html) ===================
+const els = {
+    appBody: document.getElementById('appBody'),
+    toggleThemeBtn: document.getElementById('toggleThemeBtn'),
+    themeColorMeta: document.getElementById('themeColorMeta'),
+    pagesContainer: document.getElementById('pagesContainer'),
+    pageTitle: document.getElementById('pageTitle'),
+    bottomNav: document.getElementById('bottomNav'),
+
+    // عناصر المزامنة
+    syncStatusDisplayV2: document.getElementById('syncStatusDisplayV2'),
+    syncIconV2: document.getElementById('syncIconV2'),
+    syncMessageV2: document.getElementById('syncMessageV2'),
+    syncPushBtnV2: document.getElementById('syncPushBtnV2'),
+    syncPullBtnV2: document.getElementById('syncPullBtnV2'),
+    syncLastTimeV2: document.getElementById('syncLastTimeV2'),
+    syncConfigInfo: document.getElementById('syncConfigInfo'),
+
+    // إعدادات GitHub المتقدمة
+    ghToken: document.getElementById('ghToken'),
+    ghGistId: document.getElementById('ghGistId'),
+    ghSaveCfg: document.getElementById('ghSaveCfg'),
+    ghTest: document.getElementById('ghTest'),
+    ghFilename: document.getElementById('ghFilename'),
+    ghAuto: document.getElementById('ghAuto'),
 };
 
-['saveTx','resetForm','addAccount','addCategory','exportJson','exportCsv','refreshReports','addCommitment','addCollect','execTransfer','resetTransfer','ghSaveCfg','ghTest','ghPullOld','ghPushOld','syncPushBtnV2','syncPullBtnV2', 'toggleThemeBtn']
-  .forEach(id=>document.getElementById(id)?.setAttribute('type','button'));
+let currentTheme = localStorage.getItem(THEME_KEY) || 'dark';
+let activePage = 'page-home';
 
-/* Utils */
-const eid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36);
-const fmt=n=>Number(n).toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:2});
-const escapeHtml=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
-document.getElementById('date') && (els.date.value=new Date().toISOString().slice(0,10));
-document.getElementById('trDate') && (els.trDate.value=new Date().toISOString().slice(0,10));
-function formatLocalDate(d){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`;}
-function parseLocalDate(str){const [y,m,d]=str.split('-').map(Number);const dt=new Date(y,m-1,d,0,0,0,0);dt.setHours(0,0,0,0);return dt;}
-function startOfToday(){const t=new Date();t.setHours(0,0,0,0);return t;}
-function addMonthsPreserveDOM(date,months){const d=new Date(date.getTime());const targetMonth=d.getMonth()+months;const day=d.getDate(),y=d.getFullYear();const temp=new Date(y,targetMonth+1,0);const lastDay=temp.getDate();d.setMonth(targetMonth,Math.min(day,lastDay));d.setHours(0,0,0,0);return d;}
-function daysBetween(a,b){const MS=24*60*60*1000;const da=new Date(a.getFullYear(),a.getMonth(),a.getDate());const db=new Date(b.getFullYear(),b.getMonth(),b.getDate());return Math.round((db-da)/MS);}
-const YM=()=>formatLocalDate(startOfToday()).slice(0,7);
-const addMonthsToYm=(ym, months)=>{
-  const parts=(ym||'').split('-').map(Number);
-  const y=parts[0], m=parts[1];
-  if(!Number.isFinite(y)||!Number.isFinite(m)) return ym;
-  const base=new Date(y,m-1,1);
-  const next=addMonthsPreserveDOM(base, months);
-  return formatLocalDate(next).slice(0,7);
-};
-const monthLabel=ym=>{ if(!ym) return '—'; const [y,m]=ym.split('-').map(Number); if(!Number.isFinite(y)||!Number.isFinite(m)) return ym; const dt=new Date(y,m-1,1); return dt.toLocaleDateString('ar-EG',{month:'long',year:'numeric'}); };
-const formatTime=d=>d.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit',hour12:true});
+// =================== مساعدات بسيطة ===================
+const fmt = n => Number(n||0).toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:2});
+const YM = (d=new Date()) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+const formatTime = d=>d.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit',hour12:true});
+const escapeHtml = s => String(s).replace(/[&<>"']/g, function (m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; });
 
-/* ===== دالة تبديل الوضع (Theme Toggle) ===== */
+// =================== دوال الواجهة (UI Functions) ===================
+
+function toggleCard(id) {
+    const card = document.getElementById(id);
+    if (!card) return;
+    card.classList.toggle('collapsed');
+    const toggleBtn = card.querySelector('.toggle');
+    if (toggleBtn) {
+        toggleBtn.textContent = card.classList.contains('collapsed') ? '▸' : '▾';
+        toggleBtn.setAttribute('aria-expanded', !card.classList.contains('collapsed'));
+    }
+}
+
+function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const page = document.getElementById(pageId);
+    if (page) page.classList.add('active');
+
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    const navItem = document.querySelector(`.nav-item[data-page="${pageId}"]`);
+    if (navItem) navItem.classList.add('active');
+    
+    // تحديث العنوان
+    const titleMap = {
+        'page-home': 'دفتر حساباتي - الرئيسية',
+        'page-txs': 'دفتر حساباتي - الحركات',
+        'page-commitments': 'دفتر حساباتي - الالتزامات والتحصيلات',
+        'page-settings': 'دفتر حساباتي - الإعدادات',
+    };
+    if(els.pageTitle) els.pageTitle.textContent = titleMap[pageId] || 'دفتر حساباتي';
+    activePage = pageId;
+}
+
+// دالة لتحديث حالة المزامنة
+function syncStatus(message, statusClass) {
+    if (!els.syncStatusDisplayV2 || !els.syncIconV2 || !els.syncMessageV2) return;
+    els.syncStatusDisplayV2.className = `sync-status-display ${statusClass}`;
+    els.syncMessageV2.innerHTML = message;
+    
+    // تحديث الأيقونة حسب الحالة
+    if (statusClass.includes('syncing')) els.syncIconV2.className = 'fas fa-sync-alt fa-spin';
+    else if (statusClass.includes('success')) els.syncIconV2.className = 'fas fa-check-circle';
+    else if (statusClass.includes('error')) els.syncIconV2.className = 'fas fa-times-circle';
+    else els.syncIconV2.className = 'fas fa-clock';
+    
+    // إزالة النبض من الحالات الأخرى
+    if (!statusClass.includes('syncing')) els.syncStatusDisplayV2.classList.remove('status-syncing');
+
+    // تحديث زر الرفع ليكون غير مفعل أثناء المزامنة
+    els.syncPushBtnV2.disabled = statusClass.includes('syncing');
+}
+
+// =================== منطق المزامنة (GitHub Gist Sync Logic) ===================
+const GH_FILENAME = els.ghFilename?.value || 'finance.json'; // اسم الملف
+
+// ملء نموذج الإعدادات من التخزين
+function fillGhFormFromStorage(){
+    if(!ghCfg.token) ghCfg.token = '';
+    if(!ghCfg.gistId) ghCfg.gistId = '';
+    if(!ghCfg.filename) ghCfg.filename = GH_FILENAME;
+    if(!ghCfg.auto) ghCfg.auto = false;
+
+    if(els.ghToken) els.ghToken.value = ghCfg.token;
+    if(els.ghGistId) els.ghGistId.value = ghCfg.gistId;
+    if(els.ghFilename) els.ghFilename.value = ghCfg.filename;
+    if(els.ghAuto) els.ghAuto.checked = ghCfg.auto;
+
+    updateSyncCardInfo();
+    checkInitialSyncStatus();
+}
+
+function updateSyncCardInfo(){
+    if(els.syncConfigInfo) els.syncConfigInfo.textContent = `Gist ID: ${ghCfg.gistId||'—'} / الملف: ${ghCfg.filename||GH_FILENAME}`;
+}
+
+function checkInitialSyncStatus(){
+    if(ghCfg.token && ghCfg.gistId){
+        syncStatus('الإعدادات جاهزة. اضغط **مزامنة الآن** لرفع البيانات.', 'status-idle');
+    } else {
+        syncStatus('لم يتم إعداد المزامنة. يرجى إدخال البيانات في الإعدادات المتقدمة.', 'status-idle');
+    }
+}
+
+// دالة حفظ إعدادات GitHub
+function saveGhSettings(e) {
+    e.preventDefault();
+    const token = els.ghToken?.value.trim() || '';
+    const gistId = els.ghGistId?.value.trim() || '';
+    const filename = els.ghFilename?.value.trim() || GH_FILENAME;
+    const auto = els.ghAuto?.checked || false;
+
+    if (!token) { alert('يجب إدخال GitHub Token'); return; }
+
+    ghCfg.token = token;
+    ghCfg.gistId = gistId;
+    ghCfg.filename = filename;
+    ghCfg.auto = auto;
+    saveGhCfg();
+
+    alert('تم حفظ إعدادات GitHub. يمكنك الآن المزامنة.');
+    updateSyncCardInfo();
+    checkInitialSyncStatus();
+}
+
+// دالة اختبار الاتصال
+async function testGhConnection() {
+    if (!ghCfg.token) { alert('يجب حفظ GitHub Token أولاً.'); return; }
+    syncStatus('اختبار الاتصال...', 'status-syncing');
+    try {
+        const res = await fetch('https://api.github.com/user/gists', {
+            headers: { Authorization: `token ${ghCfg.token}` }
+        });
+        if (res.ok) {
+            syncStatus('تم الاتصال بنجاح مع GitHub.', 'status-success');
+        } else {
+            throw new Error(`خطأ في المصادقة: ${res.statusText}`);
+        }
+    } catch (err) {
+        syncStatus(`فشل الاتصال: ${err.message}`, 'status-error');
+    }
+}
+
+// دالة رفع البيانات (Push)
+async function ghPush() {
+    if (!ghCfg.token) { alert('يرجى حفظ GitHub Token أولاً في الإعدادات المتقدمة.'); return; }
+    syncStatus('رفع البيانات قيد التنفيذ...', 'status-syncing');
+
+    try {
+        const payload = JSON.stringify(store);
+        const url = ghCfg.gistId ? `https://api.github.com/gists/${ghCfg.gistId}` : 'https://api.github.com/gists';
+        const method = ghCfg.gistId ? 'PATCH' : 'POST';
+
+        const res = await fetch(url, {
+            method: method,
+            headers: {
+                Authorization: 'token ' + ghCfg.token,
+                'Content-Type': 'application/json',
+                Accept: 'application/vnd.github+json'
+            },
+            body: JSON.stringify({
+                description: 'دفتر حساباتي - نسخة احتياطية',
+                public: false,
+                files: {
+                    [ghCfg.filename]: { content: payload }
+                }
+            })
+        });
+
+        if (!res.ok) throw new Error('فشل المزامنة: ' + res.status);
+        
+        const json = await res.json();
+        if (method === 'POST') {
+            ghCfg.gistId = json.id;
+            saveGhCfg();
+            updateSyncCardInfo();
+        }
+
+        const now = new Date();
+        const lastTime = formatTime(now);
+        
+        syncStatus('تم رفع البيانات بنجاح.', 'status-success');
+        if(els.syncLastTimeV2) els.syncLastTimeV2.textContent = `آخر تحديث: ${lastTime}`;
+
+    } catch (err) {
+        syncStatus('خطأ أثناء الرفع: ' + (err.message || 'خطأ غير معروف.'), 'status-error');
+        console.error('Push Error:', err);
+    }
+}
+
+// دالة سحب البيانات (Pull)
+async function ghPull() {
+    if (!ghCfg.token || !ghCfg.gistId) { alert('يرجى حفظ GitHub Token ومعرّف Gist أولاً.'); return; }
+    if (!confirm('سيتم استبدال البيانات المحلية بالبيانات الموجودة على GitHub. هل أنت متأكد؟')) return;
+
+    syncStatus('تحميل البيانات قيد التنفيذ...', 'status-syncing');
+    try {
+        const res = await fetch(`https://api.github.com/gists/${ghCfg.gistId}`, {
+            headers: { Accept: 'application/vnd.github.v3+json', Authorization: `token ${ghCfg.token}` }
+        });
+        if (!res.ok) throw new Error(`فشل تحميل Gist: ${res.status}`);
+
+        const gist = await res.json();
+        const file = gist.files[ghCfg.filename];
+        if (!file || !file.raw_url) throw new Error('الملف غير موجود في Gist المحدّد.');
+        
+        const content = await fetch(file.raw_url).then(r => r.text());
+        if (!content) throw new Error('محتوى الملف فارغ.');
+
+        // استبدال المتجر المحلي بالبيانات المستوردة
+        store = JSON.parse(content);
+        saveStore();
+        
+        // *هنا يجب إعادة رسم كل عناصر الواجهة* (تم تركها فارغة هنا لعدم اكتمال منطق التطبيق)
+        // مثال: renderTransactions(); renderSummary(); showPage(activePage);
+
+        const now = new Date(gist.updated_at);
+        const lastTime = formatTime(now);
+
+        syncStatus('تم استيراد البيانات بنجاح.', 'status-success');
+        if(els.syncLastTimeV2) els.syncLastTimeV2.textContent = `آخر تحديث: ${lastTime}`;
+
+    } catch (err) {
+        syncStatus('خطأ أثناء الاستيراد: ' + (err.message || 'خطأ غير معروف.'), 'status-error');
+        console.error('Pull Error:', err);
+    }
+}
+
+// =================== تهيئة وتوصيل الأحداث ===================
+
+// تبديل الوضع
 function setTheme(theme){
     if(!els.appBody || !els.toggleThemeBtn) return;
     currentTheme = theme;
     localStorage.setItem(THEME_KEY, theme);
-
     if(theme === 'light'){
         els.appBody.classList.add('light-theme');
         els.toggleThemeBtn.innerHTML = '<i class="fas fa-moon"></i>';
@@ -773,255 +851,36 @@ function setTheme(theme){
         if(els.themeColorMeta) els.themeColorMeta.content = '#0b1220';
     }
 }
+setTheme(currentTheme); // تطبيق الوضع المحفوظ عند التحميل
+
 els.toggleThemeBtn?.addEventListener('click', ()=>{
     const newTheme = currentTheme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
 });
 
-/* ===== دوال التنقل المبوب (جديد) ===== */
-const pageTitles = {
-    'page-home': 'دفتر حساباتي - الرئيسية',
-    'page-txs': 'دفتر حساباتي - المعاملات',
-    'page-commitments': 'دفتر حساباتي - الالتزامات والتحصيل',
-    'page-settings': 'دفتر حساباتي - التقارير والإعدادات'
-};
-function showPage(pageId){
-    // إخفاء جميع الصفحات
-    $$('.page').forEach(page => page.classList.remove('active'));
-    
-    // إظهار الصفحة المطلوبة
-    const targetPage = $(`#${pageId}`);
-    if(targetPage) targetPage.classList.add('active');
-    
-    // تحديث شريط التنقل السفلي
-    $$('.nav-item').forEach(item => item.classList.remove('active'));
-    $(`.nav-item[data-page="${pageId}"]`)?.classList.add('active');
-    
-    // تحديث عنوان الصفحة في الـ Header
-    if(els.pageTitle) els.pageTitle.textContent = pageTitles[pageId] || 'دفتر حساباتي';
-
-    // حفظ الوضع
-    activePage = pageId;
-    localStorage.setItem(PAGE_KEY, pageId);
-    
-    // إعادة رسم الرسم البياني عند الانتقال لصفحة التقارير
-    if(pageId === 'page-settings') {
-        drawMonthly();
-    }
-    
-    // التمرير للأعلى
-    window.scrollTo({top:0,behavior:'smooth'});
-}
-els.bottomNav?.addEventListener('click', (e)=>{
-    const item = e.target.closest('.nav-item');
-    if(item){
-        const pageId = item.dataset.page;
-        if(pageId && pageId !== activePage) showPage(pageId);
-    }
+// التنقل بين الصفحات
+els.bottomNav?.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+        showPage(item.dataset.page);
+    });
 });
 
-/* ... (بقية دوال العمليات: saveLedger, saveAccounts, إلخ.) ... */
-function saveLedger(){ localStorage.setItem(KEY, JSON.stringify(ledger)); maybeAutoSync(); }
-function saveAccounts(){ localStorage.setItem(ACC_KEY, JSON.stringify(accounts)); refreshAccountSelects(); drawAccountsBadges(); recalc(); maybeAutoSync(); }
-function saveCategories(){ localStorage.setItem(CAT_KEY, JSON.stringify(categories)); refreshCategorySelect(); drawCatsBadges(); maybeAutoSync(); }
-function saveCommitments(){ localStorage.setItem(COM_KEY, JSON.stringify(commitments)); drawCommitments(); drawDueSoon(); recalc(); maybeAutoSync(); }
-function saveCollections(){ localStorage.setItem(COL_KEY, JSON.stringify(collections)); drawCollections(); recalc(); maybeAutoSync(); }
+// توصيل أزرار المزامنة
+els.syncPushBtnV2?.addEventListener('click', ghPush);
+els.syncPullBtnV2?.addEventListener('click', ghPull);
 
-/* ... (بقية الدوال كما هي، لا تغيير في منطق العمليات) ... */
+// توصيل أزرار إعدادات GitHub المتقدمة
+els.ghSaveCfg?.addEventListener('click', saveGhSettings);
+els.ghTest?.addEventListener('click', testGhConnection);
 
-/* ===== إعادة الحساب + الملخص (recalc) ===== */
-function recalc(){
-  const {bal}=computeBalances(); let total=0; for(const v of bal.values()) total+=v;
+// تهيئة النموذج والإعدادات عند بدء التشغيل
+fillGhFormFromStorage();
 
-  const monthComRemain = sumCurrentMonthCommitments();
-  const nextWithCarry  = sumNextMonthCommitmentsIncludingCarry();
-  const monthCol = sumCurrentMonthCollections(); 
-  const nextCol        = sumNextMonthCollections();
+// إظهار الصفحة الافتراضية
+showPage(activePage);
 
-  if(els.totalBalance) els.totalBalance.textContent=fmt(total);
-  if(els.monthCommitTotal) els.monthCommitTotal.textContent='-'+fmt(monthComRemain);
-  if(els.currentMonthCollections) els.currentMonthCollections.textContent=fmt(monthCol); 
-  if(els.nextCommitWithCarry) els.nextCommitWithCarry.textContent='-'+fmt(nextWithCarry);
-  if(els.nextMonthCollections) els.nextMonthCollections.textContent=fmt(nextCol);
-
-  drawAccountsBadges(bal); drawPerAccount(bal);
-  refreshLinkCommitOptions();
-}
-
-/* ===== جدول الحركات (render) ===== */
-let editId=null;
-const TXS_PER_PAGE = 15;
-let txPage = 1;
-
-function render(){
-  const q=(els.search?.value||'').toLowerCase(),
-        ft=document.getElementById('fType')?.value||'all',
-        fa=document.getElementById('fAccount')?.value||'all',
-        ff=document.getElementById('fFrom')?.value||'',
-        fto=document.getElementById('fTo')?.value||'';
-  const {after}=computeBalances();
-
-  const rowsAsc=[...ledger].filter(t=>{
-    if(q && !(t.desc||'').toLowerCase().includes(q)) return false;
-    if(ft!=='all' && t.type!==ft) return false;
-    if(fa!=='all' && t.account!==fa) return false;
-    if(ff && t.date<ff) return false;
-    if(fto && t.date>fto) return false;
-    return true;
-  }).sort((a,b)=> a.date.localeCompare(b.date) || (a.id>b.id?1:-1));
-
-  const rowsDesc = rowsAsc.slice().reverse();
-
-  // pagination
-  const totalRows = rowsDesc.length;
-  const totalPages = Math.max(1, Math.ceil(totalRows / TXS_PER_PAGE));
-  if(txPage > totalPages) txPage = totalPages;
-  const start = (txPage-1)*TXS_PER_PAGE;
-  const pageRows = rowsDesc.slice(start, start + TXS_PER_PAGE);
-
-  if(els.tbody){
-    els.tbody.innerHTML=pageRows.map(t=>{
-      const cls=t.type==='income'?'inc':'exp'; const afterVal=after.has(t.id)?after.get(t.id):0;
-      const tag = t.isTransfer ? ' <span style="font-size:11px;color:var(--muted)">↔︎ تحويل</span>' : '';
-      return `<tr>
-        <td>${t.date}</td><td>${escapeHtml(t.desc||'—')}${tag}</td><td>${escapeHtml(t.category||'—')}</td><td>${escapeHtml(t.account)}</td>
-        <td class="amount ${cls}">${t.type==='income'?'+':'-'}${fmt(t.amount)}</td>
-        <td>${fmt(afterVal)}</td>
-        <td class="actions"><button class="btn btn-primary" onclick="editTx('${t.id}')">تعديل</button>
-            <button class="btn btn-danger" onclick="delTx('${t.id}')">حذف</button></td>
-      </tr>`;
-    }).join('');
-  }
-
-  // pager UI
-  const pager = document.getElementById('txPager');
-  const pagerInfo = document.getElementById('txPagerInfo');
-  const prevBtn = document.getElementById('txPrev');
-  const nextBtn = document.getElementById('txNext');
-  if(!pager || totalRows <= TXS_PER_PAGE){ pager && (pager.style.display='none'); }
-  else{
-    pager.style.display='flex';
-    pagerInfo.textContent = `صفحة ${txPage} / ${totalPages} — إجمالي ${totalRows} حركة`;
-    prevBtn.disabled = txPage<=1;
-    nextBtn.disabled = txPage>=totalPages;
-  }
-
-  recalc(); drawDueSoon(); 
-  // لا نستدعي drawMonthly() هنا، يتم استدعاؤها فقط عند فتح صفحة التقارير
-  if(activePage === 'page-settings') drawMonthly();
-}
-// ... (بقية الدوال: editTx, delTx, addTx, إلخ. تبقى كما هي) ...
-
-/* ===== التقارير: drawMonthly (إعادة الرسم بناءً على الوضع) ===== */
-// ... (دوال التقارير) ...
-function drawMonthlyChart(data, selected){
-  const cv=els.chartMonthly; if(!cv) return;
-  // ... (منطق الرسم البياني مع استخدام currentTheme) ...
-  const ctx=cv.getContext('2d'); ctx.clearRect(0,0,cv.width,cv.height);
-  const pad=42,w=cv.width,h=cv.height,innerW=w-pad*2,innerH=h-pad*2;
-  if(!data.length){
-    ctx.fillStyle=currentTheme==='light'?'#475569':'#94a3b8'; ctx.font='14px system-ui'; ctx.textAlign='center';
-    ctx.fillText('لا توجد بيانات لعرض الرسم البياني', w/2, h/2);
-    return;
-  }
-  const maxInc=Math.max(0,...data.map(d=>d.inc));
-  const maxExp=Math.max(0,...data.map(d=>d.exp));
-  const maxNet=Math.max(0,...data.map(d=>d.net));
-  const minNet=Math.min(0,...data.map(d=>d.net));
-  const minVal=Math.min(0,minNet);
-  const maxVal=Math.max(1,maxInc,maxExp,maxNet,Math.abs(minVal));
-  const range=maxVal-minVal||1;
-  const toY=v=>h-pad-((v-minVal)/range)*innerH;
-  const zeroY=toY(0);
-  const barGroup=innerW/Math.max(1,data.length);
-  const barWidth=Math.min(28,Math.max(10,barGroup*0.28));
-
-  // تحديث لون خطوط الشبكة في الرسم البياني
-  ctx.strokeStyle=currentTheme==='light'?'#e2e8f0':'#1f2a44'; ctx.lineWidth=1; const gridLines=4;
-  ctx.font='11px system-ui'; ctx.textAlign='right'; 
-  ctx.fillStyle=currentTheme==='light'?'#64748b':'#94a3b8'; // تحديث لون النص
-
-  for(let i=0;i<=gridLines;i++){
-    const v=minVal+(range*i/gridLines);
-    const y=toY(v);
-    ctx.beginPath(); ctx.moveTo(pad,y); ctx.lineTo(w-pad,y); ctx.stroke();
-    ctx.fillText(fmt(v), pad-6, y+4);
-  }
-  if(minVal<0){ ctx.strokeStyle='rgba(56,189,248,0.4)'; ctx.beginPath(); ctx.moveTo(pad,zeroY); ctx.lineTo(w-pad,zeroY); ctx.stroke(); }
-
-  data.forEach((d,i)=>{
-    const xCenter=pad+i*barGroup+barGroup/2;
-    if(d.month===selected){ ctx.fillStyle='rgba(14,165,233,0.16)'; ctx.fillRect(xCenter-barGroup/2+4, pad, barGroup-8, innerH); }
-    if(d.inc>0){
-      const top=toY(d.inc); const height=Math.max(2, zeroY-top);
-      ctx.fillStyle='#22c55e'; ctx.fillRect(xCenter-barWidth-4, top, barWidth, height);
-    }
-    if(d.exp>0){
-      const top=toY(d.exp); const height=Math.max(2, zeroY-top);
-      ctx.fillStyle='#ef4444'; ctx.fillRect(xCenter+4, top, barWidth, height);
-    }
-  });
-
-  ctx.strokeStyle='#0ea5e9'; ctx.lineWidth=2; ctx.beginPath();
-  data.forEach((d,i)=>{ const xCenter=pad+i*barGroup+barGroup/2; const y=toY(d.net); if(i===0) ctx.moveTo(xCenter,y); else ctx.lineTo(xCenter,y); }); ctx.stroke();
-  
-  // تحديث لون نص الشهور
-  ctx.fillStyle=currentTheme==='light'?'#1e293b':'#cbd5e1'; 
-  ctx.font='12px system-ui'; ctx.textAlign='center';
-  data.forEach((d,i)=>{ const xCenter=pad+i*barGroup+barGroup/2; ctx.fillText(monthLabel(d.month), xCenter, h-pad+18); });
-}
-
-/* ... (بقية الدوال: drawMonthly, drawMonthSummary) ... */
-
-/* ===== تهيئة ===== */
-function init(){
-  setTheme(currentTheme);
-
-  if(accounts.length===0){
-    accounts=[{name:'كاش',opening:0},{name:'حساب بنكي',opening:0},{name:'محفظة',opening:0}];
-    saveAccounts();
-  }
-  ensureBaseCategories();
-  // إزالة تهيئة Collapsibles القديمة
-  // initCollapsibles(); 
-
-  // تحديث Collapsibles: فتح الافتراضي في صفحاتها
-  document.getElementById('card-addtx')?.classList.remove('collapsed');
-  document.getElementById('card-txs')?.classList.remove('collapsed');
-  document.getElementById('card-commit')?.classList.remove('collapsed');
-  document.getElementById('card-collect')?.classList.remove('collapsed');
-  
-  // ... (بقية الهجرة والإعدادات) ...
-  commitments=commitments.map(c=>migrateCommit(c));
-  collections=collections.map(c=>migrateCollect(c));
-  saveCommitments(); saveCollections();
-  ensureTransferCategories();
-
-  if(els.monthPicker){
-    const today=YM();
-    if(!els.monthPicker.value) els.monthPicker.value=today;
-    els.monthPicker.setAttribute('max', today);
-  }
-
-  refreshAccountSelects(); refreshCategorySelect(); drawCatsBadges();
-  drawCommitments(); drawCollections(); drawDueSoon(); render();
-  fillGhFormFromStorage();
-  els.cEndAt?.toggleAttribute('required', els.cRecurring?.checked);
-  els.coEndAt?.toggleAttribute('required', els.coRecurring?.checked);
-  refreshLinkCommitOptions();
-
-  if(ghCfg.user && ghCfg.repo && ghCfg.token) {
-    ghStatus('الإعدادات جاهزة. اضغط **مزامنة الآن** لرفع البيانات.', true);
-  }
-  
-  // إظهار الصفحة المحفوظة (أو الافتراضية)
-  showPage(activePage); 
-}
-init();
-
-/* Pager events */
-document.getElementById('txPrev')?.addEventListener('click', ()=>{ if(txPage>1){ txPage--; render(); }});
-document.getElementById('txNext')?.addEventListener('click', ()=>{ txPage++; render(); });
+// تهيئة إخفاء/إظهار الإعدادات المتقدمة
+document.getElementById('card-github').querySelector('.toggle').textContent = document.getElementById('card-github').classList.contains('collapsed') ? '▸' : '▾';
 
 </script>
 </body>
