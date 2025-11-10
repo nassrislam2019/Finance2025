@@ -551,15 +551,6 @@
       "amount": 1000,
       "account": "حساب بنكي",
       "category": "أكل وشرب"
-    },
-    {
-      "id": "brk2ul20mht31wut",
-      "date": "2025-12-01",
-      "desc": "مرتب (تحصيل)",
-      "type": "income",
-      "amount": 2000,
-      "account": "كاش",
-      "category": "تحصيلات شهرية"
     }
   ],
   "accounts": [
@@ -799,8 +790,8 @@
       "id": "dfy87ditmhdm0xhe",
       "name": "مرتب",
       "amount": 2000,
-      "firstDue": "2025-11-01",
-      "nextDue": "2026-01-01",
+      "firstDue": "2025-12-01",
+      "nextDue": "2025-12-01",
       "recurring": true,
       "endAt": "2026-12-31"
     },
@@ -814,5 +805,5 @@
       "endAt": null
     }
   ],
-  "updatedAt": "2025-11-10T11:52:37.649Z"
+  "updatedAt": "2025-11-10T11:53:50.002Z"
 }
