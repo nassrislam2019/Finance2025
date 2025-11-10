@@ -737,6 +737,16 @@
       "recurring": false,
       "endAt": null,
       "payments": {}
+    },
+    {
+      "id": "g5erem3smht2yk5a",
+      "name": "جمعية احمد ماهر",
+      "amount": 2000,
+      "firstDue": "2025-12-01",
+      "nextDue": "2025-12-01",
+      "recurring": false,
+      "endAt": null,
+      "payments": {}
     }
   ],
   "collections": [
@@ -795,5 +805,5 @@
       "endAt": null
     }
   ],
-  "updatedAt": "2025-11-10T11:42:24.421Z"
+  "updatedAt": "2025-11-10T11:50:01.336Z"
 }
