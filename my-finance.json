@@ -646,13 +646,11 @@
       "id": "b9xam41amgoznubi",
       "name": "اشتراك",
       "amount": 250,
-      "firstDue": "2025-11-01",
-      "nextDue": "2025-12-01",
+      "firstDue": "2025-11-30",
+      "nextDue": "2025-11-30",
       "recurring": true,
       "endAt": "2026-12-31",
-      "payments": {
-        "2025-11": 250
-      }
+      "payments": {}
     },
     {
       "id": "w6ivs7i5mgozqe72",
@@ -797,5 +795,5 @@
       "endAt": null
     }
   ],
-  "updatedAt": "2025-11-10T11:39:31.829Z"
+  "updatedAt": "2025-11-10T11:42:24.421Z"
 }
