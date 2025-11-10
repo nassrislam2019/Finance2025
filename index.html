@@ -12,7 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 <style>
-/* CSS styles are assumed complete and correct from the original file */
+/* الوضع الافتراضي: الوضع الليلي (Dark Mode) */
 :root{
   --bg:#0b1220;
   --card:#0f172a;
@@ -28,6 +28,33 @@
   --field-h:42px;
   --shadow:0 8px 24px rgba(2, 6, 23, 0.4);
 }
+
+/* الوضع النهاري (Light Mode) */
+html.light-mode{
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --muted:#64748b;
+  --txt:#1e293b;
+  --brand:#1d4ed8;
+  --brand-2:#3b82f6;
+  --danger:#dc2626;
+  --warn:#f59e0b;
+  --ok:#16a34a;
+  --border:#e2e8f0;
+  --shadow:0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+html.light-mode header{
+  box-shadow:0 2px 4px rgba(0, 0, 0, 0.1);
+}
+html.light-mode input:focus, html.light-mode select:focus, html.light-mode textarea:focus{
+  border-color:var(--brand);
+}
+html.light-mode body {
+  color: var(--txt);
+}
+/* نهاية تعريف الوضع النهاري */
+
 *{
   box-sizing:border-box;
 }
@@ -355,7 +382,10 @@ input:checked + .slider:before{
 
 <header>
   <h1>دفتر حساباتي</h1>
-  <button id="btnSettings" class="btn">الإعدادات</button>
+  <div style="display:flex; gap:10px;">
+    <button id="btnThemeToggle" class="btn" style="width:auto; padding: 0.75rem 0.5rem; font-size:1.2rem; line-height:1;">🌙</button>
+    <button id="btnSettings" class="btn">الإعدادات</button>
+  </div>
 </header>
 
 <main>
@@ -364,10 +394,7 @@ input:checked + .slider:before{
     <div class="nav">
       <div class="nav-btn active" data-tab="home">الرئيسية</div>
       <div class="nav-btn" data-tab="transactions">الحركات</div>
-      <div class="nav-btn" data-tab="reports">التقارير</div>
-      <div class="nav-btn" data-tab="commitments">الالتزامات</div>
-      <div class="nav-btn" data-tab="collections">التجميعات</div>
-    </div>
+      <div class="nav-btn" data-tab="commitments">الالتزامات</div> <div class="nav-btn" data-tab="collections">التجميعات</div> <div class="nav-btn" data-tab="reports">التقارير</div> </div>
 
     <div id="tab-home" class="tab-content active">
       <div class="summary-grid">
@@ -501,39 +528,6 @@ input:checked + .slider:before{
       </div>
     </div>
 
-    <div id="tab-reports" class="tab-content">
-      <div class="card">
-        <div class="card-header">
-          <h2>توزيع المصروفات والدخل الشهري</h2>
-        </div>
-        <div class="content">
-          <div class="search-controls">
-            <input type="month" id="reportMonthPicker">
-            <button id="btnGenerateReport" class="btn">عرض التقرير</button>
-          </div>
-          <div class="grid grid-2">
-            <div>
-              <canvas id="chartMonthly"></canvas>
-            </div>
-            <div>
-              <h3>إحصائيات الشهر</h3>
-              <ul id="reportStatsList">
-                </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-header">
-          <h2>ملخص التصنيفات (الأعلى مصروفاً)</h2>
-        </div>
-        <div class="content">
-          <ul id="categorySummaryList">
-            </ul>
-        </div>
-      </div>
-    </div>
-
     <div id="tab-commitments" class="tab-content">
       <div class="card">
         <div class="card-header">
@@ -644,6 +638,39 @@ input:checked + .slider:before{
       </div>
     </div>
 
+    <div id="tab-reports" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <h2>توزيع المصروفات والدخل الشهري</h2>
+        </div>
+        <div class="content">
+          <div class="search-controls">
+            <input type="month" id="reportMonthPicker">
+            <button id="btnGenerateReport" class="btn">عرض التقرير</button>
+          </div>
+          <div class="grid grid-2">
+            <div>
+              <canvas id="chartMonthly"></canvas>
+            </div>
+            <div>
+              <h3>إحصائيات الشهر</h3>
+              <ul id="reportStatsList">
+                </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h2>ملخص التصنيفات (الأعلى مصروفاً)</h2>
+        </div>
+        <div class="content">
+          <ul id="categorySummaryList">
+            </ul>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <div id="accountModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:100;">
@@ -708,13 +735,9 @@ input:checked + .slider:before{
 
 <script>
 // ======================================================================
-// الدوال المساعدة المفقودة (تمت إضافتها)
+// الدوال المساعدة الأساسية
 // ======================================================================
-
-// 1. تصحيح الخطأ النحوي في دالة escapeHtml
 const escapeHtml=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);
-
-// 2. دوال مساعدة لإدارة التواريخ
 const YM = (d=new Date())=>{
   const year=d.getFullYear();
   const month=String(d.getMonth()+1).padStart(2, '0');
@@ -727,9 +750,7 @@ const startOfToday = () => {
 };
 const parseLocalDate = (s) => {
   if (!s) return null;
-  // يفترض أن s هو في صيغة 'YYYY-MM-DD'
   const parts = s.split('-').map(p => parseInt(p, 10));
-  // الشهر في دالة Date هو 0-indexed
   return new Date(parts[0], parts[1] - 1, parts[2]);
 };
 const formatLocalDate = (d) => {
@@ -745,10 +766,8 @@ const addMonthsPreserveDOM = (dateStr, months) => {
   if (!d) return dateStr;
   const dayOfMonth = d.getDate();
   d.setMonth(d.getMonth() + months);
-
-  // إذا كان اليوم الجديد غير موجود (مثل 31 يناير + شهر = 3 مارس)، يتم تعيينه إلى آخر يوم في الشهر
   if (d.getDate() !== dayOfMonth) {
-      d.setDate(0); // يضبط التاريخ إلى آخر يوم في الشهر السابق (الذي هو الشهر الصحيح)
+      d.setDate(0);
   }
   return formatLocalDate(d);
 };
@@ -760,80 +779,9 @@ const daysBetween = (s1, s2) => {
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 };
 
-// 3. دوال الترحيل (Migration) - تنفيذ أساسي
+// دوال الترحيل Placeholder
 const migrateCommit=(c)=>c;
 const migrateCollect=(c)=>c;
-
-// 4. دوال تحديث واجهة المستخدم (Drawing/Rendering) - تنفيذ أساسي لمنع الأخطاء في init()
-function drawAccountsList(){
-    // يجب استبدال هذا بمنطق تحديث قائمة الحسابات الفعلية بناءً على transactions
-    if(!els.accountsList) return;
-    els.accountsList.innerHTML = accounts.map(a=>`<li>${escapeHtml(a.name)}: ${formatCurrency(calculateAccountBalance(a.name))}</li>`).join('');
-}
-function drawCommitments(){
-    // يجب استبدال هذا بمنطق تحديث قائمة الالتزامات الفعلية
-    if(!els.commitmentsList) return;
-    els.commitmentsList.innerHTML = commitments.length ? commitments.map(c=>`<li>${escapeHtml(c.name)} - ${formatCurrency(c.amount)}</li>`).join('') : '<li class="no-data">لا توجد التزامات شهرية مسجلة.</li>';
-}
-function drawCollections(){
-    // يجب استبدال هذا بمنطق تحديث قائمة التجميعات الفعلية
-    if(!els.collectionsList) return;
-    els.collectionsList.innerHTML = collections.length ? collections.map(c=>`<li>${escapeHtml(c.name)} - ${formatCurrency(c.amount)}</li>`).join('') : '<li class="no-data">لا توجد تجميعات شهرية مسجلة.</li>';
-}
-function drawDueSoon(){
-    // يجب استبدال هذا بمنطق تحديث قائمة المستحقات القادمة
-    if(!els.dueSoonList) return;
-    els.dueSoonList.innerHTML = '<li class="no-data">لا توجد مستحقات قريباً.</li>';
-    els.dueSoonCount.textContent = '0';
-}
-function drawMonthly(){
-    // منطق رسم المخطط الشهري باستخدام Chart.js
-    console.log('Drawing monthly chart...');
-    if(window.myChart) window.myChart.destroy();
-    const ctx = document.getElementById('chartMonthly').getContext('2d');
-    
-    // بيانات وهمية بسيطة للعرض
-    const data = {
-        labels: ['دخل', 'مصروف'],
-        datasets: [{
-            label: 'إجمالي المبلغ',
-            data: [
-                transactions.filter(t=>t.type==='دخل').reduce((acc, t)=>acc+t.amount, 0),
-                transactions.filter(t=>t.type==='مصروف').reduce((acc, t)=>acc+t.amount, 0)
-            ],
-            backgroundColor: ['#22c55e', '#ef4444'],
-            hoverOffset: 4
-        }]
-    };
-
-    window.myChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: data,
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                    labels: {
-                        color: 'var(--txt)',
-                        font: { family: 'Cairo, sans-serif' }
-                    }
-                },
-                title: {
-                    display: true,
-                    text: 'توزيع الدخل والمصروفات',
-                    color: 'var(--brand-2)',
-                    font: { family: 'Cairo, sans-serif', size: 16 }
-                }
-            }
-        }
-    });
-}
-function drawCatsBadges(){} // دالة placeholder
-
-// ======================================================================
-// بدء الكود الأصلي (مع افتراض وجود باقي الدوال غير المفقودة)
-// ======================================================================
 
 const STORAGE_KEY='myFin';
 const BASE_CATEGORIES = [
@@ -887,6 +835,7 @@ const els = {
   ghToken: document.getElementById('ghToken'),
   ghGistId: document.getElementById('ghGistId'),
   btnGhPush: document.getElementById('btnGhPush'),
+  btnThemeToggle: document.getElementById('btnThemeToggle'), // الزر الجديد للوضع الليلي/النهاري
   
   // القوائم
   accountsList: document.getElementById('accountsList'),
@@ -917,18 +866,38 @@ function saveData(){
   const data = {transactions, accounts, categories, commitments, collections, settings};
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
-function saveTransactions(){ saveData(); }
-function saveAccounts(){ saveData(); }
-function saveCategories(){ saveData(); }
-function saveCommitments(){ saveData(); }
-function saveCollections(){ saveData(); }
-function saveSettings(){ saveData(); }
+function saveSettings(){ saveData(); } // تم توحيد دوال الحفظ
 
 // ======================================================================
-// دوال التنسيق (Formatting Functions)
+// دوال التنسيق والوضع الليلي/النهاري (Formatting & Theme Functions)
 // ======================================================================
+
 function formatCurrency(amount){
-  return new Intl.NumberFormat('ar-EG', {style: 'currency', currency: 'SAR'}).format(amount);
+  // تغيير العملة إلى الجنيه المصري (EGP)
+  return new Intl.NumberFormat('ar-EG', {style: 'currency', currency: 'EGP'}).format(amount);
+}
+
+function loadTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    if (savedTheme === 'light') {
+        document.documentElement.classList.add('light-mode');
+        if (els.btnThemeToggle) els.btnThemeToggle.textContent = '☀️';
+    } else {
+        document.documentElement.classList.remove('light-mode');
+        if (els.btnThemeToggle) els.btnThemeToggle.textContent = '🌙';
+    }
+}
+
+function toggleTheme() {
+    const isLight = document.documentElement.classList.toggle('light-mode');
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    if (els.btnThemeToggle) {
+        els.btnThemeToggle.textContent = isLight ? '☀️' : '🌙';
+    }
+    // إعادة رسم الرسوم البيانية لتحديث الألوان
+    if (document.getElementById('tab-reports').classList.contains('active')) {
+      drawMonthly();
+    }
 }
 
 // ======================================================================
@@ -946,8 +915,8 @@ function calculateAccountBalance(accountName){
       if (t.type === 'دخل' && t.account === accountName) return sum + t.amount;
       if (t.type === 'مصروف' && t.account === accountName) return sum - t.amount;
       if (t.type === 'تحويل') {
-        if (t.account === accountName) return sum - t.amount; // تحويل صادر
-        if (t.accountTo === accountName) return sum + t.amount; // تحويل وارد
+        if (t.account === accountName) return sum - t.amount;
+        if (t.accountTo === accountName) return sum + t.amount;
       }
       return sum;
     }, 0);
@@ -965,7 +934,7 @@ function ensureBaseCategories(){
       categories.push(baseCat);
     }
   });
-  saveCategories();
+  saveData();
 }
 
 function ensureTransferCategories(){
@@ -973,7 +942,7 @@ function ensureTransferCategories(){
   if (!categories.find(c => c.name === transferCat.name)) {
     categories.push(transferCat);
   }
-  saveCategories();
+  saveData();
 }
 
 function calculateMonthlySummary(month){
@@ -1047,9 +1016,73 @@ function renderSummary(month){
 function render(){
   renderSummary(currentMonth);
   renderTransactions(currentMonth, currentAccountFilter);
-  // يجب أن يتم استدعاء drawAccountsList هنا لتحديث قائمة الأرصدة في الرئيسية
   drawAccountsList(); 
 }
+
+function drawAccountsList(){
+    if(!els.accountsList) return;
+    const listHtml = accounts.map(a=>`<li>${escapeHtml(a.name)}: ${formatCurrency(calculateAccountBalance(a.name))}</li>`).join('');
+    els.accountsList.innerHTML = listHtml || '<li class="no-data">لا توجد حسابات مسجلة.</li>';
+}
+function drawCommitments(){
+    if(!els.commitmentsList) return;
+    els.commitmentsList.innerHTML = commitments.length ? commitments.map(c=>`<li>${escapeHtml(c.name)} - ${formatCurrency(c.amount)}</li>`).join('') : '<li class="no-data">لا توجد التزامات شهرية مسجلة.</li>';
+}
+function drawCollections(){
+    if(!els.collectionsList) return;
+    els.collectionsList.innerHTML = collections.length ? collections.map(c=>`<li>${escapeHtml(c.name)} - ${formatCurrency(c.amount)}</li>`).join('') : '<li class="no-data">لا توجد تجميعات شهرية مسجلة.</li>';
+}
+function drawDueSoon(){
+    if(!els.dueSoonList) return;
+    // منطق وهمي بسيط
+    els.dueSoonList.innerHTML = '<li class="no-data">لا توجد مستحقات قريباً.</li>';
+    els.dueSoonCount.textContent = '0';
+}
+let monthlyChartInstance = null;
+function drawMonthly(){
+    if(monthlyChartInstance) monthlyChartInstance.destroy();
+    const ctx = document.getElementById('chartMonthly').getContext('2d');
+    
+    // حساب بيانات الشهر الحالي
+    const currentReportMonth = els.reportMonthPicker.value || YM();
+    const {income, expense} = calculateMonthlySummary(currentReportMonth);
+
+    const isLightMode = document.documentElement.classList.contains('light-mode');
+    
+    const data = {
+        labels: [`دخل (${formatCurrency(income)})`, [`مصروف (${formatCurrency(expense)})`]],
+        datasets: [{
+            label: 'إجمالي المبلغ',
+            data: [income, expense],
+            backgroundColor: [isLightMode ? '#16a34a' : '#22c55e', isLightMode ? '#dc2626' : '#ef4444'],
+            hoverOffset: 4
+        }]
+    };
+
+    monthlyChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: data,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        color: getComputedStyle(document.documentElement).getPropertyValue('--txt'), // لون النص
+                        font: { family: 'Cairo, sans-serif' }
+                    }
+                },
+                title: {
+                    display: true,
+                    text: `توزيع الدخل والمصروفات (${currentReportMonth})`,
+                    color: getComputedStyle(document.documentElement).getPropertyValue('--brand-2'),
+                    font: { family: 'Cairo, sans-serif', size: 16 }
+                }
+            }
+        }
+    });
+}
+function drawCatsBadges(){} // دالة placeholder
 
 // ======================================================================
 // دوال الأحداث (Event Handlers)
@@ -1058,7 +1091,7 @@ function render(){
 function deleteTransaction(id){
   if(!confirm('هل أنت متأكد من حذف هذه الحركة؟')) return;
   transactions = transactions.filter(t => t.id !== id);
-  saveTransactions();
+  saveData();
   render();
 }
 
@@ -1096,7 +1129,7 @@ function addTransaction(e){
     transactions.push({
       id: Date.now() + '-out',
       type: 'مصروف',
-      category: 'تحويل', // استخدام تصنيف التحويل
+      category: 'تحويل',
       amount: amount,
       account: accountFrom,
       date: date,
@@ -1107,7 +1140,7 @@ function addTransaction(e){
     transactions.push({
       id: Date.now() + '-in',
       type: 'دخل',
-      category: 'تحويل', // استخدام تصنيف التحويل
+      category: 'تحويل',
       amount: amount,
       account: accountTo,
       date: date,
@@ -1133,10 +1166,9 @@ function addTransaction(e){
     });
   }
   
-  saveTransactions();
+  saveData();
   e.target.reset();
   
-  // ضبط تاريخ اليوم تلقائياً
   els.date.value = formatLocalDate(startOfToday());
   
   render();
@@ -1157,7 +1189,6 @@ function addCommitment(e){
       return;
   }
   
-  // تصحيح الخطأ النحوي: إضافة القوس الناقص )
   if(recurring && endAtStr && parseLocalDate(endAtStr) < parseLocalDate(firstDueStr)){
     alert('تاريخ انتهاء الالتزام الشهري يجب أن يكون بعد تاريخ الاستحقاق الأول.');
     e.preventDefault();
@@ -1169,7 +1200,7 @@ function addCommitment(e){
     name, amount, firstDue: firstDueStr, notes, recurring, endAt: endAtStr || null
   });
 
-  saveCommitments();
+  saveData();
   e.target.reset();
   drawCommitments();
   drawDueSoon();
@@ -1190,7 +1221,6 @@ function addCollection(e){
       return;
   }
 
-  // تصحيح الخطأ النحوي: يجب إضافة نفس التحقق من التاريخ هنا أيضاً
   if(recurring && endAtStr && parseLocalDate(endAtStr) < parseLocalDate(firstDueStr)){
     alert('تاريخ انتهاء التجميع الشهري يجب أن يكون بعد تاريخ الاستحقاق الأول.');
     e.preventDefault();
@@ -1202,7 +1232,7 @@ function addCollection(e){
     name, amount, firstDue: firstDueStr, notes, recurring, endAt: endAtStr || null
   });
 
-  saveCollections();
+  saveData();
   e.target.reset();
   drawCollections();
   drawDueSoon();
@@ -1235,11 +1265,9 @@ function initTabs(){
     btn.addEventListener('click', (e) => {
       const tabId = e.target.dataset.tab;
       
-      // إزالة Active من الجميع
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       
-      // إضافة Active للتبويب المحدد
       e.target.classList.add('active');
       const targetContent = document.getElementById(`tab-${tabId}`);
       if (targetContent) targetContent.classList.add('active');
@@ -1254,7 +1282,7 @@ function initTabs(){
   });
 }
 
-// Placeholder for GH Sync functions (to avoid runtime errors)
+// GitHub Sync (Placeholder functions)
 function ghSaveSettings(e){
     e.preventDefault();
     settings.ghToken = els.ghToken.value;
@@ -1273,37 +1301,34 @@ function ghPush(){
 // ======================================================================
 /* ===== تهيئة ===== */
 function init(){
+  loadTheme(); // تحميل الوضع الليلي/النهاري أولاً
   loadData();
   
   if(accounts.length===0){
     accounts=[{name:'كاش',opening:0},{name:'حساب بنكي',opening:0},{name:'محفظة',opening:0}];
-    saveAccounts();
+    saveData();
   }
   ensureBaseCategories();
   initCollapsibles();
-  initTabs(); // تهيئة التبويبات
+  initTabs();
 
-  // الآن تعمل هذه الدوال لأننا عرفناها كدوال تمرير أساسية
   commitments=commitments.map(c=>migrateCommit(c));
   collections=collections.map(c=>migrateCollect(c));
-  saveCommitments(); saveCollections();
+  saveData();
   ensureTransferCategories();
 
   if(els.monthPicker){
-    const today=YM(); // الآن YM معرفة
+    const today=YM();
     if(!els.monthPicker.value) els.monthPicker.value=today;
     els.monthPicker.setAttribute('max', today);
   }
   
-  // ضبط تاريخ الحركة الافتراضي لليوم
   if(els.date) els.date.value = formatLocalDate(startOfToday());
 
   refreshAccountSelects(); refreshCategorySelect(); drawCatsBadges();
-  // الآن تعمل دوال الرسم لأننا عرفناها
   drawCommitments(); drawCollections(); drawDueSoon(); render();
   fillGhFormFromStorage();
   
-  // التبديل بين حقول تاريخ الانتهاء بناءً على التكرار
   els.cEndAt?.toggleAttribute('required', els.cRecurring?.checked);
   els.coEndAt?.toggleAttribute('required', els.coRecurring?.checked);
 }
@@ -1312,6 +1337,9 @@ function init(){
 // المستمعات (Event Listeners)
 // ======================================================================
 document.addEventListener('DOMContentLoaded', init);
+
+// الوضع الليلي/النهاري
+els.btnThemeToggle?.addEventListener('click', toggleTheme);
 
 // حركات
 els.transactionForm.addEventListener('submit', addTransaction);
@@ -1337,10 +1365,9 @@ els.coRecurring?.addEventListener('change', e => {
 els.btnGenerateReport?.addEventListener('click', drawMonthly);
 
 
-// إدارة الحسابات (Modal) - افتراض
+// إدارة الحسابات (Modal) - Placeholder
 els.btnOpenAccountForm?.addEventListener('click', () => {
   els.accountModal.style.display = 'block';
-  // يجب إضافة منطق عرض الحسابات هنا
 });
 els.closeAccountModal?.addEventListener('click', () => {
   els.accountModal.style.display = 'none';
@@ -1355,7 +1382,6 @@ els.closeSettingsModal?.addEventListener('click', () => {
 });
 els.ghSyncForm?.addEventListener('submit', ghSaveSettings);
 els.btnGhPush?.addEventListener('click', ghPush);
-// [يُفترض وجود باقي المستمعات مثل تصدير/استيراد البيانات، مسح البيانات، وإدارة الحسابات]
 
 </script>
 </body>
