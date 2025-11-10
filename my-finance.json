@@ -501,6 +501,28 @@
       "amount": 600,
       "account": "كاش",
       "category": "تحويل وارد"
+    },
+    {
+      "id": "zuo88cphmht23gf4",
+      "link": "qr82a4ysmht23gf4",
+      "isTransfer": true,
+      "date": "2025-11-10",
+      "desc": "تحويل إلى إئتمان",
+      "type": "expense",
+      "amount": 390,
+      "account": "محفظة",
+      "category": "تحويل صادر"
+    },
+    {
+      "id": "q3movn5bmht23gf4",
+      "link": "qr82a4ysmht23gf4",
+      "isTransfer": true,
+      "date": "2025-11-10",
+      "desc": "تحويل من محفظة",
+      "type": "income",
+      "amount": 390,
+      "account": "إئتمان",
+      "category": "تحويل وارد"
     }
   ],
   "accounts": [
@@ -746,5 +768,5 @@
       "endAt": null
     }
   ],
-  "updatedAt": "2025-11-10T11:19:49.982Z"
+  "updatedAt": "2025-11-10T11:25:49.984Z"
 }
