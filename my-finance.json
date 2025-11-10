@@ -799,11 +799,11 @@
       "id": "1s13vpfamhjcnqey",
       "name": "حسام",
       "amount": 1000,
-      "firstDue": "2025-11-03",
-      "nextDue": "2025-11-03",
+      "firstDue": "2025-11-15",
+      "nextDue": "2025-11-15",
       "recurring": false,
       "endAt": null
     }
   ],
-  "updatedAt": "2025-11-10T11:50:01.336Z"
+  "updatedAt": "2025-11-10T11:51:15.880Z"
 }
