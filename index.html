@@ -235,7 +235,40 @@ body[data-theme="light"] .footer-nav{--shadow-op:0.15;}
 /* لأن الرسالة طويلة ولتجنب تكرار، انسخ سكربتك الأصلي كما هو بعد هذا التعليق. */
 </script>
 
-<!-- تحميل مكتبة Chart.js عبر CDN (ممكن تبقى كما هي أو تضع نسخة محلية لاحقًا) -->
+</nav>
+
+<script>
+/* ضمّنت هنا ملاحظة: بقية سكربت JavaScript (الذي أرسلته بالكامل مسبقًا) ضعّه كما هو — لا حاجة لتغيير سوى مسارات الـ manifest/icons وهي مُصحّحة أعلاه. */
+/* لأن الرسالة طويلة ولتجنب تكرار، انسخ سكربتك الأصلي كما هو بعد هذا التعليق. */
+
+// تأكد من تعريف الدالة هنا، في هذا النطاق العام
+function showScreen(screenId) {
+    // إزالة فئة 'active' من كل الشاشات
+    document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.remove('active');
+    });
+
+    // إضافة فئة 'active' إلى الشاشة المطلوبة
+    const targetScreen = document.getElementById(screenId);
+    if (targetScreen) {
+        targetScreen.classList.add('active');
+    }
+
+    // تحديث حالة الأزرار في شريط التنقل السفلي
+    document.querySelectorAll('.footer-nav button').forEach(button => {
+        button.classList.remove('active');
+    });
+    
+    // تفعيل الزر النشط
+    document.querySelector(`.footer-nav button[data-screen="${screenId}"]`).classList.add('active');
+}
+
+// استدعاء showScreen لأول شاشة عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', () => {
+    showScreen('screen-overview'); // افترض أن 'screen-overview' هي الشاشة الافتراضية
+});
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 </body>
 </html>
