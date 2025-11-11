@@ -1,1 +1,930 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>دفتر حساباتي</title>
+<meta name="theme-color" content="#0b1220" />
 
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512.png">
+<link rel="apple-touch-icon" href="./icons/icon-512.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&display=swap" rel="stylesheet">
+
+<style>
+/* ===== الثيمات (Theme Variables) ===== */
+:root{
+  /* Dark Mode Default */
+  --bg:#0b1220;
+  --card:#0f172a;
+  --muted:#94a3b8;
+  --txt:#e5e7eb;
+  --brand:#0369a1;
+  --brand-2:#0ea5e9;
+  --danger:#ef4444;
+  --warn:#f59e0b;
+  --ok:#22c55e;
+  --border:#1f2a44;
+  --field-bg:#0b1220;
+}
+body[data-theme="light"]{
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --muted:#64748b;
+  --txt:#1e293b;
+  --brand:#1076b9;
+  --brand-2:#1493e8;
+  --danger:#ef4444;
+  --warn:#f59e0b;
+  --ok:#16a34a;
+  --border:#e2e8f0;
+  --field-bg:#f1f5f9;
+  --shadow:0 8px 24px rgba(2,6,23,0.1);
+}
+:root{
+  --radius:12px;
+  --field-h:42px;
+  --shadow:0 8px 24px rgba(2,6,23,0.5);
+}
+
+/* خطوط */
+body,h1,h2,h3,h4,h5,h6,p,div,span,li,a,button{font-family:"Cairo",sans-serif !important;}
+*{box-sizing:border-box}
+html{height:100%}
+body{
+  margin:0;
+  padding-bottom:60px; /* مسافة لشريط التنقل السفلي */
+  background:var(--bg);
+  color:var(--txt);
+  min-height:100vh;
+  transition:background .3s;
+}
+.container{max-width:1180px;margin-inline:auto;padding:20px}
+
+/* Cards */
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:0; overflow:hidden; box-shadow:var(--shadow);
+  margin-bottom:12px;
+}
+.card-head{
+  display:flex;align-items:center;justify-content:space-between;padding:12px 14px;
+  background:linear-gradient(135deg, rgba(3,105,161,var(--grad-opacity,0.55)), rgba(14,165,233,var(--grad-opacity,0.12)));
+  border-bottom:1px solid var(--border);
+}
+body[data-theme="light"] .card-head{
+  --grad-opacity:.1;
+  background:linear-gradient(135deg, rgba(14,165,233,.1), rgba(3,105,161,.05));
+  border-bottom:1px solid var(--border);
+}
+.card-head h3{margin:0;font-size:18px;color:var(--txt)}
+.card-body{padding:14px}
+
+/* Layout */
+.grid{display:grid;gap:10px}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+.grid-4{grid-template-columns:repeat(4,1fr)}
+label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px}
+input,select,textarea{
+  width:100%;background:var(--field-bg);color:var(--txt);border:1px solid var(--border);
+  border-radius:10px;padding:10px 12px;font-size:14px;outline:none;height:var(--field-h)
+}
+input[type="date"],input[type="month"]{direction:ltr;text-align:center;font-variant-numeric:tabular-nums}
+.checkbox-row{display:flex;align-items:center;gap:8px}
+.checkbox-row input[type="checkbox"]{width:18px;height:18px}
+
+/* Buttons */
+.btn{
+  appearance:none;border:none;border-radius:10px;padding:8px 10px;font-weight:700;cursor:pointer;
+  transition:transform .06s ease, opacity .15s,height .08s ease;font-size:13px;height:36px;
+}
+.btn:hover{opacity:.95;transform:translateY(-1px)}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted);padding:8px 10px}
+.btn-primary{background:linear-gradient(135deg,#0ea5e9,#0369a1);color:#fff;border:1px solid rgba(14,165,233,.35)}
+.btn-danger{background:linear-gradient(180deg,#ef4444,#d02626);color:#fff;border:1px solid rgba(235,75,75,0.15)}
+.btn-muted{background:transparent;color:var(--muted);border:1px dashed var(--border);padding:8px 10px}
+
+/* action buttons داخل الجداول — حجم أصغر */
+.actions .btn{height:30px;padding:6px 8px;font-size:13px;border-radius:8px}
+.actions .btn-outline{border-color:var(--border);color:var(--txt)}
+
+/* Stats (ملخص الحسابات) */
+.stats{display:grid;gap:10px}
+@media(min-width:720px){.stats{grid-template-columns:repeat(6,1fr)}}
+.stat{
+  background:var(--field-bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px; text-align:center;
+  box-shadow:var(--shadow)
+}
+.stat small{color:var(--muted)}
+.stat .num{font-weight:800;font-size:22px;margin-top:4px;color:var(--txt)}
+.pos{color:var(--ok)}.neg{color:var(--danger)}
+
+/* perAccount */
+.list-plain{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.list-plain .item{
+  background:var(--field-bg);border:1px solid var(--border);padding:14px;border-radius:var(--radius);
+  text-align:center;box-shadow:var(--shadow);font-weight:700;color:var(--txt)
+}
+
+/* Reports & Tables */
+#catsTableWrap table, #tbodyCommit table, #tbodyCollect table {
+  border-spacing:0;margin-top:8px
+}
+#catsTableWrap tbody tr:hover{transform:none;box-shadow:none}
+#catsTableWrap tbody td{padding:8px 10px;border:none;border-bottom:1px solid var(--border);}
+/* Rest of CSS unchanged... */
+.hr{height:1px;background:var(--border);opacity:.7;margin:12px 0;border-radius:999px}
+.transfer-grid{display:grid;gap:10px;grid-template-columns:repeat(3,1fr)}
+.transfer-grid .full{grid-column:1/-1}
+@media(max-width:900px){.transfer-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:720px){
+  .grid-2{grid-template-columns:1fr}
+  .grid-4{grid-template-columns:1fr 1fr}
+  .badge{height:auto}
+  .card-head h3{font-size:17px}
+  .transfer-grid{grid-template-columns:1fr}
+}
+.footer-nav{
+  position:fixed;bottom:0;right:0;left:0;
+  height:56px;padding:0;
+  background:var(--card);border-top:1px solid var(--border);
+  display:flex;justify-content:space-around;
+  z-index:1000;box-shadow:0 -4px 12px rgba(0,0,0,var(--shadow-op,0.4));
+}
+body[data-theme="light"] .footer-nav{--shadow-op:0.15;}
+.footer-nav button{
+  flex:1;appearance:none;border:none;background:transparent;
+  color:var(--muted);font-size:11px;font-weight:600;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2px;cursor:pointer;
+  transition:color .2s;padding:4px 0;
+}
+.footer-nav button.active{
+  color:var(--brand-2);
+}
+.footer-nav button i{font-size:18px}
+.screen{display:none;margin-top:12px}
+.screen.active{display:block}
+#themeToggle{
+  position:fixed;top:10px;right:10px;z-index:1001;
+  width:40px;height:40px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--card);border:1px solid var(--border);
+  color:var(--txt);cursor:pointer;
+}
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+</head>
+<body data-theme="dark">
+<div class="container">
+  <header>
+    <div class="title" style="font-weight:900;font-size:22px;color:var(--txt)">دفتر حساباتي</div>
+    <div class="toolbar" style="margin-top:10px">
+      <button id="exportJson" class="btn btn-outline" type="button">تصدير JSON</button>
+      <button id="exportCsv" class="btn btn-outline" type="button">تصدير CSV</button>
+      <label class="btn btn-muted" for="importFile">استيراد JSON<input id="importFile" type="file" accept="application/json" style="display:none"></label>
+      <button id="syncNow" class="btn btn-outline" type="button">مزامنة الآن</button>
+      <button id="installBtn" class="btn btn-outline" type="button" style="display:none">تثبيت التطبيق</button>
+    </div>
+  </header>
+
+  <button id="themeToggle" type="button">
+    <i class="fas fa-sun"></i>
+  </button>
+
+  <div id="screen-overview" class="screen active">
+    <div class="card">
+      <div class="card-head"><h3>إجمالي الحسابات</h3></div>
+      <div class="card-body">
+        <div class="stats" id="totalStats">
+          </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h3>حركات الشهر الحالي</h3></div>
+      <div class="card-body">
+        <canvas id="monthlyChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div id="screen-txs" class="screen">
+    <h3>إضافة حركة جديدة</h3>
+    <form id="txForm" class="card card-body">
+        <div class="grid transfer-grid">
+            <div>
+                <label for="txType">النوع</label>
+                <select id="txType">
+                    <option value="expense">مصروف</option>
+                    <option value="income">دخل</option>
+                    <option value="transfer">تحويل</option>
+                </select>
+            </div>
+            <div>
+                <label for="txDate">التاريخ</label>
+                <input type="date" id="txDate" required>
+            </div>
+            <div>
+                <label for="txAmount">المبلغ</label>
+                <input type="number" id="txAmount" placeholder="0.00" min="0.01" step="0.01" required>
+            </div>
+            <div id="txSourceWrap">
+                <label for="txSource">من حساب</label>
+                <select id="txSource" required></select>
+            </div>
+            <div id="txTargetWrap">
+                <label for="txTarget">إلى حساب</label>
+                <select id="txTarget" required></select>
+            </div>
+            <div id="txCatWrap">
+                <label for="txCat">الفئة</label>
+                <select id="txCat"></select>
+            </div>
+            <div class="full">
+                <label for="txNote">ملاحظات</label>
+                <input type="text" id="txNote">
+            </div>
+            <div class="full">
+                <button type="submit" class="btn btn-primary" style="width:100%">حفظ الحركة</button>
+            </div>
+        </div>
+    </form>
+
+    <h3 style="margin-top:20px">سجل الحركات</h3>
+    <div class="card">
+        <table class="card-body" style="width:100%;text-align:right">
+            <thead>
+                <tr>
+                    <th style="width:15%">التاريخ</th>
+                    <th>النوع</th>
+                    <th>القيمة</th>
+                    <th>الحساب/الفئة</th>
+                    <th style="width:10%">عمليات</th>
+                </tr>
+            </thead>
+            <tbody id="tbodyTxs">
+                </tbody>
+        </table>
+    </div>
+  </div>
+  
+  <div id="screen-commitments" class="screen">
+    <h3>الالتزامات والدفعات</h3>
+    <p>هذه الشاشة مخصصة لإدارة الالتزامات المتكررة والدفعات المترتبة عليك.</p>
+  </div>
+
+  <div id="screen-accounts" class="screen">
+    <h3>إضافة حساب جديد</h3>
+    <form id="accountForm" class="card card-body grid-2" style="margin-bottom:20px">
+        <div>
+            <label for="accName">اسم الحساب</label>
+            <input type="text" id="accName" required>
+        </div>
+        <div>
+            <label for="accInitial">الرصيد الابتدائي</label>
+            <input type="number" id="accInitial" placeholder="0.00" step="0.01">
+        </div>
+        <div class="full">
+            <button type="submit" class="btn btn-primary" style="width:100%">إضافة حساب</button>
+        </div>
+    </form>
+    
+    <h3>قائمة الحسابات</h3>
+    <div class="list-plain" id="accountsList">
+        </div>
+  </div>
+
+  <div id="screen-cats" class="screen">
+    <h3>إضافة فئة جديدة</h3>
+    <form id="catForm" class="card card-body grid-2" style="margin-bottom:20px">
+        <div>
+            <label for="catName">اسم الفئة</label>
+            <input type="text" id="catName" required>
+        </div>
+        <div>
+            <label for="catType">نوع الفئة</label>
+            <select id="catType">
+                <option value="expense">مصروف</option>
+                <option value="income">دخل</option>
+            </select>
+        </div>
+        <div class="full">
+            <button type="submit" class="btn btn-primary" style="width:100%">إضافة فئة</button>
+        </div>
+    </form>
+
+    <h3>قائمة الفئات</h3>
+    <div class="card" id="catsTableWrap">
+        <table style="width:100%;text-align:right">
+            <thead>
+                <tr>
+                    <th style="width:40%">الاسم</th>
+                    <th style="width:30%">النوع</th>
+                    <th style="width:30%">عمليات</th>
+                </tr>
+            </thead>
+            <tbody id="tbodyCats">
+                </tbody>
+        </table>
+    </div>
+  </div>
+
+  <div id="screen-github" class="screen">
+    <h3>إعدادات المزامنة</h3>
+    <div class="card card-body">
+        <p>هنا يمكنك إعداد المزامنة مع GitHub لحفظ بياناتك.</p>
+        <div class="grid-2">
+            <div>
+                <label for="repoOwner">صاحب المستودع (المستخدم)</label>
+                <input type="text" id="repoOwner" placeholder="nassrislam2019" readonly>
+            </div>
+            <div>
+                <label for="repoName">اسم المستودع</label>
+                <input type="text" id="repoName" placeholder="Finance2025" readonly>
+            </div>
+        </div>
+        <div style="margin-top:10px">
+            <label for="githubToken">GitHub Personal Access Token (PAT)</label>
+            <input type="password" id="githubToken" placeholder="ghp_..." required>
+        </div>
+        <div style="margin-top:10px">
+            <button id="saveGithubSettings" class="btn btn-primary" style="width:100%">حفظ الإعدادات</button>
+        </div>
+        <p id="githubStatus" style="margin-top:10px;font-size:12px;color:var(--muted)">حالة المزامنة: غير متصل</p>
+    </div>
+  </div>
+  </div>
+
+<nav class="footer-nav nav-tabs">
+  <button data-screen="screen-overview" class="active" type="button" onclick="showScreen('screen-overview')">
+    <i class="fas fa-chart-pie"></i> ملخص
+  </button>
+  <button data-screen="screen-txs" type="button" onclick="showScreen('screen-txs')">
+    <i class="fas fa-exchange-alt"></i> حركات
+  </button>
+  <button data-screen="screen-commitments" type="button" onclick="showScreen('screen-commitments')">
+    <i class="fas fa-handshake"></i> التزامات
+  </button>
+  <button data-screen="screen-accounts" type="button" onclick="showScreen('screen-accounts')">
+    <i class="fas fa-wallet"></i> حسابات
+  </button>
+  <button data-screen="screen-cats" type="button" onclick="showScreen('screen-cats')">
+    <i class="fas fa-tags"></i> فئات
+  </button>
+  <button data-screen="screen-github" type="button" onclick="showScreen('screen-github')">
+    <i class="fas fa-cog"></i> إعدادات
+  </button>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+<script>
+// =================================================================
+//                 ✅ بدء جزء JavaScript الخاص بمنطق التطبيق ✅
+// =================================================================
+
+// 1. تعريف وظيفة تبديل الشاشات
+function showScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.remove('active');
+    });
+
+    const targetScreen = document.getElementById(screenId);
+    if (targetScreen) {
+        targetScreen.classList.add('active');
+    }
+
+    document.querySelectorAll('.footer-nav button').forEach(button => {
+        button.classList.remove('active');
+    });
+    
+    document.querySelector(`.footer-nav button[data-screen="${screenId}"]`).classList.add('active');
+}
+
+// 2. وظيفة تبديل الثيم
+document.getElementById('themeToggle').addEventListener('click', function() {
+    const body = document.body;
+    const currentTheme = body.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    body.setAttribute('data-theme', newTheme);
+    this.querySelector('i').className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    localStorage.setItem('theme', newTheme); // حفظ التفضيل
+});
+
+// 3. تحميل الثيم المحفوظ عند البدء
+document.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.body.setAttribute('data-theme', savedTheme);
+    document.getElementById('themeToggle').querySelector('i').className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    showScreen('screen-overview'); 
+});
+
+// 4. متغيرات البيانات الأساسية
+let financeData = {
+    accounts: [
+        // مثال: { id: 'a1', name: 'نقدي', initialBalance: 1000, balance: 1000 }
+    ],
+    categories: [
+        // مثال: { id: 'c1', name: 'طعام', type: 'expense' }
+    ],
+    transactions: [
+        // مثال: { id: 't1', type: 'expense', date: '2025-11-10', amount: 50, source: 'a1', category: 'c1', note: 'غداء' }
+    ],
+    commitments: [],
+};
+const STORAGE_KEY = 'my-finance-data';
+const GITHUB_REPO_OWNER = 'nassrislam2019';
+const GITHUB_REPO_NAME = 'Finance2025';
+const FINANCE_FILE_PATH = 'my-finance.json';
+
+// 5. وظيفة حفظ البيانات (الأساسية)
+function saveData() {
+    // حفظ في LocalStorage كاحتياطي
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(financeData));
+    console.log("Data saved locally.");
+    // تحديث كل الشاشات
+    renderAll();
+}
+
+// 6. وظيفة تحميل البيانات (الأساسية)
+function loadData() {
+    const localData = localStorage.getItem(STORAGE_KEY);
+    if (localData) {
+        financeData = JSON.parse(localData);
+        console.log("Data loaded from local storage.");
+    } else {
+        // تهيئة البيانات الافتراضية إذا لم يتم العثور على بيانات
+        financeData.accounts = [{ id: 'a' + Date.now(), name: 'المحفظة', initialBalance: 0, balance: 0 }];
+        financeData.categories = [
+            { id: 'c' + Date.now(), name: 'مصروفات عامة', type: 'expense' },
+            { id: 'c' + (Date.now() + 1), name: 'دخل شهري', type: 'income' }
+        ];
+    }
+    renderAll();
+}
+
+// 7. وظيفة حساب الأرصدة وإحصائيات الملخص
+function calculateBalances() {
+    // 1. إعادة تعيين الأرصدة إلى الرصيد الابتدائي
+    financeData.accounts.forEach(acc => {
+        acc.balance = acc.initialBalance;
+    });
+
+    // 2. تطبيق الحركات
+    financeData.transactions.sort((a, b) => new Date(a.date) - new Date(b.date)); // الترتيب حسب التاريخ للتأكد من صحة الرصيد
+    
+    financeData.transactions.forEach(tx => {
+        const sourceAcc = financeData.accounts.find(a => a.id === tx.source);
+        const targetAcc = financeData.accounts.find(a => a.id === tx.target);
+
+        if (tx.type === 'expense') {
+            if (sourceAcc) sourceAcc.balance -= tx.amount;
+        } else if (tx.type === 'income') {
+            if (targetAcc) targetAcc.balance += tx.amount;
+        } else if (tx.type === 'transfer') {
+            if (sourceAcc) sourceAcc.balance -= tx.amount;
+            if (targetAcc) targetAcc.balance += tx.amount;
+        }
+    });
+}
+
+// 8. وظيفة تحديث الملخص
+function renderOverview() {
+    calculateBalances();
+
+    const totalStats = document.getElementById('totalStats');
+    totalStats.innerHTML = '';
+    
+    let totalAssets = 0;
+    financeData.accounts.forEach(acc => {
+        totalAssets += acc.balance;
+    });
+
+    const totalIncome = financeData.transactions
+        .filter(tx => tx.type === 'income')
+        .reduce((sum, tx) => sum + tx.amount, 0);
+
+    const totalExpense = financeData.transactions
+        .filter(tx => tx.type === 'expense')
+        .reduce((sum, tx) => sum + tx.amount, 0);
+
+    // إضافة إحصائية إجمالي الأصول (الأرصدة)
+    totalStats.innerHTML += `
+        <div class="stat">
+            <small>إجمالي الأصول</small>
+            <div class="num ${totalAssets >= 0 ? 'pos' : 'neg'}">${totalAssets.toFixed(2)}</div>
+        </div>
+        <div class="stat">
+            <small>إجمالي الدخل</small>
+            <div class="num pos">${totalIncome.toFixed(2)}</div>
+        </div>
+        <div class="stat">
+            <small>إجمالي المصروفات</small>
+            <div class="num neg">${totalExpense.toFixed(2)}</div>
+        </div>
+    `;
+
+    // (مكان لتوليد Chart.js - تم حذفه لتجنب التعقيد والتركيز على التخزين)
+}
+
+// 9. وظيفة تحديث قائمة الحركات
+function renderTxs() {
+    const tbodyTxs = document.getElementById('tbodyTxs');
+    tbodyTxs.innerHTML = '';
+
+    financeData.transactions.slice().reverse().forEach(tx => { // عرض الأحدث أولاً
+        const sourceName = tx.source ? financeData.accounts.find(a => a.id === tx.source)?.name || 'N/A' : '';
+        const targetName = tx.target ? financeData.accounts.find(a => a.id === tx.target)?.name || 'N/A' : '';
+        const catName = tx.category ? financeData.categories.find(c => c.id === tx.category)?.name || 'N/A' : '';
+        
+        let info = '';
+        let amountClass = 'neg';
+
+        if (tx.type === 'expense') {
+            info = `${catName} / ${sourceName}`;
+            amountClass = 'neg';
+        } else if (tx.type === 'income') {
+            info = `${catName} / ${targetName}`;
+            amountClass = 'pos';
+        } else if (tx.type === 'transfer') {
+            info = `من: ${sourceName} إلى: ${targetName}`;
+            amountClass = 'pos'; // يمكن أن تكون محايدة
+        }
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${tx.date}</td>
+            <td>${tx.type === 'expense' ? 'مصروف' : tx.type === 'income' ? 'دخل' : 'تحويل'}</td>
+            <td class="${amountClass}">${tx.amount.toFixed(2)}</td>
+            <td>${info}</td>
+            <td class="actions">
+                <button class="btn btn-danger" onclick="deleteTx('${tx.id}')">حذف</button>
+            </td>
+        `;
+        tbodyTxs.appendChild(row);
+    });
+
+    // تحديث خيارات الحسابات والفئات في نموذج الحركة
+    updateFormSelects();
+}
+
+// 10. وظيفة تحديث قائمة الحسابات
+function renderAccounts() {
+    const accountsList = document.getElementById('accountsList');
+    accountsList.innerHTML = '';
+    financeData.accounts.forEach(acc => {
+        const balanceClass = acc.balance >= 0 ? 'pos' : 'neg';
+        accountsList.innerHTML += `
+            <div class="item">
+                ${acc.name}<br>
+                <span class="num ${balanceClass}">${acc.balance.toFixed(2)}</span>
+                <div class="actions" style="margin-top:10px">
+                    <button class="btn btn-danger" onclick="deleteAccount('${acc.id}')">حذف</button>
+                </div>
+            </div>
+        `;
+    });
+}
+
+// 11. وظيفة تحديث قائمة الفئات
+function renderCats() {
+    const tbodyCats = document.getElementById('tbodyCats');
+    tbodyCats.innerHTML = '';
+    financeData.categories.forEach(cat => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${cat.name}</td>
+            <td>${cat.type === 'expense' ? 'مصروف' : 'دخل'}</td>
+            <td class="actions">
+                <button class="btn btn-danger" onclick="deleteCategory('${cat.id}')">حذف</button>
+            </td>
+        `;
+        tbodyCats.appendChild(row);
+    });
+}
+
+// 12. وظيفة التحديث الشامل
+function renderAll() {
+    calculateBalances();
+    renderOverview();
+    renderTxs();
+    renderAccounts();
+    renderCats();
+    // يمكنك إضافة renderCommitments لاحقًا
+}
+
+// 13. وظائف الإضافة والحذف
+// **********************************************
+
+// إدارة الحسابات
+document.getElementById('accountForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const name = document.getElementById('accName').value;
+    const initial = parseFloat(document.getElementById('accInitial').value) || 0;
+    const newAcc = { 
+        id: 'a' + Date.now(), 
+        name: name, 
+        initialBalance: initial, 
+        balance: initial // سيتم إعادة حسابه لاحقًا
+    };
+    financeData.accounts.push(newAcc);
+    saveData();
+    this.reset();
+});
+
+function deleteAccount(id) {
+    if (confirm("هل أنت متأكد من حذف هذا الحساب؟ ستُحذف جميع الحركات المرتبطة به.")) {
+        financeData.accounts = financeData.accounts.filter(acc => acc.id !== id);
+        // حذف الحركات المرتبطة
+        financeData.transactions = financeData.transactions.filter(tx => tx.source !== id && tx.target !== id);
+        saveData();
+    }
+}
+
+// إدارة الفئات
+document.getElementById('catForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const name = document.getElementById('catName').value;
+    const type = document.getElementById('catType').value;
+    const newCat = { id: 'c' + Date.now(), name: name, type: type };
+    financeData.categories.push(newCat);
+    saveData();
+    this.reset();
+});
+
+function deleteCategory(id) {
+    if (confirm("هل أنت متأكد من حذف هذه الفئة؟")) {
+        financeData.categories = financeData.categories.filter(cat => cat.id !== id);
+        // إزالة الفئة من الحركات
+        financeData.transactions.forEach(tx => {
+            if (tx.category === id) tx.category = null;
+        });
+        saveData();
+    }
+}
+
+// تحديث خيارات الحسابات والفئات في نموذج الحركة
+function updateFormSelects() {
+    const sourceSelect = document.getElementById('txSource');
+    const targetSelect = document.getElementById('txTarget');
+    const catSelect = document.getElementById('txCat');
+    
+    // إعادة تعيين الخيارات
+    sourceSelect.innerHTML = '<option value="">اختر حساب</option>';
+    targetSelect.innerHTML = '<option value="">اختر حساب</option>';
+    catSelect.innerHTML = '<option value="">اختر فئة</option>';
+
+    financeData.accounts.forEach(acc => {
+        sourceSelect.innerHTML += `<option value="${acc.id}">${acc.name}</option>`;
+        targetSelect.innerHTML += `<option value="${acc.id}">${acc.name}</option>`;
+    });
+
+    financeData.categories.forEach(cat => {
+        catSelect.innerHTML += `<option value="${cat.id}">${cat.name} (${cat.type === 'expense' ? 'مصر' : 'دخل'})</option>`;
+    });
+
+    // منطق إخفاء/إظهار حقول المصدر/الهدف/الفئة بناءً على نوع الحركة
+    const txType = document.getElementById('txType').value;
+    document.getElementById('txSourceWrap').style.display = (txType === 'income') ? 'none' : 'block';
+    document.getElementById('txTargetWrap').style.display = (txType === 'expense') ? 'none' : 'block';
+    document.getElementById('txCatWrap').style.display = (txType === 'transfer') ? 'none' : 'block';
+
+    // إعادة ضبط الحقول المطلوبة
+    document.getElementById('txSource').required = (txType !== 'income');
+    document.getElementById('txTarget').required = (txType !== 'expense');
+}
+
+// إدارة الحركات
+document.getElementById('txType').addEventListener('change', updateFormSelects);
+
+document.getElementById('txForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const txType = document.getElementById('txType').value;
+    const date = document.getElementById('txDate').value || new Date().toISOString().slice(0, 10);
+    const amount = parseFloat(document.getElementById('txAmount').value);
+    const source = document.getElementById('txSource').value;
+    const target = document.getElementById('txTarget').value;
+    const category = document.getElementById('txCat').value;
+    const note = document.getElementById('txNote').value;
+
+    if (isNaN(amount) || amount <= 0) {
+        alert("الرجاء إدخال مبلغ صحيح.");
+        return;
+    }
+
+    if (txType === 'transfer' && source === target) {
+        alert("لا يمكن أن يكون المصدر والهدف للتحويل هما نفس الحساب.");
+        return;
+    }
+
+    const newTx = {
+        id: 't' + Date.now(),
+        type: txType,
+        date: date,
+        amount: amount,
+        source: txType !== 'income' ? source : null,
+        target: txType !== 'expense' ? target : null,
+        category: txType === 'transfer' ? null : category,
+        note: note,
+    };
+    
+    financeData.transactions.push(newTx);
+    saveData();
+    this.reset();
+    document.getElementById('txDate').value = new Date().toISOString().slice(0, 10);
+});
+
+function deleteTx(id) {
+    if (confirm("هل أنت متأكد من حذف هذه الحركة؟")) {
+        financeData.transactions = financeData.transactions.filter(tx => tx.id !== id);
+        saveData();
+    }
+}
+
+// 14. وظائف المزامنة مع GitHub (API Calls)
+// **********************************************
+
+// وظيفة جلب التوكن من Local Storage عند الحاجة
+function getGithubToken() {
+    return localStorage.getItem('githubToken');
+}
+
+// وظيفة إرسال طلب جلب أو إرسال لـ GitHub API
+async function githubApi(method, path, data = null) {
+    const token = getGithubToken();
+    if (!token) {
+        throw new Error("GitHub Token is missing. Please save it in Settings.");
+    }
+
+    const url = `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/${path}`;
+    const headers = {
+        'Authorization': `token ${token}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/vnd.github.v3+json',
+    };
+
+    const config = {
+        method: method,
+        headers: headers,
+        body: data ? JSON.stringify(data) : null,
+    };
+
+    const response = await fetch(url, config);
+    if (!response.ok) {
+        let errorMsg = `GitHub API Error: ${response.status} ${response.statusText}`;
+        try {
+            const errorBody = await response.json();
+            errorMsg += ` - ${errorBody.message}`;
+        } catch (e) { /* ignore */ }
+        throw new Error(errorMsg);
+    }
+    return response.json();
+}
+
+// 15. وظيفة جلب المحتوى من my-finance.json
+async function fetchRemoteData() {
+    const statusEl = document.getElementById('githubStatus');
+    statusEl.textContent = "حالة المزامنة: جلب البيانات...";
+    try {
+        const response = await githubApi('GET', `contents/${FINANCE_FILE_PATH}`);
+        const content = atob(response.content); // فك تشفير المحتوى من Base64
+        const remoteData = JSON.parse(content);
+        
+        // حفظ Sha للمزامنة اللاحقة
+        localStorage.setItem('fileSha', response.sha);
+        
+        // مقارنة وتحديث
+        if (JSON.stringify(remoteData) !== JSON.stringify(financeData)) {
+            // هنا يمكنك إضافة منطق للمقارنة بين البيانات المحلية والبعيدة
+            // حاليًا، نعتمد على بيانات GitHub إذا كانت أحدث (يمكن تعديل هذا)
+            financeData = remoteData;
+            saveData();
+            statusEl.textContent = "حالة المزامنة: تم جلب البيانات بنجاح!";
+        } else {
+            statusEl.textContent = "حالة المزامنة: البيانات متطابقة.";
+        }
+        return response.sha;
+    } catch (error) {
+        if (error.message.includes('Not Found')) {
+            // الملف غير موجود، لا مشكلة، فقط استمر بالبيانات المحلية
+            statusEl.textContent = "حالة المزامنة: ملف my-finance.json غير موجود بعد. جاهز للحفظ الأولي.";
+            return null;
+        }
+        statusEl.textContent = `حالة المزامنة: فشل الجلب: ${error.message}`;
+        console.error("Fetch Remote Data Error:", error);
+        throw error; // إعادة طرح الخطأ لإيقاف عملية المزامنة
+    }
+}
+
+// 16. وظيفة حفظ المحتوى إلى my-finance.json (المزامنة الفعلية)
+async function syncDataToGithub() {
+    const statusEl = document.getElementById('githubStatus');
+    statusEl.textContent = "حالة المزامنة: الحفظ إلى GitHub...";
+    try {
+        // تأكد من آخر Sha (قد يكون تغير أثناء عمل المستخدم)
+        let sha = localStorage.getItem('fileSha');
+
+        const content = JSON.stringify(financeData, null, 2);
+        const encodedContent = btoa(unescape(encodeURIComponent(content))); // تشفير المحتوى إلى Base64
+
+        const commitMessage = `Update ${FINANCE_FILE_PATH} - ${new Date().toLocaleString()}`;
+        const data = {
+            message: commitMessage,
+            content: encodedContent,
+            sha: sha // مطلوب لتحديث ملف موجود
+        };
+
+        const response = await githubApi('PUT', `contents/${FINANCE_FILE_PATH}`, data);
+        
+        // تحديث Sha بعد الحفظ الناجح
+        localStorage.setItem('fileSha', response.content.sha);
+        statusEl.textContent = "حالة المزامنة: تم الحفظ والمزامنة بنجاح!";
+        console.log("Sync success:", response);
+    } catch (error) {
+        statusEl.textContent = `حالة المزامنة: فشل الحفظ: ${error.message}`;
+        console.error("Sync to Github Error:", error);
+        // في حالة فشل الحفظ بسبب SHA غير صحيح (تعارض)، يجب على المستخدم إعادة الجلب والمحاولة مرة أخرى
+    }
+}
+
+// 17. وظيفة المزامنة الكاملة
+async function fullSync() {
+    try {
+        // 1. محاولة جلب البيانات البعيدة
+        await fetchRemoteData();
+        // 2. حفظ البيانات المحلية (المفترض أنها الأحدث الآن) إلى Local Storage
+        saveData();
+        // 3. حفظ البيانات إلى GitHub
+        await syncDataToGithub();
+    } catch (e) {
+        console.warn("Full sync interrupted:", e.message);
+    }
+}
+
+// 18. معالجات الأحداث للمزامنة والإعدادات
+document.getElementById('saveGithubSettings').addEventListener('click', function() {
+    const token = document.getElementById('githubToken').value;
+    if (token) {
+        localStorage.setItem('githubToken', token);
+        alert("تم حفظ GitHub Token بنجاح. حاول المزامنة الآن.");
+        // يمكن محاولة الجلب تلقائيًا هنا
+        fullSync(); 
+    } else {
+        alert("الرجاء إدخال GitHub Personal Access Token.");
+    }
+});
+
+document.getElementById('syncNow').addEventListener('click', fullSync);
+
+// 19. وظيفة التصدير والاستيراد
+document.getElementById('exportJson').addEventListener('click', function() {
+    const dataStr = JSON.stringify(financeData, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    const exportFileDefaultName = 'my-finance-export.json';
+    
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+});
+
+document.getElementById('importFile').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const importedData = JSON.parse(e.target.result);
+            if (importedData.accounts && importedData.transactions) {
+                if (confirm("سيؤدي الاستيراد إلى استبدال البيانات الحالية. هل أنت متأكد؟")) {
+                    financeData = importedData;
+                    saveData();
+                    alert("تم استيراد البيانات بنجاح!");
+                }
+            } else {
+                alert("صيغة ملف JSON غير صحيحة. يجب أن يحتوي على accounts و transactions.");
+            }
+        } catch (error) {
+            alert("فشل قراءة ملف JSON: " + error.message);
+        }
+    };
+    reader.readAsText(file);
+});
+
+// 20. بدء التطبيق: تحميل البيانات وعرضها
+loadData();
+
+
+// =================================================================
+//                 ✅ نهاية جزء JavaScript الخاص بمنطق التطبيق ✅
+// =================================================================
+</script>
+</body>
+</html>
