@@ -1,626 +1,81 @@
 {
-  "ledger": [
-    {
-      "id": "x9onmkuvmgrxxk1g",
-      "date": "2025-10-15",
-      "desc": "هشام",
-      "type": "expense",
-      "amount": 400,
-      "account": "كاش",
-      "category": "التزامات شهرية",
-      "linkCommitId": "5ezkl2c1mgqfzaxx"
-    },
-    {
-      "id": "pq0z88vemgs2ow84",
-      "date": "2025-10-15",
-      "desc": "مواصلات",
-      "type": "expense",
-      "amount": 70,
-      "account": "كاش",
-      "category": "مواصلات"
-    },
-    {
-      "id": "nb3wtqh9mgsfkzw4",
-      "date": "2025-10-15",
-      "desc": "سفر",
-      "type": "expense",
-      "amount": 30,
-      "account": "كاش",
-      "category": "مواصلات"
-    },
-    {
-      "id": "qyczvnvzmgsfp82h",
-      "date": "2025-10-15",
-      "desc": "الليثي (تحصيل)",
-      "type": "income",
-      "amount": 1300,
-      "account": "كاش",
-      "category": "تحصيلات شهرية"
-    },
-    {
-      "id": "ofnl51ynmgslx5vp",
-      "date": "2025-10-15",
-      "desc": "رجوع من البلد",
-      "type": "expense",
-      "amount": 145,
-      "account": "كاش",
-      "category": "مواصلات"
-    },
-    {
-      "id": "0idc8hcqmgt56whb",
-      "date": "2025-10-15",
-      "desc": "هشام (سداد التزام)",
-      "type": "expense",
-      "amount": 1000,
-      "account": "كاش",
-      "category": "التزامات شهرية",
-      "linkCommitId": "5ezkl2c1mgqfzaxx"
-    },
-    {
-      "id": "8vven1qamgwuc5c0",
-      "date": "2025-10-15",
-      "desc": "اشتراك (سداد التزام)",
-      "type": "expense",
-      "amount": 60,
-      "account": "إئتمان",
-      "category": "التزامات شهرية",
-      "linkCommitId": "cs7lzxi9mgrtufxt"
-    },
-    {
-      "id": "57ih8qqnmgwuekvj",
-      "date": "2025-10-18",
-      "desc": "موتور",
-      "type": "expense",
-      "amount": 150,
-      "account": "كاش",
-      "category": "التزامات شهرية"
-    },
-    {
-      "id": "hqv3ia4bmh03e9aa",
-      "date": "2025-10-20",
-      "desc": "نت (سداد التزام)",
-      "type": "expense",
-      "amount": 280,
-      "account": "محفظة",
-      "category": "التزامات شهرية",
-      "linkCommitId": "87dzatk4mgozsoba"
-    },
-    {
-      "id": "6f3dq8uhmh03lovk",
-      "date": "2025-10-21",
-      "desc": "كارم",
-      "type": "expense",
-      "amount": 48,
-      "account": "محفظة",
-      "category": "أكل وشرب"
-    },
-    {
-      "id": "iznncdrqmh0435nl",
-      "date": "2025-10-21",
-      "desc": "مواصلات",
-      "type": "expense",
-      "amount": 40,
-      "account": "كاش",
-      "category": "مواصلات"
-    },
-    {
-      "id": "oz5kymbnmh0o9i0j",
-      "date": "2025-10-21",
-      "desc": "مصاريف تجاوز وشحن محفظه",
-      "type": "expense",
-      "amount": 270,
-      "account": "إئتمان",
-      "category": "أكل وشرب"
-    },
-    {
-      "id": "a3sdd5ecmhdezoxi",
-      "date": "2025-11-01",
-      "desc": "مصروف (تحصيل)",
-      "type": "income",
-      "amount": 2300,
-      "account": "إئتمان",
-      "category": "تحصيلات شهرية"
-    },
-    {
-      "id": "38deimm5mhdf10lv",
-      "date": "2025-11-01",
-      "desc": "لله (تحصيل)",
-      "type": "income",
-      "amount": 300,
-      "account": "إئتمان",
-      "category": "تحصيلات شهرية"
-    },
-    {
-      "id": "w5c494w4mhdf16qf",
-      "date": "2025-11-01",
-      "desc": "وثيقه (تحصيل)",
-      "type": "income",
-      "amount": 450,
-      "account": "إئتمان",
-      "category": "تحصيلات شهرية"
-    },
-    {
-      "id": "eb7dt3ocmhdf22o8",
-      "date": "2025-11-01",
-      "desc": "شحن و نت و ارضى (تحصيل)",
-      "type": "income",
-      "amount": 600,
-      "account": "إئتمان",
-      "category": "تحصيلات شهرية"
-    },
-    {
-      "id": "gts0szsxmhdlyz4i",
-      "date": "2025-10-20",
-      "desc": "تأمين (سداد التزام)",
-      "type": "expense",
-      "amount": 420,
-      "account": "إئتمان",
-      "category": "التزامات شهرية",
-      "linkCommitId": "3m2hp895mgozlmi6"
-    },
-    {
-      "id": "5ooh04xfmhdlz5wo",
-      "date": "2025-10-25",
-      "desc": "اشتراك (سداد التزام)",
-      "type": "expense",
-      "amount": 40,
-      "account": "إئتمان",
-      "category": "التزامات شهرية",
-      "linkCommitId": "ofpg6jkpmgruck82"
-    },
-    {
-      "id": "kz74gyzbmhdm16mu",
-      "date": "2025-11-01",
-      "desc": "مرتب (تحصيل)",
-      "type": "income",
-      "amount": 2000,
-      "account": "إئتمان",
-      "category": "تحصيلات شهرية"
-    },
-    {
-      "id": "c0okmpb8mhf72tp7",
-      "date": "2025-11-01",
-      "desc": "اشتراك (سداد التزام)",
-      "type": "expense",
-      "amount": 250,
-      "account": "إئتمان",
-      "category": "التزامات شهرية",
-      "linkCommitId": "b9xam41amgoznubi"
-    },
-    {
-      "id": "0vh40lgzmhgyb3rf",
-      "date": "2025-11-01",
-      "desc": "كاش",
-      "type": "income",
-      "amount": 436,
-      "account": "إئتمان",
-      "category": "مرتب"
-    },
-    {
-      "id": "c7p4qgqimhgycr5p",
-      "date": "2025-11-01",
-      "desc": "كاش",
-      "type": "income",
-      "amount": 5254,
-      "account": "محفظة",
-      "category": "مرتب"
-    },
-    {
-      "id": "36sz9o3smhgyecze",
-      "date": "2025-11-01",
-      "desc": "للسفر و نقطة عمرو",
-      "type": "income",
-      "amount": 530,
-      "account": "كاش",
-      "category": "مرتب"
-    },
-    {
-      "id": "tv3nxfl3mhhnel6y",
-      "date": "2025-11-02",
-      "desc": "جمعية لرقم من ساره (سداد التزام)",
-      "type": "expense",
-      "amount": 1000,
-      "account": "محفظة",
-      "category": "التزامات شهرية",
-      "linkCommitId": "t6iuem1kmhgyises"
-    },
-    {
-      "id": "mhc758e9mhhnhc27",
-      "date": "2025-11-02",
-      "desc": "نقطة اكرم (سداد التزام)",
-      "type": "expense",
-      "amount": 300,
-      "account": "محفظة",
-      "category": "التزامات شهرية",
-      "linkCommitId": "con3mvigmhgykceh"
-    },
-    {
-      "id": "9mse7f5amhi8heat",
-      "date": "2025-11-02",
-      "desc": "جمعيه",
-      "type": "expense",
-      "amount": 850,
-      "account": "حساب بنكي",
-      "category": "أكل وشرب",
-      "linkCommitId": "20lhz81umhgyhdv7"
-    },
-    {
-      "id": "8e89l80xmhi8yf1y",
-      "date": "2025-11-02",
-      "desc": "نقطة كارم و هشام و على",
-      "type": "income",
-      "amount": 2000,
-      "account": "حساب بنكي",
-      "category": "تحويل وارد"
-    },
-    {
-      "id": "hajpllidmhi8zq2l",
-      "date": "2025-11-02",
-      "desc": "ساره (سداد التزام)",
-      "type": "expense",
-      "amount": 1250,
-      "account": "كاش",
-      "category": "التزامات شهرية",
-      "linkCommitId": "5zyqab2emhgyj1rw"
-    },
-    {
-      "id": "ws0l70ndmhi9elb9",
-      "date": "2025-11-05",
-      "desc": "شحن (سداد التزام)",
-      "type": "expense",
-      "amount": 150,
-      "account": "محفظة",
-      "category": "التزامات شهرية",
-      "linkCommitId": "w6ivs7i5mgozqe72"
-    },
-    {
-      "id": "tphb4e8zmhj9o69f",
-      "date": "2025-11-02",
-      "desc": "فاطمه (سداد التزام)",
-      "type": "expense",
-      "amount": 1000,
-      "account": "كاش",
-      "category": "التزامات شهرية",
-      "linkCommitId": "vmygftw0mhgyhqa2"
-    },
-    {
-      "id": "t5hghowmmhjcjacc",
-      "date": "2025-11-03",
-      "desc": "فاطمه",
-      "type": "expense",
-      "amount": 3800,
-      "account": "محفظة",
-      "category": "تحويل صادر"
-    },
-    {
-      "id": "cri3fp5vmhjcjkz8",
-      "date": "2025-11-03",
-      "desc": "فاطمه",
-      "type": "expense",
-      "amount": 1200,
-      "account": "كاش",
-      "category": "تحويل صادر"
-    },
-    {
-      "id": "duph1r6amhjcm8x0",
-      "link": "o3vinn0cmhjcm8x0",
-      "isTransfer": true,
-      "date": "2025-11-03",
-      "desc": "تحويل إلى كاش",
-      "type": "expense",
-      "amount": 1150,
-      "account": "حساب بنكي",
-      "category": "تحويل صادر"
-    },
-    {
-      "id": "mrubgug4mhjcm8x0",
-      "link": "o3vinn0cmhjcm8x0",
-      "isTransfer": true,
-      "date": "2025-11-03",
-      "desc": "تحويل من حساب بنكي",
-      "type": "income",
-      "amount": 1150,
-      "account": "كاش",
-      "category": "تحويل وارد"
-    },
-    {
-      "id": "e8heszvfmhjd0q9v",
-      "date": "2025-11-03",
-      "desc": "فلوس سيف +باقى فلوس",
-      "type": "income",
-      "amount": 1800,
-      "account": "كاش",
-      "category": "مرتب"
-    },
-    {
-      "id": "lpszgwlwmhl1xeli",
-      "date": "2025-11-03",
-      "desc": "سيف باشا (سداد التزام)",
-      "type": "expense",
-      "amount": 1500,
-      "account": "حساب بنكي",
-      "category": "التزامات شهرية",
-      "linkCommitId": "dptwtb3mmhjcxkhp"
-    },
-    {
-      "id": "2sodkugomhl1xwkp",
-      "link": "m0h84ba4mhl1xwkp",
-      "isTransfer": true,
-      "date": "2025-11-04",
-      "desc": "تحويل إلى حساب بنكي",
-      "type": "expense",
-      "amount": 1500,
-      "account": "إئتمان",
-      "category": "تحويل صادر"
-    },
-    {
-      "id": "f55bfpurmhl1xwkp",
-      "link": "m0h84ba4mhl1xwkp",
-      "isTransfer": true,
-      "date": "2025-11-04",
-      "desc": "تحويل من إئتمان",
-      "type": "income",
-      "amount": 1500,
-      "account": "حساب بنكي",
-      "category": "تحويل وارد"
-    },
-    {
-      "id": "dj44fttjmhl21b6f",
-      "link": "0z440y6wmhl21b6f",
-      "isTransfer": true,
-      "date": "2025-11-04",
-      "desc": "تحويل إلى كاش",
-      "type": "expense",
-      "amount": 350,
-      "account": "إئتمان",
-      "category": "تحويل صادر"
-    },
-    {
-      "id": "orr7o81pmhl21b6f",
-      "date": "2025-11-04",
-      "desc": "تحويل من إئتمان",
-      "type": "income",
-      "amount": 150,
-      "account": "كاش",
-      "category": "تحويل وارد"
-    },
-    {
-      "id": "uf4bdh4pmhl24j6y",
-      "date": "2025-11-04",
-      "desc": "شراء شفاط",
-      "type": "expense",
-      "amount": 600,
-      "account": "إئتمان",
-      "category": "أكل وشرب"
-    },
-    {
-      "id": "v24fbztsmhl25bwn",
-      "date": "2025-11-04",
-      "desc": "لله",
-      "type": "expense",
-      "amount": 100,
-      "account": "كاش",
-      "category": "أكل وشرب"
-    },
-    {
-      "id": "klv7xykpmhl4m1df",
-      "link": "70p04nsfmhl4m1df",
-      "isTransfer": true,
-      "date": "2025-11-04",
-      "desc": "تحويل إلى كاش",
-      "type": "expense",
-      "amount": 100,
-      "account": "إئتمان",
-      "category": "تحويل صادر"
-    },
-    {
-      "id": "98cu6x7imhl4m1df",
-      "link": "70p04nsfmhl4m1df",
-      "isTransfer": true,
-      "date": "2025-11-04",
-      "desc": "تحويل من إئتمان",
-      "type": "income",
-      "amount": 100,
-      "account": "كاش",
-      "category": "تحويل وارد"
-    },
-    {
-      "id": "29qv8rbnmhl4ntq7",
-      "date": "2025-11-04",
-      "desc": "ضبط رصيد",
-      "type": "expense",
-      "amount": 82,
-      "account": "إئتمان",
-      "category": "أكل وشرب"
-    },
-    {
-      "id": "19x0l5h1mhl52o6k",
-      "date": "2025-11-04",
-      "desc": "ضبط رصيد",
-      "type": "income",
-      "amount": 1006,
-      "account": "محفظة",
-      "category": "مرتب"
-    },
-    {
-      "id": "vej2n9qcmht1pfqr",
-      "date": "2025-11-03",
-      "desc": "احمد رفعت (تحصيل)",
-      "type": "income",
-      "amount": 1000,
-      "account": "حساب بنكي",
-      "category": "تحصيلات شهرية"
-    },
-    {
-      "id": "a9t896rfmht1pjum",
-      "date": "2025-11-03",
-      "desc": "سحر (تحصيل)",
-      "type": "income",
-      "amount": 1000,
-      "account": "كاش",
-      "category": "تحصيلات شهرية"
-    },
-    {
-      "id": "mo7ewxg1mht1pqvk",
-      "date": "2025-11-02",
-      "desc": "رشا (سداد التزام)",
-      "type": "expense",
-      "amount": 800,
-      "account": "كاش",
-      "category": "التزامات شهرية",
-      "linkCommitId": "20lhz81umhgyhdv7"
-    },
-    {
-      "id": "9ffbvr9kmht1q5hw",
-      "date": "2025-11-15",
-      "desc": "لله (سداد التزام)",
-      "type": "expense",
-      "amount": 300,
-      "account": "إئتمان",
-      "category": "التزامات شهرية",
-      "linkCommitId": "9f7hf8w3mgozrj5i"
-    },
-    {
-      "id": "e93kslppmht1vqpv",
-      "link": "t8mcojg5mht1vqpv",
-      "isTransfer": true,
-      "date": "2025-11-10",
-      "desc": "تحويل إلى كاش",
-      "type": "expense",
-      "amount": 600,
-      "account": "محفظة",
-      "category": "تحويل صادر"
-    },
-    {
-      "id": "cacw079kmht1vqpv",
-      "link": "t8mcojg5mht1vqpv",
-      "isTransfer": true,
-      "date": "2025-11-10",
-      "desc": "تحويل من محفظة",
-      "type": "income",
-      "amount": 600,
-      "account": "كاش",
-      "category": "تحويل وارد"
-    },
-    {
-      "id": "zuo88cphmht23gf4",
-      "link": "qr82a4ysmht23gf4",
-      "isTransfer": true,
-      "date": "2025-11-10",
-      "desc": "تحويل إلى إئتمان",
-      "type": "expense",
-      "amount": 390,
-      "account": "محفظة",
-      "category": "تحويل صادر"
-    },
-    {
-      "id": "q3movn5bmht23gf4",
-      "link": "qr82a4ysmht23gf4",
-      "isTransfer": true,
-      "date": "2025-11-10",
-      "desc": "تحويل من محفظة",
-      "type": "income",
-      "amount": 390,
-      "account": "إئتمان",
-      "category": "تحويل وارد"
-    },
-    {
-      "id": "zdrzgpk6mht247c7",
-      "date": "2025-11-15",
-      "desc": "اشتراك (سداد التزام)",
-      "type": "expense",
-      "amount": 60,
-      "account": "إئتمان",
-      "category": "التزامات شهرية",
-      "linkCommitId": "cs7lzxi9mgrtufxt"
-    },
-    {
-      "id": "gwwmp8vfmht25vjc",
-      "date": "2025-11-10",
-      "desc": "ظبط",
-      "type": "expense",
-      "amount": 68,
-      "account": "إئتمان",
-      "category": "أكل وشرب"
-    },
-    {
-      "id": "qk582niqmht2l2jf",
-      "date": "2025-11-10",
-      "desc": "ضبط رصيد تحت التحصيل",
-      "type": "expense",
-      "amount": 1000,
-      "account": "حساب بنكي",
-      "category": "أكل وشرب"
-    }
-  ],
   "accounts": [
     {
-      "name": "كاش",
-      "opening": 605
+      "name": "ÙØ§Ø´",
+      "opening": 605,
+      "initialBalance": 0,
+      "balance": 0
     },
     {
-      "name": "محفظة",
-      "opening": 328
+      "name": "ÙØ­ÙØ¸Ø©",
+      "opening": 328,
+      "initialBalance": 0,
+      "balance": 0
     },
     {
-      "name": "إئتمان",
-      "opening": -750
+      "name": "Ø¥Ø¦ØªÙØ§Ù",
+      "opening": -750,
+      "initialBalance": 0,
+      "balance": 0
     },
     {
-      "name": "حساب بنكي",
-      "opening": 0
+      "name": "Ø­Ø³Ø§Ø¨ Ø¨ÙÙÙ",
+      "opening": 0,
+      "initialBalance": 0,
+      "balance": 0
     }
   ],
   "categories": [
     {
-      "name": "مرتب",
+      "name": "ÙØ±ØªØ¨",
       "type": "income"
     },
     {
-      "name": "دخل آخر",
+      "name": "Ø¯Ø®Ù Ø¢Ø®Ø±",
       "type": "income"
     },
     {
-      "name": "أكل وشرب",
+      "name": "Ø£ÙÙ ÙØ´Ø±Ø¨",
       "type": "expense"
     },
     {
-      "name": "مواصلات",
+      "name": "ÙÙØ§ØµÙØ§Øª",
       "type": "expense"
     },
     {
-      "name": "فواتير",
+      "name": "ÙÙØ§ØªÙØ±",
       "type": "expense"
     },
     {
-      "name": "تسوق",
+      "name": "ØªØ³ÙÙ",
       "type": "expense"
     },
     {
-      "name": "التزامات شهرية",
+      "name": "Ø§ÙØªØ²Ø§ÙØ§Øª Ø´ÙØ±ÙØ©",
       "type": "expense"
     },
     {
-      "name": "تحصيلات شهرية",
+      "name": "ØªØ­ØµÙÙØ§Øª Ø´ÙØ±ÙØ©",
       "type": "income"
     },
     {
-      "name": "تحويل صادر",
+      "name": "ØªØ­ÙÙÙ ØµØ§Ø¯Ø±",
       "type": "expense"
     },
     {
-      "name": "تحويل وارد",
+      "name": "ØªØ­ÙÙÙ ÙØ§Ø±Ø¯",
       "type": "income"
     },
     {
-      "name": "عمولة تحويل",
+      "name": "Ø¹ÙÙÙØ© ØªØ­ÙÙÙ",
       "type": "expense"
     }
   ],
+  "transactions": [],
   "commitments": [
     {
       "id": "0w2lzxigmgozkaxi",
-      "name": "أوبر",
+      "name": "Ø£ÙØ¨Ø±",
       "amount": 1550,
       "firstDue": "2025-11-12",
       "nextDue": "2025-11-12",
@@ -631,7 +86,7 @@
     },
     {
       "id": "3m2hp895mgozlmi6",
-      "name": "تأمين",
+      "name": "ØªØ£ÙÙÙ",
       "amount": 420,
       "firstDue": "2025-10-20",
       "nextDue": "2025-11-20",
@@ -644,7 +99,7 @@
     },
     {
       "id": "b9xam41amgoznubi",
-      "name": "اشتراك",
+      "name": "Ø§Ø´ØªØ±Ø§Ù",
       "amount": 250,
       "firstDue": "2025-11-30",
       "nextDue": "2025-11-30",
@@ -654,7 +109,7 @@
     },
     {
       "id": "w6ivs7i5mgozqe72",
-      "name": "شحن",
+      "name": "Ø´Ø­Ù",
       "amount": 150,
       "firstDue": "2025-10-05",
       "nextDue": "2025-12-05",
@@ -667,7 +122,7 @@
     },
     {
       "id": "9f7hf8w3mgozrj5i",
-      "name": "لله",
+      "name": "ÙÙÙ",
       "amount": 300,
       "firstDue": "2025-11-15",
       "nextDue": "2025-12-15",
@@ -680,7 +135,7 @@
     },
     {
       "id": "87dzatk4mgozsoba",
-      "name": "نت",
+      "name": "ÙØª",
       "amount": 280,
       "firstDue": "2025-10-20",
       "nextDue": "2025-11-20",
@@ -693,7 +148,7 @@
     },
     {
       "id": "cs7lzxi9mgrtufxt",
-      "name": "اشتراك",
+      "name": "Ø§Ø´ØªØ±Ø§Ù",
       "amount": 60,
       "firstDue": "2025-10-15",
       "nextDue": "2025-12-15",
@@ -707,7 +162,7 @@
     },
     {
       "id": "ofpg6jkpmgruck82",
-      "name": "اشتراك",
+      "name": "Ø§Ø´ØªØ±Ø§Ù",
       "amount": 40,
       "firstDue": "2025-10-25",
       "nextDue": "2025-11-25",
@@ -720,7 +175,7 @@
     },
     {
       "id": "fo3n9xtamhgxgu0a",
-      "name": "سفر",
+      "name": "Ø³ÙØ±",
       "amount": 200,
       "firstDue": "2025-11-07",
       "nextDue": "2025-11-07",
@@ -730,7 +185,7 @@
     },
     {
       "id": "a1zcxcgomhgxhr9r",
-      "name": "نقطة عمرو",
+      "name": "ÙÙØ·Ø© Ø¹ÙØ±Ù",
       "amount": 500,
       "firstDue": "2025-11-07",
       "nextDue": "2025-11-07",
@@ -740,7 +195,7 @@
     },
     {
       "id": "g5erem3smht2yk5a",
-      "name": "جمعية احمد ماهر",
+      "name": "Ø¬ÙØ¹ÙØ© Ø§Ø­ÙØ¯ ÙØ§ÙØ±",
       "amount": 2000,
       "firstDue": "2025-12-01",
       "nextDue": "2025-12-01",
@@ -749,10 +204,564 @@
       "payments": {}
     }
   ],
+  "ledger": [
+    {
+      "id": "x9onmkuvmgrxxk1g",
+      "date": "2025-10-15",
+      "desc": "ÙØ´Ø§Ù",
+      "type": "expense",
+      "amount": 400,
+      "account": "ÙØ§Ø´",
+      "category": "Ø§ÙØªØ²Ø§ÙØ§Øª Ø´ÙØ±ÙØ©",
+      "linkCommitId": "5ezkl2c1mgqfzaxx"
+    },
+    {
+      "id": "pq0z88vemgs2ow84",
+      "date": "2025-10-15",
+      "desc": "ÙÙØ§ØµÙØ§Øª",
+      "type": "expense",
+      "amount": 70,
+      "account": "ÙØ§Ø´",
+      "category": "ÙÙØ§ØµÙØ§Øª"
+    },
+    {
+      "id": "nb3wtqh9mgsfkzw4",
+      "date": "2025-10-15",
+      "desc": "Ø³ÙØ±",
+      "type": "expense",
+      "amount": 30,
+      "account": "ÙØ§Ø´",
+      "category": "ÙÙØ§ØµÙØ§Øª"
+    },
+    {
+      "id": "qyczvnvzmgsfp82h",
+      "date": "2025-10-15",
+      "desc": "Ø§ÙÙÙØ«Ù (ØªØ­ØµÙÙ)",
+      "type": "income",
+      "amount": 1300,
+      "account": "ÙØ§Ø´",
+      "category": "ØªØ­ØµÙÙØ§Øª Ø´ÙØ±ÙØ©"
+    },
+    {
+      "id": "ofnl51ynmgslx5vp",
+      "date": "2025-10-15",
+      "desc": "Ø±Ø¬ÙØ¹ ÙÙ Ø§ÙØ¨ÙØ¯",
+      "type": "expense",
+      "amount": 145,
+      "account": "ÙØ§Ø´",
+      "category": "ÙÙØ§ØµÙØ§Øª"
+    },
+    {
+      "id": "0idc8hcqmgt56whb",
+      "date": "2025-10-15",
+      "desc": "ÙØ´Ø§Ù (Ø³Ø¯Ø§Ø¯ Ø§ÙØªØ²Ø§Ù)",
+      "type": "expense",
+      "amount": 1000,
+      "account": "ÙØ§Ø´",
+      "category": "Ø§ÙØªØ²Ø§ÙØ§Øª Ø´ÙØ±ÙØ©",
+      "linkCommitId": "5ezkl2c1mgqfzaxx"
+    },
+    {
+      "id": "8vven1qamgwuc5c0",
+      "date": "2025-10-15",
+      "desc": "Ø§Ø´ØªØ±Ø§Ù (Ø³Ø¯Ø§Ø¯ Ø§ÙØªØ²Ø§Ù)",
+      "type": "expense",
+      "amount": 60,
+      "account": "Ø¥Ø¦ØªÙØ§Ù",
+      "category": "Ø§ÙØªØ²Ø§ÙØ§Øª Ø´ÙØ±ÙØ©",
+      "linkCommitId": "cs7lzxi9mgrtufxt"
+    },
+    {
+      "id": "57ih8qqnmgwuekvj",
+      "date": "2025-10-18",
+      "desc": "ÙÙØªÙØ±",
+      "type": "expense",
+      "amount": 150,
+      "account": "ÙØ§Ø´",
+      "category": "Ø§ÙØªØ²Ø§ÙØ§Øª Ø´ÙØ±ÙØ©"
+    },
+    {
+      "id": "hqv3ia4bmh03e9aa",
+      "date": "2025-10-20",
+      "desc": "ÙØª (Ø³Ø¯Ø§Ø¯ Ø§ÙØªØ²Ø§Ù)",
+      "type": "expense",
+      "amount": 280,
+      "account": "ÙØ­ÙØ¸Ø©",
+      "category": "Ø§ÙØªØ²Ø§ÙØ§Øª Ø´ÙØ±ÙØ©",
+      "linkCommitId": "87dzatk4mgozsoba"
+    },
+    {
+      "id": "6f3dq8uhmh03lovk",
+      "date": "2025-10-21",
+      "desc": "ÙØ§Ø±Ù",
+      "type": "expense",
+      "amount": 48,
+      "account": "ÙØ­ÙØ¸Ø©",
+      "category": "Ø£ÙÙ ÙØ´Ø±Ø¨"
+    },
+    {
+      "id": "iznncdrqmh0435nl",
+      "date": "2025-10-21",
+      "desc": "ÙÙØ§ØµÙØ§Øª",
+      "type": "expense",
+      "amount": 40,
+      "account": "ÙØ§Ø´",
+      "category": "ÙÙØ§ØµÙØ§Øª"
+    },
+    {
+      "id": "oz5kymbnmh0o9i0j",
+      "date": "2025-10-21",
+      "desc": "ÙØµØ§Ø±ÙÙ ØªØ¬Ø§ÙØ² ÙØ´Ø­Ù ÙØ­ÙØ¸Ù",
+      "type": "expense",
+      "amount": 270,
+      "account": "Ø¥Ø¦ØªÙØ§Ù",
+      "category": "Ø£ÙÙ ÙØ´Ø±Ø¨"
+    },
+    {
+      "id": "a3sdd5ecmhdezoxi",
+      "date": "2025-11-01",
+      "desc": "ÙØµØ±ÙÙ (ØªØ­ØµÙÙ)",
+      "type": "income",
+      "amount": 2300,
+      "account": "Ø¥Ø¦ØªÙØ§Ù",
+      "category": "ØªØ­ØµÙÙØ§Øª Ø´ÙØ±ÙØ©"
+    },
+    {
+      "id": "38deimm5mhdf10lv",
+      "date": "2025-11-01",
+      "desc": "ÙÙÙ (ØªØ­ØµÙÙ)",
+      "type": "income",
+      "amount": 300,
+      "account": "Ø¥Ø¦ØªÙØ§Ù",
+      "category": "ØªØ­ØµÙÙØ§Øª Ø´ÙØ±ÙØ©"
+    },
+    {
+      "id": "w5c494w4mhdf16qf",
+      "date": "2025-11-01",
+      "desc": "ÙØ«ÙÙÙ (ØªØ­ØµÙÙ)",
+      "type": "income",
+      "amount": 450,
+      "account": "Ø¥Ø¦ØªÙØ§Ù",
+      "category": "ØªØ­ØµÙÙØ§Øª Ø´ÙØ±ÙØ©"
+    },
+    {
+      "id": "eb7dt3ocmhdf22o8",
+      "date": "2025-11-01",
+      "desc": "Ø´Ø­Ù Ù ÙØª Ù Ø§Ø±Ø¶Ù (ØªØ­ØµÙÙ)",
+      "type": "income",
+      "amount": 600,
+      "account": "Ø¥Ø¦ØªÙØ§Ù",
+      "category": "ØªØ­ØµÙÙØ§Øª Ø´ÙØ±ÙØ©"
+    },
+    {
+      "id": "gts0szsxmhdlyz4i",
+      "date": "2025-10-20",
+      "desc": "ØªØ£ÙÙÙ (Ø³Ø¯Ø§Ø¯ Ø§ÙØªØ²Ø§Ù)",
+      "type": "expense",
+      "amount": 420,
+      "account": "Ø¥Ø¦ØªÙØ§Ù",
+      "category": "Ø§ÙØªØ²Ø§ÙØ§Øª Ø´ÙØ±ÙØ©",
+      "linkCommitId": "3m2hp895mgozlmi6"
+    },
+    {
+      "id": "5ooh04xfmhdlz5wo",
+      "date": "2025-10-25",
+      "desc": "Ø§Ø´ØªØ±Ø§Ù (Ø³Ø¯Ø§Ø¯ Ø§ÙØªØ²Ø§Ù)",
+      "type": "expense",
+      "amount": 40,
+      "account": "Ø¥Ø¦ØªÙØ§Ù",
+      "category": "Ø§ÙØªØ²Ø§ÙØ§Øª Ø´ÙØ±ÙØ©",
+      "linkCommitId": "ofpg6jkpmgruck82"
+    },
+    {
+      "id": "kz74gyzbmhdm16mu",
+      "date": "2025-11-01",
+      "desc": "ÙØ±ØªØ¨ (ØªØ­ØµÙÙ)",
+      "type": "income",
+      "amount": 2000,
+      "account": "Ø¥Ø¦ØªÙØ§Ù",
+      "category": "ØªØ­ØµÙÙØ§Øª Ø´ÙØ±ÙØ©"
+    },
+    {
+      "id": "c0okmpb8mhf72tp7",
+      "date": "2025-11-01",
+      "desc": "Ø§Ø´ØªØ±Ø§Ù (Ø³Ø¯Ø§Ø¯ Ø§ÙØªØ²Ø§Ù)",
+      "type": "expense",
+      "amount": 250,
+      "account": "Ø¥Ø¦ØªÙØ§Ù",
+      "category": "Ø§ÙØªØ²Ø§ÙØ§Øª Ø´ÙØ±ÙØ©",
+      "linkCommitId": "b9xam41amgoznubi"
+    },
+    {
+      "id": "0vh40lgzmhgyb3rf",
+      "date": "2025-11-01",
+      "desc": "ÙØ§Ø´",
+      "type": "income",
+      "amount": 436,
+      "account": "Ø¥Ø¦ØªÙØ§Ù",
+      "category": "ÙØ±ØªØ¨"
+    },
+    {
+      "id": "c7p4qgqimhgycr5p",
+      "date": "2025-11-01",
+      "desc": "ÙØ§Ø´",
+      "type": "income",
+      "amount": 5254,
+      "account": "ÙØ­ÙØ¸Ø©",
+      "category": "ÙØ±ØªØ¨"
+    },
+    {
+      "id": "36sz9o3smhgyecze",
+      "date": "2025-11-01",
+      "desc": "ÙÙØ³ÙØ± Ù ÙÙØ·Ø© Ø¹ÙØ±Ù",
+      "type": "income",
+      "amount": 530,
+      "account": "ÙØ§Ø´",
+      "category": "ÙØ±ØªØ¨"
+    },
+    {
+      "id": "tv3nxfl3mhhnel6y",
+      "date": "2025-11-02",
+      "desc": "Ø¬ÙØ¹ÙØ© ÙØ±ÙÙ ÙÙ Ø³Ø§Ø±Ù (Ø³Ø¯Ø§Ø¯ Ø§ÙØªØ²Ø§Ù)",
+      "type": "expense",
+      "amount": 1000,
+      "account": "ÙØ­ÙØ¸Ø©",
+      "category": "Ø§ÙØªØ²Ø§ÙØ§Øª Ø´ÙØ±ÙØ©",
+      "linkCommitId": "t6iuem1kmhgyises"
+    },
+    {
+      "id": "mhc758e9mhhnhc27",
+      "date": "2025-11-02",
+      "desc": "ÙÙØ·Ø© Ø§ÙØ±Ù (Ø³Ø¯Ø§Ø¯ Ø§ÙØªØ²Ø§Ù)",
+      "type": "expense",
+      "amount": 300,
+      "account": "ÙØ­ÙØ¸Ø©",
+      "category": "Ø§ÙØªØ²Ø§ÙØ§Øª Ø´ÙØ±ÙØ©",
+      "linkCommitId": "con3mvigmhgykceh"
+    },
+    {
+      "id": "9mse7f5amhi8heat",
+      "date": "2025-11-02",
+      "desc": "Ø¬ÙØ¹ÙÙ",
+      "type": "expense",
+      "amount": 850,
+      "account": "Ø­Ø³Ø§Ø¨ Ø¨ÙÙÙ",
+      "category": "Ø£ÙÙ ÙØ´Ø±Ø¨",
+      "linkCommitId": "20lhz81umhgyhdv7"
+    },
+    {
+      "id": "8e89l80xmhi8yf1y",
+      "date": "2025-11-02",
+      "desc": "ÙÙØ·Ø© ÙØ§Ø±Ù Ù ÙØ´Ø§Ù Ù Ø¹ÙÙ",
+      "type": "income",
+      "amount": 2000,
+      "account": "Ø­Ø³Ø§Ø¨ Ø¨ÙÙÙ",
+      "category": "ØªØ­ÙÙÙ ÙØ§Ø±Ø¯"
+    },
+    {
+      "id": "hajpllidmhi8zq2l",
+      "date": "2025-11-02",
+      "desc": "Ø³Ø§Ø±Ù (Ø³Ø¯Ø§Ø¯ Ø§ÙØªØ²Ø§Ù)",
+      "type": "expense",
+      "amount": 1250,
+      "account": "ÙØ§Ø´",
+      "category": "Ø§ÙØªØ²Ø§ÙØ§Øª Ø´ÙØ±ÙØ©",
+      "linkCommitId": "5zyqab2emhgyj1rw"
+    },
+    {
+      "id": "ws0l70ndmhi9elb9",
+      "date": "2025-11-05",
+      "desc": "Ø´Ø­Ù (Ø³Ø¯Ø§Ø¯ Ø§ÙØªØ²Ø§Ù)",
+      "type": "expense",
+      "amount": 150,
+      "account": "ÙØ­ÙØ¸Ø©",
+      "category": "Ø§ÙØªØ²Ø§ÙØ§Øª Ø´ÙØ±ÙØ©",
+      "linkCommitId": "w6ivs7i5mgozqe72"
+    },
+    {
+      "id": "tphb4e8zmhj9o69f",
+      "date": "2025-11-02",
+      "desc": "ÙØ§Ø·ÙÙ (Ø³Ø¯Ø§Ø¯ Ø§ÙØªØ²Ø§Ù)",
+      "type": "expense",
+      "amount": 1000,
+      "account": "ÙØ§Ø´",
+      "category": "Ø§ÙØªØ²Ø§ÙØ§Øª Ø´ÙØ±ÙØ©",
+      "linkCommitId": "vmygftw0mhgyhqa2"
+    },
+    {
+      "id": "t5hghowmmhjcjacc",
+      "date": "2025-11-03",
+      "desc": "ÙØ§Ø·ÙÙ",
+      "type": "expense",
+      "amount": 3800,
+      "account": "ÙØ­ÙØ¸Ø©",
+      "category": "ØªØ­ÙÙÙ ØµØ§Ø¯Ø±"
+    },
+    {
+      "id": "cri3fp5vmhjcjkz8",
+      "date": "2025-11-03",
+      "desc": "ÙØ§Ø·ÙÙ",
+      "type": "expense",
+      "amount": 1200,
+      "account": "ÙØ§Ø´",
+      "category": "ØªØ­ÙÙÙ ØµØ§Ø¯Ø±"
+    },
+    {
+      "id": "duph1r6amhjcm8x0",
+      "link": "o3vinn0cmhjcm8x0",
+      "isTransfer": true,
+      "date": "2025-11-03",
+      "desc": "ØªØ­ÙÙÙ Ø¥ÙÙ ÙØ§Ø´",
+      "type": "expense",
+      "amount": 1150,
+      "account": "Ø­Ø³Ø§Ø¨ Ø¨ÙÙÙ",
+      "category": "ØªØ­ÙÙÙ ØµØ§Ø¯Ø±"
+    },
+    {
+      "id": "mrubgug4mhjcm8x0",
+      "link": "o3vinn0cmhjcm8x0",
+      "isTransfer": true,
+      "date": "2025-11-03",
+      "desc": "ØªØ­ÙÙÙ ÙÙ Ø­Ø³Ø§Ø¨ Ø¨ÙÙÙ",
+      "type": "income",
+      "amount": 1150,
+      "account": "ÙØ§Ø´",
+      "category": "ØªØ­ÙÙÙ ÙØ§Ø±Ø¯"
+    },
+    {
+      "id": "e8heszvfmhjd0q9v",
+      "date": "2025-11-03",
+      "desc": "ÙÙÙØ³ Ø³ÙÙ +Ø¨Ø§ÙÙ ÙÙÙØ³",
+      "type": "income",
+      "amount": 1800,
+      "account": "ÙØ§Ø´",
+      "category": "ÙØ±ØªØ¨"
+    },
+    {
+      "id": "lpszgwlwmhl1xeli",
+      "date": "2025-11-03",
+      "desc": "Ø³ÙÙ Ø¨Ø§Ø´Ø§ (Ø³Ø¯Ø§Ø¯ Ø§ÙØªØ²Ø§Ù)",
+      "type": "expense",
+      "amount": 1500,
+      "account": "Ø­Ø³Ø§Ø¨ Ø¨ÙÙÙ",
+      "category": "Ø§ÙØªØ²Ø§ÙØ§Øª Ø´ÙØ±ÙØ©",
+      "linkCommitId": "dptwtb3mmhjcxkhp"
+    },
+    {
+      "id": "2sodkugomhl1xwkp",
+      "link": "m0h84ba4mhl1xwkp",
+      "isTransfer": true,
+      "date": "2025-11-04",
+      "desc": "ØªØ­ÙÙÙ Ø¥ÙÙ Ø­Ø³Ø§Ø¨ Ø¨ÙÙÙ",
+      "type": "expense",
+      "amount": 1500,
+      "account": "Ø¥Ø¦ØªÙØ§Ù",
+      "category": "ØªØ­ÙÙÙ ØµØ§Ø¯Ø±"
+    },
+    {
+      "id": "f55bfpurmhl1xwkp",
+      "link": "m0h84ba4mhl1xwkp",
+      "isTransfer": true,
+      "date": "2025-11-04",
+      "desc": "ØªØ­ÙÙÙ ÙÙ Ø¥Ø¦ØªÙØ§Ù",
+      "type": "income",
+      "amount": 1500,
+      "account": "Ø­Ø³Ø§Ø¨ Ø¨ÙÙÙ",
+      "category": "ØªØ­ÙÙÙ ÙØ§Ø±Ø¯"
+    },
+    {
+      "id": "dj44fttjmhl21b6f",
+      "link": "0z440y6wmhl21b6f",
+      "isTransfer": true,
+      "date": "2025-11-04",
+      "desc": "ØªØ­ÙÙÙ Ø¥ÙÙ ÙØ§Ø´",
+      "type": "expense",
+      "amount": 350,
+      "account": "Ø¥Ø¦ØªÙØ§Ù",
+      "category": "ØªØ­ÙÙÙ ØµØ§Ø¯Ø±"
+    },
+    {
+      "id": "orr7o81pmhl21b6f",
+      "date": "2025-11-04",
+      "desc": "ØªØ­ÙÙÙ ÙÙ Ø¥Ø¦ØªÙØ§Ù",
+      "type": "income",
+      "amount": 150,
+      "account": "ÙØ§Ø´",
+      "category": "ØªØ­ÙÙÙ ÙØ§Ø±Ø¯"
+    },
+    {
+      "id": "uf4bdh4pmhl24j6y",
+      "date": "2025-11-04",
+      "desc": "Ø´Ø±Ø§Ø¡ Ø´ÙØ§Ø·",
+      "type": "expense",
+      "amount": 600,
+      "account": "Ø¥Ø¦ØªÙØ§Ù",
+      "category": "Ø£ÙÙ ÙØ´Ø±Ø¨"
+    },
+    {
+      "id": "v24fbztsmhl25bwn",
+      "date": "2025-11-04",
+      "desc": "ÙÙÙ",
+      "type": "expense",
+      "amount": 100,
+      "account": "ÙØ§Ø´",
+      "category": "Ø£ÙÙ ÙØ´Ø±Ø¨"
+    },
+    {
+      "id": "klv7xykpmhl4m1df",
+      "link": "70p04nsfmhl4m1df",
+      "isTransfer": true,
+      "date": "2025-11-04",
+      "desc": "ØªØ­ÙÙÙ Ø¥ÙÙ ÙØ§Ø´",
+      "type": "expense",
+      "amount": 100,
+      "account": "Ø¥Ø¦ØªÙØ§Ù",
+      "category": "ØªØ­ÙÙÙ ØµØ§Ø¯Ø±"
+    },
+    {
+      "id": "98cu6x7imhl4m1df",
+      "link": "70p04nsfmhl4m1df",
+      "isTransfer": true,
+      "date": "2025-11-04",
+      "desc": "ØªØ­ÙÙÙ ÙÙ Ø¥Ø¦ØªÙØ§Ù",
+      "type": "income",
+      "amount": 100,
+      "account": "ÙØ§Ø´",
+      "category": "ØªØ­ÙÙÙ ÙØ§Ø±Ø¯"
+    },
+    {
+      "id": "29qv8rbnmhl4ntq7",
+      "date": "2025-11-04",
+      "desc": "Ø¶Ø¨Ø· Ø±ØµÙØ¯",
+      "type": "expense",
+      "amount": 82,
+      "account": "Ø¥Ø¦ØªÙØ§Ù",
+      "category": "Ø£ÙÙ ÙØ´Ø±Ø¨"
+    },
+    {
+      "id": "19x0l5h1mhl52o6k",
+      "date": "2025-11-04",
+      "desc": "Ø¶Ø¨Ø· Ø±ØµÙØ¯",
+      "type": "income",
+      "amount": 1006,
+      "account": "ÙØ­ÙØ¸Ø©",
+      "category": "ÙØ±ØªØ¨"
+    },
+    {
+      "id": "vej2n9qcmht1pfqr",
+      "date": "2025-11-03",
+      "desc": "Ø§Ø­ÙØ¯ Ø±ÙØ¹Øª (ØªØ­ØµÙÙ)",
+      "type": "income",
+      "amount": 1000,
+      "account": "Ø­Ø³Ø§Ø¨ Ø¨ÙÙÙ",
+      "category": "ØªØ­ØµÙÙØ§Øª Ø´ÙØ±ÙØ©"
+    },
+    {
+      "id": "a9t896rfmht1pjum",
+      "date": "2025-11-03",
+      "desc": "Ø³Ø­Ø± (ØªØ­ØµÙÙ)",
+      "type": "income",
+      "amount": 1000,
+      "account": "ÙØ§Ø´",
+      "category": "ØªØ­ØµÙÙØ§Øª Ø´ÙØ±ÙØ©"
+    },
+    {
+      "id": "mo7ewxg1mht1pqvk",
+      "date": "2025-11-02",
+      "desc": "Ø±Ø´Ø§ (Ø³Ø¯Ø§Ø¯ Ø§ÙØªØ²Ø§Ù)",
+      "type": "expense",
+      "amount": 800,
+      "account": "ÙØ§Ø´",
+      "category": "Ø§ÙØªØ²Ø§ÙØ§Øª Ø´ÙØ±ÙØ©",
+      "linkCommitId": "20lhz81umhgyhdv7"
+    },
+    {
+      "id": "9ffbvr9kmht1q5hw",
+      "date": "2025-11-15",
+      "desc": "ÙÙÙ (Ø³Ø¯Ø§Ø¯ Ø§ÙØªØ²Ø§Ù)",
+      "type": "expense",
+      "amount": 300,
+      "account": "Ø¥Ø¦ØªÙØ§Ù",
+      "category": "Ø§ÙØªØ²Ø§ÙØ§Øª Ø´ÙØ±ÙØ©",
+      "linkCommitId": "9f7hf8w3mgozrj5i"
+    },
+    {
+      "id": "e93kslppmht1vqpv",
+      "link": "t8mcojg5mht1vqpv",
+      "isTransfer": true,
+      "date": "2025-11-10",
+      "desc": "ØªØ­ÙÙÙ Ø¥ÙÙ ÙØ§Ø´",
+      "type": "expense",
+      "amount": 600,
+      "account": "ÙØ­ÙØ¸Ø©",
+      "category": "ØªØ­ÙÙÙ ØµØ§Ø¯Ø±"
+    },
+    {
+      "id": "cacw079kmht1vqpv",
+      "link": "t8mcojg5mht1vqpv",
+      "isTransfer": true,
+      "date": "2025-11-10",
+      "desc": "ØªØ­ÙÙÙ ÙÙ ÙØ­ÙØ¸Ø©",
+      "type": "income",
+      "amount": 600,
+      "account": "ÙØ§Ø´",
+      "category": "ØªØ­ÙÙÙ ÙØ§Ø±Ø¯"
+    },
+    {
+      "id": "zuo88cphmht23gf4",
+      "link": "qr82a4ysmht23gf4",
+      "isTransfer": true,
+      "date": "2025-11-10",
+      "desc": "ØªØ­ÙÙÙ Ø¥ÙÙ Ø¥Ø¦ØªÙØ§Ù",
+      "type": "expense",
+      "amount": 390,
+      "account": "ÙØ­ÙØ¸Ø©",
+      "category": "ØªØ­ÙÙÙ ØµØ§Ø¯Ø±"
+    },
+    {
+      "id": "q3movn5bmht23gf4",
+      "link": "qr82a4ysmht23gf4",
+      "isTransfer": true,
+      "date": "2025-11-10",
+      "desc": "ØªØ­ÙÙÙ ÙÙ ÙØ­ÙØ¸Ø©",
+      "type": "income",
+      "amount": 390,
+      "account": "Ø¥Ø¦ØªÙØ§Ù",
+      "category": "ØªØ­ÙÙÙ ÙØ§Ø±Ø¯"
+    },
+    {
+      "id": "zdrzgpk6mht247c7",
+      "date": "2025-11-15",
+      "desc": "Ø§Ø´ØªØ±Ø§Ù (Ø³Ø¯Ø§Ø¯ Ø§ÙØªØ²Ø§Ù)",
+      "type": "expense",
+      "amount": 60,
+      "account": "Ø¥Ø¦ØªÙØ§Ù",
+      "category": "Ø§ÙØªØ²Ø§ÙØ§Øª Ø´ÙØ±ÙØ©",
+      "linkCommitId": "cs7lzxi9mgrtufxt"
+    },
+    {
+      "id": "gwwmp8vfmht25vjc",
+      "date": "2025-11-10",
+      "desc": "Ø¸Ø¨Ø·",
+      "type": "expense",
+      "amount": 68,
+      "account": "Ø¥Ø¦ØªÙØ§Ù",
+      "category": "Ø£ÙÙ ÙØ´Ø±Ø¨"
+    },
+    {
+      "id": "qk582niqmht2l2jf",
+      "date": "2025-11-10",
+      "desc": "Ø¶Ø¨Ø· Ø±ØµÙØ¯ ØªØ­Øª Ø§ÙØªØ­ØµÙÙ",
+      "type": "expense",
+      "amount": 1000,
+      "account": "Ø­Ø³Ø§Ø¨ Ø¨ÙÙÙ",
+      "category": "Ø£ÙÙ ÙØ´Ø±Ø¨"
+    }
+  ],
   "collections": [
     {
       "id": "9nbs6tpcmh0543oj",
-      "name": "شحن و نت و ارضى",
+      "name": "Ø´Ø­Ù Ù ÙØª Ù Ø§Ø±Ø¶Ù",
       "amount": 600,
       "firstDue": "2025-11-01",
       "nextDue": "2025-12-01",
@@ -761,7 +770,7 @@
     },
     {
       "id": "m4ep7fw4mh055kue",
-      "name": "وثيقه",
+      "name": "ÙØ«ÙÙÙ",
       "amount": 450,
       "firstDue": "2025-11-01",
       "nextDue": "2025-12-01",
@@ -770,7 +779,7 @@
     },
     {
       "id": "7svurhxhmh056uxp",
-      "name": "لله",
+      "name": "ÙÙÙ",
       "amount": 300,
       "firstDue": "2025-11-01",
       "nextDue": "2025-12-01",
@@ -779,7 +788,7 @@
     },
     {
       "id": "vkm7henamh057odj",
-      "name": "مصروف",
+      "name": "ÙØµØ±ÙÙ",
       "amount": 2300,
       "firstDue": "2025-11-01",
       "nextDue": "2025-12-01",
@@ -788,7 +797,7 @@
     },
     {
       "id": "dfy87ditmhdm0xhe",
-      "name": "مرتب",
+      "name": "ÙØ±ØªØ¨",
       "amount": 2000,
       "firstDue": "2025-12-01",
       "nextDue": "2025-12-01",
@@ -797,7 +806,7 @@
     },
     {
       "id": "1s13vpfamhjcnqey",
-      "name": "حسام",
+      "name": "Ø­Ø³Ø§Ù",
       "amount": 1000,
       "firstDue": "2025-11-15",
       "nextDue": "2025-11-15",
