@@ -184,6 +184,31 @@ canvas{background:#0b162a;border:1px solid var(--border);border-radius:var(--rad
 /* pager */
 .pager{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:10px}
 .pager .info{color:var(--muted);font-size:13px}
+
+/* New for Screens/Navigation */
+.screen{display:none;margin-top:12px}
+.screen.active{display:block}
+.nav-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;justify-content:center;background:var(--card);padding:8px;border-radius:var(--radius);border:1px solid var(--border)}
+.nav-tabs button{
+  flex:1 1 auto; /* Allow items to grow/shrink, suitable for full width on mobile */
+  min-width:100px;
+  background:transparent;
+  border:1px solid var(--border);
+  color:var(--muted);
+  font-weight:700;
+  cursor:pointer;
+  transition:all .15s ease;
+  height:38px;
+  padding:0 12px;
+  border-radius:8px;
+}
+.nav-tabs button.active{
+  background:linear-gradient(135deg,#0ea5e9,#0369a1);
+  color:#fff;
+  border-color:rgba(14,165,233,.35);
+  box-shadow:0 4px 12px rgba(14,165,233,.2);
+}
+@media(max-width:720px){.nav-tabs button{flex:1 1 45%;}}
 </style>
 </head>
 <body>
@@ -201,7 +226,21 @@ canvas{background:#0b162a;border:1px solid var(--border);border-radius:var(--rad
     </div>
   </header>
 
-  <section class="card" id="card-balance" data-lock="true" style="margin-top:12px">
+  <nav class="nav-tabs">
+      <button data-screen="card-balance">ملخص الحسابات</button>
+      <button data-screen="card-dueSoon">استحقاقات قريبة</button>
+      <button data-screen="card-addtx">إضافة حركة</button>
+      <button data-screen="card-txs">الحركات</button>
+      <button data-screen="card-commit">الالتزامات</button>
+      <button data-screen="card-collect">التحصيل</button>
+      <button data-screen="card-reports">التقارير</button>
+      <button data-screen="card-transfer">تحويل</button>
+      <button data-screen="card-accounts">إدارة الحسابات</button>
+      <button data-screen="card-cats">إدارة الفئات</button>
+      <button data-screen="card-github">مزامنة GitHub</button>
+  </nav>
+
+  <section class="card screen" id="card-balance" data-lock="true">
     <div class="card-head"><h3>ملخص الحسابات</h3></div>
     <div class="card-body">
       <div class="stats">
@@ -222,7 +261,7 @@ canvas{background:#0b162a;border:1px solid var(--border);border-radius:var(--rad
     </div>
   </section>
 
-  <section class="card" id="card-dueSoon" style="margin-top:12px">
+  <section class="card screen" id="card-dueSoon">
     <div class="card-head">
       <h3>استحقاقات قريبة</h3>
       <div class="badge-group">
@@ -242,38 +281,32 @@ canvas{background:#0b162a;border:1px solid var(--border);border-radius:var(--rad
     </div>
   </section>
 
-  <div class="hr"></div>
-
-  <div class="grid grid-2">
-    <section class="card collapsed" id="card-accounts" data-collapsible>
-      <div class="card-head"><h3>إدارة الحسابات</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
-      <div class="card-body">
-        <div class="grid grid-3">
-          <div><label>اسم الحساب</label><input id="newAccountName" placeholder="مثال: كاش/محفظة" /></div>
-          <div><label>رصيد افتتاحي</label><input id="newAccountOpening" type="number" step="0.01" placeholder="0.00" /></div>
-          <div><label>&nbsp;</label><button id="addAccount" class="btn btn-outline" style="width:100%">إضافة حساب</button></div>
-        </div>
-        <div id="accountsList" class="toolbar" style="margin-top:8px;flex-wrap:wrap"></div>
+  <section class="card screen" id="card-accounts">
+    <div class="card-head"><h3>إدارة الحسابات</h3></div>
+    <div class="card-body">
+      <div class="grid grid-3">
+        <div><label>اسم الحساب</label><input id="newAccountName" placeholder="مثال: كاش/محفظة" /></div>
+        <div><label>رصيد افتتاحي</label><input id="newAccountOpening" type="number" step="0.01" placeholder="0.00" /></div>
+        <div><label>&nbsp;</label><button id="addAccount" class="btn btn-outline" style="width:100%">إضافة حساب</button></div>
       </div>
-    </section>
+      <div id="accountsList" class="toolbar" style="margin-top:8px;flex-wrap:wrap"></div>
+    </div>
+  </section>
 
-    <section class="card collapsed" id="card-cats" data-collapsible>
-      <div class="card-head"><h3>إدارة الفئات</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
-      <div class="card-body">
-        <div class="grid grid-3">
-          <div><label>اسم الفئة</label><input id="newCatName" placeholder="مثال: أكل" /></div>
-          <div><label>النوع</label><select id="newCatType"><option value="expense" selected>مصروف</option><option value="income">دخل</option></select></div>
-          <div><label>&nbsp;</label><button id="addCategory" class="btn btn-outline" style="width:100%">إضافة فئة</button></div>
-        </div>
-        <div id="catsList" class="toolbar" style="margin-top:8px;flex-wrap:wrap"></div>
+  <section class="card screen" id="card-cats">
+    <div class="card-head"><h3>إدارة الفئات</h3></div>
+    <div class="card-body">
+      <div class="grid grid-3">
+        <div><label>اسم الفئة</label><input id="newCatName" placeholder="مثال: أكل" /></div>
+        <div><label>النوع</label><select id="newCatType"><option value="expense" selected>مصروف</option><option value="income">دخل</option></select></div>
+        <div><label>&nbsp;</label><button id="addCategory" class="btn btn-outline" style="width:100%">إضافة فئة</button></div>
       </div>
-    </section>
-  </div>
+      <div id="catsList" class="toolbar" style="margin-top:8px;flex-wrap:wrap"></div>
+    </div>
+  </section>
 
-  <div class="hr"></div>
-
-  <section class="card collapsed" id="card-transfer" data-collapsible>
-    <div class="card-head"><h3>تحويل بين الحسابات</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
+  <section class="card screen" id="card-transfer">
+    <div class="card-head"><h3>تحويل بين الحسابات</h3></div>
     <div class="card-body">
       <div class="transfer-grid">
         <div><label>من حساب</label><select id="trFrom"></select></div>
@@ -291,10 +324,8 @@ canvas{background:#0b162a;border:1px solid var(--border);border-radius:var(--rad
     </div>
   </section>
 
-  <div class="hr"></div>
-
-  <section class="card collapsed" id="card-addtx" data-collapsible>
-    <div class="card-head"><h3>إضافة حركة</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
+  <section class="card screen" id="card-addtx">
+    <div class="card-head"><h3>إضافة حركة</h3></div>
     <div class="card-body">
       <div class="grid grid-3">
         <div><label>النوع</label><select id="type"><option value="income">دخل</option><option value="expense" selected>مصروف</option></select></div>
@@ -312,10 +343,8 @@ canvas{background:#0b162a;border:1px solid var(--border);border-radius:var(--rad
     </div>
   </section>
 
-  <div class="hr"></div>
-
-  <section class="card collapsed" id="card-txs" data-collapsible>
-    <div class="card-head"><h3>الحركات</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
+  <section class="card screen" id="card-txs">
+    <div class="card-head"><h3>الحركات</h3></div>
     <div class="card-body">
       <div class="toolbar" style="margin-bottom:8px">
         <input id="search" placeholder="بحث بالوصف" style="max-width:220px"/>
@@ -342,10 +371,8 @@ canvas{background:#0b162a;border:1px solid var(--border);border-radius:var(--rad
     </div>
   </section>
 
-  <div class="hr"></div>
-
-  <section class="card collapsed" id="card-commit" data-collapsible>
-    <div class="card-head"><h3>الالتزامات الشهرية</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
+  <section class="card screen" id="card-commit">
+    <div class="card-head"><h3>الالتزامات الشهرية</h3></div>
     <div class="card-body">
       <div class="grid grid-4">
         <div><label>اسم الالتزام</label><input id="cName" placeholder="مثال: إيجار، إنترنت" /></div>
@@ -369,10 +396,8 @@ canvas{background:#0b162a;border:1px solid var(--border);border-radius:var(--rad
     </div>
   </section>
 
-  <div class="hr"></div>
-
-  <section class="card collapsed" id="card-collect" data-collapsible>
-    <div class="card-head"><h3>مبالغ تحت التحصيل</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
+  <section class="card screen" id="card-collect">
+    <div class="card-head"><h3>مبالغ تحت التحصيل</h3></div>
     <div class="card-body">
       <div class="grid grid-4">
         <div><label>اسم التحصيل</label><input id="coName" placeholder="مثال: إيجار مستلم، مبيعات آجل" /></div>
@@ -394,10 +419,8 @@ canvas{background:#0b162a;border:1px solid var(--border);border-radius:var(--rad
     </div>
   </section>
 
-  <div class="hr"></div>
-
-  <section class="card collapsed" id="card-reports" data-collapsible>
-    <div class="card-head"><h3>تقارير شهرية و رسوم بيانية</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
+  <section class="card screen" id="card-reports">
+    <div class="card-head"><h3>تقارير شهرية و رسوم بيانية</h3></div>
     <div class="card-body">
       <div class="toolbar" style="margin-bottom:8px">
         <input id="monthPicker" type="month" />
@@ -441,8 +464,8 @@ canvas{background:#0b162a;border:1px solid var(--border);border-radius:var(--rad
     </div>
   </section>
 
-  <section class="card collapsed" id="card-github" data-collapsible>
-    <div class="card-head"><h3>إعدادات مزامنة GitHub</h3><button class="toggle" aria-expanded="false" title="عرض/إخفاء">▸</button></div>
+  <section class="card screen" id="card-github">
+    <div class="card-head"><h3>إعدادات مزامنة GitHub</h3></div>
     <div class="card-body">
       <div class="grid grid-4">
         <div><label>اسم المستخدم</label><input id="ghUser" placeholder="مثال: username" /></div>
@@ -564,107 +587,149 @@ const YM=()=>new Date().toISOString().slice(0,7);
 const parseLocalDate=d=>d?new Date(d+'T00:00:00'):new Date(NaN);
 const formatLocalDate=d=>d.toISOString().slice(0,10);
 const startOfToday=()=>parseLocalDate(formatLocalDate(new Date()));
-const daysBetween=(d1,d2)=>Math.round((d2-d1)/(1000*60*60*24));
-const monthLabel=ym=>{
-  if(!ym||ym.length!==7) return '—';
-  const [y,m]=ym.split('-').map(Number);
-  const d=new Date(y,m-1,1);
-  return d.toLocaleString('ar-EG',{year:'numeric',month:'long'});
+const daysBetween=(d1,d2)=>Math.round((d2.getTime()-d1.getTime())/(1000*60*60*24));
+const monthLabel=ym=>{const [y,m]=ym.split('-'); return new Date(y,m-1).toLocaleString('ar-EG',{year:'numeric',month:'long'})};
+const addMonthsToYm=(ym,m)=>{const [y,month]=ym.split('-').map(Number); const d=new Date(y,month-1+m); return d.toISOString().slice(0,7)};
+const addMonthsPreserveDOM=(date,m)=>{const d=new Date(date.getTime()); d.setMonth(d.getMonth()+m); return d};
+const chooseAccount=()=>{
+  if(!accounts.length) return alert('يجب إضافة حساب أولاً');
+  if(accounts.length===1) return accounts[0].name;
+  const accName=prompt('ادخل اسم الحساب الذي تريد السحب منه:', accounts[0].name);
+  if(!accName || !accounts.some(a=>a.name===accName)) return null;
+  return accName;
+};
+const chooseCategory=type=>{
+  const cats=categories.filter(c=>c.type===type);
+  if(!cats.length) return alert('يجب إضافة فئة لهذا النوع أولاً');
+  if(cats.length===1) return cats[0].name;
+  const catName=prompt('ادخل اسم الفئة:', cats[0].name);
+  if(!catName || !cats.some(c=>c.name===catName)) return null;
+  return catName;
 }
 
-function addMonthsPreserveDOM(date, months){
-  const d=date.getDate();
-  date.setMonth(date.getMonth()+months);
-  if(date.getDate() !== d) date.setDate(0); // If month changed due to short month, go to last day of previous month
-  return date;
-}
-function addMonthsToYm(ym, months){
-  const [y,m]=ym.split('-').map(Number);
-  const d=new Date(y,m-1,1);
-  d.setMonth(d.getMonth()+months);
-  return d.toISOString().slice(0,7);
+/* New: Screen Navigation */
+function showScreen(screenId){
+  document.querySelectorAll('.screen').forEach(el=>{
+    el.classList.remove('active');
+  });
+  const activeScreen = document.getElementById(screenId);
+  if(activeScreen) activeScreen.classList.add('active');
+
+  document.querySelectorAll('.nav-tabs button').forEach(btn=>{
+    if(btn.dataset.screen === screenId){
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+  window.scrollTo({top:0,behavior:'smooth'}); // scroll to top on screen switch
 }
 
-/* التخزين */
-function saveLedger(){localStorage.setItem(KEY,JSON.stringify(ledger)); render(); ghCfg.auto && ghPush(); }
-function saveAccounts(){localStorage.setItem(ACC_KEY,JSON.stringify(accounts));}
-function saveCategories(){localStorage.setItem(CAT_KEY,JSON.stringify(categories));}
-function saveCommitments(){localStorage.setItem(COM_KEY,JSON.stringify(commitments));}
-function saveCollections(){localStorage.setItem(COL_KEY,JSON.stringify(collections));}
-function saveGhCfg(){localStorage.setItem(GH_KEY,JSON.stringify(ghCfg));}
+document.querySelectorAll('.nav-tabs button').forEach(button=>{
+  button.addEventListener('click', e => {
+    showScreen(e.target.dataset.screen);
+  });
+});
+/* End New: Screen Navigation */
 
-/* ===== إدارة الحسابات ===== */
-function buildAccountOptions(excludeName=null){
-  return accounts.filter(a=>a.name!==excludeName).map(a=>`<option value="${escapeHtml(a.name)}">${escapeHtml(a.name)}</option>`).join('');
-}
-function refreshAccountSelects(){
-  if(els.account) els.account.innerHTML = buildAccountOptions();
-  if(els.fAccount) els.fAccount.innerHTML = `<option value="all" selected>الكل</option>` + buildAccountOptions();
-  if(els.trFrom) els.trFrom.innerHTML = buildAccountOptions(els.trTo?.value);
-  if(els.trTo) els.trTo.innerHTML = buildAccountOptions(els.trFrom?.value);
-  drawAccountsBadges();
-}
-function drawAccountsBadges(){
+/* ===== حفظ البيانات ===== */
+const saveLedger=()=>localStorage.setItem(KEY,JSON.stringify(ledger));
+const saveAccounts=()=>localStorage.setItem(ACC_KEY,JSON.stringify(accounts));
+const saveCategories=()=>localStorage.setItem(CAT_KEY,JSON.stringify(categories));
+const saveCommitments=()=>localStorage.setItem(COM_KEY,JSON.stringify(commitments));
+const saveCollections=()=>localStorage.setItem(COL_KEY,JSON.stringify(collections));
+const saveGhCfg=()=>{
+  localStorage.setItem(GH_KEY,JSON.stringify(ghCfg));
+  ghStatus();
+};
+
+/* ===== الحسابات ===== */
+function drawAccounts(){
   if(!els.accountsList) return;
-  els.accountsList.innerHTML = accounts.map((a,i)=>`<span class="badge">${escapeHtml(a.name)} (${fmt(a.opening)}) <button class="btn btn-muted" style="margin-inline-start:6px" onclick="renameAccount(${i})">تعديل</button> <button class="btn btn-muted" onclick="removeAccount(${i})">حذف</button></span>`).join('');
+  els.accountsList.innerHTML = accounts.map((a,i)=>
+    `<div class="badge-group" style="margin-top:4px">
+      <span class="badge">${escapeHtml(a.name)}: ${fmt(a.opening)} ج.م</span>
+      <button class="btn btn-outline" onclick="editAccount(${i})">تعديل</button>
+      <button class="btn btn-danger" onclick="removeAccount(${i})">حذف</button>
+    </div>`
+  ).join('');
+  refreshAccountSelects();
+  drawPerAccount(computeBalances().bal); // لتحديث شاشة ملخص الحسابات
 }
-window.renameAccount=i=>{
-  const cur=accounts[i]; if(!cur) return;
-  const name=prompt('اسم الحساب', cur.name); if(!name) return;
-  const opening=prompt('الرصيد الافتتاحي', cur.opening);
-  if(opening!==null){
-    const num=parseFloat(opening);
-    if(Number.isNaN(num)) return alert('قيمة غير صحيحة');
-    cur.opening=num;
-  }
-  const oldName=cur.name;
-  cur.name=name.trim();
-
-  ledger.filter(t=>t.account===oldName).forEach(t=>t.account=cur.name);
-
-  saveAccounts(); saveLedger(); refreshAccountSelects(); render();
+window.editAccount=i=>{
+  const a=accounts[i];
+  const newName=prompt('ادخل الاسم الجديد:',a.name);
+  if(!newName || newName.trim()===a.name) return;
+  if(accounts.some(x=>x.name===newName.trim())) return alert('هذا الاسم مستخدم مسبقاً');
+  const oldName=a.name;
+  a.name=newName.trim();
+  ledger.filter(t=>t.account===oldName).forEach(t=>t.account=a.name);
+  saveAccounts(); saveLedger();
+  drawAccounts(); render();
 };
 window.removeAccount=i=>{
   const name=accounts[i].name;
   if(!confirm(`هل تريد حذف حساب ${name}؟ سيتم حذف جميع الحركات المرتبطة به.`)) return;
   accounts.splice(i,1);
   ledger=ledger.filter(t=>t.account!==name);
-  saveAccounts(); saveLedger(); refreshAccountSelects(); render();
+  saveAccounts(); saveLedger();
+  drawAccounts(); render();
 };
 document.getElementById('addAccount')?.addEventListener('click',()=>{
   const name=els.newAccountName.value.trim();
   const opening=parseFloat(els.newAccountOpening.value||'0');
   if(!name){ alert('ادخل اسم الحساب'); return; }
-  accounts.push({name, opening:Number.isFinite(opening)?opening:0});
-  els.newAccountName.value='';
-  els.newAccountOpening.value='';
-  saveAccounts(); render();
+  if(accounts.some(a=>a.name===name)){ alert('هذا الاسم موجود مسبقاً'); return; }
+  accounts.push({name,opening});
+  els.newAccountName.value=''; els.newAccountOpening.value='';
+  saveAccounts();
+  drawAccounts(); render();
 });
+function refreshAccountSelects(excludeName=null){
+  const opts=accounts.filter(a=>a.name!==excludeName).map(a=>`<option value="${escapeHtml(a.name)}">${escapeHtml(a.name)}</option>`).join('');
+  if(els.account) els.account.innerHTML=opts;
+  if(els.fAccount) els.fAccount.innerHTML=`<option value="all">كل الحسابات</option>`+opts;
+  if(els.trFrom) els.trFrom.innerHTML=opts;
+  if(els.trTo) els.trTo.innerHTML=opts;
 
-/* ===== إدارة الفئات ===== */
-function drawCatsBadges(){
-  if(!els.catsList) return;
-  els.catsList.innerHTML = categories.map((c,i)=>`<span class="badge">${escapeHtml(c.name)} · ${c.type==='income'?'دخل':'مصروف'} <button class="btn btn-muted" style="margin-inline-start:6px" onclick="renameCat(${i})">تعديل</button> <button class="btn btn-muted" onclick="removeCat(${i})">حذف</button></span>`).join('');
+  if(els.trFrom && els.trTo){
+    // لضمان عدم التحويل إلى نفس الحساب
+    syncTransferSelects('from');
+  }
 }
-window.renameCat=i=>{
-  const cur=categories[i]; if(!cur) return;
-  const name=prompt('اسم الفئة', cur.name); if(!name) return;
-  const type=prompt('النوع (income/expense)', cur.type);
+
+/* ===== الفئات ===== */
+function drawCategories(){
+  if(!els.catsList) return;
+  els.catsList.innerHTML = categories.map((c,i)=>
+    `<div class="badge-group" style="margin-top:4px">
+      <span class="badge" title="${c.type==='income'?'دخل':'مصروف'}">${escapeHtml(c.name)} (${c.type==='income'?'د':'م'})</span>
+      <button class="btn btn-outline" onclick="editCat(${i})">تعديل</button>
+      <button class="btn btn-danger" onclick="removeCat(${i})">حذف</button>
+    </div>`
+  ).join('');
+  refreshCategorySelect();
+}
+window.editCat=i=>{
+  const cur=categories[i];
+  const name=prompt('ادخل الاسم الجديد:',cur.name);
+  if(!name || name.trim()===cur.name) return;
+  const type=prompt('ادخل النوع (income/expense)', cur.type);
   if(type!=='income'&&type!=='expense') return alert('نوع غير صحيح');
   const oldName=cur.name;
   cur.name=name.trim();
   cur.type=type;
-
   ledger.filter(t=>t.category===oldName).forEach(t=>t.category=cur.name);
-
-  saveCategories(); refreshCategorySelect(); render();
+  saveCategories();
+  refreshCategorySelect(); render();
 };
 window.removeCat=i=>{
   const name=categories[i].name;
   if(!confirm(`هل تريد حذف فئة ${name}؟ لن يتم حذف الحركات المرتبطة بها لكن ستصبح 'غير مصنفة'.`)) return;
   categories.splice(i,1);
   ledger.filter(t=>t.category===name).forEach(t=>t.category=null);
-  saveCategories(); refreshCategorySelect(); render();
+  saveCategories();
+  refreshCategorySelect(); render();
 };
 document.getElementById('addCategory')?.addEventListener('click',()=>{
   const name=els.newCatName.value.trim();
@@ -672,7 +737,8 @@ document.getElementById('addCategory')?.addEventListener('click',()=>{
   if(!name){ alert('ادخل اسم الفئة'); return; }
   categories.push({name,type});
   els.newCatName.value='';
-  saveCategories(); refreshCategorySelect(); render();
+  saveCategories();
+  refreshCategorySelect(); render();
 });
 
 /* ===== تصدير/استيراد ===== */
@@ -685,7 +751,8 @@ document.getElementById('exportJson')?.addEventListener('click',()=>{
 });
 document.getElementById('exportCsv')?.addEventListener('click',()=>{
   const header=['id','date','desc','type','amount','account','category'];
-  const rows=[...ledger].sort((a,b)=> a.date.localeCompare(b.date) || (a.id>b.id?1:-1))
+  const rows=[...ledger].sort((a,b)=>
+    a.date.localeCompare(b.date) || (a.id>b.id?1:-1))
     .map(t=>[t.id,t.date,escCsv(t.desc||''),t.type,t.amount,t.account,t.category]);
   const csv=[header.join(','), ...rows.map(r=>r.join(','))].join('\n');
   download('transactions.csv', csv);
@@ -713,28 +780,109 @@ document.getElementById('importFile')?.addEventListener('change', async (e)=>{
     if(Array.isArray(data.categories)) categories=data.categories;
     if(Array.isArray(data.commitments)) commitments=data.commitments;
     if(Array.isArray(data.collections)) collections=data.collections;
-    
+
     // توحيد الحسابات والفئات الأساسية
     ensureBaseCategories();
     commitments=commitments.map(c=>migrateCommit(c));
     collections=collections.map(c=>migrateCollect(c));
-
     saveLedger(); saveAccounts(); saveCategories(); saveCommitments(); saveCollections();
-    refreshAccountSelects(); refreshCategorySelect(); drawCatsBadges();
-    drawCommitments(); drawCollections(); drawDueSoon(); render();
+    txPage = 1; // العودة للصفحة الأولى بعد الاستيراد
+    render();
     alert('تم الاستيراد بنجاح');
-  } catch(err){
-    alert('خطأ في استيراد الملف: قد يكون التنسيق غير صحيح.');
-    console.error(err);
   }
+  catch(err){ alert('فشل في استيراد الملف: '+err.message); }
+  e.target.value=null; // لإتاحة استيراد نفس الملف مرة أخرى
 });
 
-/* ===== الحركات/القيود (Ledger) ===== */
-let txPage=1, editId=null;
-const TXS_PER_PAGE=15;
+/* ===== الحركات (Ledger) ===== */
+let txPage=1;
+const TXS_PER_PAGE=10;
+let filteredTxs=[];
 
-els.type?.addEventListener('change', refreshCategorySelect);
-els.type?.addEventListener('change', refreshLinkCommitOptions);
+function renderTxTable(){
+  if(!els.tbody) return;
+  filteredTxs=applyFilters(ledger);
+
+  const start=(txPage-1)*TXS_PER_PAGE;
+  const end=start+TXS_PER_PAGE;
+  const pageTxs=filteredTxs.slice(start,end);
+
+  const {after}=computeBalances();
+
+  els.tbody.innerHTML=pageTxs.map(t=>{
+    const amountCls=t.type==='expense'?'exp':'inc';
+    const amountSign=t.type==='expense'?'-':'';
+    const balanceAfter=after.get(t.id)||0;
+    const balanceCls=balanceAfter>=0?'pos':'neg';
+    return `<tr id="tx-${t.id}">
+      <td>${t.date}</td>
+      <td>${escapeHtml(t.desc||'—')}</td>
+      <td>${escapeHtml(t.category||'غير مصنفة')}</td>
+      <td>${escapeHtml(t.account||'—')}</td>
+      <td class="amount ${amountCls}">${amountSign}${fmt(t.amount)}</td>
+      <td class="${balanceCls}">${fmt(balanceAfter)}</td>
+      <td class="actions">
+        <button class="btn btn-outline" onclick="editTx('${t.id}')">تعديل</button>
+        <button class="btn btn-danger" onclick="removeTx('${t.id}')">حذف</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  const totalPages=Math.max(1,Math.ceil(filteredTxs.length/TXS_PER_PAGE));
+  const hasPager=totalPages>1;
+
+  if(els.txPager){
+    els.txPager.style.display=hasPager?'flex':'none';
+    els.txPagerInfo.textContent=`صفحة ${txPage} / ${totalPages} (إجمالي: ${filteredTxs.length})`;
+    document.getElementById('txPrev').disabled=txPage<=1;
+    document.getElementById('txNext').disabled=txPage>=totalPages;
+  }
+}
+
+window.removeTx=id=>{
+  if(!confirm('هل تريد حذف هذه الحركة؟')) return;
+  const tx=ledger.find(t=>t.id===id);
+  // إذا كانت الحركة مرتبطة بالتزام، نعكس الدفعة
+  if(tx && tx.linkCommitId){
+    const ym=tx.date.slice(0,7);
+    const c=commitments.find(x=>x.id===tx.linkCommitId);
+    if(c && c.payments?.[ym]){
+      c.payments[ym]=Math.max(0,(c.payments[ym]-tx.amount));
+      saveCommitments();
+    }
+  }
+
+  ledger=ledger.filter(t=>t.id!==id);
+  saveLedger();
+  txPage=Math.min(txPage,Math.max(1,Math.ceil(applyFilters(ledger).length/TXS_PER_PAGE)));
+  render();
+};
+
+let editId=null;
+window.editTx=id=>{
+  const tx=ledger.find(t=>t.id===id);
+  if(!tx) return;
+  editId=id;
+
+  els.type.value=tx.type;
+  refreshCategorySelect(); // تحديث الفئات وفقاً للنوع
+  els.amount.value=tx.amount;
+  els.date.value=tx.date;
+  els.desc.value=tx.desc;
+  els.account.value=tx.account||'';
+  els.category.value=tx.category||'';
+  refreshLinkCommitSelect(); // تحديث قائمة الالتزامات
+
+  if(tx.linkCommitId){
+    els.linkCommit.value=tx.linkCommitId;
+  } else {
+    els.linkCommit.value='';
+  }
+
+  els.saveTx.textContent='تحديث الحركة';
+  window.scrollTo({top:0,behavior:'smooth'}); // الصعود للأعلى
+  showScreen('card-addtx'); // عرض شاشة إضافة حركة
+};
 
 els.resetForm?.addEventListener('click',()=>{
   editId=null;
@@ -743,73 +891,53 @@ els.resetForm?.addEventListener('click',()=>{
   els.amount.value='';
   els.date.value=formatLocalDate(new Date());
   els.desc.value='';
-  els.account.selectedIndex=0;
+  els.account.value=accounts.length?accounts[0].name:'';
+  els.category.value=categories.filter(c=>c.type==='expense').length?categories.filter(c=>c.type==='expense')[0].name:'';
   refreshCategorySelect();
-  els.category.selectedIndex=0;
-  refreshLinkCommitOptions();
-  els.linkCommit.selectedIndex=0;
+  refreshLinkCommitSelect();
 });
-els.resetForm?.click(); // تعيين القيم الافتراضية
 
-// التحقق من الحساب والفئة عند تغيير القائمة
-els.account?.addEventListener('change', ()=>{ if(!accounts.some(a=>a.name===els.account.value)) els.account.selectedIndex=0; });
-els.category?.addEventListener('change', ()=>{ if(!categories.some(c=>c.name===els.category.value)) els.category.selectedIndex=0; });
+els.type?.addEventListener('change',refreshCategorySelect);
+els.type?.addEventListener('change',refreshLinkCommitSelect);
+els.date?.addEventListener('change',refreshLinkCommitSelect); // لتحديث قائمة الالتزامات بناءً على الشهر
 
 els.saveTx?.addEventListener('click',()=>{
-  const type=els.type.value, amount=parseFloat(els.amount.value),
-        dateStr=els.date.value, desc=els.desc.value,
-        account=els.account.value, category=els.category.value,
-        linkCommitId=els.linkCommit.value;
-
-  if(!amount || amount<=0 || Number.isNaN(amount)){ alert('المبلغ غير صحيح'); return; }
-  if(!dateStr){ alert('التاريخ إجباري'); return; }
-  if(!account){ alert('الحساب إجباري'); return; }
-
-  const catObj=categories.find(c=>c.name===category && c.type===type);
-  if(!category || !catObj){ alert('يجب اختيار فئة متوافقة مع النوع'); return; }
-
   const newTx={
-    id:editId||eid(), date:dateStr, desc:desc, type:type, amount:amount,
-    account:account, category:category
+    type:els.type.value,
+    amount:parseFloat(els.amount.value),
+    date:els.date.value,
+    desc:els.desc.value.trim(),
+    account:els.account.value,
+    category:els.category.value,
+    linkCommitId:els.linkCommit.value||null
   };
 
-  if(linkCommitId && type==='expense'){
-    newTx.linkCommitId=linkCommitId;
-    
-    const c=commitments.find(x=>x.id===linkCommitId);
-    if(c){
-      const ym=dateStr.slice(0,7);
-      const paid=(c.payments?.[ym]||0);
-      const total=Number(c.amount||0);
-      const remain=Math.max(0,total-paid);
-      
-      // إذا كان المبلغ المُسدّد أكبر من المتبقي، يجب التنبيه/التحذير
-      if(amount > remain){
-        if(!confirm(`مبلغ السداد (${fmt(amount)}) أكبر من المتبقي (${fmt(remain)}). هل تريد الاستمرار؟`)) return;
-      }
-
-      // إضافة الدفعة لسجل المدفوعات للالتزام
-      addCommitPayment(linkCommitId, ym, amount);
-
-      // إذا كانت هذه الحركة هي سداد التزام كامل، غيّر الفئة لتكون 'التزامات شهرية'
-      if(amount>=total) newTx.category='التزامات شهرية';
-    }
+  if(!newTx.amount || newTx.amount<=0 || !newTx.date || !newTx.account || !newTx.category){
+    alert('جميع الحقول إجبارية (باستثناء الوصف وربط الالتزام)');
+    return;
+  }
+  if(isNaN(newTx.amount)){
+    alert('المبلغ يجب أن يكون رقماً صحيحاً.');
+    return;
   }
 
-  if(editId){
+  if(!editId){
+    newTx.id=eid();
+  } else {
     const was=ledger.find(t=>t.id===editId);
-    if(was){
-      // إذا كان الالتزام القديم موجوداً والمبلغ تغير، يجب تعديل مدفوعات الالتزام القديم
-      if(was.linkCommitId && was.linkCommitId===newTx.linkCommitId && was.amount!==newTx.amount){
-        const ym=was.date.slice(0,7);
-        const c=commitments.find(x=>x.id===was.linkCommitId);
-        if(c && c.payments?.[ym]){
-          c.payments[ym]=Math.max(0,(c.payments[ym]-was.amount+newTx.amount));
-          saveCommitments();
-        }
+    if(!was){ alert('خطأ: لم يتم العثور على الحركة الأصلية'); return; }
+    newTx.id=editId;
+
+    // إذا كانت الحركة السابقة مرتبطة بالتزام والمبلغ تغير، يجب تعديل مدفوعات الالتزام القديم
+    if(was.linkCommitId && was.linkCommitId===newTx.linkCommitId && was.amount!==newTx.amount){
+      const ym=was.date.slice(0,7);
+      const c=commitments.find(x=>x.id===was.linkCommitId);
+      if(c && c.payments?.[ym]){
+        c.payments[ym]=Math.max(0,(c.payments[ym]-was.amount+newTx.amount));
+        saveCommitments();
       }
-      ledger=ledger.filter(t=>t.id!==editId);
     }
+    ledger=ledger.filter(t=>t.id!==editId);
   }
 
   // إذا كانت حركة تحويل، نمنع حفظها من هنا
@@ -817,10 +945,15 @@ els.saveTx?.addEventListener('click',()=>{
     alert('لا يمكن حفظ حركات التحويل من هنا. استخدم قسم "تحويل بين الحسابات"');
     return;
   }
-  
+
   ledger.push(newTx);
   ledger.sort((a,b)=> a.date.localeCompare(b.date) || (a.id>b.id?1:-1));
-  
+
+  // تحديث مدفوعات الالتزام الجديد (أو المحرر)
+  if(newTx.linkCommitId && newTx.type==='expense'){
+    addCommitPayment(newTx.linkCommitId, newTx.date.slice(0,7), newTx.amount);
+  }
+
   els.resetForm.click();
   saveLedger();
   txPage = 1; // العودة للصفحة الأولى بعد التعديل
@@ -835,12 +968,14 @@ function applyFilters(txs){
   const fFrom=els.fFrom.value;
   const fTo=els.fTo.value;
 
-  if(s) filtered=filtered.filter(t=> (t.desc||'').toLowerCase().includes(s));
+  if(s) filtered=filtered.filter(t=>
+    (t.desc||'').toLowerCase().includes(s)
+  );
   if(fType!=='all') filtered=filtered.filter(t=>t.type===fType);
   if(fAccount!=='all') filtered=filtered.filter(t=>t.account===fAccount);
   if(fFrom) filtered=filtered.filter(t=>t.date>=fFrom);
   if(fTo) filtered=filtered.filter(t=>t.date<=fTo);
-  
+
   return filtered;
 }
 
@@ -849,118 +984,31 @@ els.fType?.addEventListener('change',()=>txPage=1);
 els.fAccount?.addEventListener('change',()=>txPage=1);
 els.fFrom?.addEventListener('change',()=>txPage=1);
 els.fTo?.addEventListener('change',()=>txPage=1);
-
 [els.search,els.fType,els.fAccount,els.fFrom,els.fTo].forEach(el=>el?.addEventListener('change',render));
 els.clearFilters?.addEventListener('click',()=>{
-  els.search.value=''; els.fType.value='all'; els.fAccount.value='all'; els.fFrom.value=''; els.fTo.value='';
-  txPage=1; render();
+  els.search.value='';
+  els.fType.value='all';
+  els.fAccount.value='all';
+  els.fFrom.value='';
+  els.fTo.value='';
+  txPage=1;
+  render();
+});
+document.getElementById('txPrev')?.addEventListener('click',()=>{
+  if(txPage>1){ txPage--; renderTxTable(); }
+});
+document.getElementById('txNext')?.addEventListener('click',()=>{
+  const totalPages=Math.max(1,Math.ceil(filteredTxs.length/TXS_PER_PAGE));
+  if(txPage<totalPages){ txPage++; renderTxTable(); }
 });
 
-document.getElementById('txPrev')?.addEventListener('click',()=>{ txPage=Math.max(1,txPage-1); render(); });
-document.getElementById('txNext')?.addEventListener('click',()=>{ txPage++; render(); });
-
-function render(){
-  refreshLinkCommitOptions();
-  recalc(); // حساب الأرصدة أولاً
-  drawAccountsBadges();
-  drawCommitments();
-  drawCollections();
-  drawDueSoon();
-  drawTxTable();
-  drawMonthly();
-}
-
-let after=new Map(); // لـ "الرصيد بعد العملية"
-function drawTxTable(){
-  const allTxs=[...ledger];
-  const filtered=applyFilters(allTxs);
-  const rowsDesc=[...filtered].reverse(); // العرض من الأحدث للأقدم
-
-  // Pagination
-  const totalRows = rowsDesc.length;
-  const totalPages = Math.max(1, Math.ceil(totalRows / TXS_PER_PAGE));
-  if(txPage > totalPages) txPage = totalPages;
-  const start = (txPage-1)*TXS_PER_PAGE;
-  const pageRows = rowsDesc.slice(start, start + TXS_PER_PAGE);
-
-  if(els.tbody){
-    els.tbody.innerHTML=pageRows.map(t=>{
-      const cls=t.type==='income'?'inc':'exp';
-      const afterVal=after.has(t.id)?after.get(t.id):0;
-      const tag = t.isTransfer ? ' <span style="font-size:11px;color:#9fb3c8">↔︎ تحويل</span>' : '';
-      return `<tr>
-        <td>${t.date}</td><td>${escapeHtml(t.desc||'—')}${tag}</td><td>${escapeHtml(t.category||'—')}</td><td>${escapeHtml(t.account)}</td>
-        <td class="amount ${cls}">${t.type==='income'?'+':'-'}${fmt(t.amount)}</td>
-        <td>${fmt(afterVal)}</td>
-        <td class="actions"><button class="btn btn-primary" onclick="editTx('${t.id}')">تعديل</button>
-        <button class="btn btn-danger" onclick="delTx('${t.id}')">حذف</button></td>
-      </tr>`;
-    }).join('');
-  }
-
-  // pager UI
-  const pager = document.getElementById('txPager');
-  const pagerInfo = document.getElementById('txPagerInfo');
-  const prevBtn = document.getElementById('txPrev');
-  const nextBtn = document.getElementById('txNext');
-
-  if(!pager || totalRows <= TXS_PER_PAGE){
-    pager && (pager.style.display='none');
-  }
-  else{
-    pager.style.display='flex';
-    pagerInfo.textContent = `صفحة ${txPage} / ${totalPages} — إجمالي ${totalRows} حركة`;
-    prevBtn.disabled = txPage<=1;
-    nextBtn.disabled = txPage>=totalPages;
-  }
-}
-
-window.editTx=id=>{
-  const t=ledger.find(x=>x.id===id);
-  if(!t) return;
-  editId=id;
-  els.saveTx.textContent='تحديث';
-  els.type.value=t.type;
-  refreshCategorySelect();
-  els.amount.value=t.amount;
-  els.date.value=t.date;
-  els.desc.value=t.desc||'';
-  els.account.value=t.account;
-  els.category.value=t.category||'';
-  refreshLinkCommitOptions(); // للتأكد من تحديث القائمة قبل تعيين القيمة
-  els.linkCommit.value=t.linkCommitId||'';
-  window.scrollTo({top:0,behavior:'smooth'});
-};
-window.delTx=id=>{
-  if(!confirm('هل تريد حذف هذه الحركة؟')) return;
-  const was=ledger.find(t=>t.id===id);
-  
-  // إذا كانت حركة تحويل، نحذف الحركة المقابلة لها
-  if(was.isTransfer && was.link){
-    ledger=ledger.filter(t=>t.link!==was.link);
-  } else {
-    ledger=ledger.filter(t=>t.id!==id);
-  }
-
-  saveLedger();
-  
-  // إذا كانت الحركة مرتبطة بالتزام، نعكس الدفعة من الالتزام
-  if(was && was.type==='expense' && was.linkCommitId){
-    const ym=was.date.slice(0,7);
-    const c=commitments.find(x=>x.id===was.linkCommitId);
-    if(c && c.payments?.[ym]){
-      c.payments[ym]=Math.max(0,(c.payments[ym]-was.amount));
-      saveCommitments();
-    }
-  }
-
-  txPage = 1;
-  render();
-};
-
-function refreshLinkCommitOptions(){
+function refreshLinkCommitSelect(){
   if(!els.linkCommit) return;
-  const ym=YM();
+  const targetDate=els.date.value;
+  if(!targetDate) return;
+
+  const ym=targetDate.slice(0,7);
+
   const opts = commitments
     .filter(c=>{
       const due=(c.nextDue||c.firstDue||'').slice(0,7)===ym;
@@ -969,7 +1017,7 @@ function refreshLinkCommitOptions(){
     })
     .map(c=>`<option value="${c.id}">${escapeHtml(c.name)} — أصل ${fmt(c.amount)} • مدفوع ${fmt(c.payments?.[ym]||0)} • متبقي ${fmt((Number(c.amount||0)-(c.payments?.[ym]||0)))}</option>`)
     .join('');
-  
+
   // إظهار الخيار فقط للمصروفات
   if(els.type.value==='expense'){
     els.linkCommit.parentElement.style.display='';
@@ -991,7 +1039,6 @@ function ensureTransferCategories(){
   }
   if(changed) saveCategories();
 }
-
 function syncTransferSelects(trigger){
   if(trigger === 'from' && els.trTo){
     const from = els.trFrom.value;
@@ -1002,8 +1049,7 @@ function syncTransferSelects(trigger){
     }else{
       els.trTo.selectedIndex = 0;
     }
-  }
-  else if(trigger === 'to' && els.trFrom){
+  } else if(trigger === 'to' && els.trFrom){
     const to = els.trTo.value;
     const prevFrom = els.trFrom.value;
     els.trFrom.innerHTML = buildAccountOptions(to);
@@ -1014,81 +1060,64 @@ function syncTransferSelects(trigger){
     }
   }
 }
-
+function buildAccountOptions(excludeName=null){
+  return accounts.filter(a=>a.name!==excludeName).map(a=>`<option value="${escapeHtml(a.name)}">${escapeHtml(a.name)}</option>`).join('');
+}
 function doTransfer(){
   const from=els.trFrom.value, to=els.trTo.value,
         amount=parseFloat(els.trAmount.value), fee=parseFloat(els.trFee.value||'0'),
-        date=els.trDate.value||formatLocalDate(new Date()), note=els.trDesc.value.trim();
+        date=els.trDate.value||formatLocalDate(new Date()),
+        note=els.trDesc.value.trim();
 
   if(!from || !to){ alert('يجب اختيار الحسابين'); return; }
-  if(from === to){ alert('لا يمكن التحويل لنفس الحساب'); return; }
-  if(!amount || amount<=0 || Number.isNaN(amount)){ alert('المبلغ غير صحيح'); return; }
-  if(fee<0 || Number.isNaN(fee)){ alert('العمولة غير صحيحة'); return; }
+  if(from===to){ alert('لا يمكن التحويل إلى نفس الحساب'); return; }
+  if(!amount || amount<=0 || isNaN(amount)){ alert('المبلغ غير صحيح'); return; }
+  if(isNaN(fee) || fee<0){ alert('عمولة التحويل غير صحيحة'); return; }
 
-  const link=eid();
-  const descOut = note ? `تحويل إلى ${to} — ${note}` : `تحويل إلى ${to}`;
-  const descIn = note ? `تحويل من ${from} — ${note}` : `تحويل من ${from}`;
+  const desc=note||`تحويل من ${from} إلى ${to}`;
 
-  // 1. حركة خروج المبلغ
-  ledger.push({
-    id:eid(), link, isTransfer:true, date,
-    desc:descOut, type:'expense', amount:amount,
-    account:from, category:'تحويل صادر'
-  });
+  const txs=[
+    // الحركة الصادرة
+    {id:eid(), date, desc:`${desc} (رئيسي)`, type:'expense', amount, account:from, category:'تحويل صادر', isTransfer:true},
+    // الحركة الواردة
+    {id:eid(), date, desc:`${desc} (مستلم)`, type:'income', amount, account:to, category:'تحويل وارد', isTransfer:true}
+  ];
 
-  // 2. حركة دخول المبلغ
-  ledger.push({
-    id:eid(), link, isTransfer:true, date,
-    desc:descIn, type:'income', amount:amount,
-    account:to, category:'تحويل وارد'
-  });
-
-  // 3. حركة عمولة التحويل (إذا وجدت)
+  // عمولة التحويل (إن وُجدت)
   if(fee>0){
-    const descFee = note ? `عمولة تحويل — ${note}` : `عمولة تحويل`;
-    ledger.push({
-      id:eid(), date,
-      desc:descFee, type:'expense', amount:fee,
-      account:from, category:'عمولة تحويل'
-    });
+    txs.push({id:eid(), date, desc:`عمولة تحويل ${desc}`, type:'expense', amount:fee, account:from, category:'عمولة تحويل', isTransfer:true});
   }
 
+  ledger.push(...txs);
+  ledger.sort((a,b)=> a.date.localeCompare(b.date) || (a.id>b.id?1:-1));
+
+  els.resetTransfer.click();
   saveLedger();
+  txPage = 1;
   render();
-
-  els.trAmount.value='';
-  els.trFee.value='';
-  els.trDesc.value='';
+  alert('تم تنفيذ التحويل بنجاح.');
 }
-els.execTransfer?.addEventListener('click', doTransfer);
-els.resetTransfer?.addEventListener('click', ()=>{
-  els.trAmount.value='';
-  els.trFee.value='';
-  els.trDesc.value='';
+els.trFrom?.addEventListener('change',()=>syncTransferSelects('from'));
+els.trTo?.addEventListener('change',()=>syncTransferSelects('to'));
+els.execTransfer?.addEventListener('click',doTransfer);
+els.resetTransfer?.addEventListener('click',()=>{
+  els.trAmount.value=''; els.trFee.value=''; els.trDate.value=formatLocalDate(new Date()); els.trDesc.value='';
 });
-els.trFrom?.addEventListener('change', ()=>syncTransferSelects('from'));
-els.trTo ?.addEventListener('change', ()=>syncTransferSelects('to'));
 
-/* ===== حساب الأرصدة =====
-   IMPORTANT: الأرصدة تُحسب تصاعديًا (من الأقدم للأحدث) عشان "الرصيد بعد العملية" يبقى صحيح. */
+/* ===== حساب الأرصدة ===== */
 function computeBalances(){
-  const bal = new Map(accounts.map(a=>[a.name, Number(a.opening||0)]));
-  
-  // الحركات مرتبة تصاعديًا (من الأقدم للأحدث)
-  const sorted=[...ledger].sort((a,b)=>
-    a.date.localeCompare(b.date) || (a.id>b.id?1:-1)
-  );
-  
-  after=new Map();
+  const bal=new Map(); // { 'accountName': balance }
+  const after=new Map(); // { 'txId': balanceAfterTx }
 
-  for(const t of sorted){
+  for(const a of accounts){ bal.set(a.name, Number(a.opening||0)); }
+
+  for(const t of ledger){
     const current=bal.get(t.account)||0;
     const amount=Number(t.amount||0);
     const newBal = current + (t.type==='income' ? amount : -amount);
     bal.set(t.account, newBal);
     after.set(t.id, newBal);
   }
-
   return {bal, after};
 }
 
@@ -1102,7 +1131,6 @@ function drawPerAccount(balances){
 }
 
 /* ===== الالتزامات الشهرية والتحصيلات (Commitments & Collections) ===== */
-
 function migrateCommit(c){
   if(!c.payments) c.payments={};
   if(c.firstDue && !c.nextDue){
@@ -1117,7 +1145,6 @@ function migrateCommit(c){
   }
   return c;
 }
-
 function migrateCollect(c){
   if(c.firstDue && !c.nextDue){
     const today=startOfToday();
@@ -1131,15 +1158,13 @@ function migrateCollect(c){
   }
   return c;
 }
-
 function addCommitPayment(id, ym, amount){
   const c=commitments.find(x=>x.id===id);
   if(!c) return;
   if(!c.payments) c.payments={};
   c.payments[ym]=(c.payments[ym]||0)+amount;
   saveCommitments();
-  drawCommitments();
-  drawDueSoon();
+  drawCommitments(); drawDueSoon();
 }
 
 let editCommitId=null;
@@ -1152,7 +1177,6 @@ function drawCommitments(){
     const remaining=Math.max(0,total-paid);
     const repeat=c.recurring?'شهرياً':'مرة واحدة';
     const end=c.endAt?c.endAt:'—';
-
     return `<tr>
       <td>${escapeHtml(c.name)}</td>
       <td>${fmt(total)}</td>
@@ -1168,9 +1192,42 @@ function drawCommitments(){
       </td>
     </tr>`;
   }).join('');
-  endRequiredToggle();
-  refreshLinkCommitOptions();
+  endRequiredToggleCommit();
 }
+
+els.addCommitment?.addEventListener('click',()=>{
+  const name=els.cName.value.trim();
+  const amount=parseFloat(els.cAmount.value);
+  const firstDue=els.cFirstDue.value;
+  const recurring=els.cRecurring.checked;
+  const endAt=els.cEndAt.value;
+
+  if(!name||!amount||amount<=0||isNaN(amount)||!firstDue){
+    alert('جميع الحقول إجبارية (باستثناء ينتهي في)'); return;
+  }
+  if(recurring&&!endAt){
+    alert('عند التكرار شهرياً، يجب تحديد تاريخ الانتهاء.'); return;
+  }
+
+  const c={id:editCommitId||eid(), name, amount, firstDue, recurring, endAt, payments:{}};
+  migrateCommit(c); // لحساب nextDue
+
+  if(editCommitId){
+    commitments=commitments.map(x=>x.id===editCommitId?c:x);
+  } else {
+    commitments.push(c);
+  }
+
+  editCommitId=null;
+  els.addCommitment.textContent='إضافة/تحديث';
+  els.cName.value=''; els.cAmount.value=''; els.cFirstDue.value=''; els.cRecurring.checked=false; els.cEndAt.value='';
+
+  saveCommitments();
+  drawCommitments();
+  drawDueSoon();
+  recalc();
+  refreshLinkCommitSelect();
+});
 window.editCommit=id=>{
   const c=commitments.find(x=>x.id===id);
   if(!c) return;
@@ -1182,99 +1239,52 @@ window.editCommit=id=>{
   els.cRecurring.checked=!!c.recurring;
   els.cEndAt.value=c.endAt||'';
   window.scrollTo({top:0,behavior:'smooth'});
-  endRequiredToggle();
+  endRequiredToggleCommit();
 };
 window.removeCommit=id=>{
-  if(!confirm('هل تريد حذف هذا الالتزام؟ لن يتم حذف الحركات التي تم سدادها.')) return;
+  if(!confirm('هل تريد حذف هذا الالتزام؟')) return;
   commitments=commitments.filter(c=>c.id!==id);
-  saveCommitments();
-  drawCommitments();
-  drawDueSoon();
+  ledger=ledger.filter(t=>t.linkCommitId!==id); // حذف الحركات المرتبطة بالالتزام المحذوف
+  saveCommitments(); saveLedger();
+  drawCommitments(); drawDueSoon(); recalc(); refreshLinkCommitSelect();
 };
-
-function endRequiredToggle(){
-  els.cEndAt?.toggleAttribute('required', els.cRecurring?.checked);
-}
-els.cRecurring?.addEventListener('change', endRequiredToggle);
-
-els.addCommitment?.addEventListener('click',()=>{
-  const name=els.cName.value.trim(), amount=parseFloat(els.cAmount.value),
-        firstDueStr=els.cFirstDue.value, recurring=els.cRecurring.checked,
-        endAtStr=els.cEndAt.value;
-
-  if(!name){ alert('ادخل اسم الالتزام'); return; }
-  if(!amount || amount<=0 || Number.isNaN(amount)){ alert('المبلغ غير صحيح'); return; }
-  if(!firstDueStr){ alert('تاريخ أول استحقاق إجباري'); return; }
-  if(recurring && !endAtStr){ alert('عند التكرار الشهري يجب تحديد تاريخ النهاية'); return; }
-  
-  if(recurring && endAtStr && parseLocalDate(endAtStr) < parseLocalDate(firstDueStr)){
-    alert('تاريخ النهاية يجب أن يكون بعد تاريخ أول استحقاق'); return;
-  }
-
-  let firstDue=parseLocalDate(firstDueStr), nextDue=parseLocalDate(firstDueStr);
-  const today=startOfToday();
-  
-  // حساب أقرب تاريخ استحقاق قادم
-  while(nextDue<today){
-    const tryNext=addMonthsPreserveDOM(nextDue,1);
-    if(recurring && (!endAtStr || tryNext<=parseLocalDate(endAtStr))) nextDue=tryNext;
-    else break;
-  }
-
-  const commit={
-    id:editCommitId||eid(), name, amount,
-    firstDue:formatLocalDate(firstDue),
-    nextDue:formatLocalDate(nextDue),
-    recurring,
-    endAt:(recurring?(endAtStr||null):null),
-    payments:{}
-  };
-
-  if(editCommitId){
-    const i=commitments.findIndex(c=>c.id===editCommitId);
-    if(i>-1) commitments[i]=commit;
-    editCommitId=null;
-    els.addCommitment.textContent='إضافة/تحديث';
-  } else commitments.push(commit);
-  
-  els.cName.value=''; els.cAmount.value=''; els.cFirstDue.value='';
-  els.cRecurring.checked=false; els.cEndAt.value='';
-  endRequiredToggle();
-  saveCommitments();
-  drawCommitments(); drawDueSoon();
-});
-
-function chooseAccount(){
-  if(accounts.length===0){ alert('لا توجد حسابات لإتمام العملية'); return null; }
-  const menu=accounts.map((a,i)=>`${i+1} - ${a.name}`).join('\n');
-  const ans=prompt(`اختَر الحساب:\n${menu}`);
-  if(ans===null) return null;
-  const idx=parseInt(ans,10)-1;
-  if(Number.isNaN(idx)||idx<0||idx>=accounts.length){ alert('اختيار غير صحيح'); return null; }
-  return accounts[idx].name;
+els.cRecurring?.addEventListener('change',endRequiredToggleCommit);
+function endRequiredToggleCommit(){
+  if(!els.cEndAt) return;
+  els.cEndAt.parentElement.style.display=els.cRecurring.checked?'':'none';
+  els.cEndAt.required=els.cRecurring.checked;
 }
 
 window.payCommit=id=>{
-  const c=commitments.find(x=>x.id===id); if(!c) return;
+  const c=commitments.find(x=>x.id===id);
+  if(!c) return;
   const due=c.nextDue?parseLocalDate(c.nextDue):parseLocalDate(c.firstDue);
   const dateStr=formatLocalDate(due);
   const ym=dateStr.slice(0,7);
   const paid=(c.payments?.[ym]||0);
   const remain=Math.max(0,(Number(c.amount||0)-paid));
-
   if(remain<=0){ alert('لا يوجد مبلغ متبقٍ لهذا الشهر.'); return; }
-
-  const accName=chooseAccount(); if(!accName) return;
+  const accName=chooseAccount();
+  if(!accName) return;
 
   if(!confirm(`سداد كامل متبقّي الالتزام "${c.name}" بقيمة ${fmt(remain)} ج.م من "${accName}" بتاريخ ${dateStr}؟`)) return;
 
   const tx={
-    id:eid(), date:dateStr, desc:`${c.name} (سداد التزام)`, type:'expense', amount:remain,
-    account:accName, category:'التزامات شهرية', linkCommitId:c.id
+    id:eid(),
+    date:dateStr,
+    desc:`${c.name} (سداد التزام)`,
+    type:'expense',
+    amount:remain,
+    account:accName,
+    category:'التزامات شهرية',
+    linkCommitId:c.id
   };
-  ledger.push(tx); saveLedger();
+
+  ledger.push(tx);
+  saveLedger();
   addCommitPayment(c.id, ym, remain);
-  txPage = 1; render();
+  txPage = 1;
+  render();
 };
 
 let editCollectId=null;
@@ -1284,7 +1294,6 @@ function drawCollections(){
     const repeat=c.recurring?'شهرياً':'مرة واحدة';
     const end=c.endAt?c.endAt:'—';
     const due=c.nextDue||c.firstDue;
-
     return `<tr>
       <td>${escapeHtml(c.name)}</td>
       <td>${fmt(c.amount)}</td>
@@ -1300,8 +1309,42 @@ function drawCollections(){
   }).join('');
   endRequiredToggleCollect();
 }
+
+els.addCollect?.addEventListener('click',()=>{
+  const name=els.coName.value.trim();
+  const amount=parseFloat(els.coAmount.value);
+  const firstDue=els.coFirstDue.value;
+  const recurring=els.coRecurring.checked;
+  const endAt=els.coEndAt.value;
+
+  if(!name||!amount||amount<=0||isNaN(amount)||!firstDue){
+    alert('جميع الحقول إجبارية (باستثناء ينتهي في)'); return;
+  }
+  if(recurring&&!endAt){
+    alert('عند التكرار شهرياً، يجب تحديد تاريخ الانتهاء.'); return;
+  }
+
+  const c={id:editCollectId||eid(), name, amount, firstDue, recurring, endAt};
+  migrateCollect(c); // لحساب nextDue
+
+  if(editCollectId){
+    collections=collections.map(x=>x.id===editCollectId?c:x);
+  } else {
+    collections.push(c);
+  }
+
+  editCollectId=null;
+  els.addCollect.textContent='إضافة/تحديث';
+  els.coName.value=''; els.coAmount.value=''; els.coFirstDue.value=''; els.coRecurring.checked=false; els.coEndAt.value='';
+
+  saveCollections();
+  drawCollections();
+  drawDueSoon();
+  recalc();
+});
 window.editCollect=id=>{
-  const c=collections.find(x=>x.id===id); if(!c) return;
+  const c=collections.find(x=>x.id===id);
+  if(!c) return;
   editCollectId=id;
   els.addCollect.textContent='تحديث التحصيل';
   els.coName.value=c.name;
@@ -1316,262 +1359,103 @@ window.removeCollect=id=>{
   if(!confirm('هل تريد حذف هذا التحصيل؟')) return;
   collections=collections.filter(c=>c.id!==id);
   saveCollections();
-  drawCollections();
-  drawDueSoon();
+  drawCollections(); drawDueSoon(); recalc();
 };
+window.collectNow=id=>{
+  const c=collections.find(x=>x.id===id);
+  if(!c) return;
+  const accName=chooseAccount();
+  if(!accName) return;
 
-function endRequiredToggleCollect(){
-  els.coEndAt?.toggleAttribute('required', els.coRecurring?.checked);
-}
-els.coRecurring?.addEventListener('change', endRequiredToggleCollect);
+  const due=c.nextDue?parseLocalDate(c.nextDue):parseLocalDate(c.firstDue);
+  const dateStr=formatLocalDate(new Date());
 
-els.addCollect?.addEventListener('click',()=>{
-  const name=els.coName.value.trim(), amount=parseFloat(els.coAmount.value),
-        firstDueStr=els.coFirstDue.value, recurring=els.coRecurring.checked,
-        endAtStr=els.coEndAt.value;
+  if(!confirm(`هل تم تحصيل "${c.name}" بقيمة ${fmt(c.amount)} ج.م في حساب "${accName}" بتاريخ اليوم (${dateStr})؟`)) return;
 
-  if(!name){ alert('ادخل اسم التحصيل'); return; }
-  if(!amount || amount<=0 || Number.isNaN(amount)){ alert('المبلغ غير صحيح'); return; }
-  if(!firstDueStr){ alert('تاريخ أول استحقاق إجباري'); return; }
-  if(recurring && !endAtStr){ alert('عند التكرار الشهري يجب تحديد تاريخ النهاية'); return; }
-  if(recurring && endAtStr && parseLocalDate(endAtStr) < parseLocalDate(firstDueStr)){
-    alert('تاريخ النهاية يجب أن يكون بعد تاريخ أول استحقاق'); return;
-  }
-  
-  let firstDue=parseLocalDate(firstDueStr), nextDue=parseLocalDate(firstDueStr);
-  const today=startOfToday();
-  
-  // حساب أقرب تاريخ استحقاق قادم
-  while(nextDue<today){
-    const tryNext=addMonthsPreserveDOM(nextDue,1);
-    if(recurring && (!endAtStr || tryNext<=parseLocalDate(endAtStr))) nextDue=tryNext;
-    else break;
-  }
-  
-  const item={
-    id:editCollectId||eid(), name, amount,
-    firstDue:formatLocalDate(firstDue),
-    nextDue:formatLocalDate(nextDue),
-    recurring,
-    endAt:(recurring?(endAtStr||null):null)
+  const tx={
+    id:eid(),
+    date:dateStr,
+    desc:`${c.name} (تحصيل)`,
+    type:'income',
+    amount:Number(c.amount||0),
+    account:accName,
+    category:'تحصيلات شهرية',
+    linkCollectId:c.id // يتم الحفظ للإشارة إلى أنه تم التحصيل
   };
 
-  if(editCollectId){
-    const i=collections.findIndex(c=>c.id===editCollectId);
-    if(i>-1) collections[i]=item;
-    editCollectId=null;
-    els.addCollect.textContent='إضافة/تحديث';
-  } else collections.push(item);
-  
-  els.coName.value=''; els.coAmount.value=''; els.coFirstDue.value='';
-  els.coRecurring.checked=false; els.coEndAt.value='';
-  endRequiredToggleCollect();
-  saveCollections();
-  drawCollections();
-});
-
-window.collectNow=id=>{
-  const c=collections.find(x=>x.id===id); if(!c) return;
-  const due=c.nextDue?parseLocalDate(c.nextDue):parseLocalDate(c.firstDue);
-  const dateStr=formatLocalDate(due);
-
-  const accName=chooseAccount(); if(!accName) return;
-
-  if(!confirm(`تأكيد تحصيل "${c.name}" بمبلغ ${fmt(c.amount)} ج.م إلى حساب "${accName}" بتاريخ ${dateStr}؟`)) return;
-
-  // تسجيل الحركة في دفتر القيود
-  ledger.push({
-    id:eid(), date:dateStr, desc:`${c.name} (تحصيل)`, type:'income', amount:c.amount,
-    account:accName, category:'تحصيلات شهرية'
-  });
-  saveLedger();
-  
-  // تحديث أو إزالة التحصيل من قائمة التحصيلات
+  // تحديث nextDue للموعد القادم قبل الحفظ
   if(c.recurring){
     const next=addMonthsPreserveDOM(due,1);
     if(c.endAt && next>parseLocalDate(c.endAt)){
+      alert(`انتهت دورة التحصيل لـ "${c.name}". سيتم حذفها.`);
       collections=collections.filter(x=>x.id!==id);
-    }
-    else{
+    } else {
       c.nextDue=formatLocalDate(next);
     }
-  }else{
-    collections=collections.filter(x=>x.id!==id);
+  } else {
+    collections=collections.filter(x=>x.id!==id); // حذف التحصيل لمرة واحدة
   }
-  saveCollections();
 
+  ledger.push(tx);
+  saveLedger();
+  saveCollections();
   txPage = 1;
   render();
+  alert('تم إضافة حركة التحصيل بنجاح.');
 };
 
-/* ===== الاستحقاقات القريبة: جدول + بطاقات ===== */
-function hasDueInMonth(item, targetYm){
-  const dueStr=item.nextDue||item.firstDue;
-  if(!dueStr) return false;
-  if(!targetYm || targetYm.indexOf('-')===-1) return false;
-  
-  const targetStart=parseLocalDate(`${targetYm}-01`);
-  if(Number.isNaN(targetStart.getTime())) return false;
-  
-  let endDate=null;
-  if(item.endAt){
-    const tmp=parseLocalDate(item.endAt);
-    if(!Number.isNaN(tmp.getTime())) endDate=tmp;
-  }
-  
-  const dueDate=parseLocalDate(dueStr);
-  if(Number.isNaN(dueDate.getTime())) return false;
-  
-  const monthOf=date=>formatLocalDate(date).slice(0,7);
-  
-  if(monthOf(dueDate)===targetYm) return true;
-  if(!item.recurring) return false;
-  if(endDate && endDate < targetStart) return false;
-
-  let cursor=new Date(dueDate.getTime());
-  let guard=0; // لمنع الحلقة اللانهائية
-
-  while(monthOf(cursor) < targetYm && guard < 120){
-    const next=addMonthsPreserveDOM(cursor,1);
-    if(endDate && next > endDate) return false;
-    if(next.getTime()===cursor.getTime()) break;
-    cursor=next;
-    guard++;
-  }
-  return monthOf(cursor)===targetYm;
-}
-
-function sumCurrentMonthCommitments(){
-  const ym=YM();
-  let total=0;
-  for(const c of commitments){
-    const due=(c.nextDue||c.firstDue||'');
-    if(due.slice(0,7)===ym){
-      const paid=(c.payments?.[ym]||0);
-      const remain=Math.max(0,(Number(c.amount||0)-paid));
-      total += remain;
-    }
-  }
-  return total;
-}
-
-function sumCurrentMonthCollections(){
-  const ym=YM();
-  let total=0;
-  for(const c of collections){
-    const due=(c.nextDue||c.firstDue||'');
-    if(due.slice(0,7)===ym){
-      total += Number(c.amount||0);
-    }
-  }
-  return total;
-}
-
-function sumNextMonthCommitmentsIncludingCarry(){
-  const ym=YM();
-  const nextYm=addMonthsToYm(ym,1);
-
-  // المتبقي من الشهر الحالي (غير المسدد)
-  let currentRemain = 0;
-  for(const c of commitments){
-    const due=(c.nextDue||c.firstDue||'');
-    if(due.slice(0,7)===ym){
-      const paid=(c.payments?.[ym]||0);
-      const remain=Math.max(0,(Number(c.amount||0)-paid));
-      currentRemain += remain;
-    }
-  }
-
-  // التزامات الشهر القادم
-  let nextRemain = 0;
-  for(const c of commitments){
-    if(!hasDueInMonth(c, nextYm)) continue;
-    const paidNext=(c.payments?.[nextYm]||0);
-    const remainNext=Math.max(0,(Number(c.amount||0)-paidNext));
-    nextRemain += remainNext;
-  }
-
-  return currentRemain + nextRemain;
-}
-
-function sumNextMonthCollections(){
-  const ym=YM();
-  const nextYm=addMonthsToYm(ym,1);
-  let total=0;
-  for(const c of collections){
-    if(hasDueInMonth(c, nextYm)){
-      total += Number(c.amount||0);
-    }
-  }
-  return total;
-}
-
-function recalc(){
-  const {bal}=computeBalances();
-  let total=0;
-  for(const v of bal.values()) total+=v;
-  
-  const monthComRemain = sumCurrentMonthCommitments();
-  const currentCol = sumCurrentMonthCollections();
-  const nextWithCarry = sumNextMonthCommitmentsIncludingCarry();
-  const nextCol = sumNextMonthCollections();
-
-  // قيَم إضافية
-  if(els.totalBalance) els.totalBalance.textContent = fmt(total) + ' ج.م';
-  if(els.monthCommitTotal) els.monthCommitTotal.textContent = fmt(monthComRemain) + ' ج.م';
-  if(els.currentMonthCollections) els.currentMonthCollections.textContent = fmt(currentCol) + ' ج.م';
-  if(els.balanceAfterCommitments) els.balanceAfterCommitments.textContent = fmt(total - monthComRemain) + ' ج.م';
-  if(els.nextCommitWithCarry) els.nextCommitWithCarry.textContent = fmt(nextWithCarry) + ' ج.م';
-  if(els.nextMonthCollections) els.nextMonthCollections.textContent = fmt(nextCol) + ' ج.م';
-  if(els.dueNextTotalBadge) els.dueNextTotalBadge.textContent = 'الشهر القادم: ' + fmt(nextRemain) + ' ج.م';
-  
-  drawPerAccount(bal);
+els.coRecurring?.addEventListener('change',endRequiredToggleCollect);
+function endRequiredToggleCollect(){
+  if(!els.coEndAt) return;
+  els.coEndAt.parentElement.style.display=els.coRecurring.checked?'':'none';
+  els.coEndAt.required=els.coRecurring.checked;
 }
 
 function drawDueSoon(){
-  const wrap=document.getElementById('dueSoonWrap'), none=document.getElementById('noDueSoon'),
-        tbody=document.getElementById('tbodyDueSoon'), cards=document.getElementById('dueSoonCards');
-  if(!wrap||!tbody||!cards) return;
-
+  if(!els.tbodyDueSoon) return;
+  const today=startOfToday();
   const ym=YM();
   const nextYm=addMonthsToYm(ym,1);
-  const today=startOfToday();
+  const wrap=$('#dueSoonWrap'), none=$('#noDueSoon'), cards=$('#dueSoonCards');
 
-  // قائمة الالتزامات المتبقية للشهر الحالي
-  const list=commitments.map(c=>{
-    const dueStr=c.nextDue||c.firstDue;
-    if(!dueStr) return null;
-    if(dueStr.slice(0,7)!==ym) return null;
+  // استخلاص الاستحقاقات القادمة (الالتزامات فقط)
+  const list=[];
+  let totalDue=0;
+  let nextTotalDue=0;
 
-    const paid=(c.payments?.[ym]||0);
-    const total=Number(c.amount||0);
-    const remaining=Math.max(0,total-paid);
-    if(remaining<=0) return null;
+  for(const c of commitments){
+    const dueStr=(c.nextDue||c.firstDue||'');
+    const dueYm=dueStr.slice(0,7);
+    const paid=(c.payments?.[dueYm]||0);
+    const remaining=Math.max(0,Number(c.amount||0)-paid);
 
-    const due=parseLocalDate(dueStr);
-    const diff=daysBetween(today,due);
-
-    return {...c,due,dueStr,paid,total,remaining,diff};
-  }).filter(Boolean).sort((a,b)=> a.dueStr.localeCompare(b.dueStr));
-  
-  const totalRemain = list.reduce((s,x)=>s + x.remaining, 0);
-
-  if(els.dueTotalBadge){
-    els.dueTotalBadge.textContent = 'إجمالي: ' + fmt(totalRemain) + ' ج.م';
+    if(dueYm===ym && remaining>0){
+      const dueDate=parseLocalDate(dueStr);
+      const diff=daysBetween(today,dueDate);
+      list.push({id:c.id,name:c.name,dueStr,total:Number(c.amount||0),paid,remaining,diff});
+      totalDue+=remaining;
+    } else if(dueYm===nextYm){
+      nextTotalDue+=Number(c.amount||0);
+    }
   }
 
-  // جدول (للحواسيب)
-  if(list.length>0){
+  // فرز حسب تاريخ الاستحقاق
+  list.sort((a,b)=>a.dueStr.localeCompare(b.dueStr));
+
+  // تحديث شارات الإجمالي
+  els.dueTotalBadge.textContent=`إجمالي: ${fmt(totalDue)} ج.م`;
+  els.dueNextTotalBadge.textContent=`الشهر القادم: ${fmt(nextTotalDue)} ج.م`;
+
+  // جدول (للسطح المكتب)
+  if(list.length){
     none.classList.add('d-none');
-    tbody.innerHTML=list.map(c=>{
+    els.tbodyDueSoon.innerHTML=list.map(c=>{
       let state, stateCls;
       if(c.diff<0){ state='متاخر'; stateCls='over'; }
       else if(c.diff===0){ state='اليوم'; stateCls='warn'; }
-      else if(c.diff<=7){ state='قريب'; stateCls='warn'; }
+      else if(c.diff<=7){ state='قريب جدا'; stateCls='warn'; }
       else{ state=`متبقّي ${c.diff} يوم`; stateCls=''; }
-      
       const dueLabel=c.diff<=10 ? `${c.dueStr} (${c.diff} يوم)` : c.dueStr;
-      
       return `<tr>
         <td>${escapeHtml(c.name)}</td>
         <td>${dueLabel}</td>
@@ -1606,7 +1490,6 @@ function drawDueSoon(){
 
 /* ===== التقارير الشهرية ===== */
 let monthlyData = [];
-
 function getMonthlyData(){
   const agg=new Map(); // { 'YYYY-MM': {inc, exp, net} }
   let minMonth=YM(), maxMonth=YM();
@@ -1630,136 +1513,109 @@ function getMonthlyData(){
     if(!agg.has(cursor)) agg.set(cursor,{inc:0,exp:0,net:0,month:cursor});
     cursor=addMonthsToYm(cursor,1);
   }
-  
+
   monthlyData=[...agg.values()].sort((a,b)=>a.month.localeCompare(b.month));
 }
 
-function drawMonthly(){
-  getMonthlyData();
+function renderMonthlyTable(){
   if(!els.tbodyMonthly) return;
-  
-  const totalMax=Math.max(...monthlyData.map(d=>Math.max(d.inc,d.exp)),1);
-  
-  els.tbodyMonthly.innerHTML=monthlyData.reverse().map(d=>{
+  els.tbodyMonthly.innerHTML=monthlyData.map(d=>{
     const netCls=d.net>=0?'pos':'neg';
-    const activeCls=d.month===els.monthPicker.value?'active':'';
-    return `<tr class="${activeCls}" onclick="selectMonth('${d.month}')">
+    return `<tr id="month-${d.month}">
       <td>${monthLabel(d.month)}</td>
-      <td class="inc">${fmt(d.inc)}</td>
-      <td class="exp">${fmt(d.exp)}</td>
+      <td class="pos">${fmt(d.inc)}</td>
+      <td class="neg">${fmt(d.exp)}</td>
       <td class="${netCls}">${fmt(d.net)}</td>
     </tr>`;
   }).join('');
-  
-  drawChart();
-  drawMonthSummary(els.monthPicker.value);
 }
-
-window.selectMonth=month=>{
-  els.monthPicker.value=month;
-  drawMonthly(); // لإعادة رسم الجدول وتفعيل التحديد
-}
-els.monthPicker?.addEventListener('change', drawMonthly);
-els.refreshReports?.addEventListener('click', drawMonthly);
-
 
 function drawChart(){
-  const canvas=els.chartMonthly;
-  if(!canvas) return;
-  const ctx=canvas.getContext('2d');
-  const w=canvas.width, h=canvas.height;
-  ctx.clearRect(0,0,w,h);
-  
-  const data=monthlyData.slice(-8); // آخر 8 أشهر
-  if(data.length===0) return;
-  
-  const pad=30;
-  const innerW=w-2*pad;
-  const innerH=h-2*pad;
-  
-  const maxVal=Math.max(...data.map(d=>Math.max(d.inc,d.exp)),1);
-  const minVal=Math.min(...data.map(d=>d.net),0);
-  const range=maxVal-minVal;
-  
-  const barGroup=innerW/data.length;
-  const barWidth=Math.max(8, barGroup/3 - 10);
-  
-  const toY=val=>pad+innerH*(1-(val-minVal)/range);
-  const zeroY=toY(0);
+  if(!els.chartMonthly) return;
+  const ctx=els.chartMonthly.getContext('2d');
+  const labels=monthlyData.map(d=>monthLabel(d.month));
+  const incomeData=monthlyData.map(d=>d.inc);
+  const expenseData=monthlyData.map(d=>d.exp);
+  const netData=monthlyData.map(d=>d.net);
 
-  // رسم المحور الأفقي (الصفر)
-  ctx.strokeStyle='#1f2a44';
-  ctx.lineWidth=1;
-  ctx.beginPath();
-  ctx.moveTo(pad, zeroY);
-  ctx.lineTo(w-pad, zeroY);
-  ctx.stroke();
+  const maxVal=Math.max(...incomeData,...expenseData,...netData.map(Math.abs),1);
 
-  // رسم الأعمدة
-  data.forEach((d,i)=>{
-    const xCenter=pad+i*barGroup+barGroup/2;
-    
-    // مصروفات
-    if(d.exp>0){
-      const top=zeroY;
-      const height=toY(d.exp)-zeroY;
-      ctx.fillStyle='#ef4444';
-      ctx.fillRect(xCenter-barWidth-4, top, barWidth, height);
-    }
-    
-    // دخل
-    if(d.inc>0){
-      const top=toY(d.inc);
-      const height=zeroY-toY(d.inc);
-      ctx.fillStyle='#22c55e';
-      ctx.fillRect(xCenter+4, top, barWidth, height);
+  if(window.monthlyChart) window.monthlyChart.destroy();
+  window.monthlyChart=new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels,
+      datasets:[
+        {label:'دخل',data:incomeData,backgroundColor:'#22c55e',order:2},
+        {label:'مصروف',data:expenseData,backgroundColor:'#ef4444',order:2},
+        {label:'صافي',data:netData,type:'line',borderColor:'#0ea5e9',borderWidth:2,pointRadius:4,fill:false,order:1}
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      scales:{
+        y:{
+          beginAtZero:false,
+          min:-maxVal, max:maxVal,
+          ticks:{
+            callback:v=>fmt(v)
+          }
+        },
+        x:{stacked:true}
+      },
+      plugins:{
+        tooltip:{
+          callbacks:{
+            label:item=>`${item.dataset.label}: ${fmt(item.parsed.y)} ج.م`
+          }
+        },
+        legend:{
+          display:false
+        }
+      }
     }
   });
-  
-  // رسم خط الصافي
-  ctx.strokeStyle='#0ea5e9';
-  ctx.lineWidth=2;
-  ctx.beginPath();
-  data.forEach((d,i)=>{
-    const xCenter=pad+i*barGroup+barGroup/2;
-    const y=toY(d.net);
-    if(i===0) ctx.moveTo(xCenter,y);
-    else ctx.lineTo(xCenter,y);
-  });
-  ctx.stroke();
 
-  // تسميات الشهور
-  ctx.fillStyle='#cbd5e1';
-  ctx.font='12px system-ui';
-  ctx.textAlign='center';
-  data.forEach((d,i)=>{
-    const xCenter=pad+i*barGroup+barGroup/2;
-    ctx.fillText(monthLabel(d.month), xCenter, h-pad+18);
+  // إضافة معالج للنقر على صف الجدول لتحديد الشهر
+  document.querySelectorAll('#tbodyMonthly tr').forEach(row=>{
+    row.addEventListener('click',()=>{
+      document.querySelectorAll('#tbodyMonthly tr').forEach(r=>r.classList.remove('active'));
+      row.classList.add('active');
+      const month=row.id.split('-')[1];
+      drawMonthSummary(month);
+    });
   });
+
+  // تحديد الشهر الحالي افتراضياً
+  const currentMonthRow=$(`#month-${els.monthPicker.value}`);
+  if(currentMonthRow){
+    currentMonthRow.classList.add('active');
+    drawMonthSummary(els.monthPicker.value);
+  } else if(monthlyData.length){
+    // إذا لم يكن هناك بيانات للشهر الحالي، نحدد آخر شهر
+    const lastMonth=monthlyData[monthlyData.length-1].month;
+    $(`#month-${lastMonth}`).classList.add('active');
+    drawMonthSummary(lastMonth);
+  } else {
+    drawMonthSummary(els.monthPicker.value); // لعرض قيم صفرية إذا لم يكن هناك بيانات
+  }
 }
 
 function monthTransactions(month){
-  if(!month) return [];
-  return ledger.filter(t=>!t.isTransfer && t.date.slice(0,7)===month);
+  return ledger.filter(t=>t.date.startsWith(month) && !t.isTransfer);
 }
-
 function aggregateMonthCategories(month,type){
-  const map=new Map();
+  const txs=monthTransactions(month).filter(t=>t.type===type);
+  const agg=new Map();
   let total=0;
-  for(const t of ledger){
-    if(t.isTransfer || t.type!==type) continue;
-    if(t.date.slice(0,7)!==month) continue;
-
-    const key=t.category?String(t.category):'غير مصنف';
-    const prev=map.get(key)||0;
-    const val=prev+t.amount;
-    map.set(key,val);
+  for(const t of txs){
+    const name=t.category||'غير مصنفة';
+    agg.set(name,(agg.get(name)||0)+t.amount);
     total+=t.amount;
   }
-  const items=[...map.entries()].map(([name,sum])=>({name,sum})).sort((a,b)=>b.sum-a.sum);
-  return {total,items};
+  const items=[...agg.entries()].map(([name,sum])=>({name,sum})).sort((a,b)=>b.sum-a.sum);
+  return {items,total};
 }
-
 function renderBarList(el, agg, type){
   if(!el) return;
   const items=agg.items.slice(0,6);
@@ -1769,13 +1625,11 @@ function renderBarList(el, agg, type){
   }
   const maxVal=Math.max(...items.map(i=>i.sum),0);
   const total=agg.total||0;
-
   el.innerHTML=items.map(item=>{
     const width=maxVal>0?Math.min(100,Math.max(6,(item.sum/maxVal)*100)):0;
     const share=total>0?(item.sum/total):0;
     const shareTxt=(share*100).toLocaleString('ar-EG',{maximumFractionDigits:1,minimumFractionDigits:1});
     const amountTxt=`${fmt(item.sum)} ج.م`;
-    
     return `<div class="bar-item"><div class="label">${escapeHtml(item.name)}</div><div class="bar-track"><div class="bar-fill ${type}" style="--w:${width}%"><span>${amountTxt}</span></div></div><div class="value">${amountTxt} • ${shareTxt}٪ من الإجمالي</div></div>`;
   }).join('');
 }
@@ -1785,7 +1639,7 @@ function drawMonthSummary(month){
   const totalInc=txs.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
   const totalExp=txs.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
   const net=totalInc-totalExp;
-  
+
   if(txs.length===0){
     els.monthNoData?.classList.remove('d-none');
   } else {
@@ -1799,13 +1653,12 @@ function drawMonthSummary(month){
     const daysInMonth=new Date(y,m,0).getDate();
     const today=new Date();
     const currentMonth=YM();
-    
     let daysCount=daysInMonth;
+
     // إذا كان الشهر الحالي، نحسب حتى اليوم
     if(month===currentMonth){
       daysCount=Math.min(today.getDate(),daysInMonth);
     }
-
     avg=totalExp/daysCount;
   }
 
@@ -1815,109 +1668,280 @@ function drawMonthSummary(month){
   els.monthStatNet.textContent = fmt(net);
   els.monthStatTx.textContent = txs.length.toLocaleString('ar-EG');
   els.monthStatAvg.textContent = fmt(avg);
-  
+
   const aggExp=aggregateMonthCategories(month,'expense');
   const aggInc=aggregateMonthCategories(month,'income');
-  
   renderBarList(els.monthCatsExpense, aggExp, 'expense');
   renderBarList(els.monthCatsIncome, aggInc, 'income');
 }
 
-/* ===== كروت الطي/الفتح ===== */
-function initCollapsibles(){
-  document.querySelectorAll('[data-collapsible]').forEach(sec=>{
-    const btn=sec.querySelector('.toggle');
-    if(!btn) return;
-    btn.addEventListener('click',()=>{
-      const isCollapsed=sec.classList.toggle('collapsed');
-      btn.textContent=isCollapsed?'▸':'▾';
-      btn.setAttribute('aria-expanded',String(!isCollapsed));
-    });
-    // ابدأ كلها مطوية
-    sec.classList.add('collapsed');
-    btn.textContent='▸';
-    btn.setAttribute('aria-expanded','false');
-  });
-}
-
-/* ===== PWA ===== */
-let deferredPrompt=null;
-window.addEventListener('beforeinstallprompt', (e)=>{
-  e.preventDefault();
-  deferredPrompt=e;
-  if(els.installBtn) els.installBtn.style.display='inline-flex';
+els.monthPicker?.addEventListener('change',()=>{
+  getMonthlyData();
+  renderMonthlyTable();
+  drawChart();
 });
-els.installBtn?.addEventListener('click', async ()=>{
-  if(!deferredPrompt) return;
-  els.installBtn.disabled=true;
-  await deferredPrompt.prompt();
-  deferredPrompt=null;
-  els.installBtn.style.display='none';
+els.refreshReports?.addEventListener('click',()=>{
+  getMonthlyData();
+  renderMonthlyTable();
+  drawChart();
 });
 
-/* ===== Service Worker ===== */
-if('serviceWorker' in navigator){
-  window.addEventListener('load', ()=>{
-    navigator.serviceWorker.register('/my-finance/sw.js').catch(()=>{});
-  });
+/* ===== الملخص (Recalc) ===== */
+function hasDueInMonth(item, targetYm){
+  const dueStr=item.nextDue||item.firstDue;
+  if(!dueStr) return false;
+  const endDate=item.endAt?parseLocalDate(item.endAt):null;
+  const targetStart=parseLocalDate(targetYm+'-01');
+  const dueDate=parseLocalDate(dueStr);
+  if(Number.isNaN(dueDate.getTime())) return false;
+
+  const monthOf=date=>formatLocalDate(date).slice(0,7);
+
+  if(monthOf(dueDate)===targetYm) return true;
+  if(!item.recurring) return false;
+  if(endDate && endDate < targetStart) return false;
+
+  let cursor=new Date(dueDate.getTime());
+  let guard=0; // لمنع الحلقة اللانهائية
+  while(monthOf(cursor) < targetYm && guard < 120){
+    const next=addMonthsPreserveDOM(cursor,1);
+    if(endDate && next > endDate) return false;
+    if(next.getTime()===cursor.getTime()) break;
+    cursor=next;
+    guard++;
+  }
+  return monthOf(cursor)===targetYm;
+}
+function sumCurrentMonthCommitments(){
+  const ym=YM();
+  let total=0;
+  for(const c of commitments){
+    const due=(c.nextDue||c.firstDue||'');
+    if(due.slice(0,7)===ym){
+      const paid=(c.payments?.[ym]||0);
+      const remain=Math.max(0,(Number(c.amount||0)-paid));
+      total += remain;
+    }
+  }
+  return total;
+}
+function sumCurrentMonthCollections(){
+  const ym=YM();
+  let total=0;
+  for(const c of collections){
+    const due=(c.nextDue||c.firstDue||'');
+    if(due.slice(0,7)===ym){
+      total += Number(c.amount||0);
+    }
+  }
+  return total;
+}
+function sumNextMonthCommitmentsIncludingCarry(){
+  const ym=YM();
+  const nextYm=addMonthsToYm(ym,1);
+
+  // المتبقي من الشهر الحالي (غير المسدد)
+  let currentRemain = 0;
+  for(const c of commitments){
+    const due=(c.nextDue||c.firstDue||'');
+    if(due.slice(0,7)===ym){
+      const paid=(c.payments?.[ym]||0);
+      const remain=Math.max(0,(Number(c.amount||0)-paid));
+      currentRemain += remain;
+    }
+  }
+
+  // التزامات الشهر القادم
+  let nextRemain = 0;
+  for(const c of commitments){
+    if(!hasDueInMonth(c, nextYm)) continue;
+    const paidNext=(c.payments?.[nextYm]||0);
+    const remainNext=Math.max(0,(Number(c.amount||0)-paidNext));
+    nextRemain += remainNext;
+  }
+  return currentRemain + nextRemain;
+}
+function sumNextMonthCollections(){
+  const ym=YM();
+  const nextYm=addMonthsToYm(ym,1);
+  let total=0;
+  for(const c of collections){
+    if(hasDueInMonth(c, nextYm)){
+      total += Number(c.amount||0);
+    }
+  }
+  return total;
 }
 
-/* ===== GitHub Sync ===== */
-function ghStatus(msg, ok=true){
-  if(!els.ghStatus) return;
-  els.ghStatus.textContent = 'الحالة: '+msg;
-  els.ghStatus.style.backgroundColor = ok ? '#0b162a' : '#220b0b';
-  els.ghStatus.style.borderColor = ok ? '#1f2a44' : '#441f1f';
+function recalc(){
+  const {bal}=computeBalances();
+  let total=0;
+  for(const v of bal.values()) total+=v;
+
+  const monthComRemain = sumCurrentMonthCommitments();
+  const currentCol = sumCurrentMonthCollections();
+  const balanceAfterCommitments = total - monthComRemain;
+  const nextCommitWithCarry = sumNextMonthCommitmentsIncludingCarry();
+  const nextCol = sumNextMonthCollections();
+
+  els.totalBalance.textContent=fmt(total);
+  els.totalBalance.classList.toggle('neg', total<0);
+  els.totalBalance.classList.toggle('pos', total>=0);
+
+  els.monthCommitTotal.textContent=fmt(monthComRemain);
+  els.currentMonthCollections.textContent=fmt(currentCol);
+  els.balanceAfterCommitments.textContent=fmt(balanceAfterCommitments);
+  els.balanceAfterCommitments.classList.toggle('neg', balanceAfterCommitments<0);
+  els.balanceAfterCommitments.classList.toggle('pos', balanceAfterCommitments>=0);
+
+  els.nextCommitWithCarry.textContent=fmt(nextCommitWithCarry);
+  els.nextMonthCollections.textContent=fmt(nextCol);
+
+  drawPerAccount(bal);
+  drawDueSoon();
 }
-function readGhFormToCfg(){
-  if(!els.ghUser) return;
+
+
+/* ===== وظيفة الرسم الشاملة ===== */
+function render(){
+  // 1. تحديث قوائم الحسابات والفئات
+  drawAccounts();
+  drawCategories();
+  drawCommitments();
+  drawCollections();
+  // 2. تحديث جدول الحركات
+  renderTxTable();
+  // 3. إعادة حساب الملخص
+  recalc();
+  // 4. إعادة رسم التقارير
+  getMonthlyData();
+  renderMonthlyTable();
+  drawChart();
+
+  // تحديث شاشة إضافة حركة (لتحديث قائمة الالتزامات بعد أي تغيير)
+  refreshLinkCommitSelect();
+}
+
+/* ===== مزامنة GitHub ===== */
+function ghSaveCfg(){
   ghCfg={
-    user:els.ghUser.value.trim(),
-    repo:els.ghRepo.value.trim(),
-    branch:els.ghBranch.value.trim()||'main',
-    path:els.ghPath.value.trim()||'my-finance.json',
-    token:els.ghToken.value.trim(),
+    user:els.ghUser.value,
+    repo:els.ghRepo.value,
+    branch:els.ghBranch.value,
+    path:els.ghPath.value,
+    token:els.ghToken.value,
     auto:els.ghAuto.checked
   };
   saveGhCfg();
+  alert('تم حفظ إعدادات GitHub محلياً.');
 }
-function fillGhFormFromStorage(){
-  if(!ghCfg) ghCfg={};
-  if(els.ghUser) els.ghUser.value = ghCfg.user || '';
-  if(els.ghRepo) els.ghRepo.value = ghCfg.repo || '';
-  if(els.ghBranch) els.ghBranch.value = ghCfg.branch || 'main';
-  if(els.ghPath) els.ghPath.value = ghCfg.path || 'my-finance.json';
-  if(els.ghToken) els.ghToken.value = ghCfg.token || '';
-  if(els.ghAuto) els.ghAuto.checked = ghCfg.auto || false;
-  
-  if(ghCfg.user && ghCfg.repo) ghStatus('غير متصل',false);
+function ghStatus(msg='غير متصل',ok=false){
+  if(!els.ghStatus) return;
+  if(ghCfg.user&&ghCfg.repo&&ghCfg.token){
+    els.ghStatus.textContent=`متصل بـ ${ghCfg.user}/${ghCfg.repo}`;
+    els.ghStatus.style.background=ok?'var(--ok)':'#f59e0b';
+    els.ghStatus.style.color=ok?'#0b1220':'#0b1220';
+  } else {
+    els.ghStatus.textContent=msg;
+    els.ghStatus.style.background='var(--card)';
+    els.ghStatus.style.color='var(--muted)';
+  }
+}
+function ghLoadCfg(){
+  if(!els.ghUser) return;
+  els.ghUser.value=ghCfg.user||'';
+  els.ghRepo.value=ghCfg.repo||'';
+  els.ghBranch.value=ghCfg.branch||'main';
+  els.ghPath.value=ghCfg.path||'my-finance.json';
+  els.ghToken.value=ghCfg.token||'';
+  els.ghAuto.checked=!!ghCfg.auto;
+  ghStatus();
 }
 
-// Wrapper for GitHub API calls
-async function gh_api(url, method='GET', data=null){
+async function gh_api(url,method='GET',data=null){
+  if(!ghCfg.token) throw new Error('يرجى إدخال Personal Access Token');
+  if(!ghCfg.user||!ghCfg.repo||!ghCfg.path) throw new Error('يرجى إكمال بيانات المستودع');
+
   const headers={
     'Authorization':`token ${ghCfg.token}`,
-    'Accept':'application/vnd.github.v3+json'
+    'Accept':'application/vnd.github.v3+json',
+    'Content-Type':'application/json'
   };
-  const body = data ? JSON.stringify(data) : null;
-  
-  const res=await fetch(url,{method,headers,body});
-  if(res.status===204) return null; // No Content
-  if(!res.ok) throw new Error(`GitHub API Error: ${res.status} ${res.statusText}`);
+
+  const options={method,headers};
+  if(data) options.body=JSON.stringify(data);
+
+  const res=await fetch(url,options);
+  if(!res.ok){
+    let msg=`خطأ في API: ${res.status}`;
+    try{const body=await res.json(); msg+=' - '+body.message}catch(e){}
+    throw new Error(msg);
+  }
   return res.json();
 }
-
-async function gh_get_content(){
-  const url=`https://api.github.com/repos/${ghCfg.user}/${ghCfg.repo}/contents/${ghCfg.path}?ref=${ghCfg.branch}`;
-  const file=await gh_api(url,'GET');
-  if(!file || file.type!=='file' || !file.content) throw new Error('الملف غير موجود أو ليس ملفاً');
-  const content=atob(file.content);
-  return {content, sha:file.sha};
+async function ghTest(){
+  try{
+    ghStatus('جاري الاختبار...');
+    const url=`https://api.github.com/repos/${ghCfg.user}/${ghCfg.repo}`;
+    await gh_api(url);
+    ghStatus('تم الاتصال بنجاح. جاهز للمزامنة.',true);
+  }
+  catch(e){ ghStatus('فشل الاتصال: '+e.message,false); }
 }
+async function ghPull(){
+  if(!confirm('سيتم استبدال بياناتك المحلية بالنسخة الموجودة على GitHub. هل أنت متأكد؟')) return;
+  try{
+    ghStatus('جاري تحميل البيانات...');
+    const url=`https://api.github.com/repos/${ghCfg.user}/${ghCfg.repo}/contents/${ghCfg.path}?ref=${ghCfg.branch}`;
+    const fileInfo=await gh_api(url);
+    const content=atob(fileInfo.content);
+    const data=JSON.parse(content);
+    fileInfo.sha=fileInfo.sha; // حفظ الـ SHA للتعديل لاحقاً
 
-async function gh_put_content(content, sha){
-  const url=`https://api.github.com/repos/${ghCfg.user}/${ghCfg.repo}/contents/${ghCfg.path}`;
-  const msg='Sync: Automatic update from Personal Finance App';
+    if(Array.isArray(data.ledger)) ledger=data.ledger;
+    if(Array.isArray(data.accounts)) accounts=data.accounts;
+    if(Array.isArray(data.categories)) categories=data.categories;
+    if(Array.isArray(data.commitments)) commitments=data.commitments;
+    if(Array.isArray(data.collections)) collections=data.collections;
+
+    ensureBaseCategories();
+    commitments=commitments.map(c=>migrateCommit(c));
+    collections=collections.map(c=>migrateCollect(c));
+
+    saveLedger(); saveAccounts(); saveCategories(); saveCommitments(); saveCollections();
+    txPage = 1;
+    render();
+    ghStatus('تم التحميل بنجاح.',true);
+  }
+  catch(e){ ghStatus('فشل التحميل: '+e.message,false); }
+}
+async function ghPush(){
+  try{
+    ghStatus('جاري رفع البيانات...');
+    // 1. التأكد من وجود/إنشاء الفرع
+    await gh_create_branch();
+    // 2. قراءة SHA للملف الحالي
+    const url=`https://api.github.com/repos/${ghCfg.user}/${ghCfg.repo}/contents/${ghCfg.path}?ref=${ghCfg.branch}`;
+    let sha=null;
+    try{
+      const fileInfo=await gh_api(url);
+      sha=fileInfo.sha;
+    } catch(e){
+      if(e.message.includes('404')) sha=null; // الملف غير موجود
+      else throw e;
+    }
+
+    // 3. رفع المحتوى الجديد
+    const data={ ledger, accounts, categories, commitments, collections, exportedAt:new Date().toISOString() };
+    const content=JSON.stringify(data,null,2);
+    await gh_update_file(ghCfg.path, content, sha);
+    ghStatus('تم الرفع بنجاح.',true);
+  }
+  catch(e){ ghStatus('فشل الرفع: '+e.message,false); }
+}
+async function gh_update_file(path, content, sha){
+  const url=`https://api.github.com/repos/${ghCfg.user}/${ghCfg.repo}/contents/${path}`;
+  const msg='Automated update from Personal Finance App';
   const data={
     message:msg,
     content:btoa(content),
@@ -1926,7 +1950,6 @@ async function gh_put_content(content, sha){
   };
   return gh_api(url,'PUT',data);
 }
-
 async function gh_create_branch(){
   if(ghCfg.branch==='main' || ghCfg.branch==='master') return;
   const repoInfo=await gh_api(`https://api.github.com/repos/${ghCfg.user}/${ghCfg.repo}`,'GET');
@@ -1941,84 +1964,11 @@ async function gh_create_branch(){
   }
   try{
     await gh_api(`https://api.github.com/repos/${ghCfg.user}/${ghCfg.repo}/git/refs`,'POST',{ref:`refs/heads/${ghCfg.branch}`, sha});
-  } catch(e){
+  }
+  catch(e){
     if(e.message.includes('Reference already exists')) return; // الفرع موجود مسبقاً
     throw e;
   }
-}
-
-async function ghTest(){
-  readGhFormToCfg();
-  if(!ghCfg.user||!ghCfg.repo||!ghCfg.token){ ghStatus('أكمل الإعدادات أولاً',false); return; }
-  try{
-    await gh_api(`https://api.github.com/repos/${ghCfg.user}/${ghCfg.repo}`,'GET');
-    ghStatus('الاتصال ناجح',true);
-  }
-  catch(e){ ghStatus('فشل الاتصال: '+e.message,false); }
-}
-
-async function ghPull(){
-  readGhFormToCfg();
-  if(!ghCfg.user||!ghCfg.repo||!ghCfg.token){ ghStatus('أكمل الإعدادات أولاً',false); return; }
-  ghStatus('جاري التحميل...',false);
-  try{
-    const {content}=await gh_get_content();
-    const data=JSON.parse(content);
-    
-    // استبدال البيانات المحلية ببيانات GitHub
-    if(Array.isArray(data.ledger)) ledger=data.ledger;
-    if(Array.isArray(data.accounts)) accounts=data.accounts;
-    if(Array.isArray(data.categories)) categories=data.categories;
-    if(Array.isArray(data.commitments)) commitments=data.commitments;
-    if(Array.isArray(data.collections)) collections=data.collections;
-
-    // توحيد الحسابات والفئات الأساسية
-    ensureBaseCategories();
-    commitments=commitments.map(c=>migrateCommit(c));
-    collections=collections.map(c=>migrateCollect(c));
-
-    saveLedger(); saveAccounts(); saveCategories(); saveCommitments(); saveCollections();
-    refreshAccountSelects(); refreshCategorySelect(); drawCatsBadges();
-    drawCommitments(); drawCollections(); drawDueSoon(); render();
-
-    ghStatus('تم التحميل بنجاح',true);
-    alert('تم تحميل البيانات من GitHub بنجاح.');
-  }
-  catch(e){ ghStatus('فشل التحميل: '+e.message,false); }
-}
-
-async function ghPush(){
-  readGhFormToCfg();
-  if(!ghCfg.user||!ghCfg.repo||!ghCfg.token){
-    if(!ghCfg.auto) ghStatus('أكمل الإعدادات أولاً',false);
-    return;
-  }
-  ghStatus('جاري الرفع...',false);
-  try{
-    const data={
-      ledger, accounts, categories, commitments, collections,
-      exportedAt:new Date().toISOString()
-    };
-    const content=JSON.stringify(data,null,2);
-
-    // 1. التأكد من وجود الفرع
-    await gh_create_branch();
-    
-    // 2. محاولة الحصول على الـ SHA للملف (لتحديثه)
-    let sha=null;
-    try{
-      const fileInfo=await gh_get_content();
-      sha=fileInfo.sha;
-    } catch(e){
-      if(!e.message.includes('الملف غير موجود')) throw e; // إذا كان خطأ آخر، أعد رمي الخطأ
-      // الملف غير موجود، SHA سيبقى null وسيتم إنشاء الملف
-    }
-
-    // 3. رفع المحتوى
-    await gh_put_content(content, sha);
-    ghStatus('تم الرفع بنجاح',true);
-  }
-  catch(e){ ghStatus('فشل الرفع: '+e.message,false); }
 }
 
 els.ghSaveCfg?.addEventListener('click', ghSaveCfg);
@@ -2039,7 +1989,7 @@ function init(){
     saveAccounts();
   }
   ensureBaseCategories();
-  initCollapsibles();
+  // initCollapsibles(); // تم إلغاء هذه الدالة
   commitments=commitments.map(c=>migrateCommit(c));
   collections=collections.map(c=>migrateCollect(c));
   saveCommitments(); saveCollections();
@@ -2050,14 +2000,38 @@ function init(){
     if(!els.monthPicker.value) els.monthPicker.value=today;
     els.monthPicker.setAttribute('max', today);
   }
+  els.date.value=formatLocalDate(new Date());
+  els.trDate.value=formatLocalDate(new Date());
 
-  refreshAccountSelects(); refreshCategorySelect(); drawCatsBadges();
-  drawCommitments(); drawCollections(); drawDueSoon(); render();
-  fillGhFormFromStorage();
-  els.cEndAt?.toggleAttribute('required', els.cRecurring?.checked);
-  els.coEndAt?.toggleAttribute('required', els.coRecurring?.checked);
+  ghLoadCfg();
+
+  // تفعيل الشاشة الافتراضية
+  showScreen('card-balance');
+
+  render();
 }
-init();
+
+// PWA
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  deferredPrompt = e;
+  els.installBtn.style.display='inline-flex';
+});
+els.installBtn?.addEventListener('click', (e) => {
+  els.installBtn.style.display='none';
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then((choiceResult) => {
+    if (choiceResult.outcome === 'accepted') {
+      console.log('User accepted the install prompt');
+    } else {
+      console.log('User dismissed the install prompt');
+    }
+    deferredPrompt = null;
+  });
+});
+
+window.addEventListener('load',init);
 </script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </body>
 </html>
