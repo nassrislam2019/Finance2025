@@ -62,12 +62,17 @@
 </head>
 <body class="antialiased">
 
-<div class="min-h-screen flex direction-rtl">
-  <aside class="w-64 bg-white dark:bg-gray-800 shadow-md p-4 flex flex-col" id="sidebar">
-    <div class="flex items-center gap-3 mb-4">
-      <div class="text-2xl font-extrabold" style="color:var(--brand)">دفتر حساباتي</div>
-      <button id="darkToggle" class="ml-auto px-2 py-1 rounded bg-gray-100 dark:bg-gray-700 text-sm">تبديل إلى الوضع الليلي</button>
-    </div>
+<div class="min-h-screen direction-rtl"> <main class="flex-1 p-6 overflow-auto" style="min-height: calc(100vh - 80px);">
+    </main>
+
+  <footer class="flex justify-between items-center p-4 bg-gray-100 dark:bg-gray-900 fixed bottom-0 left-0 right-0 w-full z-10" style="height: 60px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05);">
+    <button class="nav-icon" data-page="dashboard">🏠</button>
+    <button class="nav-icon" data-page="transactions">💼</button>
+    <button class="nav-icon" data-page="add">➕</button>
+    <button class="nav-icon" data-page="accounts">📊</button>
+    <button class="nav-icon" data-page="commitments">🔖</button>
+  </footer>
+</div>
 
     <nav class="flex-1">
       <ul class="space-y-2">
