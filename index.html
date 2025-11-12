@@ -938,12 +938,11 @@ $('#darkToggle')?.addEventListener('click', ()=>{
 });
 
 // Navigation
-$$('.nav-btn').forEach(b => b.addEventListener('click', (ev) => {
+// تم استبدال nav-btn بـ nav-icon
+$$('footer .nav-icon').forEach(b => b.addEventListener('click', (ev) => {
   ev.preventDefault(); 
   const p = b.dataset.page; 
   gotoPage(p); 
-  $$('.nav-btn').forEach(n => n.classList.remove('bg-gray-100', 'dark:bg-gray-700')); 
-  b.classList.add('bg-gray-100', 'dark:bg-gray-700'); 
 }));
 
 function gotoPage(p){
