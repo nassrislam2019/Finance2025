@@ -14,11 +14,14 @@
 
   <style>
     :root {
-      --bg: #f3f4f6;
-      --card: #ffffff;
-      --muted: #6b7280;
-      --txt: #0f172a;
+      /* ضبط طفيف للسطوع والتباين (لا يغيّر التصميم) */
+      --bg: #eef2f7;       /* خلفية عامة */
+      --card: #ffffff;     /* بطاقات */
+      --muted: #475569;    /* نص ثانوي */
+      --txt: #031025;      /* نص أساسي أقوى بتباين أعلى */
       --brand: #4f46e5;
+      --danger: #dc2626;
+      --ok: #15803d;
     }
     html,body{height:100%}
     body {
@@ -28,11 +31,14 @@
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
     }
+    /* ensure bg-white uses card variable to keep consistent contrast */
+    .bg-white { background-color: var(--card) !important; color: var(--txt); }
+
     /* scrollbar */
     ::-webkit-scrollbar { width:8px; height:8px; }
     ::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:10px; }
     /* modal transitions */
-    .modal { transition: opacity .2s ease, transform .2s ease; transform: scale(.98); opacity:0; visibility:hidden; }
+    .modal { transition: opacity .18s ease, transform .18s ease; transform: scale(.98); opacity:0; visibility:hidden; }
     .modal.is-open { transform: scale(1); opacity:1; visibility:visible; }
     /* toast */
     #toast-container { position: fixed; bottom: 1.25rem; left: 1.25rem; z-index:60; display:flex; flex-direction:column; gap:0.5rem; }
@@ -42,9 +48,11 @@
     /* tiny responsive */
     @media (max-width:640px){ .container{padding-left:1rem;padding-right:1rem} }
     /* dark mode helper */
-    .dark-mode { background:#0b1220; color:#e6eef8; }
+    .dark-mode { background:#071022; color:#e6eef8; }
     .dark-mode .bg-white{ background:#0f1724 !important; }
     .dark-mode input, .dark-mode select, .dark-mode textarea { background:#0f1724 !important; color:#e6eef8 !important; border-color:#24303a !important; }
+    /* small helper to show remaining/paid badges */
+    .badge { padding:2px 8px; border-radius:999px; font-size:12px; font-weight:600; display:inline-block; }
   </style>
 </head>
 <body class="text-gray-800">
@@ -72,9 +80,17 @@
           <button id="btn-gemini-summary" class="text-xs bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-3 py-1 rounded-full">✨ تحليل ملخص</button>
         </div>
         <div class="grid grid-cols-2 gap-4 text-center">
-          <div><p class="text-sm text-gray-500">إجمالي الدخل</p><p id="summary-income" class="text-xl font-bold text-green-600">0.00</p></div>
-          <div><p class="text-sm text-gray-500">إجمالي المصروفات</p><p id="summary-expense" class="text-xl font-bold text-red-600">0.00</p></div>
-          <div class="col-span-2"><p class="text-sm text-gray-500">صافي التدفق</p><p id="summary-net" class="text-2xl font-bold text-gray-800">0.00</p></div>
+          <div><p class="text-sm" style="color:var(--muted)">إجمالي الدخل</p><p id="summary-income" class="text-xl font-bold" style="color:#15803d">0.00</p></div>
+          <div><p class="text-sm" style="color:var(--muted)">إجمالي المصروفات</p><p id="summary-expense" class="text-xl font-bold" style="color:var(--danger)">0.00</p></div>
+          <div class="col-span-2"><p class="text-sm" style="color:var(--muted)">صافي التدفق</p><p id="summary-net" class="text-2xl font-bold" style="color:var(--txt)">0.00</p></div>
+
+          <!-- New requested metrics -->
+          <div class="col-span-2 mt-2 text-right">
+            <p class="text-sm" style="color:var(--muted)">إجمالي المتبقي من التزامات الشهر الحالي</p>
+            <p id="summary-payables-remaining" class="text-lg font-bold text-red-600">0.00</p>
+            <p class="text-sm mt-2" style="color:var(--muted)">إجمالي التحصيلات غير المحصلة للشهر الحالي</p>
+            <p id="summary-receivables-uncollected" class="text-lg font-bold text-green-600">0.00</p>
+          </div>
         </div>
       </div>
 
@@ -84,7 +100,7 @@
           <button id="btn-open-add-account" class="text-sm bg-indigo-100 text-indigo-700 px-3 py-1 rounded-md">إضافة حساب</button>
         </div>
         <div id="accounts-list" class="space-y-3 max-h-96 overflow-y-auto"></div>
-        <div class="border-t pt-3 mt-4"><p class="text-sm text-gray-500">إجمالي الأرصدة</p><p id="summary-total-balance" class="text-2xl font-bold text-indigo-800">0.00</p></div>
+        <div class="border-t pt-3 mt-4"><p class="text-sm" style="color:var(--muted)">إجمالي الأرصدة</p><p id="summary-total-balance" class="text-2xl font-bold text-indigo-800">0.00</p></div>
       </div>
     </aside>
 
@@ -124,18 +140,18 @@
           <table class="w-full min-w-max text-sm text-right">
             <thead class="bg-gray-50">
               <tr>
-                <th class="p-3 font-semibold text-gray-600">التاريخ</th>
-                <th class="p-3 font-semibold text-gray-600">الحساب</th>
-                <th class="p-3 font-semibold text-gray-600">الوصف</th>
-                <th class="p-3 font-semibold text-gray-600">دائن (له)</th>
-                <th class="p-3 font-semibold text-gray-600">مدين (عليه)</th>
-                <th class="p-3 font-semibold text-gray-600">الرصيد</th>
-                <th class="p-3 font-semibold text-gray-600"></th>
+                <th class="p-3 font-semibold" style="color:var(--muted)">التاريخ</th>
+                <th class="p-3 font-semibold" style="color:var(--muted)">الحساب</th>
+                <th class="p-3 font-semibold" style="color:var(--muted)">الوصف</th>
+                <th class="p-3 font-semibold" style="color:var(--muted)">دائن (له)</th>
+                <th class="p-3 font-semibold" style="color:var(--muted)">مدين (عليه)</th>
+                <th class="p-3 font-semibold" style="color:var(--muted)">الرصيد</th>
+                <th class="p-3 font-semibold" style="color:var(--muted)"></th>
               </tr>
             </thead>
             <tbody id="transactions-table-body"></tbody>
           </table>
-          <div id="transactions-empty-state" class="text-center p-10 text-gray-500 hidden">
+          <div id="transactions-empty-state" class="text-center p-10" style="color:var(--muted); display:none;">
             <p>لا توجد حركات لعرضها. حاول إضافة حركة جديدة.</p>
           </div>
         </div>
@@ -147,7 +163,6 @@
   <div id="toast-container"></div>
 
   <!-- ===== MODALS (كاملة) ===== -->
-
   <!-- Transaction Modal -->
   <div id="transaction-modal" class="modal fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
     <div class="bg-white w-full max-w-2xl rounded-xl shadow-2xl p-6">
@@ -158,7 +173,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label for="tx-type" class="block text-sm font-medium text-gray-700 mb-1">نوع الحركة</label>
+            <label for="tx-type" class="block text-sm font-medium" style="color:var(--muted)">نوع الحركة</label>
             <select id="tx-type" class="form-select w-full rounded-lg border-gray-300" required>
               <option value="income">دخل</option>
               <option value="expense">مصروف</option>
@@ -166,30 +181,30 @@
             </select>
           </div>
           <div>
-            <label for="tx-date" class="block text-sm font-medium text-gray-700 mb-1">التاريخ</label>
+            <label for="tx-date" class="block text-sm font-medium" style="color:var(--muted)">التاريخ</label>
             <input type="datetime-local" id="tx-date" class="form-input w-full rounded-lg border-gray-300" required>
           </div>
           <div class="md:col-span-2">
-            <label for="tx-amount" class="block text-sm font-medium text-gray-700 mb-1">المبلغ</label>
+            <label for="tx-amount" class="block text-sm font-medium" style="color:var(--muted)">المبلغ</label>
             <input type="number" step="0.01" id="tx-amount" class="form-input w-full rounded-lg border-gray-300" placeholder="0.00" required>
           </div>
 
           <div id="tx-account-from-container">
-            <label for="tx-account-from" class="block text-sm font-medium text-gray-700 mb-1">من حساب (المصدر)</label>
+            <label for="tx-account-from" class="block text-sm font-medium" style="color:var(--muted)">من حساب (المصدر)</label>
             <select id="tx-account-from" class="form-select w-full rounded-lg border-gray-300"></select>
           </div>
           <div id="tx-account-to-container">
-            <label for="tx-account-to" class="block text-sm font-medium text-gray-700 mb-1">إلى حساب (الهدف)</label>
+            <label for="tx-account-to" class="block text-sm font-medium" style="color:var(--muted)">إلى حساب (الهدف)</label>
             <select id="tx-account-to" class="form-select w-full rounded-lg border-gray-300"></select>
           </div>
 
           <div>
-            <label for="tx-category" class="block text-sm font-medium text-gray-700 mb-1">الفئة</label>
+            <label for="tx-category" class="block text-sm font-medium" style="color:var(--muted)">الفئة</label>
             <input type="text" id="tx-category" class="form-input w-full rounded-lg border-gray-300" placeholder="راتب، فواتير، ...">
           </div>
 
           <div class="md:col-span-2">
-            <label for="tx-notes" class="block text-sm font-medium text-gray-700 mb-1">ملاحظات</label>
+            <label for="tx-notes" class="block text-sm font-medium" style="color:var(--muted)">ملاحظات</label>
             <textarea id="tx-notes" rows="2" class="form-textarea w-full rounded-lg border-gray-300"></textarea>
           </div>
         </div>
@@ -211,11 +226,11 @@
 
         <div class="space-y-4">
           <div>
-            <label for="account-name" class="block text-sm font-medium text-gray-700 mb-1">اسم الحساب</label>
+            <label for="account-name" class="block text-sm font-medium" style="color:var(--muted)">اسم الحساب</label>
             <input type="text" id="account-name" class="form-input w-full rounded-lg border-gray-300" required>
           </div>
           <div>
-            <label for="account-type" class="block text-sm font-medium text-gray-700 mb-1">نوع الحساب</label>
+            <label for="account-type" class="block text-sm font-medium" style="color:var(--muted)">نوع الحساب</label>
             <select id="account-type" class="form-select w-full rounded-lg border-gray-300" required>
               <option value="cash">نقدي (كاش)</option>
               <option value="bank">بنكي</option>
@@ -224,7 +239,7 @@
             </select>
           </div>
           <div>
-            <label for="account-initial-balance" class="block text-sm font-medium text-gray-700 mb-1">رصيد افتتاحي</label>
+            <label for="account-initial-balance" class="block text-sm font-medium" style="color:var(--muted)">رصيد افتتاحي</label>
             <input type="number" step="0.01" id="account-initial-balance" class="form-input w-full rounded-lg border-gray-300" value="0" required>
           </div>
         </div>
@@ -246,14 +261,14 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label for="due-type" class="block text-sm font-medium text-gray-700 mb-1">نوع البند</label>
+            <label for="due-type" class="block text-sm font-medium" style="color:var(--muted)">نوع البند</label>
             <select id="due-type" class="form-select w-full rounded-lg border-gray-300" required>
               <option value="receivable">تحصيل (مستحق لي)</option>
               <option value="payable">التزام (مستحق علي)</option>
             </select>
           </div>
           <div>
-            <label for="due-recurrence" class="block text-sm font-medium text-gray-700 mb-1">التكرار</label>
+            <label for="due-recurrence" class="block text-sm font-medium" style="color:var(--muted)">التكرار</label>
             <select id="due-recurrence" class="form-select w-full rounded-lg border-gray-300" required>
               <option value="none">لا يتكرر (مرة واحدة)</option>
               <option value="monthly">يتكرر شهرياً</option>
@@ -261,27 +276,56 @@
           </div>
 
           <div class="md:col-span-2">
-            <label for="due-name" class="block text-sm font-medium text-gray-700 mb-1">اسم البند</label>
+            <label for="due-name" class="block text-sm font-medium" style="color:var(--muted)">اسم البند</label>
             <input type="text" id="due-name" class="form-input w-full rounded-lg border-gray-300" placeholder="فاتورة، إيجار..." required>
           </div>
           <div>
-            <label for="due-amount" class="block text-sm font-medium text-gray-700 mb-1">المبلغ</label>
+            <label for="due-amount" class="block text-sm font-medium" style="color:var(--muted)">المبلغ</label>
             <input type="number" step="0.01" id="due-amount" class="form-input w-full rounded-lg border-gray-300" value="0" required>
           </div>
           <div>
-            <label for="due-date" class="block text-sm font-medium text-gray-700 mb-1">تاريخ أول استحقاق</label>
+            <label for="due-date" class="block text-sm font-medium" style="color:var(--muted)">تاريخ أول استحقاق</label>
             <input type="date" id="due-date" class="form-input w-full rounded-lg border-gray-300" required>
           </div>
           <div class="md:col-span-2">
-            <label for="due-account-id" class="block text-sm font-medium text-gray-700 mb-1">الحساب المرتبط</label>
+            <label for="due-account-id" class="block text-sm font-medium" style="color:var(--muted)">الحساب المرتبط</label>
             <select id="due-account-id" class="form-select w-full rounded-lg border-gray-300" required></select>
-            <p class="text-xs text-gray-500 mt-1">(الحساب الذي سيتم التحصيل إليه أو السداد منه)</p>
+            <p class="text-xs" style="color:var(--muted); margin-top:6px;">(الحساب الذي سيتم التحصيل إليه أو السداد منه)</p>
           </div>
         </div>
 
         <div class="flex justify-end gap-3 mt-6">
           <button type="button" class="btn-close-modal bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">إلغاء</button>
           <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg">حفظ البند</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Pay/Collect Modal (new) -->
+  <div id="pay-collect-modal" class="modal fixed inset-0 z-60 flex items-center justify-center bg-black bg-opacity-50 p-4">
+    <div class="bg-white w-full max-w-md rounded-xl shadow-2xl p-6">
+      <h3 id="pay-collect-title" class="text-xl font-bold mb-4">سداد / تحصيل</h3>
+      <form id="pay-collect-form">
+        <input type="hidden" id="pay-collect-due-id">
+        <div class="space-y-3">
+          <div>
+            <label class="block text-sm font-medium" style="color:var(--muted)">اختر الحساب</label>
+            <select id="pay-collect-account" class="form-select w-full rounded-lg border-gray-300" required></select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium" style="color:var(--muted)">المبلغ</label>
+            <input type="number" step="0.01" id="pay-collect-amount" class="form-input w-full rounded-lg border-gray-300" required>
+            <p id="pay-collect-remaining-note" class="text-xs" style="color:var(--muted); margin-top:6px;"></p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium" style="color:var(--muted)">ملاحظات</label>
+            <input id="pay-collect-notes" class="form-input w-full rounded-lg border-gray-300" />
+          </div>
+        </div>
+        <div class="flex justify-end gap-3 mt-6">
+          <button type="button" class="btn-close-modal bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">إلغاء</button>
+          <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-lg">تأكيد</button>
         </div>
       </form>
     </div>
@@ -303,12 +347,12 @@
   <div id="import-export-modal" class="modal fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
     <div class="bg-white w-full max-w-lg rounded-xl shadow-2xl p-6">
       <h3 class="text-xl font-bold mb-6">استيراد / تصدير البيانات</h3>
-      <p class="text-sm text-gray-600 mb-4">يتم حفظ بياناتك محلياً في المتصفح. يمكنك تصديرها كملف JSON.</p>
+      <p class="text-sm" style="color:var(--muted); margin-bottom:8px;">يتم حفظ بياناتك محلياً في المتصفح. يمكنك تصديرها كملف JSON.</p>
 
       <div class="space-y-4">
         <button id="btn-export-data" class="w-full bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">تصدير البيانات (JSON)</button>
         <div>
-          <label for="import-file" class="block text-sm font-medium text-gray-700 mb-1">استيراد بيانات (JSON)</label>
+          <label for="import-file" class="block text-sm font-medium" style="color:var(--muted); margin-bottom:6px;">استيراد بيانات (JSON)</label>
           <input type="file" id="import-file" accept=".json" class="form-input w-full text-sm">
           <button id="btn-import-data" class="w-full mt-2 bg-green-600 text-white px-4 py-2 rounded-lg">استيراد و استبدال البيانات الحالية</button>
         </div>
@@ -343,7 +387,7 @@
     // -------------------------
     // 0. Utilities / Formatting
     // -------------------------
-    const DB_KEY = 'myAccountingAppDB_v2';
+    const DB_KEY = 'myAccountingAppDB_v3';
     let state = { accounts:[], transactions:[], payables:[] };
     let currentFilters = { account:'all', type:'all', dateStart:'', dateEnd:'' };
 
@@ -381,9 +425,7 @@
           const raw = localStorage.getItem(DB_KEY);
           if (raw) {
             const parsed = JSON.parse(raw);
-            // convert Dates stored as strings to strings (we'll use ISO strings)
             state = parsed;
-            // migration safety
             if (!state.accounts) state.accounts = [];
             if (!state.transactions) state.transactions = [];
             if (!state.payables) state.payables = [];
@@ -422,7 +464,6 @@
           transactions: [
             { id: crypto.randomUUID(), createdAt: new Date('2025-11-01T10:00:00').toISOString(), date: new Date('2025-11-01T10:00:00').toISOString(), type:'income', to: bankId, from: null, amount: 5000, category:'راتب', notes:'راتب شهر أكتوبر' },
             { id: crypto.randomUUID(), createdAt: new Date('2025-11-02T14:00:00').toISOString(), date: new Date('2025-11-02T14:00:00').toISOString(), type:'expense', from: cashId, to: null, amount: 300, category:'فواتير', notes:'فاتورة كهرباء' },
-            // transfer pair
             ...(function(){ const linked = crypto.randomUUID(); return [
               { id: crypto.randomUUID(), createdAt: new Date('2025-11-03T11:00:00').toISOString(), date: new Date('2025-11-03T11:00:00').toISOString(), type:'expense', from: bankId, to:null, amount:1000, category:'تحويل صادر', notes:'تحويل للعهدة', linkedId: linked },
               { id: linked, createdAt: new Date('2025-11-03T11:00:00').toISOString(), date: new Date('2025-11-03T11:00:00').toISOString(), type:'income', from:null, to: cashId, amount:1000, category:'تحويل وارد', notes:'تحويل للعهدة', linkedId: null }
@@ -431,10 +472,10 @@
             { id: crypto.randomUUID(), createdAt: new Date('2025-11-07T09:00:00').toISOString(), date: new Date('2025-11-07T09:00:00').toISOString(), type:'income', to: cashId, from: null, amount:200, category:'مبيعات', notes:'مبيعات نقدية' },
           ],
           payables: [
-            { id: crypto.randomUUID(), type:'receivable', name:'دفعة العميل (أحمد)', amount:2500, dueDate: fiveDays.toISOString(), status:'pending', accountId: bankId, recurrence:'none' },
-            { id: crypto.randomUUID(), type:'payable', name:'فاتورة الإنترنت', amount:450, dueDate: twoDaysAgo.toISOString(), status:'pending', accountId: cashId, recurrence:'none' },
-            { id: crypto.randomUUID(), type:'payable', name:'إيجار المكتب (سابق)', amount:3000, dueDate: fifteenDaysAgo.toISOString(), status:'paid', accountId: bankId, recurrence:'none' },
-            { id: crypto.randomUUID(), type:'payable', name:'إيجار المكتب (شهري)', amount:3000, dueDate: new Date(today.getFullYear(), today.getMonth(), 1).toISOString(), status:'pending', accountId: bankId, recurrence:'monthly' }
+            { id: crypto.randomUUID(), type:'receivable', name:'دفعة العميل (أحمد)', amount:2500, remainingAmount:2500, dueDate: fiveDays.toISOString(), status:'pending', accountId: bankId, recurrence:'none', originalDueDate: fiveDays.toISOString(), payments:[] },
+            { id: crypto.randomUUID(), type:'payable', name:'فاتورة الإنترنت', amount:450, remainingAmount:450, dueDate: twoDaysAgo.toISOString(), status:'pending', accountId: cashId, recurrence:'none', originalDueDate: twoDaysAgo.toISOString(), payments:[] },
+            { id: crypto.randomUUID(), type:'payable', name:'إيجار المكتب (سابق)', amount:3000, remainingAmount:0, dueDate: fifteenDaysAgo.toISOString(), status:'paid', accountId: bankId, recurrence:'none', originalDueDate: fifteenDaysAgo.toISOString(), payments:[ /* hypothetical payment record */ ] },
+            { id: crypto.randomUUID(), type:'payable', name:'إيجار المكتب (شهري)', amount:3000, remainingAmount:3000, dueDate: new Date(today.getFullYear(), today.getMonth(), 1).toISOString(), status:'pending', accountId: bankId, recurrence:'monthly', originalDueDate: new Date(today.getFullYear(), today.getMonth(), 1).toISOString(), payments:[] }
           ]
         };
         this.save();
@@ -553,17 +594,115 @@
       },
 
       addDue(data){
-        state.payables.push({ id: crypto.randomUUID(), type: data.type, name: data.name, amount: Number(data.amount)||0, dueDate: data.dueDate, accountId: data.accountId, recurrence: data.recurrence || 'none', status: 'pending' });
+        // create due with remainingAmount and payments history
+        state.payables.push({ id: crypto.randomUUID(), type: data.type, name: data.name, amount: Number(data.amount)||0, remainingAmount: Number(data.amount)||0, dueDate: data.dueDate, accountId: data.accountId, recurrence: data.recurrence || 'none', status: 'pending', originalDueDate: data.dueDate, payments:[] });
         StorageService.save();
       },
 
       updateDue(id, data){
         const due = this.getDueById(id); if (!due) return;
-        due.type = data.type; due.name = data.name; due.amount = Number(data.amount)||due.amount; due.dueDate = data.dueDate; due.accountId = data.accountId; due.recurrence = data.recurrence;
+        due.type = data.type; due.name = data.name; due.amount = Number(data.amount)||due.amount; 
+        // if amount changed, adjust remaining if it was pending
+        if (due.status !== 'paid') due.remainingAmount = Number(data.amount)||due.remainingAmount;
+        due.dueDate = data.dueDate; due.accountId = data.accountId; due.recurrence = data.recurrence;
+        if (!due.originalDueDate) due.originalDueDate = data.dueDate;
         StorageService.save();
       },
 
-      deleteDue(id){ state.payables = state.payables.filter(p => p.id !== id); StorageService.save(); },
+      deleteDue(id){
+        // requested behavior: if due was paid, restore it to pending with original due date and delete its payment transactions
+        const due = this.getDueById(id);
+        if (!due) return;
+        if (due.status === 'paid' && Array.isArray(due.payments) && due.payments.length) {
+          // revert payments: delete associated transactions and reset due
+          for (const p of due.payments) {
+            if (p.txId) {
+              const tx = this.getTransactionById(p.txId);
+              if (tx) {
+                state.transactions = state.transactions.filter(t => t.id !== p.txId);
+              }
+            }
+          }
+          // revert due to pending with originalDueDate
+          due.status = 'pending';
+          due.remainingAmount = due.amount;
+          due.dueDate = due.originalDueDate || due.dueDate;
+          due.payments = [];
+          this.recalculateAllBalances();
+          StorageService.save();
+          return 'restored';
+        } else {
+          // simply remove if not paid or no payments
+          state.payables = state.payables.filter(p => p.id !== id);
+          StorageService.save();
+          return 'deleted';
+        }
+      },
+
+      // new unified method: perform pay/collect with partial support
+      applyPayment({ dueId, amount, accountId, notes, isCollection }) {
+        const due = this.getDueById(dueId);
+        if (!due) return { ok:false, msg:'البند غير موجود' };
+        amount = Number(amount)||0;
+        if (amount <= 0) return { ok:false, msg:'المبلغ غير صالح' };
+        if (amount > due.remainingAmount + 0.0001) return { ok:false, msg:'المبلغ أكبر من المتبقي' };
+
+        const nowIso = new Date().toISOString();
+        // create transaction
+        let tx = null;
+        if (isCollection) {
+          // collection => income to accountId
+          tx = { id: crypto.randomUUID(), createdAt: nowIso, date: nowIso, type:'income', from:null, to: accountId, amount, category:'تحصيل', notes: notes || `تحصيل: ${due.name}` };
+        } else {
+          // payment => expense from accountId
+          tx = { id: crypto.randomUUID(), createdAt: nowIso, date: nowIso, type:'expense', from:accountId, to:null, amount, category:'سداد', notes: notes || `سداد: ${due.name}` };
+        }
+        state.transactions.push(tx);
+
+        // record payment on due
+        due.payments = due.payments || [];
+        due.payments.push({ amount, date: nowIso, accountId, txId: tx.id });
+
+        due.remainingAmount = Math.max(0, Number(due.remainingAmount) - amount);
+
+        if (due.remainingAmount <= 0.0001) {
+          // fully paid/collected
+          if (due.recurrence === 'monthly') {
+            // move dueDate to next month
+            const next = new Date(due.dueDate);
+            next.setMonth(next.getMonth()+1);
+            // if monthly, reset remaining to full amount for next cycle
+            due.dueDate = next.toISOString();
+            due.remainingAmount = Number(due.amount) || 0;
+            due.status = 'pending';
+            // keep payments history (optionally clear or keep as history)
+          } else {
+            due.status = 'paid';
+            // store originalDueDate if missing
+            if (!due.originalDueDate) due.originalDueDate = due.dueDate;
+          }
+        } else {
+          // partial payment: status stays pending but remaining updated
+          due.status = 'pending';
+        }
+
+        this.recalculateAllBalances();
+        StorageService.save();
+        return { ok:true, txId: tx.id, due };
+      },
+
+      // convenience wrappers for old code compatibility
+      collectReceivablePartial(dueId, amount, accountId, notes=''){
+        const due = this.getDueById(dueId); if (!due || due.type !== 'receivable') return false;
+        const res = this.applyPayment({ dueId, amount, accountId, notes, isCollection:true });
+        return res.ok;
+      },
+
+      payPayablePartial(dueId, amount, accountId, notes=''){
+        const due = this.getDueById(dueId); if (!due || due.type !== 'payable') return false;
+        const res = this.applyPayment({ dueId, amount, accountId, notes, isCollection:false });
+        return res.ok;
+      },
 
       getDuesWithStatus(){
         const today = new Date(); today.setHours(0,0,0,0);
@@ -574,24 +713,10 @@
           if (due.status === 'paid' && (due.recurrence === 'none' || !due.recurrence)) { statusText='مدفوع'; statusColor='bg-gray-100 text-gray-800'; }
           else if (dueDate < today) { statusText='متأخر'; statusColor='bg-red-100 text-red-800'; }
           else if (dueDate <= sevenDays) { statusText='قريب الاستحقاق'; statusColor='bg-yellow-100 text-yellow-800'; }
+          // ensure remainingAmount exists
+          if (due.remainingAmount === undefined || due.remainingAmount === null) due.remainingAmount = Number(due.amount) || 0;
           return { ...due, statusText, statusColor };
         }).sort((a,b) => new Date(a.dueDate) - new Date(b.dueDate));
-      },
-
-      collectReceivable(dueId){
-        const due = this.getDueById(dueId); if (!due || due.type !== 'receivable') return false;
-        this.addTransaction({ type:'income', date: new Date().toISOString(), amount: due.amount, from: null, to: due.accountId, category:'تحصيل', notes:`تحصيل: ${due.name}` });
-        if (due.recurrence === 'monthly') { const next = new Date(due.dueDate); next.setMonth(next.getMonth()+1); due.dueDate = next.toISOString(); }
-        else due.status = 'paid';
-        StorageService.save(); return true;
-      },
-
-      payPayable(dueId){
-        const due = this.getDueById(dueId); if (!due || due.type !== 'payable') return false;
-        this.addTransaction({ type:'expense', date: new Date().toISOString(), amount: due.amount, from: due.accountId, to: null, category:'سداد التزام', notes:`سداد: ${due.name}` });
-        if (due.recurrence === 'monthly') { const next = new Date(due.dueDate); next.setMonth(next.getMonth()+1); due.dueDate = next.toISOString(); }
-        else due.status = 'paid';
-        StorageService.save(); return true;
       },
 
       getFilteredTransactions(filters){
@@ -615,7 +740,18 @@
         let income=0, expense=0;
         state.transactions.forEach(tx => { if (tx.type === 'income') income += Number(tx.amount)||0; else if (tx.type === 'expense') expense += Number(tx.amount)||0; });
         const totalBalance = state.accounts.reduce((s,a) => s + (Number(a.currentBalance)||0), 0);
-        return { income, expense, net: income - expense, totalBalance };
+        // compute new metrics: remaining payables this month & uncollected receivables this month
+        const startOfMonth = new Date(); startOfMonth.setDate(1); startOfMonth.setHours(0,0,0,0);
+        const endOfMonth = new Date(startOfMonth); endOfMonth.setMonth(startOfMonth.getMonth()+1); endOfMonth.setDate(0); endOfMonth.setHours(23,59,59,999);
+        let payablesRemaining = 0, receivablesUncollected = 0;
+        state.payables.forEach(d => {
+          const dueDate = new Date(d.dueDate);
+          if (dueDate >= startOfMonth && dueDate <= endOfMonth) {
+            if (d.type === 'payable') payablesRemaining += Number(d.remainingAmount || d.amount || 0);
+            if (d.type === 'receivable') receivablesUncollected += Number(d.remainingAmount || d.amount || 0);
+          }
+        });
+        return { income, expense, net: income - expense, totalBalance, payablesRemaining, receivablesUncollected };
       }
     };
 
@@ -623,7 +759,7 @@
     // 3. View / DOM rendering
     // -------------------------
     const View = {
-      renderAll(){ this.renderAccounts(); this.renderPayablesAndReceivables(); this.renderTransactions(); this.renderDashboard(); this.updateFilterDropdowns(); this.updateAccountDropdowns(['tx-account-from','tx-account-to','due-account-id']); },
+      renderAll(){ this.renderAccounts(); this.renderPayablesAndReceivables(); this.renderTransactions(); this.renderDashboard(); this.updateFilterDropdowns(); this.updateAccountDropdowns(['tx-account-from','tx-account-to','due-account-id','pay-collect-account']); },
       renderAccounts(){
         const list = document.getElementById('accounts-list'); list.innerHTML = '';
         if (state.accounts.length === 0) { list.innerHTML = '<p class="text-gray-500 text-sm">لم تقم بإضافة أي حسابات بعد.</p>'; return; }
@@ -631,14 +767,14 @@
           const card = document.createElement('div'); card.className = 'p-4 rounded-lg border border-gray-200 bg-gray-50';
           card.innerHTML = `
             <div class="flex justify-between items-start">
-              <div><h4 class="font-bold">${acc.name}</h4><span class="text-xs text-gray-500 bg-gray-200 px-2 py-0.5 rounded">${acc.type}</span></div>
+              <div><h4 class="font-bold">${acc.name}</h4><span class="text-xs" style="color:var(--muted); background:#f1f5f9; padding:2px 8px; border-radius:8px;">${acc.type}</span></div>
               <div class="flex gap-2">
                 <button class="btn-edit-account text-gray-400 hover:text-indigo-600" data-id="${acc.id}" title="تعديل الحساب">✏</button>
                 <button class="btn-delete-account text-gray-400 hover:text-red-600" data-id="${acc.id}" title="حذف الحساب">🗑</button>
               </div>
             </div>
             <p class="text-xl font-bold text-indigo-700 mt-2">${formatCurrency(acc.currentBalance)}</p>
-            <p class="text-xs text-gray-500">الرصيد الافتتاحي: ${formatCurrency(acc.initialBalance)}</p>
+            <p class="text-xs" style="color:var(--muted)">الرصيد الافتتاحي: ${formatCurrency(acc.initialBalance)}</p>
           `;
           list.appendChild(card);
         });
@@ -659,16 +795,26 @@
           const item = document.createElement('div'); item.className = 'p-3 rounded-lg border border-gray-200 flex justify-between items-center';
           const account = CoreLogic.getAccountById(due.accountId);
           const isPaid = due.status === 'paid' && (due.recurrence === 'none' || !due.recurrence);
+          const remaining = Number(due.remainingAmount || 0);
+          let paymentsHtml = '';
+          if (Array.isArray(due.payments) && due.payments.length) {
+            paymentsHtml = `<div class="text-xs" style="color:var(--muted); margin-top:6px;">سجل التحصيل/السداد: ${due.payments.map(p=>formatCurrency(p.amount)).join(' • ')}</div>`;
+          }
           item.innerHTML = `
             <div class="flex-1">
               <div class="flex items-center gap-2">
                 <span class="text-xs font-medium px-2 py-0.5 rounded-full ${due.statusColor}">${due.statusText}</span>
                 <h5 class="font-bold ${isPaid ? 'text-gray-500 line-through' : ''}">${due.name}</h5>
-                ${due.recurrence === 'monthly' ? `<span class="text-xs font-medium px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800">شهري</span>` : ''}
+                ${due.recurrence === 'monthly' ? `<span class="text-xs font-medium px-2 py-0.5 rounded-full" style="background:#eef2ff;color:#3730a3">شهري</span>` : ''}
               </div>
-              <p class="text-sm text-gray-600 mt-1">
-                ${formatCurrency(due.amount)} <span class="text-xs text-gray-400">| مستحق في: ${formatDate(due.dueDate)}</span>
-                ${account ? `<span class="text-xs text-gray-400">| الحساب: ${account.name}</span>` : ''}
+              <p class="text-sm" style="color:var(--muted); margin-top:6px;">
+                مبلغ: ${formatCurrency(due.amount)} 
+                <span class="text-xs" style="color:#9ca3af">| مستحق في: ${formatDate(due.dueDate)}</span>
+                ${account ? `<span class="text-xs" style="color:#9ca3af">| الحساب: ${account.name}</span>` : ''}
+              </p>
+              <p class="text-sm" style="margin-top:6px;">
+                المتبقي: <strong>${formatCurrency(remaining)}</strong>
+                ${paymentsHtml}
               </p>
             </div>
             <div class="flex gap-2">
@@ -686,8 +832,8 @@
         const tbody = document.getElementById('transactions-table-body'); tbody.innerHTML = '';
         const filteredTxs = CoreLogic.getFilteredTransactions(currentFilters);
         const emptyState = document.getElementById('transactions-empty-state');
-        if (filteredTxs.length === 0) { emptyState.classList.remove('hidden'); return; }
-        emptyState.classList.add('hidden');
+        if (filteredTxs.length === 0) { emptyState.style.display = 'block'; return; }
+        emptyState.style.display = 'none';
 
         const selectedAccountId = currentFilters.account;
 
@@ -719,7 +865,7 @@
           row.innerHTML = `
             <td class="p-3 text-gray-600 text-xs">${formatDateTime(tx.date)}</td>
             <td class="p-3">${accountName}</td>
-            <td class="p-3">${tx.category || ''} <span class="block text-xs text-gray-400">${tx.notes || ''}</span></td>
+            <td class="p-3">${tx.category || ''} <span class="block text-xs" style="color:var(--muted)">${tx.notes || ''}</span></td>
             <td class="p-3 text-green-600 font-medium">${dain}</td>
             <td class="p-3 text-red-600 font-medium">${madin}</td>
             <td class="p-3 font-medium ${balanceColor}">${balanceAfter !== null ? formatCurrency(balanceAfter) : '---'}</td>
@@ -738,9 +884,12 @@
         document.getElementById('summary-expense').textContent = formatCurrency(summary.expense);
         const netElem = document.getElementById('summary-net');
         netElem.textContent = formatCurrency(summary.net);
-        netElem.classList.toggle('text-green-600', summary.net >= 0);
-        netElem.classList.toggle('text-red-600', summary.net < 0);
+        netElem.style.color = (summary.net >= 0) ? '#15803d' : '#dc2626';
         document.getElementById('summary-total-balance').textContent = formatCurrency(summary.totalBalance);
+
+        // new metrics
+        document.getElementById('summary-payables-remaining').textContent = formatCurrency(summary.payablesRemaining);
+        document.getElementById('summary-receivables-uncollected').textContent = formatCurrency(summary.receivablesUncollected);
       },
 
       updateFilterDropdowns(){
@@ -980,16 +1129,15 @@
 
         if (collectBtn) {
           const id = collectBtn.dataset.id; const due = CoreLogic.getDueById(id);
-          showConfirmModal('تأكيد التحصيل', `هل تريد تأكيد تحصيل مبلغ ${formatCurrency(due.amount)} لبند "${due.name}"؟`, () => {
-            if (CoreLogic.collectReceivable(id)) { View.showToast('تم التحصيل وتسجيل الحركة', 'success'); View.renderAll(); }
-          }, 'bg-green-600', 'نعم، قم بالتحصيل');
+          if (!due) return;
+          // open pay-collect modal in "collect" mode
+          openPayCollectModal({ dueId: id, isCollection: true });
         }
 
         if (payBtn) {
           const id = payBtn.dataset.id; const due = CoreLogic.getDueById(id);
-          showConfirmModal('تأكيد السداد', `هل تريد تأكيد سداد مبلغ ${formatCurrency(due.amount)} لبند "${due.name}"؟`, () => {
-            if (CoreLogic.payPayable(id)) { View.showToast('تم السداد وتسجيل الحركة', 'success'); View.renderAll(); }
-          }, 'bg-red-600', 'نعم، قم بالسداد');
+          if (!due) return;
+          openPayCollectModal({ dueId: id, isCollection: false });
         }
 
         if (editBtn) {
@@ -999,7 +1147,12 @@
 
         if (deleteBtn) {
           const id = deleteBtn.dataset.id;
-          showConfirmModal('تأكيد الحذف', 'هل أنت متأكد من حذف هذا البند؟', () => { CoreLogic.deleteDue(id); View.showToast('تم حذف البند', 'success'); View.renderPayablesAndReceivables(); });
+          showConfirmModal('تأكيد الحذف', 'هل أنت متأكد من حذف هذا البند؟ (إذا كان مدفوعاً سيتم استرجاعه كـ مستحق)', () => { 
+            const res = CoreLogic.deleteDue(id);
+            if (res === 'restored') View.showToast('البند كان مدفوعاً وتمت إعادته كـ مستحق وحُذفت الحركات المرتبطة', 'success');
+            else View.showToast('تم حذف البند', 'success');
+            View.renderPayablesAndReceivables(); View.renderAll();
+          });
         }
       }
 
@@ -1079,13 +1232,59 @@
       if (localStorage.getItem('darkMode') === 'on') document.body.classList.add('dark-mode');
       darkBtn.addEventListener('click', () => { const on = document.body.classList.toggle('dark-mode'); localStorage.setItem('darkMode', on ? 'on' : 'off'); });
 
+      // pay-collect modal logic
+      const payCollectForm = document.getElementById('pay-collect-form');
+      payCollectForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const dueId = document.getElementById('pay-collect-due-id').value;
+        const amount = parseFloat(document.getElementById('pay-collect-amount').value || 0);
+        const accountId = document.getElementById('pay-collect-account').value;
+        const notes = document.getElementById('pay-collect-notes').value;
+        const title = document.getElementById('pay-collect-title').dataset.mode;
+        if (!dueId || !accountId || !amount || amount <= 0) { View.showToast('يرجى ملء الحقول بشكل صحيح', 'error'); return; }
+        const due = CoreLogic.getDueById(dueId);
+        if (!due) { View.showToast('البند غير موجود', 'error'); return; }
+        const isCollection = title === 'collect';
+        const res = CoreLogic.applyPayment({ dueId, amount, accountId, notes, isCollection });
+        if (res.ok) {
+          View.showToast(isCollection ? 'تم تحصيل المبلغ' : 'تم سداد المبلغ', 'success');
+          View.closeModal('pay-collect-modal');
+          View.renderPayablesAndReceivables(); View.renderAll();
+        } else {
+          View.showToast(res.msg || 'حدث خطأ', 'error');
+        }
+      });
+
       // accounts and transactions delegated click handlers already attached above
+    }
+
+    // open pay-collect modal helper
+    function openPayCollectModal({ dueId, isCollection=false }) {
+      const due = CoreLogic.getDueById(dueId);
+      if (!due) return;
+      document.getElementById('pay-collect-due-id').value = dueId;
+      const select = document.getElementById('pay-collect-account');
+      select.innerHTML = '';
+      state.accounts.forEach(acc => select.innerHTML += `<option value="${acc.id}">${acc.name} (${formatCurrency(acc.currentBalance)})</option>`);
+      // prefill amount with remaining
+      document.getElementById('pay-collect-amount').value = due.remainingAmount || due.amount || 0;
+      document.getElementById('pay-collect-notes').value = '';
+      const titleEl = document.getElementById('pay-collect-title');
+      if (isCollection) {
+        titleEl.textContent = `تحصيل - ${due.name}`;
+        titleEl.dataset.mode = 'collect';
+        document.getElementById('pay-collect-remaining-note').textContent = `المتبقي الآن: ${formatCurrency(due.remainingAmount || due.amount)}`;
+      } else {
+        titleEl.textContent = `سداد - ${due.name}`;
+        titleEl.dataset.mode = 'pay';
+        document.getElementById('pay-collect-remaining-note').textContent = `المتبقي الآن: ${formatCurrency(due.remainingAmount || due.amount)}`;
+      }
+      View.openModal('pay-collect-modal');
     }
 
     // -------------------------
     // 5. Gemini (placeholder)
     // -------------------------
-    // Note: real Gemini/AI requires API key & proper backend. This function uses the GeminiService.fetchGemini placeholder.
     async function handleGeminiSummary(){
       View.openModal('gemini-summary-modal');
       const loadingEl = document.getElementById('gemini-loading');
@@ -1095,13 +1294,9 @@
       const summary = CoreLogic.getDashboardSummary();
       const topSpending = CoreLogic.getTopSpendingCategories();
 
-      const systemPrompt = `أنت مستشار مالي شخصي... (محلي)`;
-      const userQuery = `إجمالي الدخل: ${summary.income}\nإجمالي المصروفات: ${summary.expense}\nصافي التدفق: ${summary.net}\nفئات المصروفات:\n${topSpending.length ? topSpending.map(c=>`- ${c.category}: ${c.amount}`).join('\n') : 'لا توجد مصروفات'}\nأعطني تحليل ونصيحة قصيرة.`;
-
-      // Placeholder: offline simple analysis
       setTimeout(() => {
-        const advice = topSpending.length ? `لو سمحت راجع فئة الإنفاق ${topSpending[0].category} لأنها تمثل جزءاً كبيراً من المصروفات.` : `لا توجد مصروفات مسجلة حالياً — ممتاز! حافظ على ذلك.`;
-        resultsEl.innerHTML = `<p><strong>ملخص قصير:</strong><br>${summary.net >= 0 ? 'وضعك المالي جيد نسبياً.' : 'صافي التدفق سلبي؛ لاحظ النفقات.'}</p><p class="mt-2"><strong>نصيحة:</strong><br>${advice}</p>`;
+        const advice = topSpending.length ? `راجع فئة الإنفاق ${topSpending[0].category} لأنها تسهم كثيراً في المصروفات.` : `لا توجد مصروفات كبيرة مسجلة حالياً — جيد.`;
+        resultsEl.innerHTML = `<p><strong>ملخص قصير:</strong><br>${summary.net >= 0 ? 'وضعك المالي جيد نسبياً.' : 'صافي التدفق سلبي؛ حاول تقليل النفقات.'}</p><p class="mt-2"><strong>نصيحة:</strong><br>${advice}</p>`;
         loadingEl.classList.add('hidden');
       }, 700);
     }
@@ -1114,12 +1309,14 @@
       const log = (msg, color='#9ca3af') => container.innerHTML += `<div style="color:${color};margin-bottom:6px">${msg}</div>`;
       log('--- بدء الاختبارات ---');
       try {
-        // Test 1: add account & tx
-        const aId = crypto.randomUUID(); state.accounts.push({ id:aId, name:'T', type:'cash', initialBalance:1000, currentBalance:1000 });
-        state.transactions.push({ id:crypto.randomUUID(), createdAt:new Date().toISOString(), date:new Date().toISOString(), type:'income', to:aId, from:null, amount:500 });
+        // Test: partial payment behavior
+        const aId = crypto.randomUUID(); state.accounts.push({ id:aId, name:'T-TEST', type:'cash', initialBalance:1000, currentBalance:1000 });
+        const dId = crypto.randomUUID();
+        state.payables.push({ id:dId, type:'payable', name:'اختبار', amount:1000, remainingAmount:1000, dueDate:new Date().toISOString(), status:'pending', accountId:aId, recurrence:'none', originalDueDate:new Date().toISOString(), payments:[] });
+        const ok = CoreLogic.payPayablePartial(dId, 400, aId, 'جزئي');
         CoreLogic.recalculateAllBalances();
-        const acc = CoreLogic.getAccountById(aId);
-        if (acc.currentBalance === 1500) log('✅ Test 1 passed', '#22c55e'); else log(`❌ Test 1 failed: balance=${acc.currentBalance}`, '#ef4444');
+        const due = CoreLogic.getDueById(dId);
+        if (ok && Math.abs(due.remainingAmount - 600) < 0.01) log('✅ Test جزئي ناجح', '#22c55e'); else log('❌ Test جزئي فشل', '#ef4444');
       } catch (e) { log('❌ Test error: '+e.message, '#ef4444'); }
       log('--- انتهت الاختبارات ---');
     }
