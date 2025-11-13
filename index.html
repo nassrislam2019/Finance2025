@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>دفتر حساباتي — نسخة محسّنة ومدمجة (تناسق الكروت)</title>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMDJ8uR0FWO0w/dEswjJ9/J3tF/gGkS46pXbJ+ySg8rQGzO1vV0/dEswjJ9/J3tF/gGkS46pXbJ+ySg8rQGzO1vV0/J1J0+P0+vP0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
 
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
@@ -35,17 +35,12 @@
             background: var(--card);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            /* ======= التعديل هنا: زيادة الهامش الداخلي للكارت ======= */
             padding: 20px; 
-            /* ======================================================= */
             margin: 0 auto;
             overflow: hidden;
             box-shadow: 0 10px 25px rgba(9, 16, 26, 0.1);
-            /* إضافة فصل بصري سفلي للكروت */
             border-bottom: 3px solid var(--border);
         }
-        
-        /* أزلنا .card-head و .card-body لأنهما لم تعد ضرورية مع الهامش الموحد */
         
         /* Navigation Button Style */
         .nav-btn {
@@ -129,65 +124,49 @@
 </head>
 <body class="antialiased">
 
-<div class="min-h-screen flex direction-rtl">
-  <aside class="w-64 bg-card shadow-md p-4 flex flex-col" id="sidebar" style="background-color: var(--card);">
-    <div class="flex items-center gap-3 mb-4">
-      <div class="text-2xl font-extrabold" style="color:var(--brand)">دفتر حساباتي</div>
-      <button id="darkToggle" class="ml-auto px-2 py-1 rounded bg-gray-100 dark:bg-gray-700 text-sm">تبديل المظهر</button>
-    </div>
-
-    <nav class="flex-1 space-y-2">
-      <button class="nav-btn active" data-page="dashboard"><div class="nav-icon"><i class="fas fa-chart-pie"></i></div><span>لوحة البيانات</span></button>
-      <button class="nav-btn" data-page="transactions"><div class="nav-icon"><i class="fas fa-exchange-alt"></i></div><span>الحركات</span></button>
-      <button class="nav-btn" data-page="add"><div class="nav-icon"><i class="fas fa-plus-circle"></i></div><span>إضافة حركة</span></button>
-      <button class="nav-btn" data-page="accounts"><div class="nav-icon"><i class="fas fa-wallet"></i></div><span>الحسابات / فئات</span></button>
-      <button class="nav-btn" data-page="commitments"><div class="nav-icon"><i class="fas fa-calendar-check"></i></div><span>الالتزامات/التحصيلات</span></button>
-    </nav>
-
-    <div class="mt-4 space-y-2 border-t pt-4 border-border" style="border-color: var(--border);">
-      <button id="exportJson" class="w-full py-2 rounded border border-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">تصدير JSON</button>
-      <button id="importJsonBtn" class="w-full py-2 rounded border border-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">استيراد JSON</button>
-      <input id="importFile" type="file" accept="application/json" class="hidden" />
-      <button id="syncNow" class="w-full py-2 rounded border border-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">مزامنة الآن</button>
-    </div>
-  </aside>
-
-  <main class="flex-1 p-6 overflow-auto">
+<div class="min-h-screen flex direction-rtl flex-col">
+  <main class="flex-1 p-6 overflow-auto mb-16">
     <section id="dashboard" class="page-section">
+      
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 top-grid">
-        <div class="card-custom shadow-xl" style="background-color: var(--card);"> 
-          <small class="muted">إجمالي الأرصدة</small>
+        <div class="md:col-span-1 card-custom shadow-xl" style="background-color: var(--card);"> 
+          <small class="muted">صافي الأرصدة</small>
           <div id="totalBalance" class="text-3xl font-bold mt-2 text-brand" style="color:var(--brand);">0.00</div>
         </div>
-        <div class="card-custom shadow-xl" style="background-color: var(--card);">
-          <small class="muted">الرصيد المتوقع (بعد الالتزامات)</small>
-          <div id="balanceAfterCommit" class="text-3xl font-bold mt-2 text-ok" style="color:var(--ok);">0.00</div>
-        </div>
-        <div class="card-custom shadow-xl" style="background-color: var(--card);">
+        <div class="md:col-span-2 card-custom shadow-xl" style="background-color: var(--card);">
           <small class="muted">الشهر الحالي</small>
           <div id="monthLabel" class="text-3xl font-bold mt-2"></div>
         </div>
       </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div class="card-custom">
-          <h4 class="font-semibold text-lg mb-1">استحقاقات الشهر الحالي</h4>
-          <div id="totalCommitThisAndCollections" class="text-xl font-bold mt-2">0.00</div>
+          <h4 class="font-semibold text-lg mb-1">إجمالي تحصيلات الشهر الحالي</h4>
+          <div id="totalCollectionThis" class="text-xl font-bold mt-2 text-ok" style="color:var(--ok);">0.00</div>
         </div>
         <div class="card-custom">
-          <h4 class="font-semibold text-lg mb-1">استحقاقات الشهر القادم</h4>
-          <div id="totalCommitNext" class="text-xl font-bold mt-2">0.00</div>
+          <h4 class="font-semibold text-lg mb-1">إجمالي تحصيلات الشهر القادم</h4>
+          <div id="totalCollectionNext" class="text-xl font-bold mt-2 text-ok" style="color:var(--ok);">0.00</div>
+        </div>
+        <div class="card-custom">
+          <h4 class="font-semibold text-lg mb-1">إجمالي التزامات الشهر الحالي</h4>
+          <div id="totalCommitThisTotal" class="text-xl font-bold mt-2 text-danger" style="color:var(--danger);">0.00</div>
+        </div>
+        <div class="card-custom">
+          <h4 class="font-semibold text-lg mb-1">إجمالي التزامات الشهر القادم</h4>
+          <div id="totalCommitNextTotal" class="text-xl font-bold mt-2 text-danger" style="color:var(--danger);">0.00</div>
         </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        
         <div class="card-custom">
-          <h4 class="font-semibold mb-2 border-b pb-2 border-border" style="border-color: var(--border);">آخر 5 حركات</h4>
+          <h4 class="font-semibold mb-2 border-b pb-2 border-border" style="border-color: var(--border);">آخر 10 حركات</h4>
           <div id="latestTx" class="card-inner-list"></div>
         </div>
 
         <div class="card-custom">
-          <h4 class="font-semibold mb-2 border-b pb-2 border-border" style="border-color: var(--border);">استحقاقات قريبة</h4>
+          <h4 class="font-semibold mb-2 border-b pb-2 border-border" style="border-color: var(--border);">الاستحقاقات القريبة (التزامات وتحصيلات)</h4>
           <div id="dueSoonWrap" class="card-inner-list"></div>
         </div>
 
@@ -307,6 +286,26 @@
           <div id="catsList" class="mt-3 space-y-2"></div>
         </div>
       </div>
+      
+      <div class="card-custom mt-4">
+        <h3 class="font-semibold mb-2">البيانات والنسخ الاحتياطي</h3>
+        <input type="file" id="importFile" class="hidden" accept=".json" />
+        <div class="flex flex-wrap gap-3">
+          <button id="exportJson" class="px-4 py-2 border rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700" style="color:var(--ok); border-color:var(--ok);">
+            <i class="fas fa-file-export ml-2"></i> تصدير البيانات (JSON)
+          </button>
+          <button id="importJsonBtn" class="px-4 py-2 border rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700" style="color:var(--brand); border-color:var(--brand);">
+            <i class="fas fa-file-import ml-2"></i> استيراد البيانات (JSON)
+          </button>
+          <button id="syncNow" class="px-4 py-2 border rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 text-muted">
+            <i class="fas fa-cloud-upload-alt ml-2"></i> مزامنة (قريباً)
+          </button>
+          <button id="darkToggle" class="px-4 py-2 border rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 text-muted">
+            <i class="fas fa-moon ml-2"></i> تبديل الوضع
+          </button>
+        </div>
+      </div>
+      
     </section>
 
     <section id="commitments" class="page-section hidden">
@@ -351,7 +350,7 @@
       </div>
     </section>
 
-    <footer class="md:hidden flex justify-around items-center p-3 bg-card border-t border-border sticky bottom-0 z-10" style="background-color: var(--card); border-color: var(--border);">
+    <footer class="flex justify-around items-center p-3 bg-card border-t border-border sticky bottom-0 z-10" style="background-color: var(--card); border-color: var(--border);">
       <button class="nav-icon active" data-page="dashboard" style="color: var(--brand);"><i class="fas fa-chart-pie text-xl"></i></button>
       <button class="nav-icon" data-page="transactions"><i class="fas fa-exchange-alt text-xl"></i></button>
       <button class="nav-icon" data-page="add"><i class="fas fa-plus-circle text-xl"></i></button>
@@ -558,32 +557,67 @@ function drawCollections(){
 function drawDueSoon(){
   const wrap = $('#dueSoonWrap');
   if(!wrap) return;
-  const ym = YM(); const nextYm = addMonthsToYm(ym,1);
+  const ym = YM(); 
   const today = new Date();
-  const list = commitments.map(c=>{
+  
+  // 1. التزامات قريبة (Commitments)
+  const commitList = commitments.map(c=>{
     const st = getCommitmentState(c);
-    if(st.done) return null;
+    if(st.done || st.remaining <= 0) return null; // فقط الالتزامات المستحقة وغير المدفوعة
     if(st.currentDueYm !== ym) return null;
     const due = parseLocalDate(st.currentDueYm+'-01');
     const diff = daysBetween(today, due);
-    return {...c, dueStr: st.currentDueYm, paid:st.paid, remaining:st.remaining, diff};
-  }).filter(Boolean).sort((a,b)=> a.dueStr.localeCompare(b.dueStr));
-  const totalRemain = list.reduce((s,x)=>s + x.remaining, 0);
+    return {...c, dueStr: st.currentDueYm, paid:st.paid, remaining:st.remaining, diff, type: 'commitment'};
+  }).filter(Boolean);
+  
+  // 2. تحصيلات قريبة (Collections)
+  const collectList = collections.map(c=>{
+    const dueStr = c.nextDue || c.firstDue;
+    if(!dueStr || dueStr.slice(0,7) !== ym) return null; // فقط المستحقة هذا الشهر
+    
+    // بما أن nextDue يتم تقديمه أو يتم حذف التحصيل بعد التحصيل، لا نحتاج لتفحص دفتر الحركات
+    
+    const due = parseLocalDate(dueStr);
+    const diff = daysBetween(today, due);
+
+    return {...c, dueStr, diff, type: 'collection'};
+  }).filter(Boolean);
+  
+  // دمج وفرز القوائم
+  const list = [...commitList, ...collectList].sort((a,b)=> a.dueStr.localeCompare(b.dueStr));
+  
   let html = '';
   if(list.length === 0){
     // تم تعديل الهامش الداخلي ليتناسق مع padding الكارت
-    html = `<div class="text-sm muted pt-2">لا توجد استحقاقات هذا الشهر غير مسددة.</div>`;
+    html = `<div class="text-sm muted pt-2">لا توجد استحقاقات/تحصيلات قريبة لهذا الشهر غير مسجلة.</div>`;
   } else {
     html = list.map(x=>{
+      const isCommit = x.type === 'commitment';
       const isOverdue = x.diff < 0;
-      const state = isOverdue ? `<span class="text-red-600 font-bold"><i class="fas fa-exclamation-triangle"></i> متأخر ${Math.abs(x.diff)} يوم</span>` : x.diff===0 ? `<span class="text-green-600 font-bold"><i class="fas fa-bell"></i> اليوم</span>` : `<span class="text-gray-600 font-bold"><i class="fas fa-clock"></i> متبقي ${x.diff} يوم</span>`;
-      const bgClass = isOverdue ? 'bg-red-50 dark:bg-red-900 border-red-300' : 'border-border';
-      // Added 'item' class for consistent styling
+      const state = isOverdue 
+        ? `<span class="text-red-600 font-bold"><i class="fas fa-exclamation-triangle"></i> متأخر ${Math.abs(x.diff)} يوم</span>` 
+        : x.diff===0 
+        ? `<span class="text-green-600 font-bold"><i class="fas fa-bell"></i> اليوم</span>` 
+        : `<span class="text-gray-600 font-bold"><i class="fas fa-clock"></i> متبقي ${x.diff} يوم</span>`;
+      
+      const bgClass = isOverdue && isCommit ? 'bg-red-50 dark:bg-red-900 border-red-300' : 'border-border';
+      
+      const actionButton = isCommit 
+        ? `<button data-action="pay-commit" data-id="${x.id}" class="px-3 py-1 text-white rounded-lg hover:opacity-90" style="background:var(--brand);"><i class="fas fa-credit-card"></i> سداد</button>`
+        : `<button data-action="collect-now" data-id="${x.id}" class="px-3 py-1 text-white rounded-lg hover:opacity-90" style="background:var(--ok);"><i class="fas fa-check"></i> تحصيل</button>`;
+      
+      const details = isCommit 
+        ? `الأصل: ${fmt(x.amount)} · المدفوع: ${fmt(x.paid)} · استحقاق: ${x.dueStr.slice(0,7)}`
+        : `المبلغ: ${fmt(x.amount)} · التحصيل: ${x.dueStr}`;
+      const amountDisplay = isCommit ? fmt(x.remaining) : fmt(x.amount);
+      
       return `<div class="item mb-2 p-3 border rounded-lg ${bgClass}">
-        <div class="flex justify-between items-center"><div class="font-bold">${escapeHtml(x.name)}</div><div class="font-bold text-lg">${fmt(x.remaining)} ج.م</div></div>
-        <div class="text-xs muted mt-1">الأصل: ${fmt(x.amount)} · المدفوع: ${fmt(x.paid)} · استحقاق: ${x.dueStr}</div>
-        <div class="mt-2 flex justify-between items-center">${state}
-        <button data-action="pay-commit" data-id="${x.id}" class="px-3 py-1 text-white rounded-lg hover:opacity-90" style="background:var(--brand);"><i class="fas fa-credit-card"></i> سداد</button></div>
+        <div class="flex justify-between items-center">
+          <div class="font-bold">${escapeHtml(x.name)} (${isCommit ? 'التزام' : 'تحصيل'})</div>
+          <div class="font-bold text-lg ${isCommit ? 'text-danger' : 'text-ok'}">${amountDisplay} ج.م</div>
+        </div>
+        <div class="text-xs muted mt-1">${details}</div>
+        <div class="mt-2 flex justify-between items-center">${state}${actionButton}</div>
       </div>`;
     }).join('');
   }
@@ -591,6 +625,15 @@ function drawDueSoon(){
 }
 
 // Draw accounts/categories lists
+function drawPerAccount(){
+  computeBalances();
+  const list = [];
+  for(const a of accounts){
+    const v = (cachedBalances && cachedBalances.get(a.name)!==undefined) ? cachedBalances.get(a.name) : Number(a.opening||0);
+    list.push(`<div class="flex justify-between items-center item"><div>${escapeHtml(a.name)}</div><div><b>${fmt(v)} ج.م</b></div></div>`);
+  }
+  $('#perAccount').innerHTML = list.join('');
+}
 function drawAccountsList(){
   $('#accountsList').innerHTML = accounts.map((a,i)=>`<div class="flex items-center gap-2 p-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"><div class="badge-custom flex-1">${escapeHtml(a.name)} · <b>${fmt(a.opening||0)} ج.م</b></div><div class="ml-auto space-x-2 space-x-reverse"><button data-action="rename-acc" data-i="${i}" class="px-2 py-1 text-brand hover:bg-gray-100 rounded">تعديل</button><button data-action="remove-acc" data-i="${i}" class="px-2 py-1 text-red-500 hover:bg-red-50 rounded">حذف</button></div></div>`).join('');
 }
@@ -1055,49 +1098,57 @@ function computeAndUpdateSummary(){
   const ym = YM();
   const nextYm = addMonthsToYm(ym,1);
   
-  let commitTotalThis = 0, commitRemainThis = 0;
+  let commitTotalThis = 0; // إجمالي مبلغ الالتزامات المستحقة هذا الشهر (المجموع الكلي)
   for(const c of commitments){
     const st = getCommitmentState(c);
     if(!st.done && st.currentDueYm === ym){
       commitTotalThis += Number(c.amount||0);
-      commitRemainThis += st.remaining;
     }
   }
   
-  let collectionsThis = 0;
-  for(const c of collections){
-    if((c.nextDue && c.nextDue.slice(0,7) === ym) || (c.firstDue && c.firstDue.slice(0,7) === ym))
-      collectionsThis += Number(c.amount||0);
-  }
-  const collectedThis = collectedCollectionsForYm(ym);
-  const notCollected = Math.max(0, collectionsThis - collectedThis);
-  
-  const afterCom = total - commitRemainThis + collectionsThis;
-  
-  $('#totalBalance').textContent = fmt(total) + ' ج.م';
-  $('#balanceAfterCommit').textContent = fmt(afterCom) + ' ج.م';
-  $('#totalCommitThisAndCollections').textContent = `${fmt(commitTotalThis)} (المتبقي: ${fmt(commitRemainThis)}) • تحصيلات: ${fmt(collectionsThis)} (لم يحصل: ${fmt(notCollected)})`;
-  
-  let nextTotal = 0;
+  // حوسبة الالتزامات الشهر القادم (المجموع الكلي)
+  let totalCommitNextTotal = 0;
   for(const c of commitments){
     const st = getCommitmentState(c);
     if(!st.done && st.currentDueYm === nextYm)
-      nextTotal += st.remaining;
+      totalCommitNextTotal += Number(c.amount||0);
   }
+
+  // حوسبة التحصيلات
+  let totalCollectionThis = 0; // إجمالي مبلغ التحصيلات المستحقة هذا الشهر
+  let totalCollectionNext = 0; // إجمالي مبلغ التحصيلات المستحقة الشهر القادم
+  for(const c of collections){
+      const amount = Number(c.amount || 0);
+      const dueYm = monthKeyFromDateStr(c.nextDue || c.firstDue);
+      if(dueYm === ym){
+          totalCollectionThis += amount;
+      } else if(dueYm === nextYm){
+          totalCollectionNext += amount;
+      }
+  }
+
+  // تحديث العرض
   
-  $('#totalCommitNext').textContent = fmt(nextTotal) + ' ج.م';
+  $('#totalBalance').textContent = fmt(total) + ' ج.م';
+  $('#monthLabel').textContent = ym;
   
+  // تحديث الكروت الأربعة الجديدة
+  if($('#totalCollectionThis')) $('#totalCollectionThis').textContent = fmt(totalCollectionThis) + ' ج.م';
+  if($('#totalCollectionNext')) $('#totalCollectionNext').textContent = fmt(totalCollectionNext) + ' ج.م';
+  if($('#totalCommitThisTotal')) $('#totalCommitThisTotal').textContent = fmt(commitTotalThis) + ' ج.م';
+  if($('#totalCommitNextTotal')) $('#totalCommitNextTotal').textContent = fmt(totalCommitNextTotal) + ' ج.م';
+
   drawPerAccount();
   
-  // Latest - Updated to use the new inner list class
-  $('#latestTx').innerHTML = ledger.slice().sort((a,b)=> (b.exec||b.created||'').localeCompare(a.exec||a.created||'')).slice(0,5).map(t=>{
+  // Latest - تحديث لـ 10 حركات
+  $('#latestTx').innerHTML = ledger.slice().sort((a,b)=> (b.exec||b.created||'').localeCompare(a.exec||a.created||'')).slice(0,10).map(t=>{
     const sign = t.type==='income'?'+':'-';
     const color = t.type==='income'?'text-ok':'text-danger';
     // تم إضافة هامش أفقي هنا لتعويض الهامش الذي تم إلغاؤه من الأب
     return `<div class="flex justify-between items-center item"><div><b>${escapeHtml(t.desc||'—')}</b><div class="text-xs muted">${escapeHtml(t.category||'')}</div></div><div class="${color} font-bold">${sign}${fmt(t.amount)}</div></div>`;
   }).join('');
   
-  $('#monthLabel').textContent = ym;
+  drawDueSoon(); // إعادة رسم الاستحقاقات/التحصيلات القريبة
 }
 
 // Accounts & Categories
@@ -1250,7 +1301,7 @@ function loadThemeData(){
 $('#darkToggle')?.addEventListener('click', ()=>{
   const isDark = document.documentElement.classList.toggle('dark');
   localStorage.setItem(DARK_KEY, isDark);
-  $('#darkToggle').textContent = isDark ? 'تبديل إلى الوضع النهاري' : 'تبديل إلى الوضع الليلي';
+  // No need to update text content as we use an icon now
 });
 
 // Initialization
