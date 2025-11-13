@@ -3,62 +3,231 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>دفتر حساباتي</title>
+    <title>دفتر حساباتي — نسخة محسّنة ومدمجة (تناسق الكروت)</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-        :root{ --bg:#ffffff; --card:#f7f9fc; --muted:#55626b; --txt:#09101a; --brand:#0b84ff; --brand-rgb: 11, 132, 255; --danger:#ef4444; --ok:#16a34a; --border:#e6eef6; --radius:16px; }
-        .dark{ --bg:#071227; --card:#071a2b; --muted:#9fb7d0; --txt:#e6f2ff; --brand:#4ea8ff; --danger:#fb6f6f; --ok:#34d399; --border:#123142; }
-        html, body { height: 100%; }
-        body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--txt); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+:root{
+  --bg:#ffffff;
+  --card:#f7f9fc;
+  --muted:#55626b;
+  --txt:#09101a;
+  --brand:#0b84ff;
+  --brand-rgb: 11, 132, 255;
+  --danger:#ef4444;
+  --ok:#16a34a;
+  --border:#081827;
+  --radius:16px;
 
-        .card-custom { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin: 0 auto; overflow: hidden; box-shadow: 0 10px 25px rgba(9, 16, 26, 0.08); border-bottom: 3px solid var(--border); }
+  /* fallback contrast colors (used if browser doesn't support color-mix) */
+  --contrast-on-light:#0b1220; /* dark text for light surfaces */
+  --contrast-on-dark:#f3f8ff;  /* light text for dark surfaces */
+}
 
-        /* New footer nav style with icons, labels and animation */
-        .nav-btn { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; width:62px; height:62px; padding:6px; border-radius:14px; transition: background .18s, color .18s, transform .12s; color:var(--muted); background:transparent; border:none; }
-        .nav-btn .nav-icon{ font-size:20px; display:block; }
-        .nav-btn .nav-label{ font-size:11px; margin-top:4px; display:block; color:var(--muted); }
-        .nav-btn.active { color:white; background: linear-gradient(135deg, var(--brand), rgba(var(--brand-rgb),0.9)); box-shadow:0 8px 24px rgba(11,132,255,0.16); transform: translateY(-4px) scale(1.02); }
-        .nav-btn.active .nav-label{ color: rgba(255,255,255,0.95); font-weight:700; }
-        .nav-btn:focus{ outline: none; box-shadow: 0 0 0 4px rgba(var(--brand-rgb),0.14); }
-        .nav-btn.play-anim{ animation: nav-pulse 350ms ease; }
-        @keyframes nav-pulse{ 0%{ transform: scale(1); } 50%{ transform: scale(0.94); } 100%{ transform: scale(1); } }
-        .dark-toggle{ width:44px; height:44px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center; border:1px solid var(--border); }
-        footer{ position:sticky; bottom:0; z-index:60; }
+.dark{
+  --bg:#071227;
+  --card:#071a2b;
+  --muted:#010911;
+  --txt:#e6f2ff;
+  --brand:#4ea8ff;
+  --danger:#fb6f6f;
+  --ok:#34d399;
+  --border:#123142;
+  --radius:16px;
 
-        .pill-badge-income { padding:4px 10px; border-radius:9999px; font-size:0.75rem; font-weight:700; background-color:#d1fae5; color:#059669; direction:ltr; white-space:nowrap; }
-        .pill-badge-expense { padding:4px 10px; border-radius:9999px; font-size:0.75rem; font-weight:700; background-color:#fee2e2; color:#ef4444; direction:ltr; white-space:nowrap; }
-        input:focus, select:focus, textarea:focus { border-color: var(--brand) !important; box-shadow: 0 0 0 4px rgba(var(--brand-rgb),0.18) !important; }
+  /* update fallbacks for dark theme */
+  --contrast-on-light:#071227;
+  --contrast-on-dark:#e6f2ff;
+}
 
-        .custom th { background-color: var(--card); border-bottom: 2px solid var(--border); }
-        .custom td { border-bottom: 1px solid var(--border); }
-        .custom tbody tr:nth-child(even) { background-color: var(--border); }
-        .custom tbody tr:hover { background-color: rgba(var(--brand-rgb), 0.05); }
+html, body { height: 100%; }
+body {
+  font-family: 'Cairo', sans-serif;
+  background: var(--bg);
+  color: var(--txt);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
-        .card-inner-list .item { padding:10px 0; border-bottom:1px dashed var(--border); }
-        .card-inner-list .item:last-child { border-bottom:none; }
-        #modalBackdrop{ display:flex; align-items:center; justify-content:center; }
-        #modalBackdrop.hidden{ display:none; }
-        #modalBackdrop .modal-box{ max-height:80vh; overflow:auto; }
-        .modal-list{ display:flex; flex-direction:column; gap:8px; }
-        .modal-list button{ text-align:right; padding:10px; border-radius:10px; border:1px solid var(--border); background:transparent; }
+/* -----------------------------
+   Card base (keeps existing look)
+   ----------------------------- */
+.card-custom {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin: 0 auto;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(9, 16, 26, 0.08);
+  border-bottom: 3px solid var(--border);
+  /* default internal contrast variables (will be overridden) */
+  --inner-text: var(--txt);
+  --inner-muted: var(--muted);
+  --inner-border: var(--border);
+  color: var(--inner-text);
+}
 
-        @media (max-width:640px){ .due-wide{ padding-left:20px; padding-right:20px; } }
-        .stacked-on-all-sizes { display:grid; grid-template-columns:1fr; gap:1rem; }
-        .per-account .account-row{ display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap; }
-        .per-account .account-name{ flex:1 1 55%; }
-        .per-account .account-balance{ flex:1 1 40%; text-align:left; }
-    </style>
+/* -----------------------------
+   Auto-contrast rules
+   Use either color-mix (modern browsers) or fallbacks
+   ----------------------------- */
+
+/* If the page/theme is light (no .dark) then assume card is light surface:
+   produce darker inner text by mixing --txt with black */
+:root:not(.dark) .card-custom,
+.card-custom.light-surface {
+  /* modern browsers */
+  --inner-text: color-mix(in srgb, var(--txt) 75%, black 25%);
+  --inner-muted: color-mix(in srgb, var(--muted) 80%, black 20%);
+  --inner-border: color-mix(in srgb, var(--border) 85%, black 15%);
+
+  /* fallback for older browsers */
+  --inner-text-fallback: var(--contrast-on-light);
+  --inner-muted-fallback: var(--muted);
+  --inner-border-fallback: var(--border);
+}
+
+/* If the page/theme is dark (.dark) then assume card is dark surface:
+   produce lighter inner text by mixing --txt with white */
+:root .dark .card-custom,
+.card-custom.dark-surface {
+  /* modern browsers */
+  --inner-text: color-mix(in srgb, var(--txt) 85%, white 20%);
+  --inner-muted: color-mix(in srgb, var(--muted) 85%, white 30%);
+  --inner-border: color-mix(in srgb, var(--border) 80%, white 25%);
+
+  /* fallback for older browsers */
+  --inner-text-fallback: var(--contrast-on-dark);
+  --inner-muted-fallback: var(--muted);
+  --inner-border-fallback: var(--border);
+}
+
+/* Use the modern variable if available, otherwise fallback */
+.card-custom h1,
+.card-custom h2,
+.card-custom h3,
+.card-custom h4,
+.card-custom h5,
+.card-custom p,
+.card-custom span,
+.card-custom .nav-label,
+.card-custom .nav-icon,
+.card-custom a,
+.card-custom button {
+  color: var(--inner-text, var(--inner-text-fallback)) !important;
+}
+
+/* Muted text inside card */
+.card-custom .muted,
+.card-custom small,
+.card-custom .subtle {
+  color: var(--inner-muted, var(--inner-muted-fallback)) !important;
+}
+
+/* Borders inside card */
+.card-custom,
+.card-inner-list .item {
+  border-color: var(--inner-border, var(--inner-border-fallback)) !important;
+}
+
+/* -----------------------------
+   Preserve original footer/nav styles
+   ----------------------------- */
+.nav-btn {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width:62px;
+  height:62px;
+  padding:6px;
+  border-radius:14px;
+  transition: background .18s, color .18s, transform .12s;
+  color:var(--muted);
+  background:transparent;
+  border:none;
+}
+.nav-btn .nav-icon{ font-size:20px; display:block; }
+.nav-btn .nav-label{ font-size:11px; margin-top:4px; display:block; color:var(--muted); }
+.nav-btn.active {
+  color:white;
+  background: linear-gradient(135deg, var(--brand), rgba(var(--brand-rgb),0.9));
+  box-shadow:0 8px 24px rgba(var(--brand-rgb),0.16);
+  transform: translateY(-4px) scale(1.02);
+}
+.nav-btn.active .nav-label{ color: rgba(255,255,255,0.95); font-weight:700; }
+.nav-btn:focus{ outline: none; box-shadow: 0 0 0 4px rgba(var(--brand-rgb),0.14); }
+.nav-btn.play-anim{ animation: nav-pulse 350ms ease; }
+@keyframes nav-pulse{ 0%{ transform: scale(1); } 50%{ transform: scale(0.94); } 100%{ transform: scale(1); } }
+.dark-toggle{ width:44px; height:44px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center; border:1px solid var(--border); }
+footer{ position:sticky; bottom:0; z-index:60; }
+
+/* -----------------------------
+   Badges, inputs, tables, lists
+   ----------------------------- */
+.pill-badge-income { padding:4px 10px; border-radius:9999px; font-size:0.75rem; font-weight:700; background-color:#d1fae5; color:#059669; direction:ltr; white-space:nowrap; }
+.pill-badge-expense { padding:4px 10px; border-radius:9999px; font-size:0.75rem; font-weight:700; background-color:#fee2e2; color:#ef4444; direction:ltr; white-space:nowrap; }
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--brand) !important;
+  box-shadow: 0 0 0 4px rgba(var(--brand-rgb),0.18) !important;
+}
+
+/* Table custom */
+.custom th { background-color: var(--card); border-bottom: 2px solid var(--inner-border, var(--border)); }
+.custom td { border-bottom: 1px solid var(--inner-border, var(--border)); }
+.custom tbody tr:nth-child(even) { background-color: color-mix(in srgb, var(--card) 92%, var(--inner-border, var(--border)) 8%); }
+.custom tbody tr:hover { background-color: color-mix(in srgb, var(--brand) 6%, transparent 94%); }
+
+/* List inside card */
+.card-inner-list .item { padding:10px 0; border-bottom:1px dashed var(--inner-border, var(--border)); }
+.card-inner-list .item:last-child { border-bottom:none; }
+
+/* Modal */
+#modalBackdrop{ display:flex; align-items:center; justify-content:center; }
+#modalBackdrop.hidden{ display:none; }
+#modalBackdrop .modal-box{ max-height:80vh; overflow:auto; }
+.modal-list{ display:flex; flex-direction:column; gap:8px; }
+.modal-list button{ text-align:right; padding:10px; border-radius:10px; border:1px solid var(--inner-border, var(--border)); background:transparent; color:var(--inner-text, var(--inner-text-fallback)); }
+
+/* Responsive tweaks */
+@media (max-width:640px){ .due-wide{ padding-left:20px; padding-right:20px; } }
+
+/* Grid helpers */
+.stacked-on-all-sizes { display:grid; grid-template-columns:1fr; gap:1rem; }
+.per-account .account-row{ display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap; }
+.per-account .account-name{ flex:1 1 55%; }
+.per-account .account-balance{ flex:1 1 40%; text-align:left; }
+
+/* Utility classes for forcing surfaces */
+.card-custom.force-light {
+  background: color-mix(in srgb, var(--card) 90%, white 10%);
+  --inner-text: color-mix(in srgb, var(--txt) 70%, black 25%);
+}
+.card-custom.force-dark {
+  background: color-mix(in srgb, var(--card) 65%, black 25%);
+  --inner-text: color-mix(in srgb, var(--txt) 85%, white 20%);
+}
+
+/* Accessibility: ensure minimum contrast on headings (simple clamp) */
+.card-custom h1, .card-custom h2 {
+  text-shadow: 0 1px 0 rgba(0,0,0,0.02);
+  line-height:1.15;
+}
+
+/* END of style */
+</style>
+
 </head>
 <body class="antialiased">
 
 <div class="min-h-screen flex direction-rtl flex-col">
   <main class="flex-1 p-6 overflow-auto mb-20">
-    <!-- CONTENT (enhanced and filled) -->
-
     <section id="dashboard" class="page-section">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 top-grid">
         <div class="md:col-span-1 card-custom shadow-xl per-account" style="background-color: var(--card);"> 
@@ -114,7 +283,6 @@
       </div>
     </section>
 
-    <!-- Transactions -->
     <section id="transactions" class="page-section hidden">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-2xl font-bold">سجل الحركات</h2>
@@ -159,7 +327,6 @@
       </div>
     </section>
 
-    <!-- Add / Edit Transaction -->
     <section id="add" class="page-section hidden">
       <div class="card-custom">
         <h3 class="font-semibold mb-2">إضافة / تعديل حركة</h3>
@@ -169,7 +336,7 @@
             <select id="type" class="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-brand">
               <option value="income">دخل</option>
               <option value="expense">مصروف</option>
-            </select>
+              <option value="transfer">تحويل</option> </select>
           </div>
           <div>
             <label class="text-sm">المبلغ (ج.م)</label>
@@ -188,15 +355,15 @@
             <input id="desc" type="text" class="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-brand" />
           </div>
           <div>
-            <label class="text-sm">الحساب</label>
-            <select id="account" class="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-brand"></select>
+            <label class="text-sm" id="accountLabel">الحساب</label> <select id="account" class="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-brand"></select>
           </div>
-          <div>
-            <label class="text-sm">الفئة</label>
+          <div id="toAccountDiv" class="hidden"> <label class="text-sm">الحساب المُحوَّل إليه (إلى)</label>
+            <select id="toAccount" class="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-brand"></select>
+          </div>
+          <div id="categoryDiv"> <label class="text-sm">الفئة</label>
             <select id="category" class="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-brand"></select>
           </div>
-          <div>
-            <label class="text-sm">ربط الالتزام (اختياري)</label>
+          <div id="linkCommitDiv"> <label class="text-sm">ربط الالتزام (اختياري)</label>
             <select id="linkCommit" class="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-brand"></select>
           </div>
           <div class="col-span-3 flex gap-2 mt-2">
@@ -209,7 +376,6 @@
       </div>
     </section>
 
-    <!-- Accounts -->
     <section id="accounts" class="page-section hidden">
       <div class="grid md:grid-cols-2 gap-4">
         <div class="card-custom">
@@ -234,7 +400,6 @@
       </div>
     </section>
 
-    <!-- Commitments & Collections -->
     <section id="commitments" class="page-section hidden">
       <div class="grid md:grid-cols-1 gap-4">
         <div class="card-custom">
@@ -281,7 +446,6 @@
   </main>
 </div>
 
-<!-- FOOTER: new styled footer with icons + dark toggle -->
 <footer class="flex justify-between items-center p-2 bg-card border-t border-border z-50" style="background-color: var(--card); border-color: var(--border);">
   <div class="flex gap-2 px-2">
     <button class="nav-btn" data-page="dashboard" aria-label="الرئيسية" title="الرئيسية">
@@ -310,7 +474,6 @@
   </div>
 </footer>
 
-<!-- modal -->
 <div id="modalBackdrop" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
   <div class="modal-box bg-white dark:bg-gray-800 p-4 rounded-xl w-11/12 md:w-1/2" role="dialog" aria-modal="true" style="background-color: var(--card);">
     <h4 id="modalTitle" class="font-semibold mb-2">...</h4>
@@ -389,8 +552,19 @@ function bindFooter(){ $$('button.nav-btn').forEach(btn=>{ btn.addEventListener(
 function setFooterActiveByPage(pageId){ const btn=document.querySelector(`button.nav-btn[data-page="${pageId}"]`); if(btn){ $$('button.nav-btn').forEach(b=>{ b.classList.remove('active'); b.setAttribute('aria-pressed','false'); }); btn.classList.add('active'); btn.setAttribute('aria-pressed','true'); } }
 
 // small UI helpers
-function refreshAccountSelects(){ const opts = accounts.map(a=>`<option value="${escapeHtml(a.name)}">${escapeHtml(a.name)}</option>`).join(''); if($('#account')) $('#account').innerHTML = opts; if($('#fAccount')) $('#fAccount').innerHTML = `<option value="all">كل الحسابات</option>` + opts; }
-function refreshCategorySelect(){ const cats = categories.filter(c=>c.type === ($('#type')?.value||'income')); if($('#category')) $('#category').innerHTML = cats.map(c=>`<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`).join(''); }
+function refreshAccountSelects(){ 
+    const opts = accounts.map(a=>`<option value="${escapeHtml(a.name)}">${escapeHtml(a.name)}</option>`).join(''); 
+    if($('#account')) $('#account').innerHTML = opts; 
+    if($('#toAccount')) $('#toAccount').innerHTML = opts; // ADDED
+    if($('#fAccount')) $('#fAccount').innerHTML = `<option value="all">كل الحسابات</option>` + opts; 
+}
+
+function refreshCategorySelect(){ 
+    const type = $('#type')?.value || 'expense';
+    const cats = categories.filter(c=>c.type === type); 
+    if($('#category')) $('#category').innerHTML = cats.map(c=>`<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`).join(''); 
+}
+
 function refreshLinkCommitOptions(){ if(!$('#linkCommit')) return; const ym=YM(); const opts = commitments.filter(c=>{ const st=getCommitmentState(c); return !st.done && st.currentDueYm===ym && st.remaining>0; }).map(c=>`<option value="${c.id}">${escapeHtml(c.name)} (متبقي: ${fmt(c.remaining)} ج.م)</option>`).join(''); $('#linkCommit').innerHTML = `<option value="">لا يوجد ربط</option>` + opts; }
 
 // computeAndUpdateSummary (already implemented)
@@ -402,17 +576,227 @@ function loadThemeData(){ const isDark = localStorage.getItem(DARK_KEY) === 'tru
 
 function ensureTransferCategories(){ const need=[{name:'تحويل صادر',type:'expense'},{name:'تحويل وارد',type:'income'},{name:'عمولة تحويل',type:'expense'}]; let changed=false; for(const n of need){ if(!categories.some(c=>c.name===n.name && c.type===n.type)){ categories.push(n); changed=true; } } if(changed) persist(CAT_KEY, categories); }
 
+// NEW: Function to handle UI visibility based on transaction type (transfer/normal)
+function handleTypeChange(){
+    const type = $('#type')?.value;
+    const isTransfer = type === 'transfer';
+
+    $('#toAccountDiv')?.classList.toggle('hidden', !isTransfer);
+    $('#categoryDiv')?.classList.toggle('hidden', isTransfer);
+    $('#linkCommitDiv')?.classList.toggle('hidden', isTransfer);
+
+    if($('#accountLabel')) {
+        $('#accountLabel').textContent = isTransfer ? 'الحساب المُحوَّل منه (من)' : 'الحساب';
+    } else if($('#account')?.previousElementSibling) { // Fallback if no ID on label
+        $('#account').previousElementSibling.textContent = isTransfer ? 'الحساب المُحوَّل منه (من)' : 'الحساب';
+    }
+    refreshCategorySelect();
+}
+
 // basic event bindings for add account/category and compute summary
 $('#addAccount')?.addEventListener('click', ()=>{ const name=($('#newAccountName')?.value||'').trim(); const opening=Number($('#newAccountOpening')?.value||0); if(!name) return; accounts.push({name, opening}); persist(ACC_KEY, accounts); $('#newAccountName').value=''; $('#newAccountOpening').value=''; drawAccountsList(); refreshAccountSelects(); computeAndUpdateSummary(); });
 $('#addCategory')?.addEventListener('click', ()=>{ const name=($('#newCatName')?.value||'').trim(); const type=($('#newCatType')?.value||'expense'); if(!name) return; categories.push({name, type}); persist(CAT_KEY, categories); $('#newCatName').value=''; drawCatsList(); refreshCategorySelect(); });
 
-// basic save transaction (simplified)
-let editTxId=null; $('#saveTx')?.addEventListener('click', ()=>{ const type=($('#type')?.value||'income'); const amount=Number($('#amount')?.value||0); const execVal = $('#exec')?.value; const dateVal = $('#date')?.value; const desc=($('#desc')?.value||'').trim(); const account = ($('#account')?.value||''); const category = ($('#category')?.value||''); const linkCommitId = ($('#linkCommit')?.value||''); if(!account || !category || !amount || amount<=0){ alert('من فضلك أدخل: حساب/فئة/مبلغ صحيح'); return; } let execISO=null; if(execVal){ const d=new Date(execVal); const tzOffset = d.getTimezoneOffset()*60000; execISO = new Date(d.getTime() - tzOffset).toISOString(); } else execISO = new Date().toISOString(); const newTx = { id: editTxId || eid(), created: new Date().toISOString(), exec: execISO, date: dateVal || execISO.slice(0,10), desc, type, amount: Number(amount), account, category, linkCommitId, isTransfer:false }; if(editTxId){ const i = ledger.findIndex(t=>t.id===editTxId); if(i>-1) ledger[i]=newTx; editTxId=null; $('#saveTx').textContent='حفظ'; } else ledger.push(newTx); persist(KEY, ledger); markLedgerDirty(); ensureSortedLedger(); renderTransactions(); drawCommitments(); drawDueSoon(); computeAndUpdateSummary(); $('#amount').value=''; $('#desc').value=''; $('#exec').value=''; $('#date').value=''; $('#linkCommit').value=''; });
+// UPDATED: Save Transaction Logic (Handling Transfers)
+let editTxId=null; 
+$('#saveTx')?.addEventListener('click', ()=>{ 
+    const type=($('#type')?.value||'income'); 
+    const amount=Number($('#amount')?.value||0); 
+    const execVal = $('#exec')?.value; 
+    const dateVal = $('#date')?.value; 
+    const desc=($('#desc')?.value||'').trim(); 
+    const fromAccount = ($('#account')?.value||''); 
+    const category = ($('#category')?.value||''); 
+    const linkCommitId = ($('#linkCommit')?.value||''); 
+    const toAccount = ($('#toAccount')?.value||'');
 
-$('#resetForm')?.addEventListener('click', ()=>{ editTxId=null; $('#saveTx').textContent='حفظ'; $('#amount').value=''; $('#desc').value=''; $('#exec').value=''; $('#date').value=''; $('#linkCommit').value=''; });
+    // VALIDATION
+    if(!fromAccount || !amount || amount<=0){ 
+        alert('من فضلك أدخل: حساب (المحوَّل منه) ومبلغ صحيح.'); 
+        return; 
+    } 
+    if(type === 'transfer'){
+        if(!toAccount || fromAccount === toAccount){
+            alert('يجب تحديد حسابين مختلفين للتحويل.');
+            return;
+        }
+    } else if (!category) {
+        alert('من فضلك حدد فئة.');
+        return;
+    }
+
+    let execISO=null; 
+    if(execVal){ 
+        const d=new Date(execVal); 
+        const tzOffset = d.getTimezoneOffset()*60000; 
+        execISO = new Date(d.getTime() - tzOffset).toISOString(); 
+    } else execISO = new Date().toISOString(); 
+    
+    let txsToSave = [];
+    const isEditMode = !!editTxId;
+
+    // --- TRANSFER LOGIC ---
+    if(type === 'transfer'){
+        const transferBaseId = editTxId || eid();
+        const outgoingTxId = transferBaseId;
+        const incomingTxId = transferBaseId + '_in';
+
+        // 1. Outgoing Transaction (Expense)
+        const outgoingTx = { 
+            id: outgoingTxId, 
+            created: new Date().toISOString(), 
+            exec: execISO, 
+            date: dateVal || execISO.slice(0,10), 
+            desc: desc || `تحويل إلى ${toAccount}`, 
+            type: 'expense', 
+            amount: amount, 
+            account: fromAccount, 
+            category: 'تحويل صادر', 
+            linkCommitId: null, 
+            isTransfer: true,
+            linkedTxId: incomingTxId
+        };
+        txsToSave.push(outgoingTx);
+
+        // 2. Incoming Transaction (Income)
+        const incomingTx = {
+            id: incomingTxId,
+            created: new Date().toISOString(), 
+            exec: execISO, 
+            date: dateVal || execISO.slice(0,10), 
+            desc: desc || `تحويل من ${fromAccount}`, 
+            type: 'income', 
+            amount: amount, 
+            account: toAccount, 
+            category: 'تحويل وارد', 
+            linkCommitId: null, 
+            isTransfer: true,
+            linkedTxId: outgoingTxId
+        };
+        txsToSave.push(incomingTx);
+
+        // If editing, remove the old pair first
+        if (isEditMode) {
+             ledger = ledger.filter(t => t.id !== outgoingTxId && t.id !== incomingTxId);
+        }
+    } 
+    // --- NORMAL INCOME/EXPENSE LOGIC ---
+    else {
+        // If editing, check if the old transaction was a transfer. If so, delete the linked pair.
+        if (isEditMode) {
+            const existingTx = ledger.find(t=>t.id===editTxId);
+            if(existingTx?.isTransfer && existingTx.linkedTxId) {
+                ledger = ledger.filter(t => t.id !== editTxId && t.id !== existingTx.linkedTxId);
+            }
+        }
+        
+        const newTx = { 
+            id: editTxId || eid(), 
+            created: new Date().toISOString(), 
+            exec: execISO, 
+            date: dateVal || execISO.slice(0,10), 
+            desc, 
+            type, 
+            amount: Number(amount), 
+            account: fromAccount, 
+            category, 
+            linkCommitId, 
+            isTransfer:false 
+        }; 
+        txsToSave.push(newTx);
+    }
+    
+    // Final Save and Cleanup
+    if(isEditMode && type !== 'transfer'){ 
+        const i = ledger.findIndex(t=>t.id===txsToSave[0].id); 
+        if(i>-1) ledger[i]=txsToSave[0]; 
+    } else {
+        ledger.push(...txsToSave); 
+    }
+
+    editTxId=null; 
+    $('#saveTx').textContent='حفظ'; 
+    persist(KEY, ledger); 
+    markLedgerDirty(); 
+    ensureSortedLedger(); 
+    renderTransactions(); 
+    drawCommitments(); 
+    drawDueSoon(); 
+    computeAndUpdateSummary(); 
+    
+    // Reset form and UI state
+    $('#amount').value=''; 
+    $('#desc').value=''; 
+    $('#exec').value=''; 
+    $('#date').value=''; 
+    $('#linkCommit').value='';
+    $('#type').value = 'expense'; 
+    handleTypeChange(); // Ensure UI state is reset
+});
+
+$('#resetForm')?.addEventListener('click', ()=>{ editTxId=null; $('#saveTx').textContent='حفظ'; $('#amount').value=''; $('#desc').value=''; $('#exec').value=''; $('#date').value=''; $('#linkCommit').value=''; $('#type').value='expense'; handleTypeChange(); });
 
 // delegated click handlers (delete/edit tx, commitments, collections)
-document.addEventListener('click', function(e){ const btn = e.target.closest('button[data-action]'); if(!btn) return; const action = btn.getAttribute('data-action'); const id = btn.getAttribute('data-id'); if(action === 'del-tx'){ if(confirm('هل تريد حذف هذه الحركة؟')){ ledger = ledger.filter(t=>t.id!==id); persist(KEY, ledger); markLedgerDirty(); ensureSortedLedger(); renderTransactions(); drawCommitments(); drawDueSoon(); computeAndUpdateSummary(); } } else if(action === 'edit-tx'){ const t = ledger.find(x=>x.id===id); if(!t) return; editTxId = id; $('#saveTx').textContent='تحديث'; $('#type').value = t.type; $('#amount').value = t.amount; $('#desc').value = t.desc||''; $('#account').value = t.account||''; $('#category').value = t.category||''; if(t.exec){ const d = new Date(t.exec); const tzOffset = d.getTimezoneOffset()*60000; const localISOTime = new Date(d - tzOffset).toISOString().slice(0,16); $('#exec').value = localISOTime; } else $('#exec').value=''; $('#date').value = t.date || t.due || ''; $('#linkCommit').value = t.linkCommitId || ''; refreshCategorySelect(); window.scrollTo({top:0,behavior:'smooth'}); } else if(action === 'pay-commit'){ const c = commitments.find(x=>x.id===id); if(!c) return; const st = getCommitmentState(c); if(st.done || st.remaining<=0){ alert('تم سداد هذا الالتزام بالفعل أو انتهى.'); return; } const remain = st.remaining; const accName = prompt(`سداد الالتزام: ${c.name}
+document.addEventListener('click', function(e){ const btn = e.target.closest('button[data-action]'); if(!btn) return; const action = btn.getAttribute('data-action'); const id = btn.getAttribute('data-id'); if(action === 'del-tx'){ if(confirm('هل تريد حذف هذه الحركة؟')){ 
+        // If deleting a transfer, delete the linked transaction too
+        const txToDelete = ledger.find(t => t.id === id);
+        if (txToDelete?.isTransfer && txToDelete.linkedTxId) {
+            ledger = ledger.filter(t => t.id !== id && t.id !== txToDelete.linkedTxId);
+        } else {
+            ledger = ledger.filter(t=>t.id!==id);
+        }
+
+        persist(KEY, ledger); markLedgerDirty(); ensureSortedLedger(); renderTransactions(); drawCommitments(); drawDueSoon(); computeAndUpdateSummary(); 
+    } } else if(action === 'edit-tx'){ 
+        const t = ledger.find(x=>x.id===id); 
+        if(!t) return; 
+        
+        editTxId = id; 
+        $('#saveTx').textContent='تحديث'; 
+        
+        // Transfer handling logic
+        if(t.isTransfer && t.linkedTxId) {
+            const linkedTx = ledger.find(x => x.id === t.linkedTxId);
+            
+            // Determine the 'from' (expense) and 'to' (income) part
+            const isOutgoing = t.type === 'expense';
+            const fromTx = isOutgoing ? t : linkedTx;
+            const toTx = isOutgoing ? linkedTx : t;
+            
+            // Use the expense part ID as the base for editTxId
+            editTxId = fromTx?.id || t.id;
+
+            $('#type').value = 'transfer';
+            $('#account').value = fromTx?.account || '';
+            $('#toAccount').value = toTx?.account || '';
+            $('#amount').value = t.amount;
+            $('#desc').value = fromTx?.desc || t.desc || '';
+            $('#category').value = ''; // Hide category for transfers
+            $('#linkCommit').value = ''; // Hide link commit
+        } else {
+            // Normal transaction
+            $('#type').value = t.type;
+            $('#account').value = t.account||''; 
+            $('#amount').value = t.amount; 
+            $('#desc').value = t.desc||''; 
+            $('#category').value = t.category||''; 
+            $('#linkCommit').value = t.linkCommitId || '';
+            $('#toAccount').value = ''; // Clear to account in case UI state is wrong
+        }
+
+        // Common fields
+        if(t.exec){ 
+            const d = new Date(t.exec); 
+            const tzOffset = d.getTimezoneOffset()*60000; 
+            const localISOTime = new Date(d - tzOffset).toISOString().slice(0,16); 
+            $('#exec').value = localISOTime; 
+        } else $('#exec').value=''; 
+        
+        $('#date').value = t.date || t.due || ''; 
+        
+        handleTypeChange(); // Call to set the UI visibility correctly
+        window.scrollTo({top:0,behavior:'smooth'}); 
+    } else if(action === 'pay-commit'){ const c = commitments.find(x=>x.id===id); if(!c) return; const st = getCommitmentState(c); if(st.done || st.remaining<=0){ alert('تم سداد هذا الالتزام بالفعل أو انتهى.'); return; } const remain = st.remaining; const accName = prompt(`سداد الالتزام: ${c.name}
 المبلغ المتبقي: ${fmt(remain)} ج.م
 من فضلك أدخل اسم الحساب:`, accounts[0]?.name||''); if(!accName) return; if(!accounts.some(a=>a.name===accName)){ alert('هذا الحساب غير موجود'); return; } const execISO = new Date().toISOString(); const due = st.currentDueYm ? (st.currentDueYm+'-01') : (c.firstDue || execISO.slice(0,10)); ledger.push({ id:eid(), created:new Date().toISOString(), exec:execISO, date:due, due, desc:`${c.name} (سداد التزام)`, type:'expense', amount:remain, account:accName, category:'التزامات شهرية', linkCommitId:c.id }); persist(KEY, ledger); markLedgerDirty(); ensureSortedLedger(); drawCommitments(); drawDueSoon(); renderTransactions(); computeAndUpdateSummary(); } else if(action === 'del-commit'){ if(!confirm('هل تريد حذف هذا الالتزام؟ (ستبقى أي دفعات سُجلت محفوظة)')) return; commitments = commitments.filter(x=>x.id!==id); persist(COM_KEY, commitments); drawCommitments(); drawDueSoon(); computeAndUpdateSummary(); } else if(action === 'edit-commit'){ const c = commitments.find(x=>x.id===id); if(!c) return; $('#cName').value = c.name; $('#cAmount').value = c.amount; $('#cFirstDue').value = c.firstDue||''; $('#cRecurring').checked = !!c.recurring; $('#cEndAt').value = c.endAt||''; $('#addCommitment').textContent='تحديث الالتزام'; window.scrollTo({top:0,behavior:'smooth'}); } else if(action === 'collect-now'){ const c = collections.find(x=>x.id===id); if(!c) return; const accName = prompt(`تحصيل: ${c.name}
 المبلغ: ${fmt(c.amount)} ج.م
@@ -426,14 +810,35 @@ $('#addCommitment')?.addEventListener('click', ()=>{ const name=($('#cName')?.va
 $('#addCollect')?.addEventListener('click', ()=>{ const name=($('#coName')?.value||'').trim(); const amount=Number($('#coAmount')?.value||0); const firstDueStr=$('#coFirstDue')?.value; const recurring=$('#coRecurring')?.checked; const endAt = $('#coEndAt')?.value || null; if(!name||!amount||!firstDueStr){ alert('أدخل اسم + مبلغ صحيح + تاريخ أول استحقاق'); return; } if(recurring && !endAt){ alert('عند التكرار يجب تحديد تاريخ النهاية'); return; } const firstDue=parseLocalDate(firstDueStr); let nextDue=new Date(firstDue.getTime()); const today=new Date(); nextDue.setHours(0,0,0,0); while(nextDue < today){ const tryNext = addMonthsPreserveDOM(nextDue,1); if(recurring && endAt && tryNext > parseLocalDate(endAt)) break; nextDue = tryNext; if(!recurring) break; } const item = { id: eid(), name, amount:Number(amount), firstDue: formatLocalDate(firstDue), recurring, endAt: recurring? (endAt||null): null, nextDue: formatLocalDate(nextDue) }; collections.push(item); persist(COL_KEY, collections); $('#coName').value=''; $('#coAmount').value=''; $('#coFirstDue').value=''; $('#coRecurring').checked=false; $('#coEndAt').value=''; drawCollections(); computeAndUpdateSummary(); });
 
 // draw lists on init
-function init(){ loadThemeData(); ensureTransferCategories(); ensureSortedLedger(); drawAccountsList(); drawCatsList(); refreshAccountSelects(); refreshCategorySelect(); refreshLinkCommitOptions(); drawCommitments(); drawCollections(); drawDueSoon(); renderTransactions(); computeAndUpdateSummary(); bindFooter(); gotoPage('dashboard'); setFooterActiveByPage('dashboard'); }
+function init(){ loadThemeData(); ensureTransferCategories(); ensureSortedLedger(); drawAccountsList(); drawCatsList(); refreshAccountSelects(); refreshCategorySelect(); refreshLinkCommitOptions(); drawCommitments(); drawCollections(); drawDueSoon(); renderTransactions(); computeAndUpdateSummary(); bindFooter(); gotoPage('dashboard'); setFooterActiveByPage('dashboard'); handleTypeChange(); // Set initial UI state for 'Add' form
+}
 
 // safe init
 try{ init(); }catch(err){ console.error('init error', err); }
 
-// small UX filters
-$('#search')?.addEventListener('input', ()=>{ currentPage=1; renderTransactions(); }); $('#fType')?.addEventListener('change', ()=>{ currentPage=1; renderTransactions(); refreshCategorySelect(); }); $('#fAccount')?.addEventListener('change', ()=>{ currentPage=1; renderTransactions(); }); $('#fFrom')?.addEventListener('change', ()=>{ currentPage=1; renderTransactions(); }); $('#fTo')?.addEventListener('change', ()=>{ currentPage=1; renderTransactions(); });
-$('#clearFilters')?.addEventListener('click', ()=>{ $('#search').value=''; $('#fType').value='all'; $('#fAccount').value='all'; $('#fFrom').value=''; $('#fTo').value=''; currentPage=1; renderTransactions(); });
+// NEW: Consolidated Filter/Pagination Logic
+function filterChanged(e){ 
+    currentPage=1; 
+    renderTransactions(); 
+    if(e?.target?.id === 'fType') refreshCategorySelect();
+}
+
+$('#search')?.addEventListener('input', filterChanged); 
+$('#fType')?.addEventListener('change', filterChanged); 
+$('#fAccount')?.addEventListener('change', filterChanged); 
+$('#fFrom')?.addEventListener('change', filterChanged); 
+$('#fTo')?.addEventListener('change', filterChanged); 
+$('#clearFilters')?.addEventListener('click', ()=>{ 
+    $('#search').value=''; 
+    $('#fType').value='all'; 
+    $('#fAccount').value='all'; 
+    $('#fFrom').value=''; 
+    $('#fTo').value=''; 
+    filterChanged(); 
+});
+
+// Added listener for the main transaction type change
+$('#type')?.addEventListener('change', handleTypeChange); 
 
 // capture uncaught errors to console
 window.addEventListener('error', e=>{ console.error('Unhandled JS Error:', e.message); });
