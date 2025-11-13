@@ -30,20 +30,22 @@
         html, body { height: 100%; }
         body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--txt); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
-        /* Card visuals: Enhanced radius and shadow */
+        /* Card visuals: Enhanced radius, shadow, and improved padding */
         .card-custom {
             background: var(--card);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 0;
+            /* ======= التعديل هنا: زيادة الهامش الداخلي للكارت ======= */
+            padding: 20px; 
+            /* ======================================================= */
             margin: 0 auto;
             overflow: hidden;
             box-shadow: 0 10px 25px rgba(9, 16, 26, 0.1);
             /* إضافة فصل بصري سفلي للكروت */
             border-bottom: 3px solid var(--border);
         }
-        .card-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; }
-        .card-body { padding: 14px; border-top: 1px solid var(--border); }
+        
+        /* أزلنا .card-head و .card-body لأنهما لم تعد ضرورية مع الهامش الموحد */
         
         /* Navigation Button Style */
         .nav-btn {
@@ -103,10 +105,10 @@
             color: #fca5a5;
         }
         
-        /* Input Focus Style */
+        /* Input Focus Style: Increased border and ring thickness for better visual feedback */
         input:focus, select:focus, textarea:focus {
             border-color: var(--brand) !important;
-            box-shadow: 0 0 0 3px rgba(var(--brand-rgb), 0.2) !important;
+            box-shadow: 0 0 0 4px rgba(var(--brand-rgb), 0.3) !important; 
         }
 
         /* Table Styling for Transactions */
@@ -117,7 +119,7 @@
 
         /* Style for inner lists within cards (Last 5 Tx, Due Soon) */
         .card-inner-list .item {
-            padding: 8px 0;
+            padding: 10px 0; /* زيادة الهامش الأفقي */
             border-bottom: 1px dashed var(--border);
         }
         .card-inner-list .item:last-child {
@@ -153,43 +155,43 @@
   <main class="flex-1 p-6 overflow-auto">
     <section id="dashboard" class="page-section">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 top-grid">
-        <div class="card-custom p-6 shadow-xl" style="background-color: var(--card);"> 
+        <div class="card-custom shadow-xl" style="background-color: var(--card);"> 
           <small class="muted">إجمالي الأرصدة</small>
           <div id="totalBalance" class="text-3xl font-bold mt-2 text-brand" style="color:var(--brand);">0.00</div>
         </div>
-        <div class="card-custom p-6 shadow-xl" style="background-color: var(--card);">
+        <div class="card-custom shadow-xl" style="background-color: var(--card);">
           <small class="muted">الرصيد المتوقع (بعد الالتزامات)</small>
           <div id="balanceAfterCommit" class="text-3xl font-bold mt-2 text-ok" style="color:var(--ok);">0.00</div>
         </div>
-        <div class="card-custom p-6 shadow-xl" style="background-color: var(--card);">
+        <div class="card-custom shadow-xl" style="background-color: var(--card);">
           <small class="muted">الشهر الحالي</small>
           <div id="monthLabel" class="text-3xl font-bold mt-2"></div>
         </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div class="card-custom p-4">
+        <div class="card-custom">
           <h4 class="font-semibold text-lg mb-1">استحقاقات الشهر الحالي</h4>
           <div id="totalCommitThisAndCollections" class="text-xl font-bold mt-2">0.00</div>
         </div>
-        <div class="card-custom p-4">
+        <div class="card-custom">
           <h4 class="font-semibold text-lg mb-1">استحقاقات الشهر القادم</h4>
           <div id="totalCommitNext" class="text-xl font-bold mt-2">0.00</div>
         </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="card-custom p-4">
+        <div class="card-custom">
           <h4 class="font-semibold mb-2 border-b pb-2 border-border" style="border-color: var(--border);">آخر 5 حركات</h4>
           <div id="latestTx" class="card-inner-list"></div>
         </div>
 
-        <div class="card-custom p-4">
+        <div class="card-custom">
           <h4 class="font-semibold mb-2 border-b pb-2 border-border" style="border-color: var(--border);">استحقاقات قريبة</h4>
           <div id="dueSoonWrap" class="card-inner-list"></div>
         </div>
 
-        <div class="card-custom p-4">
+        <div class="card-custom">
           <h4 class="font-semibold mb-2 border-b pb-2 border-border" style="border-color: var(--border);">تفاصيل الأرصدة بالحساب</h4>
           <div id="perAccount" class="card-inner-list space-y-3 pt-1"></div>
         </div>
@@ -201,7 +203,7 @@
         <h2 class="text-2xl font-bold">سجل الحركات</h2>
       </div>
 
-      <div class="card-custom mb-4 p-4">
+      <div class="card-custom mb-4">
         <div class="flex gap-2 flex-wrap items-center mb-3">
           <input id="search" placeholder="بحث بالوصف/الفئة" class="px-3 py-2 border rounded flex-1 focus:ring-2 focus:ring-brand" />
           <select id="fType" class="px-3 py-2 border rounded focus:ring-2 focus:ring-brand">
@@ -235,7 +237,7 @@
     </section>
 
     <section id="add" class="page-section hidden">
-      <div class="card-custom p-4">
+      <div class="card-custom">
         <h3 class="font-semibold mb-2">إضافة / تعديل حركة</h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div>
@@ -285,7 +287,7 @@
 
     <section id="accounts" class="page-section hidden">
       <div class="grid md:grid-cols-2 gap-4">
-        <div class="card-custom p-4">
+        <div class="card-custom">
           <h3 class="font-semibold mb-2">الحسابات</h3>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
             <input id="newAccountName" placeholder="اسم الحساب" class="px-3 py-2 border rounded focus:ring-2 focus:ring-brand" />
@@ -295,7 +297,7 @@
           <div id="accountsList" class="mt-3 space-y-2"></div>
         </div>
 
-        <div class="card-custom p-4">
+        <div class="card-custom">
           <h3 class="font-semibold mb-2">الفئات</h3>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
             <input id="newCatName" placeholder="اسم الفئة" class="px-3 py-2 border rounded focus:ring-2 focus:ring-brand" />
@@ -309,7 +311,7 @@
 
     <section id="commitments" class="page-section hidden">
       <div class="grid md:grid-cols-2 gap-4">
-        <div class="card-custom p-4">
+        <div class="card-custom">
           <h3 class="font-semibold mb-2">الالتزامات الشهرية</h3>
           <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
             <input id="cName" placeholder="اسم الالتزام" class="px-3 py-2 border rounded focus:ring-2 focus:ring-brand" />
@@ -328,7 +330,7 @@
           </div>
         </div>
 
-        <div class="card-custom p-4">
+        <div class="card-custom">
           <h3 class="font-semibold mb-2">التحصيلات</h3>
           <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
             <input id="coName" placeholder="اسم التحصيل" class="px-3 py-2 border rounded focus:ring-2 focus:ring-brand" />
@@ -505,6 +507,7 @@ function drawPerAccount(){
   const list = [];
   for(const a of accounts){
     const v = (cachedBalances && cachedBalances.get(a.name)!==undefined) ? cachedBalances.get(a.name) : Number(a.opening||0);
+    // تم إضافة هامش أفقي هنا لتعويض الهامش الذي تم إلغاؤه من الأب
     list.push(`<div class="flex justify-between items-center item"><div>${escapeHtml(a.name)}</div><div><b>${fmt(v)} ج.م</b></div></div>`);
   }
   $('#perAccount').innerHTML = list.join('');
@@ -568,7 +571,8 @@ function drawDueSoon(){
   const totalRemain = list.reduce((s,x)=>s + x.remaining, 0);
   let html = '';
   if(list.length === 0){
-    html = `<div class="text-sm muted p-4">لا توجد استحقاقات هذا الشهر غير مسددة.</div>`;
+    // تم تعديل الهامش الداخلي ليتناسق مع padding الكارت
+    html = `<div class="text-sm muted pt-2">لا توجد استحقاقات هذا الشهر غير مسددة.</div>`;
   } else {
     html = list.map(x=>{
       const isOverdue = x.diff < 0;
@@ -1089,6 +1093,7 @@ function computeAndUpdateSummary(){
   $('#latestTx').innerHTML = ledger.slice().sort((a,b)=> (b.exec||b.created||'').localeCompare(a.exec||a.created||'')).slice(0,5).map(t=>{
     const sign = t.type==='income'?'+':'-';
     const color = t.type==='income'?'text-ok':'text-danger';
+    // تم إضافة هامش أفقي هنا لتعويض الهامش الذي تم إلغاؤه من الأب
     return `<div class="flex justify-between items-center item"><div><b>${escapeHtml(t.desc||'—')}</b><div class="text-xs muted">${escapeHtml(t.category||'')}</div></div><div class="${color} font-bold">${sign}${fmt(t.amount)}</div></div>`;
   }).join('');
   
