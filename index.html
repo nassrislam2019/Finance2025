@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>دفتر حساباتي — نسخة محسّنة ومدمجة</title>
+    <title>دفتر حساباتي — نسخة محسّنة ومدمجة (تناسق الكروت)</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMDJ8uR0FWO0w/dEswjJ9/J3tF/gGkS46pXbJ+ySg8rQGzO1vV0/dEswjJ9/J3tF/gGkS46pXbJ+ySg8rQGzO1vV0/J1J0+P0+vP0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
@@ -16,7 +16,6 @@
         /* 1. Improved CSS Variables & Styles */
         /* ==================================== */
         :root{
-            /* Base Colors (from original file, but adding RGB for transparency) */
             --bg:#ffffff; --card:#f7f9fc; --muted:#55626b; --txt:#09101a;
             --brand:#0b84ff; /* الأزرق الأساسي */
             --brand-rgb: 11, 132, 255; /* RGB for brand color */
@@ -35,11 +34,13 @@
         .card-custom {
             background: var(--card);
             border: 1px solid var(--border);
-            border-radius: var(--radius); /* استخدام المتغير الجديد */
+            border-radius: var(--radius);
             padding: 0;
             margin: 0 auto;
             overflow: hidden;
-            box-shadow: 0 10px 25px rgba(9, 16, 26, 0.1); /* ظل أعمق (shadow-xl) */
+            box-shadow: 0 10px 25px rgba(9, 16, 26, 0.1);
+            /* إضافة فصل بصري سفلي للكروت */
+            border-bottom: 3px solid var(--border);
         }
         .card-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; }
         .card-body { padding: 14px; border-top: 1px solid var(--border); }
@@ -62,9 +63,9 @@
         }
         .nav-btn.active {
             color: var(--brand);
-            background: rgba(var(--brand-rgb), 0.1); /* خلفية فاتحة شفافة */
+            background: rgba(var(--brand-rgb), 0.1);
             font-weight: 700;
-            border-right: 4px solid var(--brand); /* خط جانبي لتمييز النشط */
+            border-right: 4px solid var(--brand);
             margin-right: -4px;
         }
         .nav-btn:hover:not(.active) {
@@ -78,8 +79,8 @@
             border-radius: 9999px;
             font-size: 0.75rem;
             font-weight: 700;
-            background-color: #d1fae5; /* أخضر فاتح جداً */
-            color: #059669; /* أخضر داكن */
+            background-color: #d1fae5;
+            color: #059669;
             direction: ltr;
             white-space: nowrap;
         }
@@ -92,8 +93,8 @@
             border-radius: 9999px;
             font-size: 0.75rem;
             font-weight: 700;
-            background-color: #fee2e2; /* أحمر فاتح جداً */
-            color: #ef4444; /* أحمر داكن */
+            background-color: #fee2e2;
+            color: #ef4444;
             direction: ltr;
             white-space: nowrap;
         }
@@ -114,6 +115,14 @@
         .custom tbody tr:nth-child(even) { background-color: var(--border); }
         .custom tbody tr:hover { background-color: rgba(var(--brand-rgb), 0.05); }
 
+        /* Style for inner lists within cards (Last 5 Tx, Due Soon) */
+        .card-inner-list .item {
+            padding: 8px 0;
+            border-bottom: 1px dashed var(--border);
+        }
+        .card-inner-list .item:last-child {
+            border-bottom: none;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -149,7 +158,7 @@
           <div id="totalBalance" class="text-3xl font-bold mt-2 text-brand" style="color:var(--brand);">0.00</div>
         </div>
         <div class="card-custom p-6 shadow-xl" style="background-color: var(--card);">
-          <small class="muted">الرصيد المتوقع (بعد التحصيلات والالتزامات)</small>
+          <small class="muted">الرصيد المتوقع (بعد الالتزامات)</small>
           <div id="balanceAfterCommit" class="text-3xl font-bold mt-2 text-ok" style="color:var(--ok);">0.00</div>
         </div>
         <div class="card-custom p-6 shadow-xl" style="background-color: var(--card);">
@@ -160,11 +169,11 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div class="card-custom p-4">
-          <small class="muted">استحقاقات الشهر الحالي (المبالغ تحت التحصيل)</small>
+          <h4 class="font-semibold text-lg mb-1">استحقاقات الشهر الحالي</h4>
           <div id="totalCommitThisAndCollections" class="text-xl font-bold mt-2">0.00</div>
         </div>
         <div class="card-custom p-4">
-          <small class="muted">استحقاقات الشهر القادم</small>
+          <h4 class="font-semibold text-lg mb-1">استحقاقات الشهر القادم</h4>
           <div id="totalCommitNext" class="text-xl font-bold mt-2">0.00</div>
         </div>
       </div>
@@ -172,17 +181,17 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="card-custom p-4">
           <h4 class="font-semibold mb-2 border-b pb-2 border-border" style="border-color: var(--border);">آخر 5 حركات</h4>
-          <div id="latestTx"></div>
+          <div id="latestTx" class="card-inner-list"></div>
         </div>
 
         <div class="card-custom p-4">
           <h4 class="font-semibold mb-2 border-b pb-2 border-border" style="border-color: var(--border);">استحقاقات قريبة</h4>
-          <div id="dueSoonWrap"></div>
+          <div id="dueSoonWrap" class="card-inner-list"></div>
         </div>
 
         <div class="card-custom p-4">
           <h4 class="font-semibold mb-2 border-b pb-2 border-border" style="border-color: var(--border);">تفاصيل الأرصدة بالحساب</h4>
-          <div id="perAccount" class="space-y-2"></div>
+          <div id="perAccount" class="card-inner-list space-y-3 pt-1"></div>
         </div>
       </div>
     </section>
@@ -496,7 +505,7 @@ function drawPerAccount(){
   const list = [];
   for(const a of accounts){
     const v = (cachedBalances && cachedBalances.get(a.name)!==undefined) ? cachedBalances.get(a.name) : Number(a.opening||0);
-    list.push(`<div class="flex justify-between items-center"><div>${escapeHtml(a.name)}</div><div><b>${fmt(v)} ج.م</b></div></div>`);
+    list.push(`<div class="flex justify-between items-center item"><div>${escapeHtml(a.name)}</div><div><b>${fmt(v)} ج.م</b></div></div>`);
   }
   $('#perAccount').innerHTML = list.join('');
 }
@@ -565,7 +574,8 @@ function drawDueSoon(){
       const isOverdue = x.diff < 0;
       const state = isOverdue ? `<span class="text-red-600 font-bold"><i class="fas fa-exclamation-triangle"></i> متأخر ${Math.abs(x.diff)} يوم</span>` : x.diff===0 ? `<span class="text-green-600 font-bold"><i class="fas fa-bell"></i> اليوم</span>` : `<span class="text-gray-600 font-bold"><i class="fas fa-clock"></i> متبقي ${x.diff} يوم</span>`;
       const bgClass = isOverdue ? 'bg-red-50 dark:bg-red-900 border-red-300' : 'border-border';
-      return `<div class="mb-3 p-3 border rounded-lg ${bgClass}">
+      // Added 'item' class for consistent styling
+      return `<div class="item mb-2 p-3 border rounded-lg ${bgClass}">
         <div class="flex justify-between items-center"><div class="font-bold">${escapeHtml(x.name)}</div><div class="font-bold text-lg">${fmt(x.remaining)} ج.م</div></div>
         <div class="text-xs muted mt-1">الأصل: ${fmt(x.amount)} · المدفوع: ${fmt(x.paid)} · استحقاق: ${x.dueStr}</div>
         <div class="mt-2 flex justify-between items-center">${state}
@@ -648,7 +658,6 @@ function renderTransactions(){
     const dueTxt = t.date || t.due || '—';
     const tag = t.isTransfer ? ' <span class="text-xs text-brand"><i class="fas fa-sync-alt"></i> تحويل</span>' : '';
     
-    // Aesthetic Enhancements: Pill Badges and clean row style
     const pillClass = t.type === 'income' ? 'pill-badge-income' : 'pill-badge-expense';
     const sign = t.type === 'income' ? '+' : '-';
 
@@ -1076,11 +1085,11 @@ function computeAndUpdateSummary(){
   
   drawPerAccount();
   
-  // Latest
+  // Latest - Updated to use the new inner list class
   $('#latestTx').innerHTML = ledger.slice().sort((a,b)=> (b.exec||b.created||'').localeCompare(a.exec||a.created||'')).slice(0,5).map(t=>{
     const sign = t.type==='income'?'+':'-';
     const color = t.type==='income'?'text-ok':'text-danger';
-    return `<div class="flex justify-between py-2 border-b border-border" style="border-color: var(--border);"><div><b>${escapeHtml(t.desc||'—')}</b><div class="text-xs muted">${escapeHtml(t.category||'')}</div></div><div class="${color} font-bold">${sign}${fmt(t.amount)}</div></div>`;
+    return `<div class="flex justify-between items-center item"><div><b>${escapeHtml(t.desc||'—')}</b><div class="text-xs muted">${escapeHtml(t.category||'')}</div></div><div class="${color} font-bold">${sign}${fmt(t.amount)}</div></div>`;
   }).join('');
   
   $('#monthLabel').textContent = ym;
