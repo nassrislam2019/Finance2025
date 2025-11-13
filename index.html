@@ -1,889 +1,1140 @@
-<!doctype html>
-<html lang="ar" dir="rtl">
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>دفتر حساباتي — نسخة محسّنة ومدمجة (تناسق الكروت)</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>دفتر حساباتي — نسخة كاملة مصححة</title>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <!-- DEV NOTE: CDN مناسب للتطوير محلياً. لاستخدام إنتاجي استعمل Tailwind CLI/PostCSS لبناء ملف CSS. -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-    <style>
-:root{
-  --bg:#ffffff;
-  --card:#f7f9fc;
-  --muted:#55626b;
-  --txt:#09101a;
-  --brand:#0b84ff;
-  --brand-rgb: 11, 132, 255;
-  --danger:#ef4444;
-  --ok:#16a34a;
-  --border:#081827;
-  --radius:16px;
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 
-  /* fallback contrast colors (used if browser doesn't support color-mix) */
-  --contrast-on-light:#0b1220; /* dark text for light surfaces */
-  --contrast-on-dark:#f3f8ff;  /* light text for dark surfaces */
-}
-
-.dark{
-  --bg:#071227;
-  --card:#071a2b;
-  /* make muted a light tone in dark mode so icons and muted text remain visible */
-  --muted:#9fb3cc;
-  --txt:#e6f2ff;
-  --brand:#4ea8ff;
-  --danger:#fb6f6f;
-  --ok:#34d399;
-  --border:#123142;
-  --radius:16px;
-
-  /* update fallbacks for dark theme */
-  --contrast-on-light:#071227;
-  --contrast-on-dark:#e6f2ff;
-}
-
-html, body { height: 100%; }
-body {
-  font-family: 'Cairo', sans-serif;
-  background: var(--bg);
-  color: var(--txt);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* -----------------------------
-   Card base (keeps existing look)
-   ----------------------------- */
-.card-custom {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 20px;
-  margin: 0 auto;
-  overflow: hidden;
-  box-shadow: 0 10px 25px rgba(9, 16, 26, 0.08);
-  border-bottom: 3px solid var(--border);
-  /* default internal contrast variables (will be overridden) */
-  --inner-text: var(--txt);
-  --inner-muted: var(--muted);
-  --inner-border: var(--border);
-  color: var(--inner-text);
-}
-
-/* -----------------------------
-   Auto-contrast rules
-   Use either color-mix (modern browsers) or fallbacks
-   ----------------------------- */
-
-:root:not(.dark) .card-custom,
-.card-custom.light-surface {
-  --inner-text: color-mix(in srgb, var(--txt) 75%, black 25%);
-  --inner-muted: color-mix(in srgb, var(--muted) 80%, black 20%);
-  --inner-border: color-mix(in srgb, var(--border) 85%, black 15%);
-  --inner-text-fallback: var(--contrast-on-light);
-  --inner-muted-fallback: var(--muted);
-  --inner-border-fallback: var(--border);
-}
-
-:root .dark .card-custom,
-.card-custom.dark-surface {
-  --inner-text: color-mix(in srgb, var(--txt) 85%, white 20%);
-  --inner-muted: color-mix(in srgb, var(--muted) 85%, white 30%);
-  --inner-border: color-mix(in srgb, var(--border) 80%, white 25%);
-  --inner-text-fallback: var(--contrast-on-dark);
-  --inner-muted-fallback: var(--muted);
-  --inner-border-fallback: var(--border);
-}
-
-/* Force sensible card text colors (extra safeguard for inconsistent classes) */
-.card-custom h1,
-.card-custom h2,
-.card-custom h3,
-.card-custom h4,
-.card-custom h5,
-.card-custom p,
-.card-custom span,
-.card-custom .nav-label,
-.card-custom .nav-icon,
-.card-custom a,
-.card-custom button,
-.card-custom .muted,
-.card-custom small,
-.card-custom .subtle {
-  color: var(--inner-text, var(--inner-text-fallback)) !important;
-}
-
-/* Muted text inside card */
-.card-custom .muted,
-.card-custom small,
-.card-custom .subtle {
-  color: var(--inner-muted, var(--inner-muted-fallback)) !important;
-}
-
-/* Borders inside card */
-.card-custom,
-.card-inner-list .item {
-  border-color: var(--inner-border, var(--inner-border-fallback)) !important;
-}
-
-/* -----------------------------
-   Preserve original footer/nav styles
-   ----------------------------- */
-.nav-btn {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  width:62px;
-  height:62px;
-  padding:6px;
-  border-radius:14px;
-  transition: background .18s, color .18s, transform .12s;
-  color:var(--muted); /* fallback for light theme */
-  background:transparent;
-  border:none;
-}
-.nav-btn .nav-icon{ font-size:20px; display:block; }
-.nav-btn .nav-label{ font-size:11px; margin-top:4px; display:block; color:var(--muted); }
-/* dark-mode nav button color fix */
-:root .dark .nav-btn, :root .dark .nav-btn .nav-label, :root .dark .nav-btn .nav-icon{
-  color: var(--contrast-on-dark) !important;
-}
-:root:not(.dark) .nav-btn, :root:not(.dark) .nav-btn .nav-label, :root:not(.dark) .nav-btn .nav-icon{
-  color: var(--muted) !important;
-}
-
-.nav-btn.active {
-  color:white;
-  background: linear-gradient(135deg, var(--brand), rgba(var(--brand-rgb),0.9));
-  box-shadow:0 8px 24px rgba(var(--brand-rgb),0.16);
-  transform: translateY(-4px) scale(1.02);
-}
-.nav-btn.active .nav-label{ color: rgba(255,255,255,0.95); font-weight:700; }
-.nav-btn:focus{ outline: none; box-shadow: 0 0 0 4px rgba(var(--brand-rgb),0.14); }
-.nav-btn.play-anim{ animation: nav-pulse 350ms ease; }
-@keyframes nav-pulse{ 0%{ transform: scale(1); } 50%{ transform: scale(0.94); } 100%{ transform: scale(1); } }
-.dark-toggle{ width:44px; height:44px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center; border:1px solid var(--border); }
-footer{ position:sticky; bottom:0; z-index:60; }
-
-/* -----------------------------
-   Badges, inputs, tables, lists
-   ----------------------------- */
-.pill-badge-income { padding:4px 10px; border-radius:9999px; font-size:0.75rem; font-weight:700; background-color:#d1fae5; color:#059669; direction:ltr; white-space:nowrap; }
-.pill-badge-expense { padding:4px 10px; border-radius:9999px; font-size:0.75rem; font-weight:700; background-color:#fee2e2; color:#ef4444; direction:ltr; white-space:nowrap; }
-
-/* status helper classes that adapt to theme via variables */
-.status-overdue{ color: var(--danger) !important; font-weight:700; }
-.status-today{ color: var(--ok) !important; font-weight:700; }
-.status-soon{ color: var(--inner-muted, var(--muted)) !important; font-weight:700; }
-
-input:focus, select:focus, textarea:focus {
-  border-color: var(--brand) !important;
-  box-shadow: 0 0 0 4px rgba(var(--brand-rgb),0.18) !important;
-}
-
-/* Table custom */
-.custom th { background-color: var(--card); border-bottom: 2px solid var(--inner-border, var(--border)); }
-.custom td { border-bottom: 1px solid var(--inner-border, var(--border)); }
-.custom tbody tr:nth-child(even) { background-color: color-mix(in srgb, var(--card) 92%, var(--inner-border, var(--border)) 8%); }
-.custom tbody tr:hover { background-color: color-mix(in srgb, var(--brand) 6%, transparent 94%); }
-
-/* List inside card */
-.card-inner-list .item { padding:10px 0; border-bottom:1px dashed var(--inner-border, var(--border)); }
-.card-inner-list .item:last-child { border-bottom:none; }
-
-/* Modal */
-#modalBackdrop{ display:flex; align-items:center; justify-content:center; }
-#modalBackdrop.hidden{ display:none; }
-#modalBackdrop .modal-box{ max-height:80vh; overflow:auto; }
-.modal-list{ display:flex; flex-direction:column; gap:8px; }
-.modal-list button{ text-align:right; padding:10px; border-radius:10px; border:1px solid var(--inner-border, var(--border)); background:transparent; color:var(--inner-text, var(--inner-text-fallback)); }
-
-/* Responsive tweaks */
-@media (max-width:640px){ .due-wide{ padding-left:20px; padding-right:20px; } }
-
-/* Grid helpers */
-.stacked-on-all-sizes { display:grid; grid-template-columns:1fr; gap:1rem; }
-.per-account .account-row{ display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap; }
-.per-account .account-name{ flex:1 1 55%; }
-.per-account .account-balance{ flex:1 1 40%; text-align:left; }
-
-/* Utility classes for forcing surfaces */
-.card-custom.force-light {
-  background: color-mix(in srgb, var(--card) 90%, white 10%);
-  --inner-text: color-mix(in srgb, var(--txt) 70%, black 25%);
-}
-.card-custom.force-dark {
-  background: color-mix(in srgb, var(--card) 65%, black 25%);
-  --inner-text: color-mix(in srgb, var(--txt) 85%, white 20%);
-}
-
-/* Accessibility: ensure minimum contrast on headings (simple clamp) */
-.card-custom h1, .card-custom h2 {
-  text-shadow: 0 1px 0 rgba(0,0,0,0.02);
-  line-height:1.15;
-}
-
-/* END of style */
-</style>
-
+  <style>
+    :root {
+      --bg: #f3f4f6;
+      --card: #ffffff;
+      --muted: #6b7280;
+      --txt: #0f172a;
+      --brand: #4f46e5;
+    }
+    html,body{height:100%}
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background-color: var(--bg);
+      color: var(--txt);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    /* scrollbar */
+    ::-webkit-scrollbar { width:8px; height:8px; }
+    ::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:10px; }
+    /* modal transitions */
+    .modal { transition: opacity .2s ease, transform .2s ease; transform: scale(.98); opacity:0; visibility:hidden; }
+    .modal.is-open { transform: scale(1); opacity:1; visibility:visible; }
+    /* toast */
+    #toast-container { position: fixed; bottom: 1.25rem; left: 1.25rem; z-index:60; display:flex; flex-direction:column; gap:0.5rem; }
+    .toast { animation: fadeIn .25s ease-out, fadeOut .25s ease-in 3.5s; padding:0.65rem 0.9rem; border-radius:.6rem; box-shadow:0 6px 18px rgba(2,6,23,0.08); }
+    @keyframes fadeIn { from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:translateY(0)} }
+    @keyframes fadeOut { from{opacity:1} to{opacity:0} }
+    /* tiny responsive */
+    @media (max-width:640px){ .container{padding-left:1rem;padding-right:1rem} }
+    /* dark mode helper */
+    .dark-mode { background:#0b1220; color:#e6eef8; }
+    .dark-mode .bg-white{ background:#0f1724 !important; }
+    .dark-mode input, .dark-mode select, .dark-mode textarea { background:#0f1724 !important; color:#e6eef8 !important; border-color:#24303a !important; }
+  </style>
 </head>
-<body class="antialiased">
+<body class="text-gray-800">
 
-<div class="min-h-screen flex direction-rtl flex-col">
-  <main class="flex-1 p-6 overflow-auto mb-20">
-    <section id="dashboard" class="page-section">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 top-grid">
-        <div class="md:col-span-1 card-custom shadow-xl per-account" style="background-color: var(--card);"> 
-          <h4 class="font-semibold mb-2">تفاصيل الأرصدة بالحساب</h4>
-          <div id="perAccount" class="card-inner-list space-y-3 pt-1"></div>
+  <!-- HEADER -->
+  <header class="bg-white shadow-md sticky top-0 z-40">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-indigo-700">دفتر حساباتي</h1>
+      <div class="flex gap-2 items-center">
+        <button id="toggle-dark-mode" class="text-sm bg-gray-800 text-white px-3 py-2 rounded-lg">🌙 وضع ليلي</button>
+        <button id="btn-open-import-export" class="text-sm bg-gray-200 text-gray-700 px-3 py-2 rounded-lg">استيراد/تصدير</button>
+        <button id="btn-open-test-runner" class="text-sm bg-indigo-100 text-indigo-700 px-3 py-2 rounded-lg">مركز الاختبار</button>
+        <button id="btn-add-transaction" class="text-sm bg-indigo-600 text-white px-3 py-2 rounded-lg shadow">+ إضافة حركة</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="container mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- Left -->
+    <aside class="lg:col-span-4 space-y-6">
+      <div class="bg-white p-5 rounded-xl shadow-lg">
+        <div class="flex justify-between items-center mb-4 border-b pb-2">
+          <h2 class="text-lg font-bold">الملخص الإجمالي</h2>
+          <button id="btn-gemini-summary" class="text-xs bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-3 py-1 rounded-full">✨ تحليل ملخص</button>
         </div>
-
-        <div class="md:col-span-1 card-custom shadow-xl" style="background-color: var(--card);"> 
-          <small class="muted">صافي الأرصدة</small>
-          <div id="totalBalance" class="text-3xl font-bold mt-2 text-brand" style="color:var(--brand);">0.00</div>
-        </div>
-
-        <div class="md:col-span-1 card-custom shadow-xl" style="background-color: var(--card);">
-          <small class="muted">الشهر الحالي</small>
-          <div id="monthLabel" class="text-3xl font-bold mt-2"></div>
+        <div class="grid grid-cols-2 gap-4 text-center">
+          <div><p class="text-sm text-gray-500">إجمالي الدخل</p><p id="summary-income" class="text-xl font-bold text-green-600">0.00</p></div>
+          <div><p class="text-sm text-gray-500">إجمالي المصروفات</p><p id="summary-expense" class="text-xl font-bold text-red-600">0.00</p></div>
+          <div class="col-span-2"><p class="text-sm text-gray-500">صافي التدفق</p><p id="summary-net" class="text-2xl font-bold text-gray-800">0.00</p></div>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div class="card-custom">
-          <h4 class="font-semibold text-lg mb-1">إجمالي تحصيلات الشهر الحالي</h4>
-          <div id="totalCollectionThis" class="text-xl font-bold mt-2 text-ok" style="color:var(--ok);">0.00</div>
+      <div class="bg-white p-5 rounded-xl shadow-lg">
+        <div class="flex justify-between items-center mb-4 border-b pb-2">
+          <h2 class="text-lg font-bold">الحسابات</h2>
+          <button id="btn-open-add-account" class="text-sm bg-indigo-100 text-indigo-700 px-3 py-1 rounded-md">إضافة حساب</button>
         </div>
-        <div class="card-custom">
-          <h4 class="font-semibold text-lg mb-1">إجمالي تحصيلات الشهر القادم</h4>
-          <div id="totalCollectionNext" class="text-xl font-bold mt-2 text-ok" style="color:var(--ok);">0.00</div>
+        <div id="accounts-list" class="space-y-3 max-h-96 overflow-y-auto"></div>
+        <div class="border-t pt-3 mt-4"><p class="text-sm text-gray-500">إجمالي الأرصدة</p><p id="summary-total-balance" class="text-2xl font-bold text-indigo-800">0.00</p></div>
+      </div>
+    </aside>
+
+    <!-- Right -->
+    <section class="lg:col-span-8 space-y-6">
+      <div class="bg-white p-5 rounded-xl shadow-lg">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-bold">الالتزامات والتحصيلات</h2>
+          <button id="btn-open-add-due" class="text-sm bg-indigo-100 text-indigo-700 px-3 py-1 rounded-md">+ إضافة بند</button>
         </div>
-        <div class="card-custom">
-          <h4 class="font-semibold text-lg mb-1">إجمالي التزامات الشهر الحالي</h4>
-          <div id="totalCommitThisTotal" class="text-xl font-bold mt-2 text-danger" style="color:var(--danger);">0.00</div>
+
+        <div class="border-b border-gray-200">
+          <nav class="flex -mb-px gap-6">
+            <button id="btn-tab-receivables" class="tab-btn active text-sm font-medium py-3 px-1">تحصيلات (مستحقة لي)</button>
+            <button id="btn-tab-payables" class="tab-btn text-sm font-medium py-3 px-1 text-gray-500">التزامات (مستحقة علي)</button>
+          </nav>
         </div>
-        <div class="card-custom">
-          <h4 class="font-semibold text-lg mb-1">إجمالي التزامات الشهر القادم</h4>
-          <div id="totalCommitNextTotal" class="text-xl font-bold mt-2 text-danger" style="color:var(--danger);">0.00</div>
-        </div>
+
+        <div id="tab-content-receivables" class="py-4 space-y-3 max-h-60 overflow-y-auto"></div>
+        <div id="tab-content-payables" class="py-4 space-y-3 max-h-60 overflow-y-auto hidden"></div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="card-custom">
-          <h4 class="font-semibold mb-2 border-b pb-2 border-border" style="border-color: var(--border);">آخر 10 حركات</h4>
-          <div id="latestTx" class="card-inner-list"></div>
-        </div>
-
-        <div class="card-custom due-wide">
-          <h4 class="font-semibold mb-2 border-b pb-2 border-border" style="border-color: var(--border);">الاستحقاقات القريبة (التزامات وتحصيلات)</h4>
-          <div id="dueSoonWrap" class="card-inner-list"></div>
-        </div>
-
-        <div class="card-custom">
-          <h4 class="font-semibold mb-2 border-b pb-2 border-border" style="border-color: var(--border);">ملاحظات سريعة</h4>
-          <div id="quickNotes" class="text-sm muted">هنا يمكن إضافة ملاحظات قصيرة أو تذكيرات.</div>
-        </div>
-      </div>
-    </section>
-
-    <section id="transactions" class="page-section hidden">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-2xl font-bold">سجل الحركات</h2>
-        <div class="flex items-center gap-2">
-          <input id="importFile" type="file" accept="application/json" class="hidden" />
-          <button id="importJsonBtn" class="px-3 py-2 border rounded hover:bg-gray-100">استيراد</button>
-          <button id="exportJson" class="px-3 py-2 border rounded hover:bg-gray-100">تصدير</button>
-          <button id="syncNow" class="px-3 py-2 border rounded hover:bg-gray-100">مزامنة</button>
-        </div>
-      </div>
-
-      <!-- MOVED: Add/Edit card placed here ABOVE the transactions table -->
-      <div class="card-custom mb-4">
-        <h3 class="font-semibold mb-2">إضافة / تعديل حركة</h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <div>
-            <label class="text-sm">النوع</label>
-            <select id="type" class="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-brand">
-              <option value="income">دخل</option>
-              <option value="expense">مصروف</option>
-              <option value="transfer">تحويل</option> </select>
+      <div class="bg-white p-5 rounded-xl shadow-lg">
+        <div class="flex flex-col md:flex-row justify-between md:items-center mb-4 gap-4">
+          <h2 class="text-lg font-bold">سجل الحركات</h2>
+          <div class="flex gap-2 overflow-x-auto pb-2">
+            <select id="filter-account" class="form-select w-32 text-sm rounded-lg border-gray-300"><option value="all">كل الحسابات</option></select>
+            <select id="filter-type" class="form-select w-28 text-sm rounded-lg border-gray-300"><option value="all">كل الأنواع</option><option value="income">دخل</option><option value="expense">مصروف</option></select>
+            <input type="date" id="filter-date-start" class="form-input w-36 text-sm rounded-lg border-gray-300">
+            <input type="date" id="filter-date-end" class="form-input w-36 text-sm rounded-lg border-gray-300">
+            <button id="btn-apply-filters" class="text-sm bg-gray-700 text-white px-3 py-1 rounded-lg">تطبيق</button>
+            <button id="btn-clear-filters" class="text-sm bg-gray-200 text-gray-700 px-3 py-1 rounded-lg">مسح</button>
           </div>
-          <div>
-            <label class="text-sm">المبلغ (ج.م)</label>
-            <input id="amount" type="number" step="0.01" class="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-brand" dir="ltr" />
-          </div>
-          <div>
-            <label class="text-sm">تاريخ/وقت التنفيذ (اختياري)</label>
-            <input id="exec" type="datetime-local" class="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-brand" />
-          </div>
-          <div>
-            <label class="text-sm">تاريخ الاستحقاق</label>
-            <input id="date" type="date" class="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-brand" />
-          </div>
-          <div>
-            <label class="text-sm">الوصف</label>
-            <input id="desc" type="text" class="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-brand" />
-          </div>
-          <div>
-            <label class="text-sm" id="accountLabel">الحساب</label> <select id="account" class="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-brand"></select>
-          </div>
-          <div id="toAccountDiv" class="hidden"> <label class="text-sm">الحساب المُحوَّل إليه (إلى)</label>
-            <select id="toAccount" class="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-brand"></select>
-          </div>
-          <div id="categoryDiv"> <label class="text-sm">الفئة</label>
-            <select id="category" class="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-brand"></select>
-          </div>
-          <div id="linkCommitDiv"> <label class="text-sm">ربط الالتزام (اختياري)</label>
-            <select id="linkCommit" class="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-brand"></select>
-          </div>
-          <div class="col-span-3 flex gap-2 mt-2">
-            <button id="saveTx" class="px-6 py-3 text-white font-semibold rounded-xl hover:opacity-90 transition-opacity" style="background:var(--brand);">
-                <i class="fas fa-save ml-2"></i> حفظ
-            </button>
-            <button id="resetForm" class="px-4 py-2 border rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700">إفراغ</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="card-custom mb-4">
-        <div class="flex gap-2 flex-wrap items-center mb-3">
-          <input id="search" placeholder="بحث بالوصف/الفئة" class="px-3 py-2 border rounded flex-1 focus:ring-2 focus:ring-brand" />
-          <select id="fType" class="px-3 py-2 border rounded focus:ring-2 focus:ring-brand">
-            <option value="all">الكل</option>
-            <option value="income">دخل</option>
-            <option value="expense">مصروف</option>
-          </select>
-          <select id="fAccount" class="px-3 py-2 border rounded focus:ring-2 focus:ring-brand"></select>
-          <input id="fFrom" type="date" class="px-3 py-2 border rounded focus:ring-2 focus:ring-brand" />
-          <input id="fTo" type="date" class="px-3 py-2 border rounded focus:ring-2 focus:ring-brand" />
-          <button id="clearFilters" class="px-3 py-2 border rounded hover:bg-gray-100">مسح</button>
         </div>
 
         <div class="overflow-x-auto">
-          <table class="min-w-full custom">
-            <thead>
-              <tr class="text-sm uppercase tracking-wider text-muted">
-                <th class="px-4 py-3 text-right">تاريخ التنفيذ</th><th>تاريخ الاستحقاق</th><th>الوصف</th><th>الفئة</th><th>الحساب</th><th>المبلغ</th><th>رصيد بعد العملية</th><th>إجراءات</th>
+          <table class="w-full min-w-max text-sm text-right">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="p-3 font-semibold text-gray-600">التاريخ</th>
+                <th class="p-3 font-semibold text-gray-600">الحساب</th>
+                <th class="p-3 font-semibold text-gray-600">الوصف</th>
+                <th class="p-3 font-semibold text-gray-600">دائن (له)</th>
+                <th class="p-3 font-semibold text-gray-600">مدين (عليه)</th>
+                <th class="p-3 font-semibold text-gray-600">الرصيد</th>
+                <th class="p-3 font-semibold text-gray-600"></th>
               </tr>
             </thead>
-            <tbody id="tbody"></tbody>
+            <tbody id="transactions-table-body"></tbody>
           </table>
-        </div>
-
-        <div class="mt-3 flex	items-center justify-center gap-3">
-          <button id="prevPage" class="px-3 py-2 border rounded hover:bg-gray-100">السابق</button>
-          <div id="pageInfo" class="text-sm muted">الصفحة 1</div>
-          <button id="nextPage" class="px-3 py-2 border rounded hover:bg-gray-100">التالي</button>
-        </div>
-      </div>
-    </section>
-
-    <section id="accounts" class="page-section hidden">
-      <div class="grid md:grid-cols-2 gap-4">
-        <div class="card-custom">
-          <h3 class="font-semibold mb-2">الحسابات</h3>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <input id="newAccountName" placeholder="اسم الحساب" class="px-3 py-2 border rounded focus:ring-2 focus:ring-brand" />
-            <input id="newAccountOpening" type="number" placeholder="رصيد افتتاحي" class="px-3 py-2 border rounded focus:ring-2 focus:ring-brand" />
-            <button id="addAccount" class="px-3 py-2 border rounded hover:bg-gray-100 dark:hover:bg-gray-700">إضافة حساب</button>
-          </div>
-          <div id="accountsList" class="mt-3 space-y-2"></div>
-        </div>
-
-        <div class="card-custom">
-          <h3 class="font-semibold mb-2">الفئات</h3>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <input id="newCatName" placeholder="اسم الفئة" class="px-3 py-2 border rounded focus:ring-2 focus:ring-brand" />
-            <select id="newCatType" class="px-3 py-2 border rounded focus:ring-2 focus:ring-brand"><option value="expense">مصروف</option><option value="income">دخل</option></select>
-            <button id="addCategory" class="px-3 py-2 border rounded hover:bg-gray-100 dark:hover:bg-gray-700">إضافة فئة</button>
-          </div>
-          <div id="catsList" class="mt-3 space-y-2"></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="commitments" class="page-section hidden">
-      <div class="grid md:grid-cols-1 gap-4">
-        <div class="card-custom">
-          <h3 class="font-semibold mb-2">الالتزامات الشهرية</h3>
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
-            <input id="cName" placeholder="اسم الالتزام" class="px-3 py-2 border rounded focus:ring-2 focus:ring-brand" />
-            <input id="cAmount" type="number" placeholder="المبلغ" class="px-3 py-2 border rounded focus:ring-2 focus:ring-brand" />
-            <input id="cFirstDue" type="date" class="px-3 py-2 border rounded focus:ring-2 focus:ring-brand" />
-            <div class="flex items-center gap-2"><input id="cRecurring" type="checkbox" /><label>يتكرر شهريًا</label></div>
-            <input id="cEndAt" type="date" class="px-3 py-2 border rounded col-span-2 focus:ring-2 focus:ring-brand" placeholder="ينتهي في (عند التكرار)" />
-            <button id="addCommitment" class="px-3 py-2 border rounded hover:bg-gray-100 dark:hover:bg-gray-700">إضافة/تحديث</button>
-          </div>
-
-          <div class="mt-4 overflow-x-auto">
-            <table class="min-w-full custom">
-              <thead><tr class="text-sm uppercase tracking-wider text-muted"><th>الاسم</th><th>المبلغ</th><th>استحقاق</th><th>مدفوع (شهر)</th><th>متبقي</th><th>تكرار</th><th>ينتهي</th><th>إجراءات</th></tr></thead>
-              <tbody id="tbodyCommit"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="card-custom mt-4">
-          <h3 class="font-semibold mb-2">التحصيلات</h3>
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
-            <input id="coName" placeholder="اسم التحصيل" class="px-3 py-2 border rounded focus:ring-2 focus:ring-brand" />
-            <input id="coAmount" type="number" placeholder="المبلغ" class="px-3 py-2 border rounded focus:ring-2 focus:ring-brand" />
-            <input id="coFirstDue" type="date" class="px-3 py-2 border rounded focus:ring-2 focus:ring-brand" />
-            <div class="flex items-center gap-2"><input id="coRecurring" type="checkbox" /><label>يتكرر شهريًا</label></div>
-            <input id="coEndAt" type="date" class="px-3 py-2 border rounded col-span-2 focus:ring-2 focus:ring-brand" />
-            <button id="addCollect" class="px-3 py-2 border rounded hover:bg-gray-100 dark:hover:bg-gray-700">إضافة/تحديث</button>
-          </div>
-
-          <div class="mt-4 overflow-x-auto">
-            <table class="min-w-full custom">
-              <thead><tr class="text-sm uppercase tracking-wider text-muted"><th>الاسم</th><th>المبلغ</th><th>التحصيل القادم</th><th>التكرار</th><th>ينتهي</th><th>إجراءات</th></tr></thead>
-              <tbody id="tbodyCollect"></tbody>
-            </table>
+          <div id="transactions-empty-state" class="text-center p-10 text-gray-500 hidden">
+            <p>لا توجد حركات لعرضها. حاول إضافة حركة جديدة.</p>
           </div>
         </div>
       </div>
     </section>
-
-    <div class="mt-6 text-center text-sm muted">تم ملء شاشات الإضافة والالتزامات والحسابات — جرب إضافة حساب/فئة/حركة/التزام/تحصيل.</div>
   </main>
-</div>
 
-<footer class="flex justify-between items-center p-2 bg-card border-t border-border z-50" style="background-color: var(--card); border-color: var(--border);">
-  <div class="flex gap-2 px-2">
-    <button class="nav-btn" data-page="dashboard" aria-label="الرئيسية" title="الرئيسية">
-      <span class="nav-icon"><i class="fas fa-house-chimney"></i></span>
-      <span class="nav-label">الرئيسية</span>
-    </button>
-    <button class="nav-btn" data-page="transactions" aria-label="الحركات" title="الحركات">
-      <span class="nav-icon"><i class="fas fa-list-check"></i></span>
-      <span class="nav-label">الحركات</span>
-    </button>
-    <!-- Changed: 'add' now navigates to transactions (where the add card lives) -->
-    <button class="nav-btn" data-page="transactions" aria-label="إضافة" title="إضافة">
-      <span class="nav-icon"><i class="fas fa-plus-circle"></i></span>
-      <span class="nav-label">إضافة</span>
-    </button>
-    <button class="nav-btn" data-page="accounts" aria-label="الحسابات" title="الحسابات">
-      <span class="nav-icon"><i class="fas fa-wallet"></i></span>
-      <span class="nav-label">الحسابات</span>
-    </button>
-    <button class="nav-btn" data-page="commitments" aria-label="الالتزامات" title="الالتزامات">
-      <span class="nav-icon"><i class="fas fa-calendar-days"></i></span>
-      <span class="nav-label">الالتزامات</span>
-    </button>
-  </div>
-  <div class="flex items-center gap-2 pr-2">
-    <button id="darkToggleFooter" class="dark-toggle" title="الوضع الليلي/النهاري" aria-pressed="false"><i id="darkToggleIcon" class="fas fa-moon"></i></button>
-  </div>
-</footer>
+  <!-- Toast -->
+  <div id="toast-container"></div>
 
-<div id="modalBackdrop" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-  <div class="modal-box bg-white dark:bg-gray-800 p-4 rounded-xl w-11/12 md:w-1/2" role="dialog" aria-modal="true" style="background-color: var(--card);">
-    <h4 id="modalTitle" class="font-semibold mb-2">...</h4>
-    <div id="modalContent"></div>
-    <div class="mt-4 text-right">
-      <button id="modalClose" class="px-3 py-1 border rounded hover:bg-gray-100 dark:hover:bg-gray-700">إغلاق</button>
+  <!-- ===== MODALS (كاملة) ===== -->
+
+  <!-- Transaction Modal -->
+  <div id="transaction-modal" class="modal fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+    <div class="bg-white w-full max-w-2xl rounded-xl shadow-2xl p-6">
+      <form id="transaction-form">
+        <input type="hidden" id="tx-id">
+        <input type="hidden" id="tx-linked-id">
+        <h3 id="tx-modal-title" class="text-xl font-bold mb-6">إضافة حركة جديدة</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label for="tx-type" class="block text-sm font-medium text-gray-700 mb-1">نوع الحركة</label>
+            <select id="tx-type" class="form-select w-full rounded-lg border-gray-300" required>
+              <option value="income">دخل</option>
+              <option value="expense">مصروف</option>
+              <option value="transfer">تحويل</option>
+            </select>
+          </div>
+          <div>
+            <label for="tx-date" class="block text-sm font-medium text-gray-700 mb-1">التاريخ</label>
+            <input type="datetime-local" id="tx-date" class="form-input w-full rounded-lg border-gray-300" required>
+          </div>
+          <div class="md:col-span-2">
+            <label for="tx-amount" class="block text-sm font-medium text-gray-700 mb-1">المبلغ</label>
+            <input type="number" step="0.01" id="tx-amount" class="form-input w-full rounded-lg border-gray-300" placeholder="0.00" required>
+          </div>
+
+          <div id="tx-account-from-container">
+            <label for="tx-account-from" class="block text-sm font-medium text-gray-700 mb-1">من حساب (المصدر)</label>
+            <select id="tx-account-from" class="form-select w-full rounded-lg border-gray-300"></select>
+          </div>
+          <div id="tx-account-to-container">
+            <label for="tx-account-to" class="block text-sm font-medium text-gray-700 mb-1">إلى حساب (الهدف)</label>
+            <select id="tx-account-to" class="form-select w-full rounded-lg border-gray-300"></select>
+          </div>
+
+          <div>
+            <label for="tx-category" class="block text-sm font-medium text-gray-700 mb-1">الفئة</label>
+            <input type="text" id="tx-category" class="form-input w-full rounded-lg border-gray-300" placeholder="راتب، فواتير، ...">
+          </div>
+
+          <div class="md:col-span-2">
+            <label for="tx-notes" class="block text-sm font-medium text-gray-700 mb-1">ملاحظات</label>
+            <textarea id="tx-notes" rows="2" class="form-textarea w-full rounded-lg border-gray-300"></textarea>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-3 mt-6">
+          <button type="button" class="btn-close-modal bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">إلغاء</button>
+          <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg">حفظ الحركة</button>
+        </div>
+      </form>
     </div>
   </div>
-</div>
 
-<script>
-// Local storage keys
-const KEY='pf_ledger_v1', ACC_KEY='pf_accounts_v1', CAT_KEY='pf_categories_v1', COM_KEY='pf_commitments_v1', COL_KEY='pf_collections_v1', DARK_KEY='pf_dark_v1';
+  <!-- Account Modal -->
+  <div id="account-modal" class="modal fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+    <div class="bg-white w-full max-w-md rounded-xl shadow-2xl p-6">
+      <form id="account-form">
+        <input type="hidden" id="account-id">
+        <h3 id="account-modal-title" class="text-xl font-bold mb-6">إضافة حساب جديد</h3>
 
-function safeParse(key,fallback){ try{ const raw = localStorage.getItem(key); if(!raw) return fallback; return JSON.parse(raw);}catch(e){ console.error('Corrupt localStorage',key,e); try{ localStorage.setItem(key+'_backup', localStorage.getItem(key)); }catch{} localStorage.removeItem(key); return fallback; }}
-let ledger = safeParse(KEY,[]); let accounts = safeParse(ACC_KEY,[]); let categories = safeParse(CAT_KEY,[]); let commitments = safeParse(COM_KEY,[]); let collections = safeParse(COL_KEY,[]);
+        <div class="space-y-4">
+          <div>
+            <label for="account-name" class="block text-sm font-medium text-gray-700 mb-1">اسم الحساب</label>
+            <input type="text" id="account-name" class="form-input w-full rounded-lg border-gray-300" required>
+          </div>
+          <div>
+            <label for="account-type" class="block text-sm font-medium text-gray-700 mb-1">نوع الحساب</label>
+            <select id="account-type" class="form-select w-full rounded-lg border-gray-300" required>
+              <option value="cash">نقدي (كاش)</option>
+              <option value="bank">بنكي</option>
+              <option value="wallet">محفظة إلكترونية</option>
+              <option value="other">أخرى</option>
+            </select>
+          </div>
+          <div>
+            <label for="account-initial-balance" class="block text-sm font-medium text-gray-700 mb-1">رصيد افتتاحي</label>
+            <input type="number" step="0.01" id="account-initial-balance" class="form-input w-full rounded-lg border-gray-300" value="0" required>
+          </div>
+        </div>
 
-let sortedLedger=[]; let isLedgerDirty=true; function markLedgerDirty(){ isLedgerDirty=true; }
-const $=s=>document.querySelector(s); const $$=s=>Array.from(document.querySelectorAll(s)); const eid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36);
-const fmt = n=>Number(n||0).toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:2}); const escapeHtml = s=>String(s||'').replace(/[&<>\"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
-function formatLocalDate(d){ if(!d) return ''; const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${day}`; }
-function parseLocalDate(str){ if(!str) return null; const [y,m,d]=str.split('-').map(Number); if(!y) return null; const dt=new Date(y,m-1,d,0,0,0,0); dt.setHours(0,0,0,0); return dt; }
-function YM(){ return formatLocalDate(new Date()).slice(0,7); }
-function addMonthsPreserveDOM(date, months){ const d=new Date(date.getTime()); const targetMonth=d.getMonth()+months; const day=d.getDate(), y=d.getFullYear(); const temp=new Date(y,targetMonth+1,0); const lastDay=temp.getDate(); d.setMonth(targetMonth, Math.min(day,lastDay)); d.setHours(0,0,0,0); return d; }
-function addMonthsToYm(ym, months){ const parts=(ym||'').split('-').map(Number); const y=parts[0], m=parts[1]; if(!Number.isFinite(y)||!Number.isFinite(m)) return ym; const base=new Date(y,m-1,1); const next=addMonthsPreserveDOM(base, months); return formatLocalDate(next).slice(0,7); }
-function daysBetween(a,b){ const MS=24*60*60*1000; const da=new Date(a.getFullYear(),a.getMonth(),a.getDate()); const db=new Date(b.getFullYear(),b.getMonth(),b.getDate()); return Math.round((db-da)/MS); }
+        <div class="flex justify-end gap-3 mt-6">
+          <button type="button" class="btn-close-modal bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">إلغاء</button>
+          <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg">حفظ الحساب</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-function persist(key,obj){ try{ localStorage.setItem(key, JSON.stringify(obj)); }catch(e){ console.error('persist error',e); }}
+  <!-- Due Modal -->
+  <div id="due-modal" class="modal fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+    <div class="bg-white w-full max-w-lg rounded-xl shadow-2xl p-6">
+      <form id="due-form">
+        <input type="hidden" id="due-id">
+        <h3 id="due-modal-title" class="text-xl font-bold mb-6">إضافة بند جديد</h3>
 
-function ensureSortedLedger(){ if(!isLedgerDirty && sortedLedger.length) return; sortedLedger = [...ledger].slice().sort((a,b)=>{ const aKey=(a.exec||a.created||a.date||''); const bKey=(b.exec||b.created||b.date||''); if(aKey===bKey) return (a.id||'').localeCompare(b.id||''); return aKey.localeCompare(bKey); }); isLedgerDirty=false; }
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label for="due-type" class="block text-sm font-medium text-gray-700 mb-1">نوع البند</label>
+            <select id="due-type" class="form-select w-full rounded-lg border-gray-300" required>
+              <option value="receivable">تحصيل (مستحق لي)</option>
+              <option value="payable">التزام (مستحق علي)</option>
+            </select>
+          </div>
+          <div>
+            <label for="due-recurrence" class="block text-sm font-medium text-gray-700 mb-1">التكرار</label>
+            <select id="due-recurrence" class="form-select w-full rounded-lg border-gray-300" required>
+              <option value="none">لا يتكرر (مرة واحدة)</option>
+              <option value="monthly">يتكرر شهرياً</option>
+            </select>
+          </div>
 
-let cachedBalances=null, cachedAfter=null;
-function computeBalances(){ ensureSortedLedger(); const bal = new Map(accounts.map(a=>[a.name, Number(a.opening||0)])); const after = new Map(); for(const t of sortedLedger){ const cur = bal.get(t.account) ?? 0; const delta = (t.type==='income' ? Number(t.amount||0) : -Number(t.amount||0)); const next = cur + delta; bal.set(t.account, next); after.set(t.id, next); } cachedBalances = bal; cachedAfter = after; return {bal, after}; }
+          <div class="md:col-span-2">
+            <label for="due-name" class="block text-sm font-medium text-gray-700 mb-1">اسم البند</label>
+            <input type="text" id="due-name" class="form-input w-full rounded-lg border-gray-300" placeholder="فاتورة، إيجار..." required>
+          </div>
+          <div>
+            <label for="due-amount" class="block text-sm font-medium text-gray-700 mb-1">المبلغ</label>
+            <input type="number" step="0.01" id="due-amount" class="form-input w-full rounded-lg border-gray-300" value="0" required>
+          </div>
+          <div>
+            <label for="due-date" class="block text-sm font-medium text-gray-700 mb-1">تاريخ أول استحقاق</label>
+            <input type="date" id="due-date" class="form-input w-full rounded-lg border-gray-300" required>
+          </div>
+          <div class="md:col-span-2">
+            <label for="due-account-id" class="block text-sm font-medium text-gray-700 mb-1">الحساب المرتبط</label>
+            <select id="due-account-id" class="form-select w-full rounded-lg border-gray-300" required></select>
+            <p class="text-xs text-gray-500 mt-1">(الحساب الذي سيتم التحصيل إليه أو السداد منه)</p>
+          </div>
+        </div>
 
-function getCommitmentState(commit){ if(!commit || !commit.firstDue) return { currentDueYm:null, paid:0, remaining:Number(commit.amount||0) }; const amount = Number(commit.amount||0); const start = parseLocalDate(commit.firstDue); if(!start) return { currentDueYm:null, paid:0, remaining:amount }; const endDate = commit.endAt ? parseLocalDate(commit.endAt) : null; const payMap = new Map(); for(const t of ledger){ if(t.linkCommitId !== commit.id) continue; const ym = (t.exec||t.created||t.date||'').slice(0,7); if(!ym) continue; const arr = payMap.get(ym) || []; arr.push(t); payMap.set(ym, arr); } let cursor = new Date(start.getTime()); let guard=0; while(guard<500){ const ym=formatLocalDate(cursor).slice(0,7); if(endDate && cursor > endDate) return { done:true }; const txs = payMap.get(ym) || []; const paidThisMonth = txs.reduce((s,t)=>s + Number(t.amount||0), 0); if(paidThisMonth + 1e-9 < amount){ return { currentDueYm: ym, paid: paidThisMonth, remaining: Math.max(0, amount - paidThisMonth) }; } else { if(!commit.recurring) return { done:true }; const next = addMonthsPreserveDOM(cursor,1); if(endDate && next > endDate) return { done:true }; cursor = next; } guard++; } return { done:true }; }
+        <div class="flex justify-end gap-3 mt-6">
+          <button type="button" class="btn-close-modal bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">إلغاء</button>
+          <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg">حفظ البند</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-function collectedCollectionsForYm(ym){ let total=0; for(const t of ledger){ if(t.type !== 'income') continue; const when=(t.exec||t.created||t.date||'').slice(0,7); if(when !== ym) continue; if(t.sourceCollectionId) total += Number(t.amount||0); } return total; }
+  <!-- Confirm Modal -->
+  <div id="confirm-modal" class="modal fixed inset-0 z-60 flex items-center justify-center bg-black bg-opacity-50 p-4">
+    <div class="bg-white w-full max-w-sm rounded-xl shadow-2xl p-6">
+      <h3 id="confirm-title" class="text-xl font-bold mb-4">تأكيد</h3>
+      <p id="confirm-message" class="text-gray-600 mb-6">هل أنت متأكد؟</p>
+      <div class="flex justify-end gap-3">
+        <button id="btn-confirm-cancel" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">إلغاء</button>
+        <button id="btn-confirm-action" class="bg-red-600 text-white px-4 py-2 rounded-lg">نعم</button>
+      </div>
+    </div>
+  </div>
 
-// DRAW functions
-function drawPerAccount(){ computeBalances(); const list=[]; for(const a of accounts){ const v = (cachedBalances && cachedBalances.get(a.name)!==undefined) ? cachedBalances.get(a.name) : Number(a.opening||0); list.push(`<div class="item"><div class="account-row"><div class="account-name"><div class="text-sm muted">${escapeHtml(a.name)}</div></div><div class="account-balance"><b>${fmt(v)} ج.م</b></div></div></div>`); } $('#perAccount').innerHTML = list.join(''); }
+  <!-- Import/Export Modal -->
+  <div id="import-export-modal" class="modal fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+    <div class="bg-white w-full max-w-lg rounded-xl shadow-2xl p-6">
+      <h3 class="text-xl font-bold mb-6">استيراد / تصدير البيانات</h3>
+      <p class="text-sm text-gray-600 mb-4">يتم حفظ بياناتك محلياً في المتصفح. يمكنك تصديرها كملف JSON.</p>
 
-function drawCommitments(){ const rows = commitments.slice().sort((a,b)=> (a.firstDue||'').localeCompare(b.firstDue||'')); if($('#tbodyCommit')) $('#tbodyCommit').innerHTML = rows.map(c=>{ const st = getCommitmentState(c); const paid = st.paid || 0; const remaining = st.remaining !== undefined ? st.remaining : Number(c.amount||0); const due = st.currentDueYm || (c.firstDue? c.firstDue.slice(0,7) : '—'); return `<tr class="row-item" data-id="${c.id}"><td class="p-2">${escapeHtml(c.name)}</td><td class="p-2">${fmt(c.amount)}</td><td class="p-2">${escapeHtml(due)}</td><td class="p-2">${fmt(paid)}</td><td class="p-2"><b>${fmt(remaining)}</b></td><td class="p-2">${c.recurring? 'شهري':'مرة'}</td><td class="p-2">${c.endAt||'—'}</td><td class="p-2 space-x-2 space-x-reverse"><button data-action="pay-commit" data-id="${c.id}" class="px-2 py-1 bg-brand text-white rounded-lg hover:opacity-90"><i class="fas fa-hand-holding-usd"></i> سداد</button><button data-action="edit-commit" data-id="${c.id}" class="px-2 py-1 border rounded hover:bg-gray-100"><i class="fas fa-edit"></i> تعديل</button><button data-action="del-commit" data-id="${c.id}" class="px-2 py-1 bg-danger text-white rounded-lg hover:opacity-90"><i class="fas fa-trash-alt"></i> حذف</button></td></tr>`; }).join(''); }
+      <div class="space-y-4">
+        <button id="btn-export-data" class="w-full bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">تصدير البيانات (JSON)</button>
+        <div>
+          <label for="import-file" class="block text-sm font-medium text-gray-700 mb-1">استيراد بيانات (JSON)</label>
+          <input type="file" id="import-file" accept=".json" class="form-input w-full text-sm">
+          <button id="btn-import-data" class="w-full mt-2 bg-green-600 text-white px-4 py-2 rounded-lg">استيراد و استبدال البيانات الحالية</button>
+        </div>
+      </div>
 
-function drawCollections(){ const rows = collections.slice().sort((a,b)=> (a.nextDue||a.firstDue||'').localeCompare(b.nextDue||b.firstDue||'')); if($('#tbodyCollect')) $('#tbodyCollect').innerHTML = rows.map(c=>{ return `<tr class="row-item" data-id="${c.id}"><td class="p-2">${escapeHtml(c.name)}</td><td class="p-2">${fmt(c.amount)}</td><td class="p-2">${escapeHtml(c.nextDue||c.firstDue||'—')}</td><td class="p-2">${c.recurring? 'شهري':'مرة'}</td><td class="p-2">${c.endAt||'—'}</td><td class="p-2 space-x-2 space-x-reverse"><button data-action="collect-now" data-id="${c.id}" class="px-2 py-1 bg-ok text-white rounded-lg hover:opacity-90"><i class="fas fa-check"></i> تحصيل</button><button data-action="edit-collect" data-id="${c.id}" class="px-2 py-1 border rounded hover:bg-gray-100"><i class="fas fa-edit"></i> تعديل</button><button data-action="del-collect" data-id="${c.id}" class="px-2 py-1 bg-danger text-white rounded-lg hover:opacity-90"><i class="fas fa-trash-alt"></i> حذف</button></td></tr>`; }).join(''); }
+      <div class="flex justify-end mt-6"><button type="button" class="btn-close-modal bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">إغلاق</button></div>
+    </div>
+  </div>
 
-// Updated drawDueSoon: include commitments & collections for current month and sort by real date (oldest -> newest)
-function drawDueSoon(){ const wrap=$('#dueSoonWrap'); if(!wrap) return; const ym=YM(); const today=new Date();
-  const commitList = commitments.map(c=>{ const st=getCommitmentState(c); if(st.done || st.remaining<=0) return null; if(st.currentDueYm !== ym) return null; // only this month
-    // determine a realistic day for the commitment within the month: prefer original firstDue day if possible
-    let day = 1;
-    if(c.firstDue){ const p = parseLocalDate(c.firstDue); if(p) day = Math.min(28, p.getDate()); } // clamp to avoid invalid days
-    const due = parseLocalDate(st.currentDueYm + '-' + String(day).padStart(2,'0')) || parseLocalDate(st.currentDueYm + '-01');
-    const diff = daysBetween(today,due);
-    return {...c, dueDate: due, dueStr: st.currentDueYm, paid:st.paid, remaining:st.remaining, diff, type:'commitment'}; }).filter(Boolean);
+  <!-- Test Runner Modal -->
+  <div id="test-runner-modal" class="modal fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+    <div class="bg-white w-full max-w-2xl rounded-xl shadow-2xl p-6">
+      <h3 class="text-xl font-bold mb-4">مركز اختبار الوظائف الأساسية</h3>
+      <button id="btn-run-tests" class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg mb-4">بدء تشغيل الاختبارات</button>
+      <div id="test-results-container" class="mt-4 max-h-96 overflow-y-auto bg-gray-900 text-white rounded-lg p-4 font-mono text-sm">انقر "بدء تشغيل الاختبارات" لرؤية النتائج...</div>
+      <div class="flex justify-end mt-6"><button type="button" class="btn-close-modal bg-gray-200 px-4 py-2 rounded-lg">إغلاق</button></div>
+    </div>
+  </div>
 
-  const collectList = collections.map(c=>{ const dueStr = c.nextDue || c.firstDue; if(!dueStr || dueStr.slice(0,7)!==ym) return null; // only this month
-    // if collection has a full date use it, otherwise default to day 1
-    const due = parseLocalDate(dueStr) || parseLocalDate(dueStr.slice(0,7) + '-01');
-    const diff = daysBetween(today,due);
-    return {...c, dueDate: due, dueStr, diff, type:'collection'}; }).filter(Boolean);
+  <!-- Gemini Summary Modal -->
+  <div id="gemini-summary-modal" class="modal fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 p-4">
+    <div class="bg-white w-full max-w-lg rounded-xl shadow-2xl p-6">
+      <h3 class="text-xl font-bold mb-4">✨ تحليل مالي ذكي</h3>
+      <div id="gemini-loading" class="text-center p-4 text-gray-600 hidden"><p>جاري توليد التحليل...</p></div>
+      <div id="gemini-results" class="text-gray-700 leading-relaxed max-h-60 overflow-y-auto"></div>
+      <div class="flex justify-end mt-6"><button type="button" class="btn-close-modal bg-gray-200 px-4 py-2 rounded-lg">إغلاق</button></div>
+    </div>
+  </div>
 
-  // merge and sort by actual dueDate (oldest => newest)
-  const list = [...commitList, ...collectList].sort((a,b)=> a.dueDate - b.dueDate);
+  <!-- ====== SCRIPT (JS كامل) ====== -->
+  <script>
+    // -------------------------
+    // 0. Utilities / Formatting
+    // -------------------------
+    const DB_KEY = 'myAccountingAppDB_v2';
+    let state = { accounts:[], transactions:[], payables:[] };
+    let currentFilters = { account:'all', type:'all', dateStart:'', dateEnd:'' };
 
-  let html='';
-  if(list.length===0){ html=`<div class="text-sm muted pt-2">لا توجد استحقاقات/تحصيلات قريبة لهذا الشهر غير مسجلة.</div>`; }
-  else {
-    html = list.map(x=>{
-      const isCommit = x.type==='commitment';
-      const isOverdue = x.diff < 0;
-      const state = isOverdue ? `<span class="status-overdue"><i class="fas fa-exclamation-triangle"></i> متأخر ${Math.abs(x.diff)} يوم</span>` : x.diff===0 ? `<span class="status-today"><i class="fas fa-bell"></i> اليوم</span>` : `<span class="status-soon"><i class="fas fa-clock"></i> متبقي ${x.diff} يوم</span>`;
-      const bgClass = isOverdue && isCommit ? 'bg-red-50 dark:bg-red-900 border-red-300' : 'border-border';
-      const actionButton = isCommit ? `<button data-action="pay-commit" data-id="${x.id}" class="px-3 py-1 text-white rounded-lg hover:opacity-90" style="background:var(--brand);"><i class="fas fa-credit-card"></i> سداد</button>` : `<button data-action="collect-now" data-id="${x.id}" class="px-3 py-1 text-white rounded-lg hover:opacity-90" style="background:var(--ok);"><i class="fas fa-check"></i> تحصيل</button>`;
-      const details = isCommit ? `الأصل: ${fmt(x.amount)} · المدفوع: ${fmt(x.paid || 0)} · استحقاق: ${x.dueDate ? formatLocalDate(x.dueDate) : x.dueStr}` : `المبلغ: ${fmt(x.amount)} · التحصيل: ${x.dueDate ? formatLocalDate(x.dueDate) : x.dueStr}`;
-      const amountDisplay = isCommit ? fmt(x.remaining) : fmt(x.amount);
-      return `<div class="item mb-2 p-3 border rounded-lg ${bgClass}"><div class="flex justify-between items-center"><div class="font-bold">${escapeHtml(x.name)} (${isCommit ? 'التزام' : 'تحصيل'})</div><div class="font-bold text-lg">${amountDisplay} ج.م</div></div><div class="text-xs muted mt-1">${details}</div><div class="mt-2 flex justify-between items-center">${state}${actionButton}</div></div>`;
-    }).join('');
-  }
-  wrap.innerHTML = html;
-}
+    const currencyFormatter = new Intl.NumberFormat('ar-EG', { style:'currency', currency:'EGP', minimumFractionDigits:2, maximumFractionDigits:2 });
 
-// Transaction rendering (latest-first) implemented earlier as renderTransactions
-let currentPage=1; const pageSize=20;
-function renderTransactions(){ ensureSortedLedger(); computeBalances(); const search = ($('#search')?.value||'').toLowerCase(); const fType = $('#fType')?.value||'all'; const fAccount = $('#fAccount')?.value||'all'; const fFrom = $('#fFrom')?.value; const fTo = $('#fTo')?.value; const filtered = sortedLedger.filter(t=>{ if(fType !== 'all' && t.type !== fType) return false; if(fAccount !== 'all' && t.account !== fAccount) return false; if(search){ const match = (t.desc||'').toLowerCase().includes(search) || (t.category||'').toLowerCase().includes(search); if(!match) return false; } if(fFrom && t.date && t.date < fFrom) return false; if(fTo && t.date && t.date > fTo) return false; return true; }); const rows = filtered.slice().sort((a,b)=>{ const aKey=(a.exec||a.created||a.date||''); const bKey=(b.exec||b.created||b.date||''); return (bKey).localeCompare(aKey); }); const total = rows.length; const pages = Math.ceil(total / pageSize); if(currentPage > pages) currentPage = pages; const start = (currentPage - 1) * pageSize; const pageRows = rows.slice(start, start+pageSize); const after = (cachedAfter || new Map()); $('#tbody').innerHTML = pageRows.map(t=>{ const afterVal = after.has(t.id) ? after.get(t.id) : 0; const execTxt = t.exec ? new Date(t.exec).toLocaleString('ar-EG') : (t.created ? new Date(t.created).toLocaleString('ar-EG') : '—'); const dueTxt = t.date || t.due || '—'; const tag = t.isTransfer ? ' <span class="text-xs text-brand"><i class="fas fa-sync-alt"></i> تحويل</span>' : ''; const pillClass = t.type === 'income' ? 'pill-badge-income' : 'pill-badge-expense'; const sign = t.type === 'income' ? '+' : '-'; return `<tr class="row-item" data-id="${t.id}"><td class="p-2" data-label="تاريخ التنفيذ">${escapeHtml(execTxt)}</td><td class="p-2" data-label="تاريخ الاستحقاق">${escapeHtml(dueTxt)}</td><td class="p-2" data-label="الوصف"><div class="font-semibold">${escapeHtml(t.desc||'—')}${tag}</div><div class="text-xs muted">${escapeHtml(t.category||'—')}</div></td><td class="p-2" data-label="الفئة">${escapeHtml(t.category||'—')}</td><td class="p-2" data-label="الحساب">${escapeHtml(t.account||'—')}</td><td class="p-2 text-left" data-label="المبلغ"><span class="${pillClass}" dir="ltr">${sign}${fmt(t.amount)}</span></td><td class="p-2" data-label="رصيد بعد العملية">${fmt(afterVal)}</td><td class="p-2" data-label="إجراءات"><button data-action="edit-tx" data-id="${t.id}" class="px-2 py-1 text-brand hover:bg-gray-100 rounded-lg"><i class="fas fa-edit"></i> تعديل</button> <button data-action="del-tx" data-id="${t.id}" class="px-2 py-1 text-danger hover:bg-red-50 rounded-lg"><i class="fas fa-trash-alt"></i> حذف</button></td></tr>`; }).join(''); $('#pageInfo').textContent = `الصفحة ${currentPage} من ${pages||1} — إجمالي ${total}`; $('#prevPage').disabled = currentPage <= 1; $('#nextPage').disabled = currentPage >= pages; }
-
-// Pagination buttons
-$('#prevPage')?.addEventListener('click', ()=>{ if(currentPage>1) currentPage--; renderTransactions(); });
-$('#nextPage')?.addEventListener('click', ()=>{ currentPage++; renderTransactions(); });
-
-// small helpers for accounts/categories rendering
-function drawAccountsList(){ if(!$('#accountsList')) return; $('#accountsList').innerHTML = accounts.map((a,i)=>`<div class="flex items-center gap-2 p-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"><div class="badge-custom flex-1">${escapeHtml(a.name)} · <b>${fmt(a.opening||0)} ج.م</b></div><div class="ml-auto space-x-2 space-x-reverse"><button data-action="rename-acc" data-i="${i}" class="px-2 py-1 text-brand hover:bg-gray-100 rounded">تعديل</button><button data-action="remove-acc" data-i="${i}" class="px-2 py-1 text-red-500 hover:bg-red-50 rounded">حذف</button></div></div>`).join(''); }
-function drawCatsList(){ if(!$('#catsList')) return; $('#catsList').innerHTML = categories.map((c,i)=>`<div class="flex items-center gap-2 p-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"><div class="badge-custom flex-1">${escapeHtml(c.name)} · <span class="text-sm ${c.type==='income'?'text-ok':'text-danger'}">${c.type==='income'?'دخل':'مصروف'}</span></div><div class="ml-auto space-x-2 space-x-reverse"><button data-action="rename-cat" data-i="${i}" class="px-2 py-1 text-brand hover:bg-gray-100 rounded">تعديل</button><button data-action="remove-cat" data-i="${i}" class="px-2 py-1 text-red-500 hover:bg-red-50 rounded">حذف</button></div></div>`).join(''); }
-
-// showModal implementation and modal handlers
-function showModal(title, content, asList){ $('#modalTitle').textContent = title; const cont = $('#modalContent'); if(asList && Array.isArray(content)){ cont.innerHTML = '<div class="modal-list">' + content.map((it,i)=>`<button data-modal-i="${i}" class="px-2 py-2 border rounded text-right">${escapeHtml(it)}</button>`).join('') + '</div>'; } else if(typeof content === 'string'){ cont.innerHTML = content; } else { cont.innerHTML = `<pre style="white-space:pre-wrap;">${escapeHtml(JSON.stringify(content,null,2))}</pre>`; } $('#modalBackdrop').classList.remove('hidden'); }
-
-$('#modalClose')?.addEventListener('click', ()=>{ $('#modalBackdrop').classList.add('hidden'); });
-document.addEventListener('click', (e)=>{ const modalBackdrop=$('#modalBackdrop'); if(modalBackdrop && !modalBackdrop.classList.contains('hidden') && e.target === modalBackdrop){ $('#modalClose')?.click(); return; } const mi = e.target.closest('[data-modal-i]'); if(mi){ const idx=Number(mi.getAttribute('data-modal-i')); console.log('modal selection', idx); $('#modalBackdrop')?.classList.add('hidden'); } });
-
-// Import/Export handlers
-$('#importJsonBtn')?.addEventListener('click', ()=>{ $('#importFile')?.click(); });
-$('#importFile')?.addEventListener('change', async (e)=>{ const file=e.target.files?.[0]; if(!file) return; try{ const text = await file.text(); const data = JSON.parse(text); if(Array.isArray(data.ledger)) ledger = data.ledger; if(Array.isArray(data.accounts)) accounts = data.accounts; if(Array.isArray(data.categories)) categories = data.categories; if(Array.isArray(data.commitments)) commitments = data.commitments; if(Array.isArray(data.collections)) collections = data.collections; persist(KEY, ledger); persist(ACC_KEY, accounts); persist(CAT_KEY, categories); persist(COM_KEY, commitments); persist(COL_KEY, collections); init(); alert('تم استيراد البيانات بنجاح!'); }catch(err){ console.error('Import error', err); alert('فشل استيراد الملف. تأكد من أنه ملف JSON صحيح.'); } });
-$('#exportJson')?.addEventListener('click', ()=>{ const data={ ledger, accounts, categories, commitments, collections, exportedAt:new Date().toISOString() }; const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='my-finance-data.json'; a.click(); URL.revokeObjectURL(a.href); });
-
-// Footer buttons binding + animation + dark toggle
-function bindFooter(){ $$('button.nav-btn').forEach(btn=>{ btn.addEventListener('click', ()=>{ const page=btn.dataset.page; btn.classList.remove('play-anim'); void btn.offsetWidth; btn.classList.add('play-anim'); $$('button.nav-btn').forEach(b=>{ b.classList.remove('active'); b.setAttribute('aria-pressed','false'); }); btn.classList.add('active'); btn.setAttribute('aria-pressed','true'); if(typeof gotoPage === 'function') gotoPage(page); else{ $$('.page-section').forEach(p=>p.classList.add('hidden')); const t=document.getElementById(page); if(t) t.classList.remove('hidden'); } }); }); const darkBtn=$('#darkToggleFooter'); if(darkBtn){ darkBtn.addEventListener('click', ()=>{ const isDark=document.documentElement.classList.toggle('dark'); localStorage.setItem(DARK_KEY, isDark? 'true':'false'); const ic=$('#darkToggleIcon'); if(ic) ic.className = isDark? 'fas fa-sun' : 'fas fa-moon'; darkBtn.setAttribute('aria-pressed', String(isDark)); }); }
-}
-
-// Keep footer active in sync when gotoPage is called
-function setFooterActiveByPage(pageId){ const btn=document.querySelector(`button.nav-btn[data-page="${pageId}"]`); if(btn){ $$('button.nav-btn').forEach(b=>{ b.classList.remove('active'); b.setAttribute('aria-pressed','false'); }); btn.classList.add('active'); btn.setAttribute('aria-pressed','true'); } }
-
-// small UI helpers
-function refreshAccountSelects(){ 
-    const opts = accounts.map(a=>`<option value="${escapeHtml(a.name)}">${escapeHtml(a.name)}</option>`).join(''); 
-    if($('#account')) $('#account').innerHTML = opts; 
-    if($('#toAccount')) $('#toAccount').innerHTML = opts; // ADDED
-    if($('#fAccount')) $('#fAccount').innerHTML = `<option value="all">كل الحسابات</option>` + opts; 
-}
-
-function refreshCategorySelect(){ 
-    const type = $('#type')?.value || 'expense';
-    const cats = categories.filter(c=>c.type === type); 
-    if($('#category')) $('#category').innerHTML = cats.map(c=>`<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`).join(''); 
-}
-
-function refreshLinkCommitOptions(){ if(!$('#linkCommit')) return; const ym=YM(); const opts = commitments.filter(c=>{ const st=getCommitmentState(c); return !st.done && st.currentDueYm===ym && st.remaining>0; }).map(c=>{ const st=getCommitmentState(c); return `<option value="${c.id}">${escapeHtml(c.name)} (متبقي: ${fmt(st.remaining||c.amount)} ج.م)</option>`; }).join(''); $('#linkCommit').innerHTML = `<option value="">لا يوجد ربط</option>` + opts; }
-
-// computeAndUpdateSummary (already implemented)
-function computeAndUpdateSummary(){ ensureSortedLedger(); computeBalances(); let total=0; for(const v of (cachedBalances||new Map()).values()) total += Number(v||0); const ym = YM(); const nextYm = addMonthsToYm(ym,1); let commitTotalThis=0; let totalCommitNextTotal=0; for(const c of commitments){ const st = getCommitmentState(c); if(!st.done && st.currentDueYm===ym) commitTotalThis += Number(c.amount||0); if(!st.done && st.currentDueYm===nextYm) totalCommitNextTotal += Number(c.amount||0); } let totalCollectionThis=0; let totalCollectionNext=0; for(const c of collections){ const dueYm = (c.nextDue||c.firstDue||'').slice(0,7); if(dueYm===ym) totalCollectionThis += Number(c.amount||0); if(dueYm===nextYm) totalCollectionNext += Number(c.amount||0); } if($('#totalBalance')) $('#totalBalance').textContent = fmt(total) + ' ج.م'; if($('#monthLabel')) $('#monthLabel').textContent = ym; if($('#totalCollectionThis')) $('#totalCollectionThis').textContent = fmt(totalCollectionThis) + ' ج.م'; if($('#totalCollectionNext')) $('#totalCollectionNext').textContent = fmt(totalCollectionNext) + ' ج.م'; if($('#totalCommitThisTotal')) $('#totalCommitThisTotal').textContent = fmt(commitTotalThis) + ' ج.م'; if($('#totalCommitNextTotal')) $('#totalCommitNextTotal').textContent = fmt(totalCommitNextTotal) + ' ج.م'; drawPerAccount(); $('#latestTx').innerHTML = ledger.slice().sort((a,b)=> (b.exec||b.created||'').localeCompare(a.exec||a.created||'')).slice(0,10).map(t=>{ const sign=t.type==='income'?'+':'-'; const color = t.type==='income'?'text-ok':'text-danger'; return `<div class="flex justify-between items-center item"><div><b>${escapeHtml(t.desc||'—')}</b><div class="text-xs muted">${escapeHtml(t.category||'')}</div></div><div class="${color} font-bold">${sign}${fmt(t.amount)}</div></div>`; }).join(''); drawDueSoon(); }
-
-// init function
-function gotoPage(pageId){ $$('.page-section').forEach(p=>p.classList.add('hidden')); $(`#${pageId}`)?.classList.remove('hidden'); setFooterActiveByPage(pageId); }
-function loadThemeData(){ const isDark = localStorage.getItem(DARK_KEY) === 'true'; if(isDark) document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark'); const ic=$('#darkToggleIcon'); if(ic) ic.className = isDark? 'fas fa-sun' : 'fas fa-moon'; }
-
-function ensureTransferCategories(){ const need=[{name:'تحويل صادر',type:'expense'},{name:'تحويل وارد',type:'income'},{name:'عمولة تحويل',type:'expense'}]; let changed=false; for(const n of need){ if(!categories.some(c=>c.name===n.name && c.type===n.type)){ categories.push(n); changed=true; } } if(changed) persist(CAT_KEY, categories); }
-
-// NEW: Function to handle UI visibility based on transaction type (transfer/normal)
-function handleTypeChange(){
-    const type = $('#type')?.value;
-    const isTransfer = type === 'transfer';
-
-    $('#toAccountDiv')?.classList.toggle('hidden', !isTransfer);
-    $('#categoryDiv')?.classList.toggle('hidden', isTransfer);
-    $('#linkCommitDiv')?.classList.toggle('hidden', isTransfer);
-
-    if($('#accountLabel')) {
-        $('#accountLabel').textContent = isTransfer ? 'الحساب المُحوَّل منه (من)' : 'الحساب';
-    } else if($('#account')?.previousElementSibling) { // Fallback if no ID on label
-        $('#account').previousElementSibling.textContent = isTransfer ? 'الحساب المُحوَّل منه (من)' : 'الحساب';
+    function formatCurrency(num){
+      if (num === null || num === undefined) return '0.00';
+      const n = Number(num) || 0;
+      return currencyFormatter.format(n).replace('EGP','').trim();
     }
-    refreshCategorySelect();
-}
 
-// basic event bindings for add account/category and compute summary
-$('#addAccount')?.addEventListener('click', ()=>{ const name=($('#newAccountName')?.value||'').trim(); const opening=Number($('#newAccountOpening')?.value||0); if(!name) return; accounts.push({name, opening}); persist(ACC_KEY, accounts); $('#newAccountName').value=''; $('#newAccountOpening').value=''; drawAccountsList(); refreshAccountSelects(); computeAndUpdateSummary(); });
-$('#addCategory')?.addEventListener('click', ()=>{ const name=($('#newCatName')?.value||'').trim(); const type=($('#newCatType')?.value||'expense'); if(!name) return; categories.push({name, type}); persist(CAT_KEY, categories); $('#newCatName').value=''; drawCatsList(); refreshCategorySelect(); });
+    function formatDate(d){
+      const date = new Date(d);
+      if (isNaN(date)) return '';
+      let month = '' + (date.getMonth() + 1);
+      let day = '' + date.getDate();
+      let year = date.getFullYear();
+      if (month.length < 2) month = '0' + month;
+      if (day.length < 2) day = '0' + day;
+      return [year, month, day].join('-');
+    }
 
-// UPDATED: Save Transaction Logic (Handling Transfers)
-let editTxId=null; 
-$('#saveTx')?.addEventListener('click', ()=>{ 
-    const type=($('#type')?.value||'income'); 
-    const amount=Number($('#amount')?.value||0); 
-    const execVal = $('#exec')?.value; 
-    const dateVal = $('#date')?.value; 
-    const desc=($('#desc')?.value||'').trim(); 
-    const fromAccount = ($('#account')?.value||''); 
-    const category = ($('#category')?.value||''); 
-    const linkCommitId = ($('#linkCommit')?.value||''); 
-    const toAccount = ($('#toAccount')?.value||'');
+    function formatDateTime(d){
+      const date = new Date(d);
+      if (isNaN(date)) return '';
+      return date.toLocaleDateString('ar-EG', { year:'numeric', month:'short', day:'numeric' }) + ' ' + date.toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' });
+    }
 
-    // VALIDATION
-    if(!fromAccount || !amount || amount<=0){ 
-        alert('من فضلك أدخل: حساب (المحوَّل منه) ومبلغ صحيح.'); 
-        return; 
-    } 
-    if(type === 'transfer'){
-        if(!toAccount || fromAccount === toAccount){
-            alert('يجب تحديد حسابين مختلفين للتحويل.');
+    // -------------------------
+    // 1. Storage
+    // -------------------------
+    const StorageService = {
+      load(){
+        try {
+          const raw = localStorage.getItem(DB_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            // convert Dates stored as strings to strings (we'll use ISO strings)
+            state = parsed;
+            // migration safety
+            if (!state.accounts) state.accounts = [];
+            if (!state.transactions) state.transactions = [];
+            if (!state.payables) state.payables = [];
             return;
-        }
-    } else if (!category) {
-        alert('من فضلك حدد فئة.');
-        return;
-    }
+          }
+        } catch (e) { console.warn('Failed to parse storage, seeding initial data.', e); }
+        this.saveInitial();
+      },
+      save(){ localStorage.setItem(DB_KEY, JSON.stringify(state)); },
+      exportData(){ return JSON.stringify(state, null, 2); },
+      importData(jsonStr){
+        try {
+          const parsed = JSON.parse(jsonStr);
+          if (!parsed.accounts || !parsed.transactions) return false;
+          if (!parsed.payables) parsed.payables = [];
+          state = parsed;
+          this.save();
+          return true;
+        } catch (e) { return false; }
+      },
+      saveInitial(){
+        const cashId = crypto.randomUUID();
+        const bankId = crypto.randomUUID();
+        const walletId = crypto.randomUUID();
+        const today = new Date();
+        const fiveDays = new Date(today); fiveDays.setDate(today.getDate()+5);
+        const twoDaysAgo = new Date(today); twoDaysAgo.setDate(today.getDate()-2);
+        const fifteenDaysAgo = new Date(today); fifteenDaysAgo.setDate(today.getDate()-15);
 
-    let execISO=null; 
-    if(execVal){ 
-        const d=new Date(execVal); 
-        const tzOffset = d.getTimezoneOffset()*60000; 
-        execISO = new Date(d.getTime() - tzOffset).toISOString(); 
-    } else execISO = new Date().toISOString(); 
-    
-    let txsToSave = [];
-    const isEditMode = !!editTxId;
-
-    // --- TRANSFER LOGIC ---
-    if(type === 'transfer'){
-        const transferBaseId = editTxId || eid();
-        const outgoingTxId = transferBaseId;
-        const incomingTxId = transferBaseId + '_in';
-
-        // 1. Outgoing Transaction (Expense)
-        const outgoingTx = { 
-            id: outgoingTxId, 
-            created: new Date().toISOString(), 
-            exec: execISO, 
-            date: dateVal || execISO.slice(0,10), 
-            desc: desc || `تحويل إلى ${toAccount}`, 
-            type: 'expense', 
-            amount: amount, 
-            account: fromAccount, 
-            category: 'تحويل صادر', 
-            linkCommitId: null, 
-            isTransfer: true,
-            linkedTxId: incomingTxId
+        state = {
+          accounts: [
+            { id: cashId, name: 'نقد (الخزنة)', type:'cash', initialBalance:2000, currentBalance:2000 },
+            { id: bankId, name: 'بنك الأهلي', type:'bank', initialBalance:10000, currentBalance:10000 },
+            { id: walletId, name: 'محفظة إلكترونية', type:'wallet', initialBalance:500, currentBalance:500 }
+          ],
+          transactions: [
+            { id: crypto.randomUUID(), createdAt: new Date('2025-11-01T10:00:00').toISOString(), date: new Date('2025-11-01T10:00:00').toISOString(), type:'income', to: bankId, from: null, amount: 5000, category:'راتب', notes:'راتب شهر أكتوبر' },
+            { id: crypto.randomUUID(), createdAt: new Date('2025-11-02T14:00:00').toISOString(), date: new Date('2025-11-02T14:00:00').toISOString(), type:'expense', from: cashId, to: null, amount: 300, category:'فواتير', notes:'فاتورة كهرباء' },
+            // transfer pair
+            ...(function(){ const linked = crypto.randomUUID(); return [
+              { id: crypto.randomUUID(), createdAt: new Date('2025-11-03T11:00:00').toISOString(), date: new Date('2025-11-03T11:00:00').toISOString(), type:'expense', from: bankId, to:null, amount:1000, category:'تحويل صادر', notes:'تحويل للعهدة', linkedId: linked },
+              { id: linked, createdAt: new Date('2025-11-03T11:00:00').toISOString(), date: new Date('2025-11-03T11:00:00').toISOString(), type:'income', from:null, to: cashId, amount:1000, category:'تحويل وارد', notes:'تحويل للعهدة', linkedId: null }
+            ]; })(),
+            { id: crypto.randomUUID(), createdAt: new Date('2025-11-05T18:00:00').toISOString(), date: new Date('2025-11-05T18:00:00').toISOString(), type:'expense', from: walletId, to: null, amount:150, category:'مشتريات أونلاين', notes:'' },
+            { id: crypto.randomUUID(), createdAt: new Date('2025-11-07T09:00:00').toISOString(), date: new Date('2025-11-07T09:00:00').toISOString(), type:'income', to: cashId, from: null, amount:200, category:'مبيعات', notes:'مبيعات نقدية' },
+          ],
+          payables: [
+            { id: crypto.randomUUID(), type:'receivable', name:'دفعة العميل (أحمد)', amount:2500, dueDate: fiveDays.toISOString(), status:'pending', accountId: bankId, recurrence:'none' },
+            { id: crypto.randomUUID(), type:'payable', name:'فاتورة الإنترنت', amount:450, dueDate: twoDaysAgo.toISOString(), status:'pending', accountId: cashId, recurrence:'none' },
+            { id: crypto.randomUUID(), type:'payable', name:'إيجار المكتب (سابق)', amount:3000, dueDate: fifteenDaysAgo.toISOString(), status:'paid', accountId: bankId, recurrence:'none' },
+            { id: crypto.randomUUID(), type:'payable', name:'إيجار المكتب (شهري)', amount:3000, dueDate: new Date(today.getFullYear(), today.getMonth(), 1).toISOString(), status:'pending', accountId: bankId, recurrence:'monthly' }
+          ]
         };
-        txsToSave.push(outgoingTx);
+        this.save();
+      }
+    };
 
-        // 2. Incoming Transaction (Income)
-        const incomingTx = {
-            id: incomingTxId,
-            created: new Date().toISOString(), 
-            exec: execISO, 
-            date: dateVal || execISO.slice(0,10), 
-            desc: desc || `تحويل من ${fromAccount}`, 
-            type: 'income', 
-            amount: amount, 
-            account: toAccount, 
-            category: 'تحويل وارد', 
-            linkCommitId: null, 
-            isTransfer: true,
-            linkedTxId: outgoingTxId
+    // -------------------------
+    // 2. Core Logic
+    // -------------------------
+    const CoreLogic = {
+      getAccountById(id){ return state.accounts.find(a=>a.id===id); },
+      getTransactionById(id){ return state.transactions.find(t=>t.id===id); },
+      getDueById(id){ return state.payables.find(p=>p.id===id); },
+
+      createTransferPair(fromId, toId, amount, dateIso, notes){
+        const linkedId = crypto.randomUUID();
+        const expense = { id: crypto.randomUUID(), createdAt: dateIso, date: dateIso, type:'expense', from: fromId, to: null, amount: amount, category:'تحويل صادر', notes: notes, linkedId: linkedId };
+        const income = { id: linkedId, createdAt: dateIso, date: dateIso, type:'income', from:null, to: toId, amount: amount, category:'تحويل وارد', notes: notes, linkedId: expense.id };
+        return [expense, income];
+      },
+
+      recalculateAccountBalance(accountId){
+        const account = this.getAccountById(accountId);
+        if (!account) return;
+        const accountTxs = state.transactions.filter(t => t.from === accountId || t.to === accountId)
+          .sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime() || new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+        let currentBalance = Number(account.initialBalance) || 0;
+        for (const tx of accountTxs) {
+          tx.balanceBefore = currentBalance;
+          if (tx.type === 'income' && tx.to === accountId) currentBalance += Number(tx.amount) || 0;
+          else if (tx.type === 'expense' && tx.from === accountId) currentBalance -= Number(tx.amount) || 0;
+          tx.balanceAfter = currentBalance;
+        }
+        account.currentBalance = currentBalance;
+      },
+
+      recalculateAllBalances(){
+        for (const acc of state.accounts) this.recalculateAccountBalance(acc.id);
+      },
+
+      addAccount(name, type, initialBalance){
+        state.accounts.push({ id: crypto.randomUUID(), name, type, initialBalance: Number(initialBalance)||0, currentBalance: Number(initialBalance)||0 });
+        this.recalculateAllBalances();
+        StorageService.save();
+      },
+
+      updateAccount(id, name, type, initialBalance){
+        const acc = this.getAccountById(id);
+        if (!acc) return;
+        acc.name = name; acc.type = type; acc.initialBalance = Number(initialBalance)||0;
+        this.recalculateAllBalances(); StorageService.save();
+      },
+
+      deleteAccount(id){
+        if (state.transactions.some(t => t.from === id || t.to === id)) return false;
+        state.accounts = state.accounts.filter(a => a.id !== id);
+        StorageService.save();
+        return true;
+      },
+
+      addTransaction(txData){
+        const now = new Date().toISOString();
+        if (txData.type === 'transfer') {
+          const dateIso = new Date(txData.date).toISOString();
+          const [expense, income] = this.createTransferPair(txData.from, txData.to, Number(txData.amount)||0, dateIso, txData.notes || '');
+          state.transactions.push(expense, income);
+        } else {
+          state.transactions.push({
+            id: crypto.randomUUID(),
+            createdAt: now,
+            date: new Date(txData.date).toISOString(),
+            type: txData.type,
+            from: txData.from || null,
+            to: txData.to || null,
+            amount: Number(txData.amount) || 0,
+            category: txData.category || '',
+            notes: txData.notes || '',
+            linkedId: null
+          });
+        }
+        this.recalculateAllBalances(); StorageService.save();
+      },
+
+      updateTransaction(id, newTxData){
+        const tx = this.getTransactionById(id);
+        if (!tx) return;
+        if (tx.linkedId) {
+          const linkedTx = this.getTransactionById(tx.linkedId);
+          tx.date = new Date(newTxData.date).toISOString();
+          tx.amount = Number(newTxData.amount)||tx.amount;
+          tx.notes = newTxData.notes || tx.notes;
+          tx.from = newTxData.from || tx.from;
+          if (linkedTx) {
+            linkedTx.date = tx.date;
+            linkedTx.amount = tx.amount;
+            linkedTx.notes = tx.notes;
+            linkedTx.to = newTxData.to || linkedTx.to;
+          }
+        } else {
+          tx.date = new Date(newTxData.date).toISOString();
+          tx.amount = Number(newTxData.amount)||tx.amount;
+          tx.category = newTxData.category || tx.category;
+          tx.notes = newTxData.notes || tx.notes;
+          tx.from = newTxData.from || tx.from;
+          tx.to = newTxData.to || tx.to;
+        }
+        this.recalculateAllBalances(); StorageService.save();
+      },
+
+      deleteTransaction(id){
+        const tx = this.getTransactionById(id);
+        if (!tx) return;
+        if (tx.linkedId) state.transactions = state.transactions.filter(t => t.id !== id && t.id !== tx.linkedId);
+        else state.transactions = state.transactions.filter(t => t.id !== id);
+        this.recalculateAllBalances(); StorageService.save();
+      },
+
+      addDue(data){
+        state.payables.push({ id: crypto.randomUUID(), type: data.type, name: data.name, amount: Number(data.amount)||0, dueDate: data.dueDate, accountId: data.accountId, recurrence: data.recurrence || 'none', status: 'pending' });
+        StorageService.save();
+      },
+
+      updateDue(id, data){
+        const due = this.getDueById(id); if (!due) return;
+        due.type = data.type; due.name = data.name; due.amount = Number(data.amount)||due.amount; due.dueDate = data.dueDate; due.accountId = data.accountId; due.recurrence = data.recurrence;
+        StorageService.save();
+      },
+
+      deleteDue(id){ state.payables = state.payables.filter(p => p.id !== id); StorageService.save(); },
+
+      getDuesWithStatus(){
+        const today = new Date(); today.setHours(0,0,0,0);
+        const sevenDays = new Date(today.getTime() + 7*24*60*60*1000);
+        return state.payables.map(due => {
+          const dueDate = new Date(due.dueDate); dueDate.setHours(0,0,0,0);
+          let statusText = 'مستحق', statusColor = 'bg-blue-100 text-blue-800';
+          if (due.status === 'paid' && (due.recurrence === 'none' || !due.recurrence)) { statusText='مدفوع'; statusColor='bg-gray-100 text-gray-800'; }
+          else if (dueDate < today) { statusText='متأخر'; statusColor='bg-red-100 text-red-800'; }
+          else if (dueDate <= sevenDays) { statusText='قريب الاستحقاق'; statusColor='bg-yellow-100 text-yellow-800'; }
+          return { ...due, statusText, statusColor };
+        }).sort((a,b) => new Date(a.dueDate) - new Date(b.dueDate));
+      },
+
+      collectReceivable(dueId){
+        const due = this.getDueById(dueId); if (!due || due.type !== 'receivable') return false;
+        this.addTransaction({ type:'income', date: new Date().toISOString(), amount: due.amount, from: null, to: due.accountId, category:'تحصيل', notes:`تحصيل: ${due.name}` });
+        if (due.recurrence === 'monthly') { const next = new Date(due.dueDate); next.setMonth(next.getMonth()+1); due.dueDate = next.toISOString(); }
+        else due.status = 'paid';
+        StorageService.save(); return true;
+      },
+
+      payPayable(dueId){
+        const due = this.getDueById(dueId); if (!due || due.type !== 'payable') return false;
+        this.addTransaction({ type:'expense', date: new Date().toISOString(), amount: due.amount, from: due.accountId, to: null, category:'سداد التزام', notes:`سداد: ${due.name}` });
+        if (due.recurrence === 'monthly') { const next = new Date(due.dueDate); next.setMonth(next.getMonth()+1); due.dueDate = next.toISOString(); }
+        else due.status = 'paid';
+        StorageService.save(); return true;
+      },
+
+      getFilteredTransactions(filters){
+        const { account, type, dateStart, dateEnd } = filters;
+        return state.transactions.filter(tx => {
+          if (account !== 'all' && tx.from !== account && tx.to !== account) return false;
+          if (type !== 'all' && tx.type !== type) return false;
+          if (dateStart) { if (formatDate(tx.date) < dateStart) return false; }
+          if (dateEnd) { if (formatDate(tx.date) > dateEnd) return false; }
+          return true;
+        }).sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      },
+
+      getTopSpendingCategories(){
+        const spending = {};
+        state.transactions.forEach(tx => { if (tx.type === 'expense') { const cat = tx.category || 'غير مصنف'; spending[cat] = (spending[cat] || 0) + Number(tx.amount || 0); }});
+        return Object.entries(spending).map(([category, amount]) => ({ category, amount })).sort((a,b)=>b.amount-a.amount).slice(0,5);
+      },
+
+      getDashboardSummary(){
+        let income=0, expense=0;
+        state.transactions.forEach(tx => { if (tx.type === 'income') income += Number(tx.amount)||0; else if (tx.type === 'expense') expense += Number(tx.amount)||0; });
+        const totalBalance = state.accounts.reduce((s,a) => s + (Number(a.currentBalance)||0), 0);
+        return { income, expense, net: income - expense, totalBalance };
+      }
+    };
+
+    // -------------------------
+    // 3. View / DOM rendering
+    // -------------------------
+    const View = {
+      renderAll(){ this.renderAccounts(); this.renderPayablesAndReceivables(); this.renderTransactions(); this.renderDashboard(); this.updateFilterDropdowns(); this.updateAccountDropdowns(['tx-account-from','tx-account-to','due-account-id']); },
+      renderAccounts(){
+        const list = document.getElementById('accounts-list'); list.innerHTML = '';
+        if (state.accounts.length === 0) { list.innerHTML = '<p class="text-gray-500 text-sm">لم تقم بإضافة أي حسابات بعد.</p>'; return; }
+        state.accounts.forEach(acc => {
+          const card = document.createElement('div'); card.className = 'p-4 rounded-lg border border-gray-200 bg-gray-50';
+          card.innerHTML = `
+            <div class="flex justify-between items-start">
+              <div><h4 class="font-bold">${acc.name}</h4><span class="text-xs text-gray-500 bg-gray-200 px-2 py-0.5 rounded">${acc.type}</span></div>
+              <div class="flex gap-2">
+                <button class="btn-edit-account text-gray-400 hover:text-indigo-600" data-id="${acc.id}" title="تعديل الحساب">✏</button>
+                <button class="btn-delete-account text-gray-400 hover:text-red-600" data-id="${acc.id}" title="حذف الحساب">🗑</button>
+              </div>
+            </div>
+            <p class="text-xl font-bold text-indigo-700 mt-2">${formatCurrency(acc.currentBalance)}</p>
+            <p class="text-xs text-gray-500">الرصيد الافتتاحي: ${formatCurrency(acc.initialBalance)}</p>
+          `;
+          list.appendChild(card);
+        });
+      },
+
+      renderPayablesAndReceivables(){
+        const allDues = CoreLogic.getDuesWithStatus();
+        const receivables = allDues.filter(d => d.type === 'receivable');
+        const payables = allDues.filter(d => d.type === 'payable');
+        this.renderDuesList('tab-content-receivables', receivables);
+        this.renderDuesList('tab-content-payables', payables);
+      },
+
+      renderDuesList(containerId, dues){
+        const container = document.getElementById(containerId); container.innerHTML = '';
+        if (dues.length === 0) { container.innerHTML = '<p class="text-gray-500 text-sm text-center p-4">لا توجد بنود لعرضها.</p>'; return; }
+        dues.forEach(due => {
+          const item = document.createElement('div'); item.className = 'p-3 rounded-lg border border-gray-200 flex justify-between items-center';
+          const account = CoreLogic.getAccountById(due.accountId);
+          const isPaid = due.status === 'paid' && (due.recurrence === 'none' || !due.recurrence);
+          item.innerHTML = `
+            <div class="flex-1">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-medium px-2 py-0.5 rounded-full ${due.statusColor}">${due.statusText}</span>
+                <h5 class="font-bold ${isPaid ? 'text-gray-500 line-through' : ''}">${due.name}</h5>
+                ${due.recurrence === 'monthly' ? `<span class="text-xs font-medium px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800">شهري</span>` : ''}
+              </div>
+              <p class="text-sm text-gray-600 mt-1">
+                ${formatCurrency(due.amount)} <span class="text-xs text-gray-400">| مستحق في: ${formatDate(due.dueDate)}</span>
+                ${account ? `<span class="text-xs text-gray-400">| الحساب: ${account.name}</span>` : ''}
+              </p>
+            </div>
+            <div class="flex gap-2">
+              ${!isPaid && due.type === 'receivable' ? `<button class="btn-collect-due text-sm bg-green-600 text-white px-3 py-1 rounded-md" data-id="${due.id}">تحصيل</button>` : ''}
+              ${!isPaid && due.type === 'payable' ? `<button class="btn-pay-due text-sm bg-red-600 text-white px-3 py-1 rounded-md" data-id="${due.id}">سداد</button>` : ''}
+              <button class="btn-edit-due text-gray-400 hover:text-indigo-600" data-id="${due.id}" title="تعديل البند">✏</button>
+              <button class="btn-delete-due text-gray-400 hover:text-red-600" data-id="${due.id}" title="حذف البند">🗑</button>
+            </div>
+          `;
+          container.appendChild(item);
+        });
+      },
+
+      renderTransactions(){
+        const tbody = document.getElementById('transactions-table-body'); tbody.innerHTML = '';
+        const filteredTxs = CoreLogic.getFilteredTransactions(currentFilters);
+        const emptyState = document.getElementById('transactions-empty-state');
+        if (filteredTxs.length === 0) { emptyState.classList.remove('hidden'); return; }
+        emptyState.classList.add('hidden');
+
+        const selectedAccountId = currentFilters.account;
+
+        filteredTxs.forEach(tx => {
+          // choose account name
+          let accountIdToShow = selectedAccountId;
+          if (selectedAccountId === 'all') accountIdToShow = tx.from || tx.to;
+          const account = CoreLogic.getAccountById(accountIdToShow);
+          const accountName = account ? account.name : (tx.category || 'غير محدد');
+
+          let dain = '', madin = '', balanceAfter = null;
+          if (selectedAccountId === 'all') {
+            if (tx.type === 'income') dain = formatCurrency(tx.amount);
+            else if (tx.type === 'expense') madin = formatCurrency(tx.amount);
+            balanceAfter = null;
+          } else {
+            // ensure tx relates to selected account
+            if (tx.from !== selectedAccountId && tx.to !== selectedAccountId) return;
+            if (tx.type === 'income' && tx.to === selectedAccountId) dain = formatCurrency(tx.amount);
+            else if (tx.type === 'expense' && tx.from === selectedAccountId) madin = formatCurrency(tx.amount);
+            else if (tx.type === 'income' && tx.from === selectedAccountId) madin = formatCurrency(tx.amount);
+            else if (tx.type === 'expense' && tx.to === selectedAccountId) dain = formatCurrency(tx.amount);
+            balanceAfter = (tx.balanceAfter !== undefined) ? tx.balanceAfter : null;
+          }
+
+          const balanceColor = (balanceAfter !== null) ? (balanceAfter >= 0 ? 'text-gray-800' : 'text-red-600') : 'text-gray-800';
+
+          const row = document.createElement('tr'); row.className = 'border-b hover:bg-gray-50';
+          row.innerHTML = `
+            <td class="p-3 text-gray-600 text-xs">${formatDateTime(tx.date)}</td>
+            <td class="p-3">${accountName}</td>
+            <td class="p-3">${tx.category || ''} <span class="block text-xs text-gray-400">${tx.notes || ''}</span></td>
+            <td class="p-3 text-green-600 font-medium">${dain}</td>
+            <td class="p-3 text-red-600 font-medium">${madin}</td>
+            <td class="p-3 font-medium ${balanceColor}">${balanceAfter !== null ? formatCurrency(balanceAfter) : '---'}</td>
+            <td class="p-3">
+              <button class="btn-edit-tx text-gray-400 hover:text-indigo-600" data-id="${tx.id}" title="تعديل الحركة">✏</button>
+              <button class="btn-delete-tx text-gray-400 hover:text-red-600" data-id="${tx.id}" title="حذف الحركة">🗑</button>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+      },
+
+      renderDashboard(){
+        const summary = CoreLogic.getDashboardSummary();
+        document.getElementById('summary-income').textContent = formatCurrency(summary.income);
+        document.getElementById('summary-expense').textContent = formatCurrency(summary.expense);
+        const netElem = document.getElementById('summary-net');
+        netElem.textContent = formatCurrency(summary.net);
+        netElem.classList.toggle('text-green-600', summary.net >= 0);
+        netElem.classList.toggle('text-red-600', summary.net < 0);
+        document.getElementById('summary-total-balance').textContent = formatCurrency(summary.totalBalance);
+      },
+
+      updateFilterDropdowns(){
+        const select = document.getElementById('filter-account'); const cur = select.value || 'all';
+        select.innerHTML = '<option value="all">كل الحسابات</option>';
+        state.accounts.forEach(acc => select.innerHTML += `<option value="${acc.id}">${acc.name}</option>`);
+        select.value = cur;
+      },
+
+      updateAccountDropdowns(selectIds){
+        selectIds.forEach(id => {
+          const sel = document.getElementById(id);
+          if (!sel) return;
+          sel.innerHTML = '';
+          if (state.accounts.length === 0) { sel.innerHTML = '<option value="">لا توجد حسابات</option>'; return; }
+          state.accounts.forEach(acc => sel.innerHTML += `<option value="${acc.id}">${acc.name} (${formatCurrency(acc.currentBalance)})</option>`);
+        });
+      },
+
+      resetTxForm(){
+        document.getElementById('transaction-form').reset();
+        document.getElementById('tx-id').value = '';
+        document.getElementById('tx-linked-id').value = '';
+        document.getElementById('tx-modal-title').textContent = 'إضافة حركة جديدة';
+        const nowSlice = new Date().toISOString().slice(0,16);
+        document.getElementById('tx-date').value = nowSlice;
+        this.toggleTxFormFields('expense');
+      },
+
+      resetAccountForm(){
+        document.getElementById('account-form').reset();
+        document.getElementById('account-id').value = '';
+        document.getElementById('account-modal-title').textContent = 'إضافة حساب جديد';
+      },
+
+      resetDueForm(){
+        document.getElementById('due-form').reset();
+        document.getElementById('due-id').value = '';
+        document.getElementById('due-modal-title').textContent = 'إضافة بند جديد';
+        document.getElementById('due-date').value = formatDate(new Date());
+        document.getElementById('due-recurrence').value = 'none';
+      },
+
+      toggleTxFormFields(type){
+        const fromContainer = document.getElementById('tx-account-from-container');
+        const toContainer = document.getElementById('tx-account-to-container');
+        const category = document.getElementById('tx-category');
+        fromContainer.classList.add('hidden'); toContainer.classList.add('hidden'); category.parentElement.classList.add('hidden');
+        this.updateAccountDropdowns(['tx-account-from','tx-account-to']);
+        if (type === 'income') { toContainer.classList.remove('hidden'); category.parentElement.classList.remove('hidden'); document.getElementById('tx-account-from').value=''; }
+        else if (type === 'expense') { fromContainer.classList.remove('hidden'); category.parentElement.classList.remove('hidden'); document.getElementById('tx-account-to').value=''; }
+        else if (type === 'transfer') { fromContainer.classList.remove('hidden'); toContainer.classList.remove('hidden'); category.parentElement.classList.add('hidden'); }
+      },
+
+      populateTxFormForEdit(tx){
+        this.resetTxForm();
+        document.getElementById('tx-modal-title').textContent = 'تعديل حركة';
+        let txData = {...tx};
+        if (tx.linkedId) {
+          const linked = CoreLogic.getTransactionById(tx.linkedId);
+          txData.type = 'transfer';
+          if (tx.type === 'expense') { txData.from = tx.from; txData.to = linked ? linked.to : ''; }
+          else { txData.from = linked ? linked.from : ''; txData.to = tx.to; }
+          document.getElementById('tx-linked-id').value = tx.linkedId;
+        }
+        document.getElementById('tx-id').value = txData.id;
+        document.getElementById('tx-type').value = txData.type;
+        document.getElementById('tx-amount').value = txData.amount;
+        document.getElementById('tx-date').value = new Date(txData.date).toISOString().slice(0,16);
+        document.getElementById('tx-category').value = txData.category || '';
+        document.getElementById('tx-notes').value = txData.notes || '';
+        this.toggleTxFormFields(txData.type);
+        document.getElementById('tx-account-from').value = txData.from || '';
+        document.getElementById('tx-account-to').value = txData.to || '';
+        this.openModal('transaction-modal');
+      },
+
+      populateAccountFormForEdit(account){
+        this.resetAccountForm();
+        document.getElementById('account-modal-title').textContent = 'تعديل حساب';
+        document.getElementById('account-id').value = account.id;
+        document.getElementById('account-name').value = account.name;
+        document.getElementById('account-type').value = account.type;
+        document.getElementById('account-initial-balance').value = account.initialBalance;
+        this.openModal('account-modal');
+      },
+
+      populateDueFormForEdit(due){
+        this.resetDueForm();
+        document.getElementById('due-modal-title').textContent = 'تعديل بند';
+        document.getElementById('due-id').value = due.id;
+        document.getElementById('due-type').value = due.type;
+        document.getElementById('due-name').value = due.name;
+        document.getElementById('due-amount').value = due.amount;
+        document.getElementById('due-date').value = formatDate(due.dueDate);
+        document.getElementById('due-account-id').value = due.accountId;
+        document.getElementById('due-recurrence').value = due.recurrence || 'none';
+        this.openModal('due-modal');
+      },
+
+      openModal(modalId){ document.getElementById(modalId).classList.add('is-open'); },
+      closeModal(modalId){ document.getElementById(modalId).classList.remove('is-open'); if (modalId === 'transaction-modal') this.resetTxForm(); if (modalId === 'account-modal') this.resetAccountForm(); if (modalId === 'due-modal') this.resetDueForm(); },
+
+      showToast(message, type='info'){
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        let bg = 'bg-blue-100 text-blue-800 border border-blue-200';
+        if (type === 'success') bg = 'bg-green-100 text-green-800 border border-green-200';
+        if (type === 'error') bg = 'bg-red-100 text-red-800 border border-red-200';
+        toast.className = `toast ${bg}`;
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(()=> toast.remove(), 4200);
+      }
+    };
+
+    // -------------------------
+    // 4. Event bindings
+    // -------------------------
+    function attachListeners(){
+      // header buttons
+      document.getElementById('btn-add-transaction').addEventListener('click', ()=>{ View.resetTxForm(); View.openModal('transaction-modal'); });
+      document.getElementById('btn-open-add-account').addEventListener('click', ()=>{ View.resetAccountForm(); View.openModal('account-modal'); });
+      document.getElementById('btn-open-add-due').addEventListener('click', ()=>{ View.resetDueForm(); View.openModal('due-modal'); });
+      document.getElementById('btn-open-import-export').addEventListener('click', ()=> View.openModal('import-export-modal'));
+      document.getElementById('btn-open-test-runner').addEventListener('click', ()=> View.openModal('test-runner-modal'));
+      document.getElementById('btn-gemini-summary').addEventListener('click', handleGeminiSummary);
+
+      // modal close buttons and overlay clicks
+      document.querySelectorAll('.btn-close-modal').forEach(el => el.addEventListener('click', (e)=> { const modal = e.target.closest('.modal'); if (modal) modal.classList.remove('is-open'); }));
+      document.querySelectorAll('.modal').forEach(el => el.addEventListener('click', (e)=> { if (e.target === el) el.classList.remove('is-open'); }));
+      // prevent overlay close when clicking inner content
+      document.querySelectorAll('.modal > div').forEach(el => el.addEventListener('click', e => e.stopPropagation()));
+
+      // account form
+      document.getElementById('account-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const id = document.getElementById('account-id').value;
+        const name = document.getElementById('account-name').value.trim();
+        const type = document.getElementById('account-type').value;
+        const initialBalance = parseFloat(document.getElementById('account-initial-balance').value || 0);
+        if (!name || !type) { View.showToast('يرجى ملء جميع الحقول', 'error'); return; }
+        if (id) { CoreLogic.updateAccount(id, name, type, initialBalance); View.showToast('تم تحديث الحساب بنجاح', 'success'); }
+        else { CoreLogic.addAccount(name, type, initialBalance); View.showToast('تم إضافة الحساب بنجاح', 'success'); }
+        View.closeModal('account-modal'); View.renderAll();
+      });
+
+      // transaction form
+      document.getElementById('transaction-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const id = document.getElementById('tx-id').value;
+        const type = document.getElementById('tx-type').value;
+        const amount = parseFloat(document.getElementById('tx-amount').value || 0);
+        const txData = {
+          type,
+          date: document.getElementById('tx-date').value,
+          amount,
+          from: document.getElementById('tx-account-from').value || null,
+          to: document.getElementById('tx-account-to').value || null,
+          category: document.getElementById('tx-category').value,
+          notes: document.getElementById('tx-notes').value
         };
-        txsToSave.push(incomingTx);
+        // validation
+        if (!txData.date || !amount || amount <= 0) { View.showToast('يرجى إدخال تاريخ ومبلغ صحيح', 'error'); return; }
+        if (type === 'income' && !txData.to) { View.showToast('يرجى اختيار حساب (الهدف) للدخل', 'error'); return; }
+        if (type === 'expense' && !txData.from) { View.showToast('يرجى اختيار حساب (المصدر) للمصروف', 'error'); return; }
+        if (type === 'transfer' && (!txData.from || !txData.to)) { View.showToast('يرجى اختيار حسابي المصدر والهدف للتحويل', 'error'); return; }
+        if (type === 'transfer' && txData.from === txData.to) { View.showToast('لا يمكن التحويل لنفس الحساب', 'error'); return; }
+        if (id) { CoreLogic.updateTransaction(id, txData); View.showToast('تم تعديل الحركة بنجاح', 'success'); }
+        else { CoreLogic.addTransaction(txData); View.showToast('تمت إضافة الحركة بنجاح', 'success'); }
+        View.closeModal('transaction-modal'); View.renderAll();
+      });
 
-        // If editing, remove the old pair first
-        if (isEditMode) {
-             // remove any existing pair that uses the same base id (best-effort)
-             ledger = ledger.filter(t => !(t.id === outgoingTxId || t.id === incomingTxId || t.linkedTxId === outgoingTxId || t.linkedTxId === incomingTxId));
+      // toggle tx form fields on type change
+      document.getElementById('tx-type').addEventListener('change', (e) => View.toggleTxFormFields(e.target.value));
+
+      // due form
+      document.getElementById('due-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const id = document.getElementById('due-id').value;
+        const data = {
+          type: document.getElementById('due-type').value,
+          name: document.getElementById('due-name').value,
+          amount: parseFloat(document.getElementById('due-amount').value || 0),
+          dueDate: document.getElementById('due-date').value,
+          accountId: document.getElementById('due-account-id').value,
+          recurrence: document.getElementById('due-recurrence').value
+        };
+        if (!data.name || !data.amount || data.amount <= 0 || !data.dueDate || !data.accountId) { View.showToast('يرجى ملء جميع الحقول بشكل صحيح', 'error'); return; }
+        if (id) { CoreLogic.updateDue(id, data); View.showToast('تم تحديث البند بنجاح', 'success'); }
+        else { CoreLogic.addDue(data); View.showToast('تمت إضافة البند بنجاح', 'success'); }
+        View.closeModal('due-modal'); View.renderPayablesAndReceivables(); View.renderAll();
+      });
+
+      // account list actions
+      document.getElementById('accounts-list').addEventListener('click', (e) => {
+        const editBtn = e.target.closest('.btn-edit-account');
+        const deleteBtn = e.target.closest('.btn-delete-account');
+        if (editBtn) {
+          const id = editBtn.dataset.id;
+          const account = CoreLogic.getAccountById(id);
+          if (account) View.populateAccountFormForEdit(account);
         }
-    } 
-    // --- NORMAL INCOME/EXPENSE LOGIC ---
-    else {
-        // If editing, check if the old transaction was a transfer. If so, delete the linked pair.
-        if (isEditMode) {
-            const existingTx = ledger.find(t=>t.id===editTxId);
-            if(existingTx?.isTransfer && existingTx.linkedTxId) {
-                ledger = ledger.filter(t => t.id !== editTxId && t.id !== existingTx.linkedTxId);
-            }
+        if (deleteBtn) {
+          const id = deleteBtn.dataset.id;
+          showConfirmModal('تأكيد الحذف', 'هل أنت متأكد من حذف هذا الحساب؟', () => {
+            if (CoreLogic.deleteAccount(id)) {
+              View.showToast('تم حذف الحساب', 'success'); View.renderAll();
+            } else View.showToast('لا يمكن حذف حساب يحتوي على حركات', 'error');
+          });
         }
-        
-        const newTx = { 
-            id: editTxId || eid(), 
-            created: new Date().toISOString(), 
-            exec: execISO, 
-            date: dateVal || execISO.slice(0,10), 
-            desc, 
-            type, 
-            amount: Number(amount), 
-            account: fromAccount, 
-            category, 
-            linkCommitId, 
-            isTransfer:false 
-        }; 
-        txsToSave.push(newTx);
+      });
+
+      // transactions actions
+      document.getElementById('transactions-table-body').addEventListener('click', (e) => {
+        const editBtn = e.target.closest('.btn-edit-tx');
+        const deleteBtn = e.target.closest('.btn-delete-tx');
+        if (editBtn) {
+          const id = editBtn.dataset.id; const tx = CoreLogic.getTransactionById(id);
+          if (tx) View.populateTxFormForEdit(tx);
+        }
+        if (deleteBtn) {
+          const id = deleteBtn.dataset.id; const tx = CoreLogic.getTransactionById(id);
+          const msg = tx && tx.linkedId ? 'سيتم حذف حركتي التحويل (الصادر والوارد). هل أنت متأكد؟' : 'هل أنت متأكد من حذف هذه الحركة؟';
+          showConfirmModal('تأكيد الحذف', msg, () => { CoreLogic.deleteTransaction(id); View.showToast('تم حذف الحركة', 'success'); View.renderAll(); });
+        }
+      });
+
+      // dues actions delegation
+      document.getElementById('tab-content-receivables').addEventListener('click', handleDueActions);
+      document.getElementById('tab-content-payables').addEventListener('click', handleDueActions);
+      function handleDueActions(e){
+        const collectBtn = e.target.closest('.btn-collect-due');
+        const payBtn = e.target.closest('.btn-pay-due');
+        const editBtn = e.target.closest('.btn-edit-due');
+        const deleteBtn = e.target.closest('.btn-delete-due');
+
+        if (collectBtn) {
+          const id = collectBtn.dataset.id; const due = CoreLogic.getDueById(id);
+          showConfirmModal('تأكيد التحصيل', `هل تريد تأكيد تحصيل مبلغ ${formatCurrency(due.amount)} لبند "${due.name}"؟`, () => {
+            if (CoreLogic.collectReceivable(id)) { View.showToast('تم التحصيل وتسجيل الحركة', 'success'); View.renderAll(); }
+          }, 'bg-green-600', 'نعم، قم بالتحصيل');
+        }
+
+        if (payBtn) {
+          const id = payBtn.dataset.id; const due = CoreLogic.getDueById(id);
+          showConfirmModal('تأكيد السداد', `هل تريد تأكيد سداد مبلغ ${formatCurrency(due.amount)} لبند "${due.name}"؟`, () => {
+            if (CoreLogic.payPayable(id)) { View.showToast('تم السداد وتسجيل الحركة', 'success'); View.renderAll(); }
+          }, 'bg-red-600', 'نعم، قم بالسداد');
+        }
+
+        if (editBtn) {
+          const id = editBtn.dataset.id; const due = CoreLogic.getDueById(id);
+          if (due) View.populateDueFormForEdit(due);
+        }
+
+        if (deleteBtn) {
+          const id = deleteBtn.dataset.id;
+          showConfirmModal('تأكيد الحذف', 'هل أنت متأكد من حذف هذا البند؟', () => { CoreLogic.deleteDue(id); View.showToast('تم حذف البند', 'success'); View.renderPayablesAndReceivables(); });
+        }
+      }
+
+      // tabs logic
+      const tabs = [
+        { btn: document.getElementById('btn-tab-receivables'), content: document.getElementById('tab-content-receivables') },
+        { btn: document.getElementById('btn-tab-payables'), content: document.getElementById('tab-content-payables') }
+      ];
+      tabs.forEach(tab => {
+        tab.btn.addEventListener('click', () => {
+          tabs.forEach(t => { t.btn.classList.remove('active'); t.btn.classList.add('text-gray-500'); t.content.classList.add('hidden'); });
+          tab.btn.classList.add('active'); tab.btn.classList.remove('text-gray-500'); tab.content.classList.remove('hidden');
+        });
+      });
+
+      // confirm modal
+      let confirmCallback = null;
+      const btnConfirmAction = document.getElementById('btn-confirm-action');
+      const btnConfirmCancel = document.getElementById('btn-confirm-cancel');
+      function showConfirmModal(title, message, onConfirm, btnClass='bg-red-600', btnText='نعم') {
+        document.getElementById('confirm-title').textContent = title;
+        document.getElementById('confirm-message').textContent = message;
+        confirmCallback = onConfirm;
+        btnConfirmAction.textContent = btnText;
+        btnConfirmAction.className = `px-4 py-2 rounded-lg text-white transition ${btnClass}`;
+        View.openModal('confirm-modal');
+      }
+      btnConfirmAction.addEventListener('click', () => { if (confirmCallback) confirmCallback(); confirmCallback = null; View.closeModal('confirm-modal'); });
+      btnConfirmCancel.addEventListener('click', () => { confirmCallback = null; View.closeModal('confirm-modal'); });
+
+      // filters
+      document.getElementById('btn-apply-filters').addEventListener('click', applyFilters);
+      document.getElementById('btn-clear-filters').addEventListener('click', clearFilters);
+      function applyFilters(){
+        currentFilters.account = document.getElementById('filter-account').value;
+        currentFilters.type = document.getElementById('filter-type').value;
+        currentFilters.dateStart = document.getElementById('filter-date-start').value;
+        currentFilters.dateEnd = document.getElementById('filter-date-end').value;
+        View.renderTransactions();
+      }
+      function clearFilters(){
+        document.getElementById('filter-account').value = 'all';
+        document.getElementById('filter-type').value = 'all';
+        document.getElementById('filter-date-start').value = '';
+        document.getElementById('filter-date-end').value = '';
+        applyFilters();
+      }
+
+      // import/export
+      document.getElementById('btn-export-data').addEventListener('click', () => {
+        const data = StorageService.exportData();
+        const blob = new Blob([data], { type:'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = `dafatir_${formatDate(new Date())}.json`; a.click(); URL.revokeObjectURL(url);
+        View.showToast('تم بدء تصدير البيانات', 'success');
+      });
+
+      document.getElementById('btn-import-data').addEventListener('click', () => {
+        const fileInput = document.getElementById('import-file');
+        if (!fileInput.files.length) { View.showToast('يرجى اختيار ملف أولاً', 'error'); return; }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          showConfirmModal('تأكيد الاستيراد', 'سيتم استبدال جميع بياناتك الحالية. هل أنت متأكد؟', () => {
+            if (StorageService.importData(e.target.result)) {
+              CoreLogic.recalculateAllBalances(); StorageService.save(); View.renderAll(); View.showToast('تم استيراد البيانات بنجاح', 'success'); View.closeModal('import-export-modal');
+            } else { View.showToast('فشل الاستيراد. الملف غير صالح.', 'error'); }
+          }, 'bg-green-600','نعم، استورد');
+        };
+        reader.readAsText(fileInput.files[0]);
+      });
+
+      // test runner
+      document.getElementById('btn-run-tests').addEventListener('click', runUnitTests);
+
+      // dark mode toggle
+      const darkBtn = document.getElementById('toggle-dark-mode');
+      if (localStorage.getItem('darkMode') === 'on') document.body.classList.add('dark-mode');
+      darkBtn.addEventListener('click', () => { const on = document.body.classList.toggle('dark-mode'); localStorage.setItem('darkMode', on ? 'on' : 'off'); });
+
+      // accounts and transactions delegated click handlers already attached above
     }
-    
-    // Final Save and Cleanup
-    if(isEditMode && type !== 'transfer'){ 
-        const i = ledger.findIndex(t=>t.id===txsToSave[0].id); 
-        if(i>-1) ledger[i]=txsToSave[0]; 
-        else ledger.push(...txsToSave);
-    } else {
-        ledger.push(...txsToSave); 
+
+    // -------------------------
+    // 5. Gemini (placeholder)
+    // -------------------------
+    // Note: real Gemini/AI requires API key & proper backend. This function uses the GeminiService.fetchGemini placeholder.
+    async function handleGeminiSummary(){
+      View.openModal('gemini-summary-modal');
+      const loadingEl = document.getElementById('gemini-loading');
+      const resultsEl = document.getElementById('gemini-results');
+      loadingEl.classList.remove('hidden'); resultsEl.innerHTML = '';
+
+      const summary = CoreLogic.getDashboardSummary();
+      const topSpending = CoreLogic.getTopSpendingCategories();
+
+      const systemPrompt = `أنت مستشار مالي شخصي... (محلي)`;
+      const userQuery = `إجمالي الدخل: ${summary.income}\nإجمالي المصروفات: ${summary.expense}\nصافي التدفق: ${summary.net}\nفئات المصروفات:\n${topSpending.length ? topSpending.map(c=>`- ${c.category}: ${c.amount}`).join('\n') : 'لا توجد مصروفات'}\nأعطني تحليل ونصيحة قصيرة.`;
+
+      // Placeholder: offline simple analysis
+      setTimeout(() => {
+        const advice = topSpending.length ? `لو سمحت راجع فئة الإنفاق ${topSpending[0].category} لأنها تمثل جزءاً كبيراً من المصروفات.` : `لا توجد مصروفات مسجلة حالياً — ممتاز! حافظ على ذلك.`;
+        resultsEl.innerHTML = `<p><strong>ملخص قصير:</strong><br>${summary.net >= 0 ? 'وضعك المالي جيد نسبياً.' : 'صافي التدفق سلبي؛ لاحظ النفقات.'}</p><p class="mt-2"><strong>نصيحة:</strong><br>${advice}</p>`;
+        loadingEl.classList.add('hidden');
+      }, 700);
     }
 
-    editTxId=null; 
-    $('#saveTx').textContent='حفظ'; 
-    persist(KEY, ledger); 
-    markLedgerDirty(); 
-    ensureSortedLedger(); 
-    renderTransactions(); 
-    drawCommitments(); 
-    drawDueSoon(); 
-    computeAndUpdateSummary(); 
-    
-    // Reset form and UI state
-    $('#amount').value=''; 
-    $('#desc').value=''; 
-    $('#exec').value=''; 
-    $('#date').value=''; 
-    $('#linkCommit').value='';
-    $('#type').value = 'expense'; 
-    handleTypeChange(); // Ensure UI state is reset
-});
+    // -------------------------
+    // 6. Unit tests (simple)
+    // -------------------------
+    function runUnitTests(){
+      const container = document.getElementById('test-results-container'); container.innerHTML = '';
+      const log = (msg, color='#9ca3af') => container.innerHTML += `<div style="color:${color};margin-bottom:6px">${msg}</div>`;
+      log('--- بدء الاختبارات ---');
+      try {
+        // Test 1: add account & tx
+        const aId = crypto.randomUUID(); state.accounts.push({ id:aId, name:'T', type:'cash', initialBalance:1000, currentBalance:1000 });
+        state.transactions.push({ id:crypto.randomUUID(), createdAt:new Date().toISOString(), date:new Date().toISOString(), type:'income', to:aId, from:null, amount:500 });
+        CoreLogic.recalculateAllBalances();
+        const acc = CoreLogic.getAccountById(aId);
+        if (acc.currentBalance === 1500) log('✅ Test 1 passed', '#22c55e'); else log(`❌ Test 1 failed: balance=${acc.currentBalance}`, '#ef4444');
+      } catch (e) { log('❌ Test error: '+e.message, '#ef4444'); }
+      log('--- انتهت الاختبارات ---');
+    }
 
-$('#resetForm')?.addEventListener('click', ()=>{ editTxId=null; $('#saveTx').textContent='حفظ'; $('#amount').value=''; $('#desc').value=''; $('#exec').value=''; $('#date').value=''; $('#linkCommit').value=''; $('#type').value='expense'; handleTypeChange(); });
+    // -------------------------
+    // 7. Init
+    // -------------------------
+    document.addEventListener('DOMContentLoaded', () => {
+      StorageService.load();
+      CoreLogic.recalculateAllBalances();
+      View.renderAll();
+      attachListeners();
+      View.showToast('مرحباً بك في دفتر حساباتي!', 'info');
+    });
 
-// delegated click handlers (delete/edit tx, commitments, collections)
-document.addEventListener('click', function(e){ const btn = e.target.closest('button[data-action]'); if(!btn) return; const action = btn.getAttribute('data-action'); const id = btn.getAttribute('data-id'); if(action === 'del-tx'){ if(confirm('هل تريد حذف هذه الحركة؟')){ 
-        // If deleting a transfer, delete the linked transaction too
-        const txToDelete = ledger.find(t => t.id === id);
-        if (txToDelete?.isTransfer && txToDelete.linkedTxId) {
-            ledger = ledger.filter(t => t.id !== id && t.id !== txToDelete.linkedTxId);
-        } else {
-            ledger = ledger.filter(t=>t.id!==id);
-        }
-
-        persist(KEY, ledger); markLedgerDirty(); ensureSortedLedger(); renderTransactions(); drawCommitments(); drawDueSoon(); computeAndUpdateSummary(); 
-    } } else if(action === 'edit-tx'){ const t = ledger.find(x=>x.id===id); if(!t) return; 
-        
-        editTxId = id; 
-        $('#saveTx').textContent='تحديث'; 
-        
-        // Transfer handling logic
-        if(t.isTransfer && t.linkedTxId) {
-            const linkedTx = ledger.find(x => x.id === t.linkedTxId);
-            
-            // Determine the 'from' (expense) and 'to' (income) part
-            const isOutgoing = t.type === 'expense';
-            const fromTx = isOutgoing ? t : linkedTx;
-            const toTx = isOutgoing ? linkedTx : t;
-            
-            // Use the expense part ID as the base for editTxId
-            editTxId = fromTx?.id || t.id;
-
-            $('#type').value = 'transfer';
-            $('#account').value = fromTx?.account || '';
-            $('#toAccount').value = toTx?.account || '';
-            $('#amount').value = t.amount;
-            $('#desc').value = fromTx?.desc || t.desc || '';
-            $('#category').value = ''; // Hide category for transfers
-            $('#linkCommit').value = ''; // Hide link commit
-        } else {
-            // Normal transaction
-            $('#type').value = t.type;
-            $('#account').value = t.account||''; 
-            $('#amount').value = t.amount; 
-            $('#desc').value = t.desc||''; 
-            $('#category').value = t.category||''; 
-            $('#linkCommit').value = t.linkCommitId || '';
-            $('#toAccount').value = ''; // Clear to account in case UI state is wrong
-        }
-
-        // Common fields
-        if(t.exec){ 
-            const d = new Date(t.exec); 
-            const tzOffset = d.getTimezoneOffset()*60000; 
-            const localISOTime = new Date(d - tzOffset).toISOString().slice(0,16); 
-            $('#exec').value = localISOTime; 
-        } else $('#exec').value=''; 
-        
-        $('#date').value = t.date || t.due || ''; 
-        
-        handleTypeChange(); // Call to set the UI visibility correctly
-        window.scrollTo({top:0,behavior:'smooth'}); 
-    } else if(action === 'pay-commit'){ const c = commitments.find(x=>x.id===id); if(!c) return; const st = getCommitmentState(c); if(st.done || st.remaining<=0){ alert('تم سداد هذا الالتزام بالفعل أو انتهى.'); return; } const remain = st.remaining; const accName = prompt(`سداد الالتزام: ${c.name}
-المبلغ المتبقي: ${fmt(remain)} ج.م
-من فضلك أدخل اسم الحساب:`, accounts[0]?.name||''); if(!accName) return; if(!accounts.some(a=>a.name===accName)){ alert('هذا الحساب غير موجود'); return; } const execISO = new Date().toISOString(); const due = st.currentDueYm ? (st.currentDueYm+'-01') : (c.firstDue || execISO.slice(0,10)); ledger.push({ id:eid(), created:new Date().toISOString(), exec:execISO, date:due, due, desc:`${c.name} (سداد التزام)`, type:'expense', amount:remain, account:accName, category:'التزامات شهرية', linkCommitId:c.id }); persist(KEY, ledger); markLedgerDirty(); ensureSortedLedger(); drawCommitments(); drawDueSoon(); renderTransactions(); computeAndUpdateSummary(); } else if(action === 'del-commit'){ if(!confirm('هل تريد حذف هذا الالتزام؟ (ستبقى أي دفعات سُجلت محفوظة)')) return; commitments = commitments.filter(x=>x.id!==id); persist(COM_KEY, commitments); drawCommitments(); drawDueSoon(); computeAndUpdateSummary(); } else if(action === 'edit-commit'){ const c = commitments.find(x=>x.id===id); if(!c) return; $('#cName').value = c.name; $('#cAmount').value = c.amount; $('#cFirstDue').value = c.firstDue||''; $('#cRecurring').checked = !!c.recurring; $('#cEndAt').value = c.endAt||''; $('#addCommitment').textContent='تحديث الالتزام'; window.scrollTo({top:0,behavior:'smooth'}); } else if(action === 'collect-now'){ const c = collections.find(x=>x.id===id); if(!c) return; const accName = prompt(`تحصيل: ${c.name}
-المبلغ: ${fmt(c.amount)} ج.م
-من فضلك ادخل اسم الحساب المستقبل:`, accounts[0]?.name||''); if(!accName) return; if(!accounts.some(a=>a.name===accName)){ alert('هذا الحساب غير موجود'); return; } const execISO=new Date().toISOString(); const due = c.nextDue || c.firstDue || execISO.slice(0,10); ledger.push({ id:eid(), created:new Date().toISOString(), exec:execISO, date:due, due, desc:`${c.name} (تحصيل)`, type:'income', amount:c.amount, account:accName, category:'تحصيلات', sourceCollectionId:c.id }); if(c.recurring){ const currentDue = parseLocalDate(c.nextDue || c.firstDue); const next = addMonthsPreserveDOM(currentDue,1); let ci = collections.find(x=>x.id===id); if(ci) ci.nextDue = formatLocalDate(next); } else collections = collections.filter(x=>x.id!==id); persist(COL_KEY, collections); markLedgerDirty(); ensureSortedLedger(); drawCollections(); renderTransactions(); drawCommitments(); drawDueSoon(); computeAndUpdateSummary(); } else if(action === 'del-collect'){ if(confirm('هل تريد حذف هذا التحصيل؟')){ collections = collections.filter(x=>x.id!==id); persist(COL_KEY, collections); drawCollections(); computeAndUpdateSummary(); } } else if(action === 'edit-collect'){ const c = collections.find(x=>x.id===id); if(!c) return; $('#coName').value=c.name; $('#coAmount').value=c.amount; $('#coFirstDue').value=c.firstDue||''; $('#coRecurring').checked=!!c.recurring; $('#coEndAt').value=c.endAt||''; $('#addCollect').textContent='تحديث التحصيل'; window.scrollTo({top:0,behavior:'smooth'}); } });
-
-
-// commitments add
-$('#addCommitment')?.addEventListener('click', ()=>{ const name=($('#cName')?.value||'').trim(); const amount=Number($('#cAmount')?.value||0); const firstDueStr=$('#cFirstDue')?.value; const recurring = $('#cRecurring')?.checked; const endAt = $('#cEndAt')?.value || null; if(!name||!amount||!firstDueStr){ alert('أدخل اسم + مبلغ صحيح + تاريخ أول استحقاق'); return; } if(recurring && !endAt){ alert('عند التكرار يجب تحديد تاريخ النهاية'); return; } const firstDue = parseLocalDate(firstDueStr); let nextDue = new Date(firstDue.getTime()); const today=new Date(); nextDue.setHours(0,0,0,0); while(nextDue < today){ const tryNext = addMonthsPreserveDOM(nextDue,1); if(recurring && endAt && tryNext > parseLocalDate(endAt)) break; nextDue = tryNext; if(!recurring) break; } const commit = { id: eid(), name, amount:Number(amount), firstDue: formatLocalDate(firstDue), recurring, endAt: recurring ? (endAt||null): null, nextDue: formatLocalDate(nextDue) }; commitments.push(commit); persist(COM_KEY, commitments); $('#cName').value=''; $('#cAmount').value=''; $('#cFirstDue').value=''; $('#cRecurring').checked=false; $('#cEndAt').value=''; drawCommitments(); drawDueSoon(); computeAndUpdateSummary(); });
-
-// collections add
-$('#addCollect')?.addEventListener('click', ()=>{ const name=($('#coName')?.value||'').trim(); const amount=Number($('#coAmount')?.value||0); const firstDueStr=$('#coFirstDue')?.value; const recurring=$('#coRecurring')?.checked; const endAt = $('#coEndAt')?.value || null; if(!name||!amount||!firstDueStr){ alert('أدخل اسم + مبلغ صحيح + تاريخ أول استحقاق'); return; } if(recurring && !endAt){ alert('عند التكرار يجب تحديد تاريخ النهاية'); return; } const firstDue=parseLocalDate(firstDueStr); let nextDue=new Date(firstDue.getTime()); const today=new Date(); nextDue.setHours(0,0,0,0); while(nextDue < today){ const tryNext = addMonthsPreserveDOM(nextDue,1); if(recurring && endAt && tryNext > parseLocalDate(endAt)) break; nextDue = tryNext; if(!recurring) break; } const item = { id: eid(), name, amount:Number(amount), firstDue: formatLocalDate(firstDue), recurring, endAt: recurring? (endAt||null): null, nextDue: formatLocalDate(nextDue) }; collections.push(item); persist(COL_KEY, collections); $('#coName').value=''; $('#coAmount').value=''; $('#coFirstDue').value=''; $('#coRecurring').checked=false; $('#coEndAt').value=''; drawCollections(); computeAndUpdateSummary(); });
-
-// draw lists on init
-function init(){ loadThemeData(); ensureTransferCategories(); ensureSortedLedger(); drawAccountsList(); drawCatsList(); refreshAccountSelects(); refreshCategorySelect(); refreshLinkCommitOptions(); drawCommitments(); drawCollections(); drawDueSoon(); renderTransactions(); computeAndUpdateSummary(); bindFooter(); gotoPage('dashboard'); setFooterActiveByPage('dashboard'); handleTypeChange(); // Set initial UI state for 'Add' form
-}
-
-// safe init
-try{ init(); }catch(err){ console.error('init error', err); }
-
-// NEW: Consolidated Filter/Pagination Logic
-function filterChanged(e){ 
-    currentPage=1; 
-    renderTransactions(); 
-    if(e?.target?.id === 'fType') refreshCategorySelect();
-}
-
-$('#search')?.addEventListener('input', filterChanged); 
-$('#fType')?.addEventListener('change', filterChanged); 
-$('#fAccount')?.addEventListener('change', filterChanged); 
-$('#fFrom')?.addEventListener('change', filterChanged); 
-$('#fTo')?.addEventListener('change', filterChanged); 
-$('#clearFilters')?.addEventListener('click', ()=>{ 
-    $('#search').value=''; 
-    $('#fType').value='all'; 
-    $('#fAccount').value='all'; 
-    $('#fFrom').value=''; 
-    $('#fTo').value=''; 
-    filterChanged(); 
-});
-
-// Added listener for the main transaction type change
-$('#type')?.addEventListener('change', handleTypeChange); 
-
-// capture uncaught errors to console
-window.addEventListener('error', e=>{ console.error('Unhandled JS Error:', e.message); });
-
-</script>
+  </script>
 </body>
 </html>
