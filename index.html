@@ -30,7 +30,8 @@
 .dark{
   --bg:#071227;
   --card:#071a2b;
-  --muted:#010911;
+  /* make muted a light tone in dark mode so icons and muted text remain visible */
+  --muted:#9fb3cc;
   --txt:#e6f2ff;
   --brand:#4ea8ff;
   --danger:#fb6f6f;
@@ -76,37 +77,27 @@ body {
    Use either color-mix (modern browsers) or fallbacks
    ----------------------------- */
 
-/* If the page/theme is light (no .dark) then assume card is light surface:
-   produce darker inner text by mixing --txt with black */
 :root:not(.dark) .card-custom,
 .card-custom.light-surface {
-  /* modern browsers */
   --inner-text: color-mix(in srgb, var(--txt) 75%, black 25%);
   --inner-muted: color-mix(in srgb, var(--muted) 80%, black 20%);
   --inner-border: color-mix(in srgb, var(--border) 85%, black 15%);
-
-  /* fallback for older browsers */
   --inner-text-fallback: var(--contrast-on-light);
   --inner-muted-fallback: var(--muted);
   --inner-border-fallback: var(--border);
 }
 
-/* If the page/theme is dark (.dark) then assume card is dark surface:
-   produce lighter inner text by mixing --txt with white */
 :root .dark .card-custom,
 .card-custom.dark-surface {
-  /* modern browsers */
   --inner-text: color-mix(in srgb, var(--txt) 85%, white 20%);
   --inner-muted: color-mix(in srgb, var(--muted) 85%, white 30%);
   --inner-border: color-mix(in srgb, var(--border) 80%, white 25%);
-
-  /* fallback for older browsers */
   --inner-text-fallback: var(--contrast-on-dark);
   --inner-muted-fallback: var(--muted);
   --inner-border-fallback: var(--border);
 }
 
-/* Use the modern variable if available, otherwise fallback */
+/* Force sensible card text colors (extra safeguard for inconsistent classes) */
 .card-custom h1,
 .card-custom h2,
 .card-custom h3,
@@ -117,7 +108,10 @@ body {
 .card-custom .nav-label,
 .card-custom .nav-icon,
 .card-custom a,
-.card-custom button {
+.card-custom button,
+.card-custom .muted,
+.card-custom small,
+.card-custom .subtle {
   color: var(--inner-text, var(--inner-text-fallback)) !important;
 }
 
@@ -148,12 +142,20 @@ body {
   padding:6px;
   border-radius:14px;
   transition: background .18s, color .18s, transform .12s;
-  color:var(--muted);
+  color:var(--muted); /* fallback for light theme */
   background:transparent;
   border:none;
 }
 .nav-btn .nav-icon{ font-size:20px; display:block; }
 .nav-btn .nav-label{ font-size:11px; margin-top:4px; display:block; color:var(--muted); }
+/* dark-mode nav button color fix */
+:root .dark .nav-btn, :root .dark .nav-btn .nav-label, :root .dark .nav-btn .nav-icon{
+  color: var(--contrast-on-dark) !important;
+}
+:root:not(.dark) .nav-btn, :root:not(.dark) .nav-btn .nav-label, :root:not(.dark) .nav-btn .nav-icon{
+  color: var(--muted) !important;
+}
+
 .nav-btn.active {
   color:white;
   background: linear-gradient(135deg, var(--brand), rgba(var(--brand-rgb),0.9));
@@ -172,6 +174,11 @@ footer{ position:sticky; bottom:0; z-index:60; }
    ----------------------------- */
 .pill-badge-income { padding:4px 10px; border-radius:9999px; font-size:0.75rem; font-weight:700; background-color:#d1fae5; color:#059669; direction:ltr; white-space:nowrap; }
 .pill-badge-expense { padding:4px 10px; border-radius:9999px; font-size:0.75rem; font-weight:700; background-color:#fee2e2; color:#ef4444; direction:ltr; white-space:nowrap; }
+
+/* status helper classes that adapt to theme via variables */
+.status-overdue{ color: var(--danger) !important; font-weight:700; }
+.status-today{ color: var(--ok) !important; font-weight:700; }
+.status-soon{ color: var(--inner-muted, var(--muted)) !important; font-weight:700; }
 
 input:focus, select:focus, textarea:focus {
   border-color: var(--brand) !important;
@@ -278,7 +285,7 @@ input:focus, select:focus, textarea:focus {
 
         <div class="card-custom">
           <h4 class="font-semibold mb-2 border-b pb-2 border-border" style="border-color: var(--border);">ملاحظات سريعة</h4>
-          <div class="text-sm muted">هنا يمكن إضافة ملاحظات قصيرة أو تذكيرات.</div>
+          <div id="quickNotes" class="text-sm muted">هنا يمكن إضافة ملاحظات قصيرة أو تذكيرات.</div>
         </div>
       </div>
     </section>
@@ -294,41 +301,8 @@ input:focus, select:focus, textarea:focus {
         </div>
       </div>
 
+      <!-- MOVED: Add/Edit card placed here ABOVE the transactions table -->
       <div class="card-custom mb-4">
-        <div class="flex gap-2 flex-wrap items-center mb-3">
-          <input id="search" placeholder="بحث بالوصف/الفئة" class="px-3 py-2 border rounded flex-1 focus:ring-2 focus:ring-brand" />
-          <select id="fType" class="px-3 py-2 border rounded focus:ring-2 focus:ring-brand">
-            <option value="all">الكل</option>
-            <option value="income">دخل</option>
-            <option value="expense">مصروف</option>
-          </select>
-          <select id="fAccount" class="px-3 py-2 border rounded focus:ring-2 focus:ring-brand"></select>
-          <input id="fFrom" type="date" class="px-3 py-2 border rounded focus:ring-2 focus:ring-brand" />
-          <input id="fTo" type="date" class="px-3 py-2 border rounded focus:ring-2 focus:ring-brand" />
-          <button id="clearFilters" class="px-3 py-2 border rounded hover:bg-gray-100">مسح</button>
-        </div>
-
-        <div class="overflow-x-auto">
-          <table class="min-w-full custom">
-            <thead>
-              <tr class="text-sm uppercase tracking-wider text-muted">
-                <th class="px-4 py-3 text-right">تاريخ التنفيذ</th><th>تاريخ الاستحقاق</th><th>الوصف</th><th>الفئة</th><th>الحساب</th><th>المبلغ</th><th>رصيد بعد العملية</th><th>إجراءات</th>
-              </tr>
-            </thead>
-            <tbody id="tbody"></tbody>
-          </table>
-        </div>
-
-        <div class="mt-3 flex items-center justify-center gap-3">
-          <button id="prevPage" class="px-3 py-2 border rounded hover:bg-gray-100">السابق</button>
-          <div id="pageInfo" class="text-sm muted">الصفحة 1</div>
-          <button id="nextPage" class="px-3 py-2 border rounded hover:bg-gray-100">التالي</button>
-        </div>
-      </div>
-    </section>
-
-    <section id="add" class="page-section hidden">
-      <div class="card-custom">
         <h3 class="font-semibold mb-2">إضافة / تعديل حركة</h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div>
@@ -372,6 +346,38 @@ input:focus, select:focus, textarea:focus {
             </button>
             <button id="resetForm" class="px-4 py-2 border rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700">إفراغ</button>
           </div>
+        </div>
+      </div>
+
+      <div class="card-custom mb-4">
+        <div class="flex gap-2 flex-wrap items-center mb-3">
+          <input id="search" placeholder="بحث بالوصف/الفئة" class="px-3 py-2 border rounded flex-1 focus:ring-2 focus:ring-brand" />
+          <select id="fType" class="px-3 py-2 border rounded focus:ring-2 focus:ring-brand">
+            <option value="all">الكل</option>
+            <option value="income">دخل</option>
+            <option value="expense">مصروف</option>
+          </select>
+          <select id="fAccount" class="px-3 py-2 border rounded focus:ring-2 focus:ring-brand"></select>
+          <input id="fFrom" type="date" class="px-3 py-2 border rounded focus:ring-2 focus:ring-brand" />
+          <input id="fTo" type="date" class="px-3 py-2 border rounded focus:ring-2 focus:ring-brand" />
+          <button id="clearFilters" class="px-3 py-2 border rounded hover:bg-gray-100">مسح</button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="min-w-full custom">
+            <thead>
+              <tr class="text-sm uppercase tracking-wider text-muted">
+                <th class="px-4 py-3 text-right">تاريخ التنفيذ</th><th>تاريخ الاستحقاق</th><th>الوصف</th><th>الفئة</th><th>الحساب</th><th>المبلغ</th><th>رصيد بعد العملية</th><th>إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+
+        <div class="mt-3 flex	items-center justify-center gap-3">
+          <button id="prevPage" class="px-3 py-2 border rounded hover:bg-gray-100">السابق</button>
+          <div id="pageInfo" class="text-sm muted">الصفحة 1</div>
+          <button id="nextPage" class="px-3 py-2 border rounded hover:bg-gray-100">التالي</button>
         </div>
       </div>
     </section>
@@ -456,7 +462,8 @@ input:focus, select:focus, textarea:focus {
       <span class="nav-icon"><i class="fas fa-list-check"></i></span>
       <span class="nav-label">الحركات</span>
     </button>
-    <button class="nav-btn" data-page="add" aria-label="إضافة" title="إضافة">
+    <!-- Changed: 'add' now navigates to transactions (where the add card lives) -->
+    <button class="nav-btn" data-page="transactions" aria-label="إضافة" title="إضافة">
       <span class="nav-icon"><i class="fas fa-plus-circle"></i></span>
       <span class="nav-label">إضافة</span>
     </button>
@@ -510,7 +517,7 @@ function computeBalances(){ ensureSortedLedger(); const bal = new Map(accounts.m
 
 function getCommitmentState(commit){ if(!commit || !commit.firstDue) return { currentDueYm:null, paid:0, remaining:Number(commit.amount||0) }; const amount = Number(commit.amount||0); const start = parseLocalDate(commit.firstDue); if(!start) return { currentDueYm:null, paid:0, remaining:amount }; const endDate = commit.endAt ? parseLocalDate(commit.endAt) : null; const payMap = new Map(); for(const t of ledger){ if(t.linkCommitId !== commit.id) continue; const ym = (t.exec||t.created||t.date||'').slice(0,7); if(!ym) continue; const arr = payMap.get(ym) || []; arr.push(t); payMap.set(ym, arr); } let cursor = new Date(start.getTime()); let guard=0; while(guard<500){ const ym=formatLocalDate(cursor).slice(0,7); if(endDate && cursor > endDate) return { done:true }; const txs = payMap.get(ym) || []; const paidThisMonth = txs.reduce((s,t)=>s + Number(t.amount||0), 0); if(paidThisMonth + 1e-9 < amount){ return { currentDueYm: ym, paid: paidThisMonth, remaining: Math.max(0, amount - paidThisMonth) }; } else { if(!commit.recurring) return { done:true }; const next = addMonthsPreserveDOM(cursor,1); if(endDate && next > endDate) return { done:true }; cursor = next; } guard++; } return { done:true }; }
 
-function collectedCollectionsForYm(ym){ let total=0; for(const t of ledger){ if(t.type !== 'income') continue; const when=(t.exec||t.created||t.date||'').slice(0,7); if(when !== ym) continue; if(t.sourceCollectionId && String(t.sourceCollectionId).startsWith('collect_')) total += Number(t.amount||0); } return total; }
+function collectedCollectionsForYm(ym){ let total=0; for(const t of ledger){ if(t.type !== 'income') continue; const when=(t.exec||t.created||t.date||'').slice(0,7); if(when !== ym) continue; if(t.sourceCollectionId) total += Number(t.amount||0); } return total; }
 
 // DRAW functions
 function drawPerAccount(){ computeBalances(); const list=[]; for(const a of accounts){ const v = (cachedBalances && cachedBalances.get(a.name)!==undefined) ? cachedBalances.get(a.name) : Number(a.opening||0); list.push(`<div class="item"><div class="account-row"><div class="account-name"><div class="text-sm muted">${escapeHtml(a.name)}</div></div><div class="account-balance"><b>${fmt(v)} ج.م</b></div></div></div>`); } $('#perAccount').innerHTML = list.join(''); }
@@ -519,7 +526,41 @@ function drawCommitments(){ const rows = commitments.slice().sort((a,b)=> (a.fir
 
 function drawCollections(){ const rows = collections.slice().sort((a,b)=> (a.nextDue||a.firstDue||'').localeCompare(b.nextDue||b.firstDue||'')); if($('#tbodyCollect')) $('#tbodyCollect').innerHTML = rows.map(c=>{ return `<tr class="row-item" data-id="${c.id}"><td class="p-2">${escapeHtml(c.name)}</td><td class="p-2">${fmt(c.amount)}</td><td class="p-2">${escapeHtml(c.nextDue||c.firstDue||'—')}</td><td class="p-2">${c.recurring? 'شهري':'مرة'}</td><td class="p-2">${c.endAt||'—'}</td><td class="p-2 space-x-2 space-x-reverse"><button data-action="collect-now" data-id="${c.id}" class="px-2 py-1 bg-ok text-white rounded-lg hover:opacity-90"><i class="fas fa-check"></i> تحصيل</button><button data-action="edit-collect" data-id="${c.id}" class="px-2 py-1 border rounded hover:bg-gray-100"><i class="fas fa-edit"></i> تعديل</button><button data-action="del-collect" data-id="${c.id}" class="px-2 py-1 bg-danger text-white rounded-lg hover:opacity-90"><i class="fas fa-trash-alt"></i> حذف</button></td></tr>`; }).join(''); }
 
-function drawDueSoon(){ const wrap=$('#dueSoonWrap'); if(!wrap) return; const ym=YM(); const today=new Date(); const commitList = commitments.map(c=>{ const st=getCommitmentState(c); if(st.done || st.remaining<=0) return null; if(st.currentDueYm !== ym) return null; const due=parseLocalDate(st.currentDueYm+'-01'); const diff=daysBetween(today,due); return {...c, dueStr:st.currentDueYm, paid:st.paid, remaining:st.remaining, diff, type:'commitment'}; }).filter(Boolean); const collectList = collections.map(c=>{ const dueStr=c.nextDue||c.firstDue; if(!dueStr || dueStr.slice(0,7)!==ym) return null; const due=parseLocalDate(dueStr); const diff=daysBetween(today,due); return {...c, dueStr, diff, type:'collection'}; }).filter(Boolean); const list=[...commitList,...collectList].sort((a,b)=> a.dueStr.localeCompare(b.dueStr)); let html=''; if(list.length===0){ html=`<div class="text-sm muted pt-2">لا توجد استحقاقات/تحصيلات قريبة لهذا الشهر غير مسجلة.</div>`; } else { html = list.map(x=>{ const isCommit = x.type==='commitment'; const isOverdue = x.diff < 0; const state = isOverdue ? `<span class="text-red-600 font-bold"><i class="fas fa-exclamation-triangle"></i> متأخر ${Math.abs(x.diff)} يوم</span>` : x.diff===0 ? `<span class="text-green-600 font-bold"><i class="fas fa-bell"></i> اليوم</span>` : `<span class="text-gray-600 font-bold"><i class="fas fa-clock"></i> متبقي ${x.diff} يوم</span>`; const bgClass = isOverdue && isCommit ? 'bg-red-50 dark:bg-red-900 border-red-300' : 'border-border'; const actionButton = isCommit ? `<button data-action="pay-commit" data-id="${x.id}" class="px-3 py-1 text-white rounded-lg hover:opacity-90" style="background:var(--brand);"><i class="fas fa-credit-card"></i> سداد</button>` : `<button data-action="collect-now" data-id="${x.id}" class="px-3 py-1 text-white rounded-lg hover:opacity-90" style="background:var(--ok);"><i class="fas fa-check"></i> تحصيل</button>`; const details = isCommit ? `الأصل: ${fmt(x.amount)} · المدفوع: ${fmt(x.paid)} · استحقاق: ${x.dueStr.slice(0,7)}` : `المبلغ: ${fmt(x.amount)} · التحصيل: ${x.dueStr}`; const amountDisplay = isCommit ? fmt(x.remaining) : fmt(x.amount); return `<div class="item mb-2 p-3 border rounded-lg ${bgClass}"><div class="flex justify-between items-center"><div class="font-bold">${escapeHtml(x.name)} (${isCommit ? 'التزام' : 'تحصيل'})</div><div class="font-bold text-lg ${isCommit ? 'text-danger' : 'text-ok'}">${amountDisplay} ج.م</div></div><div class="text-xs muted mt-1">${details}</div><div class="mt-2 flex justify-between items-center">${state}${actionButton}</div></div>`; }).join(''); } wrap.innerHTML=html; }
+// Updated drawDueSoon: include commitments & collections for current month and sort by real date (oldest -> newest)
+function drawDueSoon(){ const wrap=$('#dueSoonWrap'); if(!wrap) return; const ym=YM(); const today=new Date();
+  const commitList = commitments.map(c=>{ const st=getCommitmentState(c); if(st.done || st.remaining<=0) return null; if(st.currentDueYm !== ym) return null; // only this month
+    // determine a realistic day for the commitment within the month: prefer original firstDue day if possible
+    let day = 1;
+    if(c.firstDue){ const p = parseLocalDate(c.firstDue); if(p) day = Math.min(28, p.getDate()); } // clamp to avoid invalid days
+    const due = parseLocalDate(st.currentDueYm + '-' + String(day).padStart(2,'0')) || parseLocalDate(st.currentDueYm + '-01');
+    const diff = daysBetween(today,due);
+    return {...c, dueDate: due, dueStr: st.currentDueYm, paid:st.paid, remaining:st.remaining, diff, type:'commitment'}; }).filter(Boolean);
+
+  const collectList = collections.map(c=>{ const dueStr = c.nextDue || c.firstDue; if(!dueStr || dueStr.slice(0,7)!==ym) return null; // only this month
+    // if collection has a full date use it, otherwise default to day 1
+    const due = parseLocalDate(dueStr) || parseLocalDate(dueStr.slice(0,7) + '-01');
+    const diff = daysBetween(today,due);
+    return {...c, dueDate: due, dueStr, diff, type:'collection'}; }).filter(Boolean);
+
+  // merge and sort by actual dueDate (oldest => newest)
+  const list = [...commitList, ...collectList].sort((a,b)=> a.dueDate - b.dueDate);
+
+  let html='';
+  if(list.length===0){ html=`<div class="text-sm muted pt-2">لا توجد استحقاقات/تحصيلات قريبة لهذا الشهر غير مسجلة.</div>`; }
+  else {
+    html = list.map(x=>{
+      const isCommit = x.type==='commitment';
+      const isOverdue = x.diff < 0;
+      const state = isOverdue ? `<span class="status-overdue"><i class="fas fa-exclamation-triangle"></i> متأخر ${Math.abs(x.diff)} يوم</span>` : x.diff===0 ? `<span class="status-today"><i class="fas fa-bell"></i> اليوم</span>` : `<span class="status-soon"><i class="fas fa-clock"></i> متبقي ${x.diff} يوم</span>`;
+      const bgClass = isOverdue && isCommit ? 'bg-red-50 dark:bg-red-900 border-red-300' : 'border-border';
+      const actionButton = isCommit ? `<button data-action="pay-commit" data-id="${x.id}" class="px-3 py-1 text-white rounded-lg hover:opacity-90" style="background:var(--brand);"><i class="fas fa-credit-card"></i> سداد</button>` : `<button data-action="collect-now" data-id="${x.id}" class="px-3 py-1 text-white rounded-lg hover:opacity-90" style="background:var(--ok);"><i class="fas fa-check"></i> تحصيل</button>`;
+      const details = isCommit ? `الأصل: ${fmt(x.amount)} · المدفوع: ${fmt(x.paid || 0)} · استحقاق: ${x.dueDate ? formatLocalDate(x.dueDate) : x.dueStr}` : `المبلغ: ${fmt(x.amount)} · التحصيل: ${x.dueDate ? formatLocalDate(x.dueDate) : x.dueStr}`;
+      const amountDisplay = isCommit ? fmt(x.remaining) : fmt(x.amount);
+      return `<div class="item mb-2 p-3 border rounded-lg ${bgClass}"><div class="flex justify-between items-center"><div class="font-bold">${escapeHtml(x.name)} (${isCommit ? 'التزام' : 'تحصيل'})</div><div class="font-bold text-lg">${amountDisplay} ج.م</div></div><div class="text-xs muted mt-1">${details}</div><div class="mt-2 flex justify-between items-center">${state}${actionButton}</div></div>`;
+    }).join('');
+  }
+  wrap.innerHTML = html;
+}
 
 // Transaction rendering (latest-first) implemented earlier as renderTransactions
 let currentPage=1; const pageSize=20;
@@ -565,7 +606,7 @@ function refreshCategorySelect(){
     if($('#category')) $('#category').innerHTML = cats.map(c=>`<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`).join(''); 
 }
 
-function refreshLinkCommitOptions(){ if(!$('#linkCommit')) return; const ym=YM(); const opts = commitments.filter(c=>{ const st=getCommitmentState(c); return !st.done && st.currentDueYm===ym && st.remaining>0; }).map(c=>`<option value="${c.id}">${escapeHtml(c.name)} (متبقي: ${fmt(c.remaining)} ج.م)</option>`).join(''); $('#linkCommit').innerHTML = `<option value="">لا يوجد ربط</option>` + opts; }
+function refreshLinkCommitOptions(){ if(!$('#linkCommit')) return; const ym=YM(); const opts = commitments.filter(c=>{ const st=getCommitmentState(c); return !st.done && st.currentDueYm===ym && st.remaining>0; }).map(c=>{ const st=getCommitmentState(c); return `<option value="${c.id}">${escapeHtml(c.name)} (متبقي: ${fmt(st.remaining||c.amount)} ج.م)</option>`; }).join(''); $('#linkCommit').innerHTML = `<option value="">لا يوجد ربط</option>` + opts; }
 
 // computeAndUpdateSummary (already implemented)
 function computeAndUpdateSummary(){ ensureSortedLedger(); computeBalances(); let total=0; for(const v of (cachedBalances||new Map()).values()) total += Number(v||0); const ym = YM(); const nextYm = addMonthsToYm(ym,1); let commitTotalThis=0; let totalCommitNextTotal=0; for(const c of commitments){ const st = getCommitmentState(c); if(!st.done && st.currentDueYm===ym) commitTotalThis += Number(c.amount||0); if(!st.done && st.currentDueYm===nextYm) totalCommitNextTotal += Number(c.amount||0); } let totalCollectionThis=0; let totalCollectionNext=0; for(const c of collections){ const dueYm = (c.nextDue||c.firstDue||'').slice(0,7); if(dueYm===ym) totalCollectionThis += Number(c.amount||0); if(dueYm===nextYm) totalCollectionNext += Number(c.amount||0); } if($('#totalBalance')) $('#totalBalance').textContent = fmt(total) + ' ج.م'; if($('#monthLabel')) $('#monthLabel').textContent = ym; if($('#totalCollectionThis')) $('#totalCollectionThis').textContent = fmt(totalCollectionThis) + ' ج.م'; if($('#totalCollectionNext')) $('#totalCollectionNext').textContent = fmt(totalCollectionNext) + ' ج.م'; if($('#totalCommitThisTotal')) $('#totalCommitThisTotal').textContent = fmt(commitTotalThis) + ' ج.م'; if($('#totalCommitNextTotal')) $('#totalCommitNextTotal').textContent = fmt(totalCommitNextTotal) + ' ج.م'; drawPerAccount(); $('#latestTx').innerHTML = ledger.slice().sort((a,b)=> (b.exec||b.created||'').localeCompare(a.exec||a.created||'')).slice(0,10).map(t=>{ const sign=t.type==='income'?'+':'-'; const color = t.type==='income'?'text-ok':'text-danger'; return `<div class="flex justify-between items-center item"><div><b>${escapeHtml(t.desc||'—')}</b><div class="text-xs muted">${escapeHtml(t.category||'')}</div></div><div class="${color} font-bold">${sign}${fmt(t.amount)}</div></div>`; }).join(''); drawDueSoon(); }
@@ -677,7 +718,8 @@ $('#saveTx')?.addEventListener('click', ()=>{
 
         // If editing, remove the old pair first
         if (isEditMode) {
-             ledger = ledger.filter(t => t.id !== outgoingTxId && t.id !== incomingTxId);
+             // remove any existing pair that uses the same base id (best-effort)
+             ledger = ledger.filter(t => !(t.id === outgoingTxId || t.id === incomingTxId || t.linkedTxId === outgoingTxId || t.linkedTxId === incomingTxId));
         }
     } 
     // --- NORMAL INCOME/EXPENSE LOGIC ---
@@ -710,6 +752,7 @@ $('#saveTx')?.addEventListener('click', ()=>{
     if(isEditMode && type !== 'transfer'){ 
         const i = ledger.findIndex(t=>t.id===txsToSave[0].id); 
         if(i>-1) ledger[i]=txsToSave[0]; 
+        else ledger.push(...txsToSave);
     } else {
         ledger.push(...txsToSave); 
     }
@@ -747,9 +790,7 @@ document.addEventListener('click', function(e){ const btn = e.target.closest('bu
         }
 
         persist(KEY, ledger); markLedgerDirty(); ensureSortedLedger(); renderTransactions(); drawCommitments(); drawDueSoon(); computeAndUpdateSummary(); 
-    } } else if(action === 'edit-tx'){ 
-        const t = ledger.find(x=>x.id===id); 
-        if(!t) return; 
+    } } else if(action === 'edit-tx'){ const t = ledger.find(x=>x.id===id); if(!t) return; 
         
         editTxId = id; 
         $('#saveTx').textContent='تحديث'; 
