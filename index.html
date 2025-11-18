@@ -1,1213 +1,398 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>دفتر حساباتي - لوحة القيادة</title>
-  <meta name="description" content="واجهة مستخدم بسيطة لدفتر الحسابات" />
-  <style>
-    /* ----------------------------------------------------- */
-    /* 1. Global & Color Variables (Day/Night) */
-    /* ----------------------------------------------------- */
-    :root {
-      /* Default Light Mode Colors */
-      --primary: #007bff;
-      --primary-dark: #0056b3;
-      --secondary: #6c757d;
-      --success: #28a745;
-      --danger: #dc3545;
-      --warning: #ffc107;
-      --background: #f8f9fa;
-      --card-bg: white;
-      --text-color: #212529;
-      --border-color: #dee2e6;
-      --shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
-      --input-bg: white;
-    }
-    
-    /* Dark Mode Override (prefers-color-scheme) */
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --background: #121212;
-        --card-bg: #1e1e1e;
-        --text-color: #f1f1f1;
-        --border-color: #333;
-        --shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.4);
-        --primary: #4e9af1; 
-        --primary-dark: #2a73c2;
-        --success: #6cff6c;
-        --danger: #ff6b6b;
-        --input-bg: #2b2b2b;
-      }
-      body { color: var(--text-color); }
-    }
-
-    /* Dark Mode Class Toggle (manual switch) */
-    html.dark-mode {
-      --background: #121212;
-      --card-bg: #1e1e1e;
-      --text-color: #f1f1f1;
-      --border-color: #333;
-      --shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.4);
-      --primary: #4e9af1;
-      --primary-dark: #2a73c2;
-      --success: #6cff6c;
-      --danger: #ff6b6b;
-      --input-bg: #2b2b2b;
-    }
-    
-    /* ----------------------------------------------------- */
-    /* 2. Base Styling */
-    /* ----------------------------------------------------- */
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Arabic Naskh", "Droid Arabic Naskh";
-      direction: rtl;
-      margin: 0;
-      padding: 0;
-      background-color: var(--background);
-      color: var(--text-color);
-      transition: background-color 0.3s, color 0.3s;
-    }
-    header {
-      background-color: var(--primary);
-      color: white;
-      padding: 15px 20px;
-      text-align: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    header h1 { margin: 0; font-size: 1.5rem; }
-    .container {
-      max-width: 900px; /* Reduced width */
-      margin: 20px auto;
-      padding: 0 15px;
-    }
-
-    /* ----------------------------------------------------- */
-    /* 3. Dashboard Layout & Cards */
-    /* ----------------------------------------------------- */
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Adjusted grid for smaller width */
-      gap: 15px;
-      margin-bottom: 20px;
-    }
-    .card {
-      background-color: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 15px;
-      box-shadow: var(--shadow);
-      transition: all 0.3s;
-      margin-bottom: 10px;
-    }
-    .card:hover {
-        transform: translateY(-2px);
-    }
-    .card-title {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-bottom: 10px;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 5px;
-      color: var(--primary);
-    }
-    .summary-item h3 { font-size: 1.8rem; margin: 5px 0; font-weight: 700; }
-    .summary-item p { font-size: 0.8rem; margin-top: 0; color: var(--secondary); }
-    
-    /* Color Highlights */
-    .total-balance { color: var(--text-color); }
-    .income { color: var(--success); }
-    .expense { color: var(--danger); }
-    .net-balance { color: var(--primary); }
-
-    /* ----------------------------------------------------- */
-    /* 4. Table Styling */
-    /* ----------------------------------------------------- */
-    .table-responsive { overflow-x: auto; }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      font-size: 0.85rem;
-    }
-    th, td {
-      padding: 8px 10px;
-      border: 1px solid var(--border-color);
-      text-align: right;
-    }
-    th {
-      background-color: var(--primary);
-      color: white;
-      font-weight: 600;
-      text-align: center;
-      border-color: var(--primary);
-    }
-    tr:nth-child(even) {
-      background-color: rgba(0, 0, 0, 0.03); 
-    }
-    html.dark-mode tr:nth-child(even), :not(.dark-mode) tr:nth-child(even) {
-      background-color: rgba(255, 255, 255, 0.05); 
-    }
-    
-    /* Status Badges */
-    .status-badge {
-      padding: 4px 8px;
-      border-radius: 20px;
-      font-size: 0.75em;
-      color: white;
-      font-weight: 600;
-      display: inline-block;
-      white-space: nowrap;
-    }
-    .status-متأخر { background-color: var(--danger); }
-    .status-مدفوع { background-color: var(--success); }
-    .status-قريب-الاستحقاق { background-color: var(--warning); color: var(--text-color); }
-    .status-مستحق { background-color: var(--primary); }
-
-    /* Utility Classes */
-    .text-center { text-align: center !important; }
-    .text-success { color: var(--success) !important; }
-    .text-danger { color: var(--danger) !important; }
-    .text-warning { color: var(--warning) !important; }
-
-    /* Action Buttons within tables */
-    .action-btn {
-        background: none;
-        border: none;
-        color: var(--primary);
-        cursor: pointer;
-        font-size: 1em;
-        margin: 0 3px;
-        padding: 4px;
-        transition: color 0.2s;
-    }
-    .action-btn:hover { color: var(--primary-dark); }
-    .action-btn.delete { color: var(--danger); }
-    .action-btn.delete:hover { color: #8a0000; }
-    
-    /* ----------------------------------------------------- */
-    /* 5. Floating Action Buttons (FABs) */
-    /* ----------------------------------------------------- */
-    .fab-group {
-        position: fixed;
-        bottom: 20px;
-        left: 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        z-index: 100;
-    }
-    .fab {
-        background-color: var(--primary);
-        color: white;
-        border: none;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        font-size: 1.5rem;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: background-color 0.3s, transform 0.2s;
-        position: relative;
-    }
-    .fab:hover {
-        background-color: var(--primary-dark);
-        transform: scale(1.05);
-    }
-    .fab .tooltip {
-        position: absolute;
-        right: 60px;
-        background-color: #333;
-        color: white;
-        padding: 5px 10px;
-        border-radius: 5px;
-        font-size: 0.8rem;
-        white-space: nowrap;
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.3s, visibility 0.3s;
-    }
-    .fab:hover .tooltip {
-        opacity: 1;
-        visibility: visible;
-    }
-
-    /* ----------------------------------------------------- */
-    /* 6. Modal Styling */
-    /* ----------------------------------------------------- */
-    .modal {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.7);
-        display: none; /* Hidden by default */
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-    }
-    .modal-content {
-        background-color: var(--card-bg);
-        padding: 25px;
-        border-radius: 10px;
-        width: 90%;
-        max-width: 450px;
-        box-shadow: var(--shadow);
-        animation: fadeIn 0.3s;
-        position: relative;
-    }
-    .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-        border-bottom: 1px solid var(--border-color);
-        padding-bottom: 10px;
-    }
-    .close-btn {
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        cursor: pointer;
-        color: var(--secondary);
-    }
-    .close-btn:hover { color: var(--danger); }
-    
-    /* Form Styling */
-    .form-group {
-        margin-bottom: 15px;
-    }
-    .form-group label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: 500;
-    }
-    .form-group input, .form-group select, .form-group textarea {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-        box-sizing: border-box;
-        background-color: var(--input-bg);
-        color: var(--text-color);
-    }
-    .form-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
-        margin-top: 20px;
-    }
-    .btn {
-        padding: 10px 15px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: 600;
-        border: none;
-        transition: opacity 0.2s;
-    }
-    .btn-primary { background-color: var(--primary); color: white; }
-    .btn-secondary { background-color: var(--secondary); color: white; }
-    .btn-primary:hover, .btn-secondary:hover { opacity: 0.9; }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(-20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المعاملات المالية</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Configure Tailwind to use Arabic font and direction -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#10b981', // Emerald 500
+                        'secondary': '#f97316', // Orange 600
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Tahoma', 'Arial', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom styles for better aesthetics and readability */
+        body {
+            background-color: #f3f4f6;
+            font-family: 'Tahoma', sans-serif;
+        }
+        .card {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .transaction-row:hover {
+            background-color: #fef2f2; /* Light red hover for easy delete identification */
+        }
+        /* Custom scrollbar for transaction list */
+        #transactions-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        #transactions-list::-webkit-scrollbar-thumb {
+            background-color: #d1d5db;
+            border-radius: 4px;
+        }
+    </style>
 </head>
-<body>
-  <header>
-    <button id="theme-toggle" aria-label="تبديل الوضع الليلي/النهاري">
-        ☀️
-    </button>
-    <h1>دفتر حساباتي 📊</h1>
-    <p style="margin:0; opacity: 0.8;">لوحة القيادة المالية</p>
-  </header>
+<body class="p-4 md:p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">نظام إدارة المعاملات المالية</h1>
 
-  <div class="container">
-    <!-- لوحة ملخص الأرقام -->
-    <div class="dashboard-grid" id="summary-cards">
-      <!-- البطاقات سيتم توليدها هنا بواسطة JavaScript -->
-    </div>
-    
-    <div class="dashboard-grid">
-      <!-- جدول أرصدة الحسابات -->
-      <div class="card" id="accounts-card">
-        <h2 class="card-title">💵 أرصدة الحسابات</h2>
-        <div class="table-responsive">
-          <table id="accounts-table">
-            <thead>
-              <tr>
-                <th>الحساب</th>
-                <th class="text-center">الرصيد الحالي (ج.م)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- البيانات سيتم توليدها هنا -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- جدول أهم المصروفات -->
-      <div class="card" id="top-spending-card">
-        <h2 class="card-title">💰 أعلى فئات المصروفات (أول 5)</h2>
-        <div class="table-responsive">
-          <table id="top-spending-table">
-            <thead>
-              <tr>
-                <th>الفئة</th>
-                <th class="text-center">المبلغ (ج.م)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- البيانات سيتم توليدها هنا -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- جدول المستحقات القادمة -->
-    <div class="card" id="dues-card">
-      <h2 class="card-title">⏳ المستحقات القادمة (مطلوب/متوقع)</h2>
-      <div class="table-responsive">
-        <table id="dues-table">
-          <thead>
-            <tr>
-              <th>البيان</th>
-              <th class="text-center">النوع</th>
-              <th class="text-center">تاريخ الاستحقاق</th>
-              <th class="text-center">المبلغ المتبقي (ج.م)</th>
-              <th class="text-center">الحساب</th>
-              <th class="text-center">الحالة</th>
-              <th class="text-center">الإجراءات</th> <!-- عمود الإجراءات -->
-            </tr>
-          </thead>
-          <tbody>
-            <!-- البيانات سيتم توليدها هنا -->
-          </tbody>
-        </table>
-      </div>
-    </div>
-    
-    <!-- زر لتحديث البيانات (في حال تم إجراء تغيير يدوي في الكونسول) -->
-    <button onclick="initializeDashboard()" style="background-color: var(--success); color: white; border: none; padding: 10px 20px; border-radius: 8px; margin-top: 20px; cursor: pointer; font-size: 1rem;">🔄 تحديث لوحة القيادة</button>
-  </div>
-
-  <!-- ----------------------------------------------------- -->
-  <!-- Floating Action Buttons (FABs) -->
-  <!-- ----------------------------------------------------- -->
-  <div class="fab-group">
-    <button class="fab" onclick="openAddDueModal()">
-        +
-        <span class="tooltip">إضافة التزام جديد</span>
-    </button>
-    <button class="fab" onclick="openAddTransactionModal()">
-        T
-        <span class="tooltip">إضافة حركة (دخل/مصروف/تحويل)</span>
-    </button>
-  </div>
-
-  <!-- ----------------------------------------------------- -->
-  <!-- Generic Modal Container (Will be populated by JS) -->
-  <!-- ----------------------------------------------------- -->
-  <div id="generic-modal" class="modal" onclick="closeModalIfOutside(event)">
-    <div class="modal-content" id="modal-content">
-      <!-- Modal content will be injected here -->
-    </div>
-  </div>
-
-  <!-- تضمين كود الـ API والـ JavaScript الخاص بالواجهة -->
-  <script>
-    /**
-     * Dafatir API (No UI) - Logic Core (Unchanged from previous response)
-     */
-    
-    (function(global){
-      const DB_KEY = 'myAccountingAppDB_v4';
-      let state = { accounts: [], transactions: [], payables: [] };
-
-      // --- صيغ ومساعدات ---
-      const currencyFormatter = new Intl.NumberFormat('ar-EG', { style:'currency', currency:'EGP', minimumFractionDigits:2, maximumFractionDigits:2 });
-      function formatCurrency(num){ const n = Number(num) || 0; return currencyFormatter.format(n).replace('EGP','').trim(); }
-      function formatDateISO(d){ try { return new Date(d).toISOString(); } catch(e){ return new Date().toISOString(); } }
-      function getTodayDateISO() { return new Date().toISOString().slice(0, 10); } // YYYY-MM-DD
-      const cryptoUUID = () => (crypto && crypto.randomUUID) ? crypto.randomUUID() : ('id-' + Math.random().toString(36).slice(2,11));
-
-      // --- StorageService ---
-      const StorageService = {
-        load(){
-          try {
-            const raw = localStorage.getItem(DB_KEY);
-            if (raw) {
-              const parsed = JSON.parse(raw);
-              state = parsed;
-              if (!state.accounts) state.accounts = [];
-              if (!state.transactions) state.transactions = [];
-              if (!state.payables) state.payables = [];
-              return true;
-            }
-          } catch(e){
-            console.warn('StorageService.load failed', e);
-          }
-          this.saveInitial();
-          return false;
-        },
-        save(){ localStorage.setItem(DB_KEY, JSON.stringify(state)); },
-        exportData(){ return JSON.stringify(state, null, 2); },
-        importData(jsonStr){
-          try {
-            const parsed = JSON.parse(jsonStr);
-            if (!parsed.accounts || !parsed.transactions) return false;
-            if (!parsed.payables) parsed.payables = [];
-            state = parsed;
-            this.save();
-            return true;
-          } catch(e){
-            return false;
-          }
-        },
-        saveInitial(){
-          const cashId = cryptoUUID();
-          const bankId = cryptoUUID();
-          const walletId = cryptoUUID();
-
-          const today = new Date();
-          const fiveDays = new Date(today); fiveDays.setDate(today.getDate()+5);
-          const twoDaysAgo = new Date(today); twoDaysAgo.setDate(today.getDate()-2);
-          const fifteenDaysAgo = new Date(today); fifteenDaysAgo.setDate(today.getDate()-15);
-
-          state = {
-            accounts: [
-              { id: cashId, name: 'نقد (الخزنة)', initialBalance:2000, currentBalance:2000 },
-              { id: bankId, name: 'بنك الأهلي', initialBalance:10000, currentBalance:10000 },
-              { id: walletId, name: 'محفظة إلكترونية', initialBalance:500, currentBalance:500 }
-            ],
-            transactions: [
-              { id: cryptoUUID(), createdAt: new Date('2025-11-01T10:00:00').toISOString(), date: new Date('2025-11-01T10:00:00').toISOString(), type:'income', to: bankId, from: null, amount: 5000, category:'راتب', notes:'راتب شهر أكتوبر' },
-              { id: cryptoUUID(), createdAt: new Date('2025-11-02T14:00:00').toISOString(), date: new Date('2025-11-02T14:00:00').toISOString(), type:'expense', from: cashId, to: null, amount: 300, category:'فواتير', notes:'فاتورة كهرباء' },
-              ...(function(){ const linked = cryptoUUID(); return [
-                { id: cryptoUUID(), createdAt: new Date('2025-11-03T11:00:00').toISOString(), date: new Date('2025-11-03T11:00:00').toISOString(), type:'expense', from: bankId, to:null, amount:1000, category:'تحويل صادر', notes:'تحويل للعهدة', linkedId: linked },
-                { id: linked, createdAt: new Date('2025-11-03T11:00:00').toISOString(), date: new Date('2025-11-03T11:00:00').toISOString(), type:'income', from:null, to: cashId, amount:1000, category:'تحويل وارد', notes:'تحويل للعهدة', linkedId: expense.id }
-              ]; })(),
-              { id: cryptoUUID(), createdAt: new Date('2025-11-05T18:00:00').toISOString(), date: new Date('2025-11-05T18:00:00').toISOString(), type:'expense', from: walletId, to: null, amount:150, category:'مشتريات أونلاين', notes:'' },
-              { id: cryptoUUID(), createdAt: new Date('2025-11-07T09:00:00').toISOString(), date: new Date('2025-11-07T09:00:00').toISOString(), type:'income', to: cashId, from: null, amount:200, category:'مبيعات', notes:'مبيعات نقدية' },
-            ],
-            payables: [
-              { id: cryptoUUID(), type:'receivable', name:'دفعة العميل (أحمد)', amount:2500, remainingAmount:2500, dueDate: fiveDays.toISOString(), status:'pending', accountId: bankId, recurrence:'none', originalDueDate: fiveDays.toISOString(), payments:[] },
-              { id: cryptoUUID(), type:'payable', name:'فاتورة الإنترنت', amount:450, remainingAmount:450, dueDate: twoDaysAgo.toISOString(), status:'pending', accountId: cashId, recurrence:'none', originalDueDate: twoDaysAgo.toISOString(), payments:[] },
-              { id: cryptoUUID(), type:'payable', name:'إيجار المكتب (سابق)', amount:3000, remainingAmount:0, dueDate: fifteenDaysAgo.toISOString(), status:'paid', accountId: bankId, recurrence:'none', originalDueDate: fifteenDaysAgo.toISOString(), payments:[] },
-              { id: cryptoUUID(), type:'payable', name:'إيجار المكتب (شهري)', amount:3000, remainingAmount:3000, dueDate: new Date(today.getFullYear(), today.getMonth(), 1).toISOString(), status:'pending', accountId: bankId, recurrence:'monthly', originalDueDate: new Date(today.getFullYear(), today.getMonth(), 1).toISOString(), payments:[] }
-            ]
-          };
-
-          this.save();
-        }
-      };
-
-      // --- CoreLogic (business rules) ---
-      const CoreLogic = {
-        getAccountById(id){ return state.accounts.find(a => a.id === id); },
-        getTransactionById(id){ return state.transactions.find(t => t.id === id); },
-        getDueById(id){ return state.payables.find(p => p.id === id); },
-
-        createTransferPair(fromId, toId, amount, dateIso, notes){
-          const linkedId = cryptoUUID();
-          const expense = { id: cryptoUUID(), createdAt: dateIso, date: dateIso, type:'expense', from: fromId, to: null, amount: amount, category:'تحويل صادر', notes: notes, linkedId: linkedId };
-          const income = { id: linkedId, createdAt: dateIso, date: dateIso, type:'income', from:null, to: toId, amount: amount, category:'تحويل وارد', notes: notes, linkedId: expense.id };
-          return [expense, income];
-        },
-
-        recalculateAccountBalance(accountId){
-          const account = this.getAccountById(accountId);
-          if (!account) return;
-          const accountTxs = state.transactions.filter(t => t.from === accountId || t.to === accountId)
-            .sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime() || new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-          let currentBalance = Number(account.initialBalance) || 0;
-          for (const tx of accountTxs) {
-            tx.balanceBefore = currentBalance;
-            if (tx.type === 'income' && tx.to === accountId) currentBalance += Number(tx.amount) || 0;
-            else if (tx.type === 'expense' && tx.from === accountId) currentBalance -= Number(tx.amount) || 0;
-            tx.balanceAfter = currentBalance;
-          }
-          account.currentBalance = currentBalance;
-        },
-
-        recalculateAllBalances(){ for (const acc of state.accounts) this.recalculateAccountBalance(acc.id); },
-
-        addAccount(name, initialBalance){
-          const id = cryptoUUID();
-          state.accounts.push({ id, name, initialBalance: Number(initialBalance)||0, currentBalance: Number(initialBalance)||0 });
-          this.recalculateAllBalances(); StorageService.save();
-          return id;
-        },
-
-        updateAccount(id, name, initialBalance){
-          const acc = this.getAccountById(id); if (!acc) return false;
-          acc.name = name; acc.initialBalance = Number(initialBalance)||0;
-          this.recalculateAllBalances(); StorageService.save(); return true;
-        },
-
-        deleteAccount(id){
-          if (state.transactions.some(t => t.from === id || t.to === id)) return false;
-          state.accounts = state.accounts.filter(a => a.id !== id);
-          StorageService.save(); return true;
-        },
-
-        addTransaction(txData){
-          const now = new Date().toISOString();
-          if (txData.type === 'transfer') {
-            const dateIso = new Date(txData.date).toISOString();
-            const [expense, income] = this.createTransferPair(txData.from, txData.to, Number(txData.amount)||0, dateIso, txData.notes || '');
-            state.transactions.push(expense, income);
-            this.recalculateAllBalances(); StorageService.save();
-            return [expense.id, income.id];
-          } else {
-            const id = cryptoUUID();
-            const tx = {
-              id,
-              createdAt: now,
-              date: new Date(txData.date).toISOString(),
-              type: txData.type,
-              from: txData.from || null,
-              to: txData.to || null,
-              amount: Number(txData.amount) || 0,
-              category: txData.category || '',
-              notes: txData.notes || '',
-              linkedId: null
-            };
-            state.transactions.push(tx);
-            this.recalculateAllBalances(); StorageService.save();
-            return id;
-          }
-        },
-
-        updateTransaction(id, newTxData){
-          const tx = this.getTransactionById(id); if (!tx) return false;
-          if (tx.linkedId) {
-            const linkedTx = this.getTransactionById(tx.linkedId);
-            tx.date = new Date(newTxData.date).toISOString();
-            tx.amount = Number(newTxData.amount)||tx.amount;
-            tx.notes = newTxData.notes || tx.notes;
-            tx.from = newTxData.from || tx.from;
-            if (linkedTx) {
-              linkedTx.date = tx.date;
-              linkedTx.amount = tx.amount;
-              linkedTx.notes = tx.notes;
-              linkedTx.to = newTxData.to || linkedTx.to;
-            }
-          } else {
-            tx.date = new Date(newTxData.date).toISOString();
-            tx.amount = Number(newTxData.amount)||tx.amount;
-            tx.category = newTxData.category || tx.category;
-            tx.notes = newTxData.notes || tx.notes;
-            tx.from = newTxData.from || tx.from;
-            tx.to = newTxData.to || tx.to;
-          }
-          this.recalculateAllBalances(); StorageService.save(); return true;
-        },
-
-        deleteTransaction(id){
-          const tx = this.getTransactionById(id);
-          if (!tx) return false;
-          if (tx.linkedId) state.transactions = state.transactions.filter(t => t.id !== id && t.id !== tx.linkedId);
-          else state.transactions = state.transactions.filter(t => t.id !== id);
-          this.recalculateAllBalances(); StorageService.save(); return true;
-        },
-
-        addDue(data){
-          const id = cryptoUUID();
-          state.payables.push({ id, type: data.type, name: data.name, amount: Number(data.amount)||0, remainingAmount: Number(data.amount)||0, dueDate: data.dueDate, accountId: data.accountId, recurrence: data.recurrence || 'none', status: 'pending', originalDueDate: data.dueDate, payments:[] });
-          StorageService.save(); return id;
-        },
-
-        updateDue(id, data){
-          const due = this.getDueById(id); if (!due) return false;
-          due.type = data.type; due.name = data.name; due.amount = Number(data.amount)||due.amount;
-          if (due.status !== 'paid') due.remainingAmount = Number(data.amount)||due.remainingAmount;
-          due.dueDate = data.dueDate; due.accountId = data.accountId; due.recurrence = data.recurrence;
-          if (!due.originalDueDate) due.originalDueDate = data.dueDate;
-          StorageService.save(); return true;
-        },
-
-        deleteDue(id){
-          const due = this.getDueById(id);
-          if (!due) return false;
-          // Note: If payments exist, we will only delete the due and associated payments (transactions)
-          if (Array.isArray(due.payments) && due.payments.length) {
-            for (const p of due.payments) {
-              if (p.txId) {
-                state.transactions = state.transactions.filter(t => t.id !== p.txId);
-              }
-            }
-          }
-          state.payables = state.payables.filter(p => p.id !== id);
-          this.recalculateAllBalances(); 
-          StorageService.save();
-          return 'deleted';
-        },
-
-        applyPayment({ dueId, amount, accountId, notes, isCollection }) {
-          const due = this.getDueById(dueId);
-          if (!due) return { ok:false, msg:'البند غير موجود' };
-          amount = Number(amount)||0;
-          if (amount <= 0) return { ok:false, msg:'المبلغ غير صالح' };
-          if (amount > due.remainingAmount + 0.0001) return { ok:false, msg:'المبلغ أكبر من المتبقي' };
-
-          const nowIso = new Date().toISOString();
-          let tx = null;
-          if (isCollection) {
-            tx = { id: cryptoUUID(), createdAt: nowIso, date: nowIso, type:'income', from:null, to: accountId, amount, category:'تحصيل', notes: notes || `تحصيل: ${due.name}` };
-          } else {
-            tx = { id: cryptoUUID(), createdAt: nowIso, date: nowIso, type:'expense', from:accountId, to:null, amount, category:'سداد', notes: notes || `سداد: ${due.name}` };
-          }
-          state.transactions.push(tx);
-
-          due.payments = due.payments || [];
-          due.payments.push({ amount, date: nowIso, accountId, txId: tx.id });
-
-          due.remainingAmount = Math.max(0, Number(due.remainingAmount) - amount);
-
-          if (due.remainingAmount <= 0.0001) {
-            if (due.recurrence === 'monthly') {
-              // For monthly recurring, we keep the old one as paid, and create a new one for the next month
-              const newDue = {...due, id: cryptoUUID(), status:'pending', remainingAmount: due.amount, payments: []};
-              const next = new Date(due.dueDate);
-              next.setMonth(next.getMonth()+1);
-              newDue.dueDate = next.toISOString();
-              state.payables.push(newDue);
-              
-              due.status = 'paid'; // Mark the current instance as paid
-            } else {
-              due.status = 'paid';
-              if (!due.originalDueDate) due.originalDueDate = due.dueDate;
-            }
-          } else {
-            due.status = 'partially_paid';
-          }
-
-          this.recalculateAllBalances();
-          StorageService.save();
-          return { ok:true, txId: tx.id, due };
-        },
-
-        collectReceivablePartial(dueId, amount, accountId, notes=''){ const due = this.getDueById(dueId); if (!due || due.type !== 'receivable') return false; const res = this.applyPayment({ dueId, amount, accountId, notes, isCollection:true }); return res.ok; },
-        payPayablePartial(dueId, amount, accountId, notes=''){ const due = this.getDueById(dueId); if (!due || due.type !== 'payable') return false; const res = this.applyPayment({ dueId, amount, accountId, notes, isCollection:false }); return res.ok; },
-
-        getDuesWithStatus(){
-          const today = new Date(); today.setHours(0,0,0,0);
-          const sevenDays = new Date(today.getTime() + 7*24*60*60*1000);
-          return state.payables.map(due => {
-            const dueDate = new Date(due.dueDate); dueDate.setHours(0,0,0,0);
-            let statusText = 'مستحق';
-            if (due.status === 'paid') statusText='مدفوع';
-            else if (due.status === 'partially_paid') statusText='مدفوع جزئياً';
-            else if (dueDate < today) statusText='متأخر';
-            else if (dueDate <= sevenDays) statusText='قريب الاستحقاق';
-            
-            if (due.remainingAmount === undefined || due.remainingAmount === null) due.remainingAmount = Number(due.amount) || 0;
-            return { ...due, statusText };
-          }).sort((a,b) => new Date(a.dueDate) - new Date(b.dueDate));
-        },
-
-        getFilteredTransactions(filters){
-          const { account='all', type='all', dateStart='', dateEnd='' } = filters || {};
-          return state.transactions.filter(tx => {
-            if (account !== 'all' && tx.from !== account && tx.to !== account) return false;
-            if (type !== 'all' && tx.type !== type) return false;
-            if (dateStart) { if (formatDateISO(tx.date).slice(0,10) < dateStart) return false; }
-            if (dateEnd) { if (formatDateISO(tx.date).slice(0,10) > dateEnd) return false; }
-            return true;
-          }).sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-        },
-
-        getTopSpendingCategories(){
-          const spending = {};
-          state.transactions.forEach(tx => { if (tx.type === 'expense') { const cat = tx.category || 'غير مصنف'; spending[cat] = (spending[cat] || 0) + Number(tx.amount || 0); }});
-          return Object.entries(spending).map(([category, amount]) => ({ category, amount })).sort((a,b)=>b.amount-a.amount).slice(0,5);
-        },
-
-        getDashboardSummary(){
-          let income=0, expense=0;
-          state.transactions.forEach(tx => { if (tx.type === 'income') income += Number(tx.amount)||0; else if (tx.type === 'expense') expense += Number(tx.amount)||0; });
-          const totalBalance = state.accounts.reduce((s,a) => s + (Number(a.currentBalance)||0), 0);
-          
-          let payablesRemaining = 0, receivablesUncollected = 0;
-          state.payables.forEach(d => {
-              if (d.status !== 'paid') {
-                  if (d.type === 'payable') payablesRemaining += Number(d.remainingAmount || d.amount || 0);
-                  if (d.type === 'receivable') receivablesUncollected += Number(d.remainingAmount || d.amount || 0);
-              }
-          });
-          return { income, expense, net: income - expense, totalBalance, payablesRemaining, receivablesUncollected };
-        }
-      };
-
-      // --- API layer (Exposed) ---
-      const API = {
-        init(){ StorageService.load(); CoreLogic.recalculateAllBalances(); return Promise.resolve(true); },
-        getState(){ return JSON.parse(JSON.stringify(state)); },
-        listAccounts(){ return JSON.parse(JSON.stringify(state.accounts)); },
-        getAccount(id){ return JSON.parse(JSON.stringify(CoreLogic.getAccountById(id))); },
-        addTransaction(txData){ return CoreLogic.addTransaction(txData); },
-        addDue(data){ return CoreLogic.addDue(data); },
-        listDues(){ return CoreLogic.getDuesWithStatus(); },
-        getDue(id){ return JSON.parse(JSON.stringify(CoreLogic.getDueById(id))); },
-        deleteDue(id){ return CoreLogic.deleteDue(id); },
-        collectReceivablePartial(dueId, amount, accountId, notes=''){ return CoreLogic.collectReceivablePartial(dueId, amount, accountId, notes); },
-        payPayablePartial(dueId, amount, accountId, notes=''){ return CoreLogic.payPayablePartial(dueId, amount, accountId, notes); },
-        getDashboardSummary(){ return CoreLogic.getDashboardSummary(); },
-        getTopSpendingCategories(){ return CoreLogic.getTopSpendingCategories(); },
-      };
-
-      global.DafatirAPI = API;
-
-      StorageService.load();
-      CoreLogic.recalculateAllBalances();
-
-      // --- JavaScript for Rendering the UI and Theme Toggle (New/Updated Code) ---
-      const langMap = {
-          'payable': 'مطلوب (دفع)',
-          'receivable': 'متوقع (تحصيل)',
-          'income': 'دخل',
-          'expense': 'مصروف',
-          'transfer': 'تحويل',
-          'monthly': 'شهري',
-          'none': 'مرة واحدة'
-      };
-      
-      const getAccountName = (id) => {
-          const account = DafatirAPI.getAccount(id);
-          return account ? account.name : 'غير محدد';
-      };
-      
-      const formatDate = (dateIso) => {
-          return new Date(dateIso).toLocaleDateString('ar-EG', { year: 'numeric', month: 'short', day: 'numeric' });
-      };
-
-
-      // --- RENDER FUNCTIONS ---
-      function renderSummaryCards() {
-        const summary = DafatirAPI.getDashboardSummary();
-        const cardsContainer = document.getElementById('summary-cards');
-        const summaryData = [
-          { title: 'إجمالي الرصيد', value: formatCurrency(summary.totalBalance), class: 'total-balance', icon: '💰' },
-          { title: 'الإيرادات الكُلية', value: formatCurrency(summary.income), class: 'income', icon: '⬆️' },
-          { title: 'المصروفات الكُلية', value: formatCurrency(summary.expense), class: 'expense', icon: '⬇️' },
-          { title: 'صافي الرصيد', value: formatCurrency(summary.net), class: 'net-balance', icon: '⚖️' },
-          { title: 'مطلوب الدفع المعلق', value: formatCurrency(summary.payablesRemaining), class: 'expense', icon: '🗓️' },
-          { title: 'متوقع التحصيل المعلق', value: formatCurrency(summary.receivablesUncollected), class: 'income', icon: '📥' },
-        ];
-
-        cardsContainer.innerHTML = summaryData.map(item => `
-          <div class="card summary-item">
-            <h2 class="card-title">${item.icon} ${item.title}</h2>
-            <h3 class="${item.class} text-center">${item.value}</h3>
-          </div>
-        `).join('');
-      }
-
-      function renderAccountsTable() {
-        const accounts = DafatirAPI.listAccounts();
-        const tbody = document.querySelector('#accounts-table tbody');
-        tbody.innerHTML = accounts.map(acc => `
-          <tr>
-            <td>${acc.name}</td>
-            <td class="text-center ${acc.currentBalance < 0 ? 'text-danger' : 'text-success'}">${formatCurrency(acc.currentBalance)}</td>
-          </tr>
-        `).join('');
-      }
-
-      function renderDuesTable() {
-        // عرض فقط المستحقات غير المدفوعة أو القادمة
-        const dues = DafatirAPI.listDues().filter(d => d.status !== 'paid' || d.recurrence === 'monthly');
-        const tbody = document.querySelector('#dues-table tbody');
-        
-        if (dues.length === 0) {
-             tbody.innerHTML = '<tr><td colspan="7" class="text-center">لا توجد مستحقات معلقة أو قادمة.</td></tr>';
-             return;
-        }
-
-        tbody.innerHTML = dues.map(due => {
-          const dueDateStr = formatDate(due.dueDate);
-          const statusClass = due.statusText.replace(/\s/g, '-');
-          const isDanger = due.type === 'payable' && due.statusText !== 'مدفوع';
-          const isSuccess = due.type === 'receivable' && due.statusText !== 'مدفوع';
-
-          const actionButton = due.status !== 'paid' ? `
-              <button class="action-btn" title="${due.type === 'payable' ? 'سداد' : 'تحصيل'}" onclick="openPaymentModal('${due.id}')">
-                  ${due.type === 'payable' ? '💸' : '💰'}
-              </button>
-          ` : '';
-          
-          return `
-            <tr>
-              <td>${due.name}</td>
-              <td class="text-center">${langMap[due.type]}</td>
-              <td class="text-center">${dueDateStr}</td>
-              <td class="text-center ${isDanger ? 'text-danger' : (isSuccess ? 'text-success' : '')}">${formatCurrency(due.remainingAmount)}</td>
-              <td class="text-center">${getAccountName(due.accountId)}</td>
-              <td class="text-center">
-                <span class="status-badge status-${statusClass}">${due.statusText}</span>
-              </td>
-              <td class="text-center" style="width: 100px; white-space: nowrap;">
-                  ${actionButton}
-                  <button class="action-btn delete" title="حذف الالتزام" onclick="handleDeleteDue('${due.id}', '${due.name}')">
-                      🗑️
-                  </button>
-              </td>
-            </tr>
-          `;
-        }).join('');
-      }
-      
-      function renderTopSpendingTable() {
-          const topSpending = DafatirAPI.getTopSpendingCategories();
-          const tbody = document.querySelector('#top-spending-table tbody');
-          
-          if (topSpending.length === 0) {
-              tbody.innerHTML = '<tr><td colspan="2" class="text-center">لا توجد مصروفات مسجلة بعد.</td></tr>';
-              return;
-          }
-
-          tbody.innerHTML = topSpending.map(item => `
-              <tr>
-                  <td>${item.category}</td>
-                  <td class="text-center text-danger">${formatCurrency(item.amount)}</td>
-              </tr>
-          `).join('');
-      }
-
-      // -----------------------------------------------------------------
-      // Modal Logic
-      // -----------------------------------------------------------------
-      const modal = document.getElementById('generic-modal');
-      const modalContent = document.getElementById('modal-content');
-
-      function showModal(contentHtml, title) {
-        modalContent.innerHTML = `
-            <div class="modal-header">
-                <h2>${title}</h2>
-                <button class="close-btn" onclick="closeModal()">&times;</button>
+        <!-- Summary Section -->
+        <div id="summary-section" class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <!-- Net Balance -->
+            <div class="card p-4 rounded-xl bg-white border-b-4 border-primary shadow-lg">
+                <p class="text-sm font-medium text-gray-500">الرصيد الصافي</p>
+                <p id="net-balance" class="text-2xl font-extrabold text-gray-900 mt-1">0.00</p>
             </div>
-            ${contentHtml}
-        `;
-        modal.style.display = 'flex';
-      }
+            <!-- Total Collections -->
+            <div class="card p-4 rounded-xl bg-white border-b-4 border-blue-500 shadow-lg">
+                <p class="text-sm font-medium text-gray-500">إجمالي التحصيلات (المستحقات)</p>
+                <p id="total-collections" class="text-2xl font-extrabold text-blue-600 mt-1">0.00</p>
+            </div>
+            <!-- Total Payments -->
+            <div class="card p-4 rounded-xl bg-white border-b-4 border-red-500 shadow-lg">
+                <p class="text-sm font-medium text-gray-500">إجمالي السدادات (الالتزامات)</p>
+                <p id="total-payments" class="text-2xl font-extrabold text-red-600 mt-1">0.00</p>
+            </div>
+            <!-- Total Inflow -->
+            <div class="card p-4 rounded-xl bg-white border-b-4 border-green-500 shadow-lg">
+                <p class="text-sm font-medium text-gray-500">إجمالي الإيرادات (النقدي)</p>
+                <p id="total-inflow" class="text-2xl font-extrabold text-green-600 mt-1">0.00</p>
+            </div>
+        </div>
 
-      function closeModal() {
-        modal.style.display = 'none';
-        modalContent.innerHTML = '';
-      }
+        <!-- Transaction Forms Section -->
+        <div class="bg-white p-6 rounded-xl card mb-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">إضافة معاملة جديدة</h2>
 
-      // Close modal when clicking outside the content area
-      global.closeModalIfOutside = function(event) {
-          if (event.target === modal) {
-              closeModal();
-          }
-      }
+            <!-- Input Fields for all transactions -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                <input type="text" id="transaction-description" placeholder="الوصف (إيراد/مصروف/مستحق/التزام)" class="p-3 border rounded-lg md:col-span-2 focus:ring-primary focus:border-primary transition duration-150" required>
+                <input type="number" id="transaction-amount" placeholder="المبلغ" class="p-3 border rounded-lg focus:ring-primary focus:border-primary transition duration-150" required min="1">
+                <input type="date" id="transaction-date" class="p-3 border rounded-lg focus:ring-primary focus:border-primary transition duration-150" required>
+            </div>
 
-      // Helper to generate Account Dropdown
-      function getAccountOptions(selectedId = null, includeAll = false) {
-          const accounts = DafatirAPI.listAccounts();
-          let options = includeAll ? '<option value="all">كل الحسابات</option>' : '';
-          options += accounts.map(acc => 
-              `<option value="${acc.id}" ${acc.id === selectedId ? 'selected' : ''}>${acc.name} (${formatCurrency(acc.currentBalance)})</option>`
-          ).join('');
-          return options;
-      }
+            <!-- Transaction Type Buttons -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <button onclick="addTransaction('income')" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg transition duration-150 shadow-md">إضافة إيراد</button>
+                <button onclick="addTransaction('expense')" class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-lg transition duration-150 shadow-md">إضافة مصروف</button>
+                <button onclick="addTransaction('receivable_collection')" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg transition duration-150 shadow-md">تحصيل المستحقات</button>
+                <button onclick="addTransaction('liability_payment')" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-lg transition duration-150 shadow-md">سداد الالتزامات</button>
+            </div>
+        </div>
 
-      // --- A. Add Transaction Modal ---
-      global.openAddTransactionModal = function() {
-          const formHtml = `
-              <form id="add-transaction-form" onsubmit="event.preventDefault(); handleTransactionSubmit();">
-                  <div class="form-group">
-                      <label for="tx_type">نوع الحركة:</label>
-                      <select id="tx_type" name="type" required onchange="toggleTransactionFields(this.value)">
-                          <option value="income">دخل</option>
-                          <option value="expense">مصروف</option>
-                          <option value="transfer">تحويل</option>
-                      </select>
-                  </div>
+        <!-- Transactions List Section -->
+        <div class="bg-white p-6 rounded-xl card">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">سجل المعاملات</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-3 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">التاريخ</th>
+                            <th class="px-3 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الوصف</th>
+                            <th class="px-3 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">النوع</th>
+                            <th class="px-3 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المبلغ (±)</th>
+                            <th class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactions-list" class="bg-white divide-y divide-gray-200">
+                        <!-- Transactions will be rendered here -->
+                        <tr><td colspan="5" class="text-center py-4 text-gray-500">الرجاء الانتظار... يتم تحميل البيانات.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- User ID display for collaborative/debug purposes -->
+        <div class="mt-4 text-center text-xs text-gray-500">
+            <p>معرف المستخدم: <span id="user-id-display">جار التحميل...</span></p>
+        </div>
 
-                  <div class="form-group" id="tx_from_group">
-                      <label for="tx_from">من حساب:</label>
-                      <select id="tx_from" name="from">
-                          ${getAccountOptions()}
-                      </select>
-                  </div>
+    </div>
 
-                  <div class="form-group" id="tx_to_group">
-                      <label for="tx_to">إلى حساب:</label>
-                      <select id="tx_to" name="to">
-                          ${getAccountOptions()}
-                      </select>
-                  </div>
-                  
-                  <div class="form-group">
-                      <label for="tx_amount">المبلغ:</label>
-                      <input type="number" id="tx_amount" name="amount" min="0.01" step="0.01" required>
-                  </div>
-                  
-                  <div class="form-group">
-                      <label for="tx_date">التاريخ:</label>
-                      <input type="date" id="tx_date" name="date" value="${getTodayDateISO()}" required>
-                  </div>
+    <!-- Firebase Imports and Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, addDoc, onSnapshot, collection, deleteDoc, query, orderBy, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // IMPORTANT: Set Firestore log level for debugging
+        setLogLevel('Debug');
 
-                  <div class="form-group" id="tx_category_group">
-                      <label for="tx_category">الفئة:</label>
-                      <input type="text" id="tx_category" name="category" placeholder="راتب، فواتير، إلخ.">
-                  </div>
-                  
-                  <div class="form-group">
-                      <label for="tx_notes">ملاحظات:</label>
-                      <textarea id="tx_notes" name="notes"></textarea>
-                  </div>
+        let app;
+        let db;
+        let auth;
+        let userId = 'loading';
+        
+        // Global variables provided by the Canvas environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-                  <div class="form-actions">
-                      <button type="submit" class="btn btn-primary">إضافة الحركة</button>
-                      <button type="button" class="btn btn-secondary" onclick="closeModal()">إلغاء</button>
-                  </div>
-              </form>
-          `;
-          showModal(formHtml, 'إضافة حركة مالية جديدة');
-          // Initial field toggle setup
-          toggleTransactionFields('income');
-      }
+        /**
+         * Converts transaction type string to Arabic display name and CSS class.
+         * @param {string} type - The transaction type (e.g., 'income').
+         * @returns {{name: string, class: string}}
+         */
+        function getTransactionDisplay(type) {
+            const displays = {
+                'income': { name: 'إيراد (نقدي)', class: 'bg-green-100 text-green-800' },
+                'expense': { name: 'مصروف (نقدي)', class: 'bg-red-100 text-red-800' },
+                'receivable_collection': { name: 'تحصيل مستحقات', class: 'bg-blue-100 text-blue-800' },
+                'liability_payment': { name: 'سداد التزامات', class: 'bg-orange-100 text-orange-800' }
+            };
+            return displays[type] || { name: 'غير معروف', class: 'bg-gray-100 text-gray-800' };
+        }
 
-      global.toggleTransactionFields = function(type) {
-          const fromGroup = document.getElementById('tx_from_group');
-          const toGroup = document.getElementById('tx_to_group');
-          const categoryGroup = document.getElementById('tx_category_group');
+        /**
+         * Initializes Firebase and handles user authentication.
+         */
+        async function initFirebaseAndAuth() {
+            if (!firebaseConfig) {
+                console.error("Firebase config is missing.");
+                document.getElementById('transactions-list').innerHTML = `<tr><td colspan="5" class="text-center py-4 text-red-500">خطأ: إعدادات قاعدة البيانات غير متوفرة.</td></tr>`;
+                return;
+            }
 
-          fromGroup.style.display = (type === 'expense' || type === 'transfer') ? 'block' : 'none';
-          toGroup.style.display = (type === 'income' || type === 'transfer') ? 'block' : 'none';
-          categoryGroup.style.display = (type !== 'transfer') ? 'block' : 'none';
+            try {
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
 
-          // Set required attributes based on type
-          document.getElementById('tx_from').required = (type === 'expense' || type === 'transfer');
-          document.getElementById('tx_to').required = (type === 'income' || type === 'transfer');
-          document.getElementById('tx_category').required = (type !== 'transfer');
-      }
+                // Sign in using the provided token or anonymously
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
 
-      global.handleTransactionSubmit = function() {
-          const form = document.getElementById('add-transaction-form');
-          const data = new FormData(form);
-          const txData = Object.fromEntries(data.entries());
+                // Set up authentication state listener
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        document.getElementById('user-id-display').textContent = userId;
+                        console.log("User authenticated:", userId);
+                        // Start listening to transactions once authenticated
+                        listenForTransactions();
+                    } else {
+                        // This should ideally not happen after initial sign-in
+                        console.log("User signed out or failed authentication.");
+                        document.getElementById('user-id-display').textContent = 'غير مصادق';
+                    }
+                });
 
-          if (txData.type === 'income') {
-              txData.from = null;
-          } else if (txData.type === 'expense') {
-              txData.to = null;
-          } else if (txData.type === 'transfer' && txData.from === txData.to) {
-              console.error('لا يمكن التحويل من وإلى نفس الحساب.');
-              // Use a user-friendly message box instead of alert
-              alert('خطأ: لا يمكن التحويل من وإلى نفس الحساب.');
-              return;
-          }
+            } catch (error) {
+                console.error("Error during Firebase initialization or authentication:", error);
+                document.getElementById('transactions-list').innerHTML = `<tr><td colspan="5" class="text-center py-4 text-red-500">فشل في الاتصال بالخدمة.</td></tr>`;
+            }
+        }
 
-          if (DafatirAPI.addTransaction(txData)) {
-              closeModal();
-              initializeDashboard();
-          } else {
-              console.error('فشل في إضافة الحركة.');
-              alert('فشل في إضافة الحركة. تحقق من البيانات.');
-          }
-      }
+        /**
+         * Calculates the summary statistics from a list of transactions.
+         * @param {Array<Object>} transactions - List of transaction objects.
+         */
+        function calculateSummary(transactions) {
+            let totalInflow = 0;
+            let totalOutflow = 0;
+            let totalCollections = 0; // تحصيل المستحقات
+            let totalPayments = 0; // سداد الالتزامات
 
-      // --- B. Add Due Modal (Obligations/Receivables) ---
-      global.openAddDueModal = function() {
-          const formHtml = `
-              <form id="add-due-form" onsubmit="event.preventDefault(); handleDueSubmit();">
-                  <div class="form-group">
-                      <label for="due_type">النوع:</label>
-                      <select id="due_type" name="type" required>
-                          <option value="payable">مطلوب دفعه (التزام)</option>
-                          <option value="receivable">متوقع تحصيله (مستحق)</option>
-                      </select>
-                  </div>
-                  
-                  <div class="form-group">
-                      <label for="due_name">البيان/الوصف:</label>
-                      <input type="text" id="due_name" name="name" required placeholder="إيجار المكتب، دفعة العميل X">
-                  </div>
-                  
-                  <div class="form-group">
-                      <label for="due_amount">المبلغ الكلي:</label>
-                      <input type="number" id="due_amount" name="amount" min="0.01" step="0.01" required>
-                  </div>
+            transactions.forEach(t => {
+                const amount = parseFloat(t.amount) || 0;
 
-                  <div class="form-group">
-                      <label for="due_dueDate">تاريخ الاستحقاق:</label>
-                      <input type="date" id="due_dueDate" name="dueDate" value="${getTodayDateISO()}" required>
-                  </div>
-                  
-                  <div class="form-group">
-                      <label for="due_accountId">الحساب المرتبط (للدفع/التحصيل):</label>
-                      <select id="due_accountId" name="accountId" required>
-                          ${getAccountOptions()}
-                      </select>
-                  </div>
-                  
-                  <div class="form-group">
-                      <label for="due_recurrence">التكرار:</label>
-                      <select id="due_recurrence" name="recurrence">
-                          <option value="none">مرة واحدة</option>
-                          <option value="monthly">شهري</option>
-                      </select>
-                  </div>
+                switch (t.type) {
+                    case 'income':
+                        totalInflow += amount;
+                        break;
+                    case 'expense':
+                        totalOutflow += amount;
+                        break;
+                    case 'receivable_collection':
+                        totalInflow += amount;
+                        totalCollections += amount;
+                        break;
+                    case 'liability_payment':
+                        totalOutflow += amount;
+                        totalPayments += amount;
+                        break;
+                }
+            });
 
-                  <div class="form-actions">
-                      <button type="submit" class="btn btn-primary">إضافة الالتزام</button>
-                      <button type="button" class="btn btn-secondary" onclick="closeModal()">إلغاء</button>
-                  </div>
-              </form>
-          `;
-          showModal(formHtml, 'إضافة التزام/مستحق جديد');
-      }
+            const netBalance = totalInflow - totalOutflow;
 
-      global.handleDueSubmit = function() {
-          const form = document.getElementById('add-due-form');
-          const data = new FormData(form);
-          const dueData = Object.fromEntries(data.entries());
+            // Update DOM
+            document.getElementById('net-balance').textContent = netBalance.toFixed(2) + ' ر.ع'; // ر.ع = رمز عملة افتراضي
+            document.getElementById('total-inflow').textContent = totalInflow.toFixed(2) + ' ر.ع';
+            document.getElementById('total-collections').textContent = totalCollections.toFixed(2) + ' ر.ع';
+            document.getElementById('total-payments').textContent = totalPayments.toFixed(2) + ' ر.ع';
+        }
 
-          if (DafatirAPI.addDue(dueData)) {
-              closeModal();
-              initializeDashboard();
-          } else {
-              console.error('فشل في إضافة الالتزام.');
-              alert('فشل في إضافة الالتزام. تحقق من البيانات.');
-          }
-      }
+        /**
+         * Renders the transaction list and updates the summary.
+         * @param {Array<Object>} transactions - List of transaction objects.
+         */
+        function renderApp(transactions) {
+            const listElement = document.getElementById('transactions-list');
+            listElement.innerHTML = ''; // Clear existing list
 
-      // --- C. Payment/Collection Modal (تحصيلات/سدادات) ---
-      global.openPaymentModal = function(dueId) {
-          const due = DafatirAPI.getDue(dueId);
-          if (!due) return alert('الالتزام غير موجود.');
-          
-          const isPayable = due.type === 'payable';
-          const title = isPayable ? 'تسجيل سداد التزام' : 'تسجيل تحصيل مستحق';
-          const buttonText = isPayable ? 'سداد الآن' : 'تحصيل الآن';
-          const typeLabel = isPayable ? 'المطلوب دفعه' : 'المتوقع تحصيله';
+            // Sort transactions by date (most recent first)
+            transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-          const formHtml = `
-              <form id="payment-form" onsubmit="event.preventDefault(); handlePaymentSubmit('${dueId}', ${isPayable});">
-                  <p><strong>البيان:</strong> ${due.name}</p>
-                  <p><strong>${typeLabel} المتبقي:</strong> <span class="${isPayable ? 'text-danger' : 'text-success'}">${formatCurrency(due.remainingAmount)}</span></p>
-                  
-                  <div class="form-group">
-                      <label for="pay_amount">مبلغ الدفع/التحصيل:</label>
-                      <input type="number" id="pay_amount" name="amount" min="0.01" step="0.01" max="${due.remainingAmount}" value="${due.remainingAmount.toFixed(2)}" required>
-                  </div>
-                  
-                  <div class="form-group">
-                      <label for="pay_accountId">الحساب المستخدم:</label>
-                      <select id="pay_accountId" name="accountId" required>
-                          ${getAccountOptions(due.accountId)}
-                      </select>
-                  </div>
-                  
-                  <div class="form-group">
-                      <label for="pay_notes">ملاحظات الدفع:</label>
-                      <textarea id="pay_notes" name="notes"></textarea>
-                  </div>
+            if (transactions.length === 0) {
+                listElement.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-gray-500">لا توجد معاملات مسجلة بعد.</td></tr>`;
+            } else {
+                transactions.forEach(t => {
+                    const display = getTransactionDisplay(t.type);
+                    
+                    let amountSign = '';
+                    let amountClass = 'text-gray-900';
+                    if (t.type === 'income' || t.type === 'receivable_collection') {
+                        amountSign = '+';
+                        amountClass = 'text-green-600 font-semibold';
+                    } else if (t.type === 'expense' || t.type === 'liability_payment') {
+                        amountSign = '-';
+                        amountClass = 'text-red-600 font-semibold';
+                    }
 
-                  <div class="form-actions">
-                      <button type="submit" class="btn btn-primary">${buttonText}</button>
-                      <button type="button" class="btn btn-secondary" onclick="closeModal()">إلغاء</button>
-                  </div>
-              </form>
-          `;
-          showModal(formHtml, title);
-      }
-      
-      global.handlePaymentSubmit = function(dueId, isPayable) {
-          const form = document.getElementById('payment-form');
-          const data = new FormData(form);
-          const payData = Object.fromEntries(data.entries());
-          
-          const amount = parseFloat(payData.amount);
-          if (isNaN(amount) || amount <= 0) return alert('يرجى إدخال مبلغ صحيح.');
+                    const row = `
+                        <tr class="transaction-row transition duration-100" data-doc-id="${t.id}">
+                            <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-500">${t.date}</td>
+                            <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-900">${t.description}</td>
+                            <td class="px-3 py-3 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${display.class}">
+                                    ${display.name}
+                                </span>
+                            </td>
+                            <td class="px-3 py-3 whitespace-nowrap text-sm ${amountClass}">${amountSign}${parseFloat(t.amount).toFixed(2)}</td>
+                            <td class="px-3 py-3 whitespace-nowrap text-center text-sm font-medium">
+                                <button onclick="deleteTransaction('${t.id}')" class="text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-50 transition duration-150" aria-label="حذف المعاملة">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 10-2 0v6a1 1 0 102 0V8z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    listElement.insertAdjacentHTML('beforeend', row);
+                });
+            }
 
-          let success = false;
-          if (isPayable) {
-              success = DafatirAPI.payPayablePartial(dueId, amount, payData.accountId, payData.notes);
-          } else {
-              success = DafatirAPI.collectReceivablePartial(dueId, amount, payData.accountId, payData.notes);
-          }
-          
-          if (success) {
-              closeModal();
-              initializeDashboard();
-          } else {
-              alert('فشل في تسجيل العملية. تحقق من المبلغ والرصيد المتبقي.');
-          }
-      }
-      
-      // --- D. Delete Due Function ---
-      global.handleDeleteDue = function(dueId, dueName) {
-          if (confirm(`هل أنت متأكد من حذف الالتزام "${dueName}"؟ سيتم حذف جميع الحركات المالية المرتبطة به أيضاً.`)) {
-              DafatirAPI.deleteDue(dueId);
-              initializeDashboard();
-          }
-      }
+            calculateSummary(transactions);
+        }
 
-      // -----------------------------------------------------------------
-      // Theme Toggle Logic
-      // -----------------------------------------------------------------
-      function setupThemeToggle() {
-          const toggleButton = document.getElementById('theme-toggle');
-          
-          // 1. Initial setup based on localStorage or system preference
-          const storedTheme = localStorage.getItem('theme');
-          const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        /**
+         * Sets up the real-time listener for the user's transactions.
+         */
+        function listenForTransactions() {
+            if (!db || !userId) return;
 
-          if (storedTheme === 'dark' || (!storedTheme && prefersDark)) {
-              document.documentElement.classList.add('dark-mode');
-              toggleButton.textContent = '☀️';
-          } else {
-              document.documentElement.classList.remove('dark-mode');
-              toggleButton.textContent = '🌙';
-          }
+            // Path: /artifacts/{appId}/users/{userId}/financial_transactions
+            const collectionPath = `artifacts/${appId}/users/${userId}/financial_transactions`;
+            const q = collection(db, collectionPath);
+            
+            // onSnapshot provides real-time updates and handles the initial fetch
+            onSnapshot(q, (querySnapshot) => {
+                const transactions = [];
+                querySnapshot.forEach((doc) => {
+                    // Spread operator is used to include the document ID (id) with the data
+                    transactions.push({ id: doc.id, ...doc.data() });
+                });
+                console.log("Transactions updated in real-time:", transactions.length);
+                // The new list is passed to renderApp, which recalculates the summary automatically.
+                renderApp(transactions);
+            }, (error) => {
+                console.error("Error listening to transactions:", error);
+                document.getElementById('transactions-list').innerHTML = `<tr><td colspan="5" class="text-center py-4 text-red-500">فشل في جلب المعاملات: ${error.message}</td></tr>`;
+            });
+        }
 
-          // 2. Event Listener for manual toggle
-          toggleButton.addEventListener('click', () => {
-              const isDarkMode = document.documentElement.classList.toggle('dark-mode');
-              if (isDarkMode) {
-                  localStorage.setItem('theme', 'dark');
-                  toggleButton.textContent = '☀️'; // Show Sun for light mode switch
-              } else {
-                  localStorage.setItem('theme', 'light');
-                  toggleButton.textContent = '🌙'; // Show Moon for dark mode switch
-              }
-          });
-      }
-      // -----------------------------------------------------------------
-      
-      global.initializeDashboard = function() {
-        DafatirAPI.init(); // Recalculate and load latest data
-        renderSummaryCards();
-        renderAccountsTable();
-        renderDuesTable();
-        renderTopSpendingTable();
-      };
-      
-      // تنفيذ تهيئة لوحة القيادة وتفعيل زر الوضع الليلي بعد تحميل الـ DOM
-      window.addEventListener('DOMContentLoaded', () => {
-          setupThemeToggle();
-          initializeDashboard();
-      });
+        /**
+         * Saves a new transaction to Firestore.
+         * @param {string} type - 'income', 'expense', 'receivable_collection', or 'liability_payment'.
+         */
+        window.addTransaction = async function(type) {
+            if (!db || !userId) {
+                console.warn("Database or user not ready.");
+                return;
+            }
 
-    })(window);
-  </script>
+            const description = document.getElementById('transaction-description').value.trim();
+            const amountStr = document.getElementById('transaction-amount').value;
+            const date = document.getElementById('transaction-date').value;
+
+            if (!description || !amountStr || !date || parseFloat(amountStr) <= 0) {
+                alert("الرجاء إدخال وصف ومبلغ وتاريخ صالحين."); // Custom modal preferred, but using alert for simplicity in one-file JS
+                return;
+            }
+
+            const amount = parseFloat(amountStr);
+
+            const transactionData = {
+                type: type,
+                description: description,
+                amount: amount,
+                date: date, // YYYY-MM-DD format for easy sorting
+                createdAt: serverTimestamp() // To track order of creation
+            };
+
+            const collectionPath = `artifacts/${appId}/users/${userId}/financial_transactions`;
+
+            try {
+                await addDoc(collection(db, collectionPath), transactionData);
+                console.log("Transaction added successfully:", type);
+                
+                // Clear inputs after successful add
+                document.getElementById('transaction-description').value = '';
+                document.getElementById('transaction-amount').value = '';
+                // Keep date field if user is entering a series of transactions for the same date
+                
+            } catch (error) {
+                console.error("Error adding transaction:", error);
+                alert("فشل في إضافة المعاملة: " + error.message);
+            }
+        }
+
+        /**
+         * Deletes a transaction from Firestore.
+         * The real-time listener will automatically handle the recalculation.
+         * @param {string} docId - The Firestore document ID.
+         */
+        window.deleteTransaction = async function(docId) {
+            if (!db || !userId) return;
+
+            // In a real app, you would use a custom confirmation modal here instead of 'confirm'
+            if (!confirm("هل أنت متأكد من حذف هذه المعاملة؟ سيتم تحديث الأرصدة والالتزامات/التحصيلات تلقائياً.")) {
+                return;
+            }
+            
+            const docRef = doc(db, `artifacts/${appId}/users/${userId}/financial_transactions`, docId);
+            
+            try {
+                // The deletion ensures that both the value and the date (by removing the entry entirely) 
+                // are removed from consideration, fulfilling the user's requirement.
+                await deleteDoc(docRef);
+                console.log("Transaction deleted successfully:", docId);
+            } catch (error) {
+                console.error("Error deleting transaction:", error);
+                alert("فشل في حذف المعاملة: " + error.message);
+            }
+        }
+
+        // Initialize the application on load
+        initFirebaseAndAuth();
+
+    </script>
 </body>
 </html>
 
