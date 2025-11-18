@@ -1,398 +1,437 @@
-<!DOCTYPE html>
+
+<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إدارة المعاملات المالية</title>
-    <!-- Load Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Configure Tailwind to use Arabic font and direction -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'primary': '#10b981', // Emerald 500
-                        'secondary': '#f97316', // Orange 600
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'Tahoma', 'Arial', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        /* Custom styles for better aesthetics and readability */
-        body {
-            background-color: #f3f4f6;
-            font-family: 'Tahoma', sans-serif;
-        }
-        .card {
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
-        .transaction-row:hover {
-            background-color: #fef2f2; /* Light red hover for easy delete identification */
-        }
-        /* Custom scrollbar for transaction list */
-        #transactions-list::-webkit-scrollbar {
-            width: 8px;
-        }
-        #transactions-list::-webkit-scrollbar-thumb {
-            background-color: #d1d5db;
-            border-radius: 4px;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>جمع المتطلبات — index.html</title>
+  <style>
+    body{font-family: Tajawal, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; padding:18px; background:#f7fafc; color:#0f172a}
+    .card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(12,20,40,0.06); margin-bottom:16px}
+    h1{margin:0 0 10px 0;font-size:20px}
+    label{display:inline-block;margin-bottom:8px}
+    input[type=file]{display:block}
+    button{background:#0ea5a4;color:#fff;border:none;padding:10px 14px;border-radius:10px;cursor:pointer;margin:6px 6px 0 0}
+    button.secondary{background:#64748b}
+    pre{background:#0b1221;color:#e6eef8;padding:12px;border-radius:8px;overflow:auto}
+    table{width:100%;border-collapse:collapse;margin-top:12px}
+    th,td{border:1px solid #e6eef8;padding:8px;text-align:right}
+    .flex{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-start}
+    .small{font-size:13px;color:#475569}
+    .badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#e6f6f6;color:#064e4e;font-weight:600}
+    .hidden{display:none}
+    @media (max-width:600px){body{padding:12px}}
+  </style>
+  <!-- js-yaml for YAML parsing -->
+  <script src="https://unpkg.com/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
 </head>
-<body class="p-4 md:p-8">
-    <div class="max-w-4xl mx-auto">
-        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">نظام إدارة المعاملات المالية</h1>
+<body>
+  <div class="card">
+    <h1>جامع المتطلبات — افتح الملفات وجمّعها في ملف واحد</h1>
+    <p class="small">ارفع ملفات JSON / YAML / MD. السكربت هيطبع النتائج ويخلّيك تحمّلها كـ JSON / CSV / MD.</p>
 
-        <!-- Summary Section -->
-        <div id="summary-section" class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <!-- Net Balance -->
-            <div class="card p-4 rounded-xl bg-white border-b-4 border-primary shadow-lg">
-                <p class="text-sm font-medium text-gray-500">الرصيد الصافي</p>
-                <p id="net-balance" class="text-2xl font-extrabold text-gray-900 mt-1">0.00</p>
-            </div>
-            <!-- Total Collections -->
-            <div class="card p-4 rounded-xl bg-white border-b-4 border-blue-500 shadow-lg">
-                <p class="text-sm font-medium text-gray-500">إجمالي التحصيلات (المستحقات)</p>
-                <p id="total-collections" class="text-2xl font-extrabold text-blue-600 mt-1">0.00</p>
-            </div>
-            <!-- Total Payments -->
-            <div class="card p-4 rounded-xl bg-white border-b-4 border-red-500 shadow-lg">
-                <p class="text-sm font-medium text-gray-500">إجمالي السدادات (الالتزامات)</p>
-                <p id="total-payments" class="text-2xl font-extrabold text-red-600 mt-1">0.00</p>
-            </div>
-            <!-- Total Inflow -->
-            <div class="card p-4 rounded-xl bg-white border-b-4 border-green-500 shadow-lg">
-                <p class="text-sm font-medium text-gray-500">إجمالي الإيرادات (النقدي)</p>
-                <p id="total-inflow" class="text-2xl font-extrabold text-green-600 mt-1">0.00</p>
-            </div>
-        </div>
+    <label>اختر ملفات (متعدد)</label>
+    <input id="files" type="file" multiple accept=".json,.yaml,.yml,.md,text/markdown,application/json" />
 
-        <!-- Transaction Forms Section -->
-        <div class="bg-white p-6 rounded-xl card mb-8">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">إضافة معاملة جديدة</h2>
-
-            <!-- Input Fields for all transactions -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                <input type="text" id="transaction-description" placeholder="الوصف (إيراد/مصروف/مستحق/التزام)" class="p-3 border rounded-lg md:col-span-2 focus:ring-primary focus:border-primary transition duration-150" required>
-                <input type="number" id="transaction-amount" placeholder="المبلغ" class="p-3 border rounded-lg focus:ring-primary focus:border-primary transition duration-150" required min="1">
-                <input type="date" id="transaction-date" class="p-3 border rounded-lg focus:ring-primary focus:border-primary transition duration-150" required>
-            </div>
-
-            <!-- Transaction Type Buttons -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <button onclick="addTransaction('income')" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg transition duration-150 shadow-md">إضافة إيراد</button>
-                <button onclick="addTransaction('expense')" class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-lg transition duration-150 shadow-md">إضافة مصروف</button>
-                <button onclick="addTransaction('receivable_collection')" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg transition duration-150 shadow-md">تحصيل المستحقات</button>
-                <button onclick="addTransaction('liability_payment')" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-lg transition duration-150 shadow-md">سداد الالتزامات</button>
-            </div>
-        </div>
-
-        <!-- Transactions List Section -->
-        <div class="bg-white p-6 rounded-xl card">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">سجل المعاملات</h2>
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-3 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">التاريخ</th>
-                            <th class="px-3 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الوصف</th>
-                            <th class="px-3 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">النوع</th>
-                            <th class="px-3 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المبلغ (±)</th>
-                            <th class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراء</th>
-                        </tr>
-                    </thead>
-                    <tbody id="transactions-list" class="bg-white divide-y divide-gray-200">
-                        <!-- Transactions will be rendered here -->
-                        <tr><td colspan="5" class="text-center py-4 text-gray-500">الرجاء الانتظار... يتم تحميل البيانات.</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        
-        <!-- User ID display for collaborative/debug purposes -->
-        <div class="mt-4 text-center text-xs text-gray-500">
-            <p>معرف المستخدم: <span id="user-id-display">جار التحميل...</span></p>
-        </div>
-
+    <div style="margin-top:10px" class="flex">
+      <button id="processBtn">ابدأ التجميع</button>
+      <button id="clearBtn" class="secondary">مسح النتائج</button>
+      <button id="downloadJson" class="hidden">تحميل JSON</button>
+      <button id="downloadCsv" class="hidden">تحميل CSV</button>
+      <button id="downloadMd" class="hidden">تحميل Markdown</button>
     </div>
 
-    <!-- Firebase Imports and Script -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, addDoc, onSnapshot, collection, deleteDoc, query, orderBy, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        
-        // IMPORTANT: Set Firestore log level for debugging
-        setLogLevel('Debug');
+    <div id="stats" style="margin-top:12px" class="small"></div>
+  </div>
 
-        let app;
-        let db;
-        let auth;
-        let userId = 'loading';
-        
-        // Global variables provided by the Canvas environment
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+  <div id="resultContainer" class="card hidden">
+    <h1>النتيجة</h1>
+    <div id="summary" class="small"></div>
+    <div id="tableWrap"></div>
+  </div>
 
-        /**
-         * Converts transaction type string to Arabic display name and CSS class.
-         * @param {string} type - The transaction type (e.g., 'income').
-         * @returns {{name: string, class: string}}
-         */
-        function getTransactionDisplay(type) {
-            const displays = {
-                'income': { name: 'إيراد (نقدي)', class: 'bg-green-100 text-green-800' },
-                'expense': { name: 'مصروف (نقدي)', class: 'bg-red-100 text-red-800' },
-                'receivable_collection': { name: 'تحصيل مستحقات', class: 'bg-blue-100 text-blue-800' },
-                'liability_payment': { name: 'سداد التزامات', class: 'bg-orange-100 text-orange-800' }
-            };
-            return displays[type] || { name: 'غير معروف', class: 'bg-gray-100 text-gray-800' };
+<script>
+/*
+  index.html — requirements aggregator (client-side)
+  - يدعم قراءة .json, .yaml/.yml, .md
+  - يقوم بتوحيد الحقول: title, description, priority, tags, status, assignee, created_at
+  - يدمج التكرارات البسيطة بناءً على تطبيع العنوان (normalize)
+  - يتيح تحميل النتائج كـ JSON / CSV / Markdown
+*/
+
+// Helpers
+function normalizeText(s){
+  if(!s) return "";
+  s = String(s).trim().toLowerCase();
+  // remove punctuation, keep arabic letters and latin/digits
+  s = s.replace(/[^\p{L}\p{N}\s]/gu, ""); // unicode letters & numbers
+  s = s.replace(/\s+/g, " ");
+  return s;
+}
+
+function parseMarkdown(content, sourceFile){
+  // بسيط: كل heading (#..######) يبدأ عنصر جديد.
+  const lines = content.split(/\r?\n/);
+  const items = [];
+  let curr = null;
+  let descBuf = [];
+  let metaBuf = {};
+  for(let i=0;i<=lines.length;i++){
+    const line = lines[i] ?? "";
+    const h = line.match(/^(#{1,6})\s+(.*)$/);
+    const kv = line.match(/^\s*([A-Za-z0-9_-]+)\s*:\s*(.+)$/);
+    if(h){
+      if(curr){
+        curr.description = descBuf.join("\n").trim();
+        Object.assign(curr, metaBuf);
+        items.push(curr);
+      }
+      curr = { title: h[2].trim(), source_file: sourceFile };
+      descBuf = [];
+      metaBuf = {};
+    } else if(kv && curr){
+      const key = kv[1].trim().toLowerCase();
+      const val = kv[2].trim();
+      if(key === "priority") metaBuf.priority = val;
+      else if(key === "tags") metaBuf.tags = val.split(",").map(t=>t.trim()).filter(Boolean);
+      else if(key === "status") metaBuf.status = val;
+      else if(key === "assignee") metaBuf.assignee = val;
+      else metaBuf[key] = val;
+    } else {
+      if(curr) descBuf.push(line);
+    }
+  }
+  if(!items.length && content.trim()){
+    items.push({ title: sourceFile, description: content.trim(), source_file: sourceFile });
+  }
+  return items;
+}
+
+function unifyItem(raw, sourceFile){
+  const title = raw.title || raw.name || raw.summary || "";
+  const desc = raw.description || raw.details || raw.body || "";
+  let prio = raw.priority || raw.p || raw.urgency || "medium";
+  let tags = raw.tags || raw.labels || [];
+  if(typeof tags === "string") tags = tags.split(",").map(t=>t.trim()).filter(Boolean);
+  const status = raw.status || "open";
+  const assignee = raw.assignee || raw.owner || "";
+  let created_at = raw.created_at || raw.date || "";
+  // try ISO normalization if possible (naive)
+  try {
+    if(created_at){
+      const d = new Date(created_at);
+      if(!isNaN(d)) created_at = d.toISOString();
+    }
+  } catch(e){}
+  return {
+    title: String(title).trim(),
+    description: String(desc).trim(),
+    priority: String(prio).trim(),
+    tags: tags,
+    status: String(status).trim(),
+    assignee: String(assignee).trim(),
+    created_at: created_at,
+    source_file: sourceFile
+  };
+}
+
+function mergeRequirements(items){
+  const merged = [];
+  const indexByNorm = {};
+  const order = { "low":1, "medium":2, "high":3, "critical":4 };
+  items.forEach(it=>{
+    let title = it.title || "";
+    if(!title.trim()){
+      title = (it.description || "").slice(0,80) || "untitled";
+      it.title = title;
+    }
+    const norm = normalizeText(title);
+    if(indexByNorm[norm] !== undefined){
+      const base = merged[indexByNorm[norm]];
+      // longer description
+      if((it.description || "").length > (base.description || "").length){
+        base.description = it.description;
+      }
+      // priority: choose higher
+      const curPr = order[(it.priority||"").toLowerCase()] || 0;
+      const basePr = order[(base.priority||"").toLowerCase()] || 0;
+      if(curPr > basePr) base.priority = it.priority;
+      // merge tags
+      const s = new Set([...(base.tags||[]), ...(it.tags||[])]);
+      base.tags = Array.from(s);
+      // status: if any closed/done -> closed
+      if(["closed","done","resolved"].includes((it.status||"").toLowerCase()) || ["closed","done","resolved"].includes((base.status||"").toLowerCase())){
+        base.status = "closed";
+      }
+      // sources
+      base.sources = Array.from(new Set([...(base.sources||[]), it.source_file]));
+      // assignee: keep existing, else new
+      if(!base.assignee && it.assignee) base.assignee = it.assignee;
+    } else {
+      const copy = Object.assign({}, it);
+      copy.sources = [it.source_file];
+      merged.push(copy);
+      indexByNorm[norm] = merged.length - 1;
+    }
+  });
+  return merged;
+}
+
+function itemsToCsv(items){
+  const keys = ["id","title","description","priority","tags","status","assignee","created_at","sources"];
+  const rows = [keys.join(",")];
+  items.forEach((it,i)=>{
+    const row = [
+      i+1,
+      `"${(it.title||"").replace(/"/g,'""')}"`,
+      `"${(it.description||"").replace(/"/g,'""').replace(/\n/g,' \\n ')}"`,
+      `"${(it.priority||"")}"`,
+      `"${((it.tags||[]).join(","))}"`,
+      `"${(it.status||"")}"`,
+      `"${(it.assignee||"")}"`,
+      `"${(it.created_at||"")}"`,
+      `"${((it.sources||[]).join(","))}"`
+    ];
+    rows.push(row.join(","));
+  });
+  return rows.join("\n");
+}
+
+function itemsToMarkdown(items){
+  const byPrio = {};
+  items.forEach(it=>{
+    const p = (it.priority||"medium").toLowerCase();
+    byPrio[p] = byPrio[p] || [];
+    byPrio[p].push(it);
+  });
+  const lines = [];
+  lines.push("# Requirements Report");
+  lines.push(`_Generated: ${new Date().toISOString()}_\n`);
+  lines.push("## Summary");
+  lines.push(`- Total merged requirements: **${items.length}**\n`);
+  Object.keys(byPrio).sort().reverse().forEach(p=>{
+    lines.push(`- ${p.charAt(0).toUpperCase()+p.slice(1)}: ${byPrio[p].length}`);
+  });
+  lines.push("\n---\n");
+  items.forEach((it,i)=>{
+    lines.push(`### ${i+1}. ${it.title}`);
+    lines.push(`- **Priority:** ${it.priority}`);
+    lines.push(`- **Status:** ${it.status}`);
+    if((it.tags||[]).length) lines.push(`- **Tags:** ${(it.tags||[]).join(", ")}`);
+    if(it.assignee) lines.push(`- **Assignee:** ${it.assignee}`);
+    if(it.sources) lines.push(`- **Sources:** ${it.sources.join(", ")}`);
+    if(it.created_at) lines.push(`- **Created at:** ${it.created_at}`);
+    lines.push("");
+    if(it.description) lines.push(it.description);
+    lines.push("\n---\n");
+  });
+  return lines.join("\n");
+}
+
+// UI wiring
+const fileInput = document.getElementById("files");
+const processBtn = document.getElementById("processBtn");
+const clearBtn = document.getElementById("clearBtn");
+const downloadJson = document.getElementById("downloadJson");
+const downloadCsv = document.getElementById("downloadCsv");
+const downloadMd = document.getElementById("downloadMd");
+const stats = document.getElementById("stats");
+const resultContainer = document.getElementById("resultContainer");
+const summary = document.getElementById("summary");
+const tableWrap = document.getElementById("tableWrap");
+
+let lastMerged = null;
+
+processBtn.addEventListener("click", async ()=>{
+  const files = Array.from(fileInput.files || []);
+  if(!files.length){
+    alert("عايز ملف واحد على الأقل (JSON / YAML / MD).");
+    return;
+  }
+  stats.innerHTML = "جاري القراءة والمعالجة... رجاءً انتظر لحظة";
+  resultContainer.classList.add("hidden");
+  tableWrap.innerHTML = "";
+  summary.innerHTML = "";
+
+  const rawItems = [];
+  for(const f of files){
+    try {
+      const text = await f.text();
+      const name = f.name || "file";
+      if(name.endsWith(".json")){
+        try {
+          const data = JSON.parse(text);
+          let arr = [];
+          if(Array.isArray(data)) arr = data;
+          else if(typeof data === "object" && data !== null){
+            if(Array.isArray(data.requirements)) arr = data.requirements;
+            else arr = [data];
+          }
+          arr.forEach(a=>{
+            rawItems.push(unifyItem(a, name));
+          });
+        } catch(e){
+          console.warn("JSON parse failed for", name, e);
         }
-
-        /**
-         * Initializes Firebase and handles user authentication.
-         */
-        async function initFirebaseAndAuth() {
-            if (!firebaseConfig) {
-                console.error("Firebase config is missing.");
-                document.getElementById('transactions-list').innerHTML = `<tr><td colspan="5" class="text-center py-4 text-red-500">خطأ: إعدادات قاعدة البيانات غير متوفرة.</td></tr>`;
-                return;
-            }
-
-            try {
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-
-                // Sign in using the provided token or anonymously
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
-
-                // Set up authentication state listener
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        userId = user.uid;
-                        document.getElementById('user-id-display').textContent = userId;
-                        console.log("User authenticated:", userId);
-                        // Start listening to transactions once authenticated
-                        listenForTransactions();
-                    } else {
-                        // This should ideally not happen after initial sign-in
-                        console.log("User signed out or failed authentication.");
-                        document.getElementById('user-id-display').textContent = 'غير مصادق';
-                    }
-                });
-
-            } catch (error) {
-                console.error("Error during Firebase initialization or authentication:", error);
-                document.getElementById('transactions-list').innerHTML = `<tr><td colspan="5" class="text-center py-4 text-red-500">فشل في الاتصال بالخدمة.</td></tr>`;
-            }
+      } else if(name.endsWith(".yaml") || name.endsWith(".yml")){
+        try {
+          const doc = jsyaml.load(text);
+          let arr = [];
+          if(Array.isArray(doc)) arr = doc;
+          else if(typeof doc === "object" && doc !== null){
+            if(Array.isArray(doc.requirements)) arr = doc.requirements;
+            else arr = [doc];
+          }
+          arr.forEach(a=>{
+            rawItems.push(unifyItem(a, name));
+          });
+        } catch(e){
+          console.warn("YAML parse failed for", name, e);
         }
-
-        /**
-         * Calculates the summary statistics from a list of transactions.
-         * @param {Array<Object>} transactions - List of transaction objects.
-         */
-        function calculateSummary(transactions) {
-            let totalInflow = 0;
-            let totalOutflow = 0;
-            let totalCollections = 0; // تحصيل المستحقات
-            let totalPayments = 0; // سداد الالتزامات
-
-            transactions.forEach(t => {
-                const amount = parseFloat(t.amount) || 0;
-
-                switch (t.type) {
-                    case 'income':
-                        totalInflow += amount;
-                        break;
-                    case 'expense':
-                        totalOutflow += amount;
-                        break;
-                    case 'receivable_collection':
-                        totalInflow += amount;
-                        totalCollections += amount;
-                        break;
-                    case 'liability_payment':
-                        totalOutflow += amount;
-                        totalPayments += amount;
-                        break;
-                }
-            });
-
-            const netBalance = totalInflow - totalOutflow;
-
-            // Update DOM
-            document.getElementById('net-balance').textContent = netBalance.toFixed(2) + ' ر.ع'; // ر.ع = رمز عملة افتراضي
-            document.getElementById('total-inflow').textContent = totalInflow.toFixed(2) + ' ر.ع';
-            document.getElementById('total-collections').textContent = totalCollections.toFixed(2) + ' ر.ع';
-            document.getElementById('total-payments').textContent = totalPayments.toFixed(2) + ' ر.ع';
+      } else if(name.endsWith(".md") || name.endsWith(".markdown")){
+        const parsed = parseMarkdown(text, name);
+        parsed.forEach(p=>{
+          rawItems.push(unifyItem(p, name));
+        });
+      } else {
+        // try to guess content: JSON fallback
+        try {
+          const data = JSON.parse(text);
+          const arr = Array.isArray(data) ? data : [data];
+          arr.forEach(a=> rawItems.push(unifyItem(a, name)));
+        } catch(e){
+          // treat as markdown
+          const parsed = parseMarkdown(text, name);
+          parsed.forEach(p=> rawItems.push(unifyItem(p, name)));
         }
+      }
+    } catch(err){
+      console.warn("file read error", f.name, err);
+    }
+  }
 
-        /**
-         * Renders the transaction list and updates the summary.
-         * @param {Array<Object>} transactions - List of transaction objects.
-         */
-        function renderApp(transactions) {
-            const listElement = document.getElementById('transactions-list');
-            listElement.innerHTML = ''; // Clear existing list
+  if(!rawItems.length){
+    stats.innerHTML = "لم يتم استخراج أي عناصر من الملفات. تأكد من صيغة الملفات أو محتواها.";
+    return;
+  }
 
-            // Sort transactions by date (most recent first)
-            transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+  stats.innerHTML = `تم استخراج ${rawItems.length} عنصر أولي — جارِ الدمج...`;
+  const merged = mergeRequirements(rawItems);
+  lastMerged = merged;
 
-            if (transactions.length === 0) {
-                listElement.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-gray-500">لا توجد معاملات مسجلة بعد.</td></tr>`;
-            } else {
-                transactions.forEach(t => {
-                    const display = getTransactionDisplay(t.type);
-                    
-                    let amountSign = '';
-                    let amountClass = 'text-gray-900';
-                    if (t.type === 'income' || t.type === 'receivable_collection') {
-                        amountSign = '+';
-                        amountClass = 'text-green-600 font-semibold';
-                    } else if (t.type === 'expense' || t.type === 'liability_payment') {
-                        amountSign = '-';
-                        amountClass = 'text-red-600 font-semibold';
-                    }
+  stats.innerHTML = `تم الدمج: ${rawItems.length} → ${merged.length} عناصر فريدة. يمكنك تحميل النتائج أو معاينتها أدناه.`;
+  downloadJson.classList.remove("hidden");
+  downloadCsv.classList.remove("hidden");
+  downloadMd.classList.remove("hidden");
+  resultContainer.classList.remove("hidden");
 
-                    const row = `
-                        <tr class="transaction-row transition duration-100" data-doc-id="${t.id}">
-                            <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-500">${t.date}</td>
-                            <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-900">${t.description}</td>
-                            <td class="px-3 py-3 whitespace-nowrap">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${display.class}">
-                                    ${display.name}
-                                </span>
-                            </td>
-                            <td class="px-3 py-3 whitespace-nowrap text-sm ${amountClass}">${amountSign}${parseFloat(t.amount).toFixed(2)}</td>
-                            <td class="px-3 py-3 whitespace-nowrap text-center text-sm font-medium">
-                                <button onclick="deleteTransaction('${t.id}')" class="text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-50 transition duration-150" aria-label="حذف المعاملة">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 10-2 0v6a1 1 0 102 0V8z" clip-rule="evenodd" />
-                                    </svg>
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                    listElement.insertAdjacentHTML('beforeend', row);
-                });
-            }
+  // show summary
+  const prioCount = merged.reduce((acc,it)=>{
+    const p = (it.priority||"medium").toLowerCase();
+    acc[p] = (acc[p]||0)+1; return acc;
+  },{});
+  const topTags = {};
+  merged.forEach(it => (it.tags||[]).forEach(t => topTags[t] = (topTags[t]||0)+1));
+  summary.innerHTML = `
+    <div class="small">
+      <div><span class="badge">مجمّع</span> العناصر المدموجة: <strong>${merged.length}</strong></div>
+      <div style="margin-top:6px">الأولوية حسب العدد: ${Object.entries(prioCount).map(([k,v])=>` ${k}:${v}`).join(" | ")}</div>
+      <div style="margin-top:6px">أهم التاجز: ${Object.entries(topTags).sort((a,b)=>b[1]-a[1]).slice(0,8).map(t=>t[0]).join(", ") || "-"}</div>
+    </div>
+  `;
 
-            calculateSummary(transactions);
-        }
+  // build table
+  const table = document.createElement("table");
+  const thead = document.createElement("thead");
+  thead.innerHTML = "<tr><th>#</th><th>العنوان</th><th>الوصف</th><th>الأولوية</th><th>التاجز</th><th>الحالة</th><th>المصدر</th></tr>";
+  table.appendChild(thead);
+  const tbody = document.createElement("tbody");
+  merged.forEach((it,i)=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${i+1}</td>
+      <td>${escapeHtml(it.title)}</td>
+      <td><pre style="white-space:pre-wrap;margin:0;padding:0;border:none;background:transparent">${escapeHtml(it.description||"")}</pre></td>
+      <td>${escapeHtml(it.priority||"")}</td>
+      <td>${(it.tags||[]).map(t=>`<span class="badge">${escapeHtml(t)}</span>`).join(" ")}</td>
+      <td>${escapeHtml(it.status||"")}</td>
+      <td>${(it.sources||[]).map(s=>escapeHtml(s)).join(", ")}</td>`;
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  tableWrap.innerHTML = "";
+  tableWrap.appendChild(table);
 
-        /**
-         * Sets up the real-time listener for the user's transactions.
-         */
-        function listenForTransactions() {
-            if (!db || !userId) return;
+});
 
-            // Path: /artifacts/{appId}/users/{userId}/financial_transactions
-            const collectionPath = `artifacts/${appId}/users/${userId}/financial_transactions`;
-            const q = collection(db, collectionPath);
-            
-            // onSnapshot provides real-time updates and handles the initial fetch
-            onSnapshot(q, (querySnapshot) => {
-                const transactions = [];
-                querySnapshot.forEach((doc) => {
-                    // Spread operator is used to include the document ID (id) with the data
-                    transactions.push({ id: doc.id, ...doc.data() });
-                });
-                console.log("Transactions updated in real-time:", transactions.length);
-                // The new list is passed to renderApp, which recalculates the summary automatically.
-                renderApp(transactions);
-            }, (error) => {
-                console.error("Error listening to transactions:", error);
-                document.getElementById('transactions-list').innerHTML = `<tr><td colspan="5" class="text-center py-4 text-red-500">فشل في جلب المعاملات: ${error.message}</td></tr>`;
-            });
-        }
+clearBtn.addEventListener("click", ()=>{
+  fileInput.value = "";
+  stats.innerHTML = "";
+  resultContainer.classList.add("hidden");
+  tableWrap.innerHTML = "";
+  summary.innerHTML = "";
+  downloadJson.classList.add("hidden");
+  downloadCsv.classList.add("hidden");
+  downloadMd.classList.add("hidden");
+  lastMerged = null;
+});
 
-        /**
-         * Saves a new transaction to Firestore.
-         * @param {string} type - 'income', 'expense', 'receivable_collection', or 'liability_payment'.
-         */
-        window.addTransaction = async function(type) {
-            if (!db || !userId) {
-                console.warn("Database or user not ready.");
-                return;
-            }
+downloadJson.addEventListener("click", ()=>{
+  if(!lastMerged) return alert("لا توجد نتائج للتحميل.");
+  const content = JSON.stringify(lastMerged, null, 2);
+  downloadBlob(content, "merged_requirements.json", "application/json;charset=utf-8");
+});
 
-            const description = document.getElementById('transaction-description').value.trim();
-            const amountStr = document.getElementById('transaction-amount').value;
-            const date = document.getElementById('transaction-date').value;
+downloadCsv.addEventListener("click", ()=>{
+  if(!lastMerged) return alert("لا توجد نتائج للتحميل.");
+  const csv = itemsToCsv(lastMerged);
+  downloadBlob(csv, "merged_requirements.csv", "text/csv;charset=utf-8");
+});
 
-            if (!description || !amountStr || !date || parseFloat(amountStr) <= 0) {
-                alert("الرجاء إدخال وصف ومبلغ وتاريخ صالحين."); // Custom modal preferred, but using alert for simplicity in one-file JS
-                return;
-            }
+downloadMd.addEventListener("click", ()=>{
+  if(!lastMerged) return alert("لا توجد نتائج للتحميل.");
+  const md = itemsToMarkdown(lastMerged);
+  downloadBlob(md, "requirements_report.md", "text/markdown;charset=utf-8");
+});
 
-            const amount = parseFloat(amountStr);
+// small util
+function downloadBlob(content, filename, mime){
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
 
-            const transactionData = {
-                type: type,
-                description: description,
-                amount: amount,
-                date: date, // YYYY-MM-DD format for easy sorting
-                createdAt: serverTimestamp() // To track order of creation
-            };
+function escapeHtml(str){
+  return String(str || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
 
-            const collectionPath = `artifacts/${appId}/users/${userId}/financial_transactions`;
+// expose unifyItem for internal use
+function unifyItem(raw, sourceFile){ return (window.__unifyItem || (window.__unifyItem = (r,s)=> {
+  const title = r.title || r.name || r.summary || "";
+  const desc = r.description || r.details || r.body || "";
+  let prio = r.priority || r.p || r.urgency || "medium";
+  let tags = r.tags || r.labels || [];
+  if(typeof tags === "string") tags = tags.split(",").map(t=>t.trim()).filter(Boolean);
+  const status = r.status || "open";
+  const assignee = r.assignee || r.owner || "";
+  let created_at = r.created_at || r.date || "";
+  try { if(created_at){ const d = new Date(created_at); if(!isNaN(d)) created_at = d.toISOString(); } } catch(e){}
+  return {
+    title: String(title).trim(),
+    description: String(desc).trim(),
+    priority: String(prio).trim(),
+    tags: tags,
+    status: String(status).trim(),
+    assignee: String(assignee).trim(),
+    created_at: created_at,
+    source_file: s
+  };
+}))(raw, sourceFile);
+}
 
-            try {
-                await addDoc(collection(db, collectionPath), transactionData);
-                console.log("Transaction added successfully:", type);
-                
-                // Clear inputs after successful add
-                document.getElementById('transaction-description').value = '';
-                document.getElementById('transaction-amount').value = '';
-                // Keep date field if user is entering a series of transactions for the same date
-                
-            } catch (error) {
-                console.error("Error adding transaction:", error);
-                alert("فشل في إضافة المعاملة: " + error.message);
-            }
-        }
-
-        /**
-         * Deletes a transaction from Firestore.
-         * The real-time listener will automatically handle the recalculation.
-         * @param {string} docId - The Firestore document ID.
-         */
-        window.deleteTransaction = async function(docId) {
-            if (!db || !userId) return;
-
-            // In a real app, you would use a custom confirmation modal here instead of 'confirm'
-            if (!confirm("هل أنت متأكد من حذف هذه المعاملة؟ سيتم تحديث الأرصدة والالتزامات/التحصيلات تلقائياً.")) {
-                return;
-            }
-            
-            const docRef = doc(db, `artifacts/${appId}/users/${userId}/financial_transactions`, docId);
-            
-            try {
-                // The deletion ensures that both the value and the date (by removing the entry entirely) 
-                // are removed from consideration, fulfilling the user's requirement.
-                await deleteDoc(docRef);
-                console.log("Transaction deleted successfully:", docId);
-            } catch (error) {
-                console.error("Error deleting transaction:", error);
-                alert("فشل في حذف المعاملة: " + error.message);
-            }
-        }
-
-        // Initialize the application on load
-        initFirebaseAndAuth();
-
-    </script>
+</script>
 </body>
-</html>
-
