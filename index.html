@@ -6,25 +6,61 @@
   <title>دفتر حساباتي - لوحة القيادة</title>
   <meta name="description" content="واجهة مستخدم بسيطة لدفتر الحسابات" />
   <style>
-    /* CSS بسيط للواجهة */
+    /* ----------------------------------------------------- */
+    /* 1. Global & Color Variables (Day/Night) */
+    /* ----------------------------------------------------- */
     :root {
+      /* Default Light Mode Colors */
       --primary: #007bff;
       --secondary: #6c757d;
       --success: #28a745;
       --danger: #dc3545;
       --warning: #ffc107;
-      --info: #17a2b8;
-      --light: #f8f9fa;
-      --dark: #343a40;
+      --background: #f8f9fa;
+      --card-bg: white;
+      --text-color: #212529;
       --border-color: #dee2e6;
+      --shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
     }
+    
+    /* Dark Mode Override (prefers-color-scheme) */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #121212;
+        --card-bg: #1e1e1e;
+        --text-color: #f1f1f1;
+        --border-color: #333;
+        --shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.4);
+        --primary: #4e9af1; /* Adjusted for contrast */
+        --success: #6cff6c;
+        --danger: #ff6b6b;
+      }
+      body { color: var(--text-color); }
+    }
+
+    /* Dark Mode Class Toggle (manual switch) */
+    html.dark-mode {
+      --background: #121212;
+      --card-bg: #1e1e1e;
+      --text-color: #f1f1f1;
+      --border-color: #333;
+      --shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.4);
+      --primary: #4e9af1;
+      --success: #6cff6c;
+      --danger: #ff6b6b;
+    }
+    
+    /* ----------------------------------------------------- */
+    /* 2. Base Styling */
+    /* ----------------------------------------------------- */
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Arabic Naskh", "Droid Arabic Naskh";
       direction: rtl;
       margin: 0;
       padding: 0;
-      background-color: var(--light);
-      color: var(--dark);
+      background-color: var(--background);
+      color: var(--text-color);
+      transition: background-color 0.3s, color 0.3s;
     }
     header {
       background-color: var(--primary);
@@ -32,12 +68,20 @@
       padding: 15px 20px;
       text-align: center;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
+    header h1 { margin: 0; }
     .container {
       max-width: 1200px;
       margin: 20px auto;
       padding: 0 15px;
     }
+
+    /* ----------------------------------------------------- */
+    /* 3. Dashboard Layout & Cards */
+    /* ----------------------------------------------------- */
     .dashboard-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -45,11 +89,15 @@
       margin-bottom: 20px;
     }
     .card {
-      background-color: white;
+      background-color: var(--card-bg);
       border: 1px solid var(--border-color);
-      border-radius: 8px;
+      border-radius: 12px;
       padding: 20px;
-      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+      box-shadow: var(--shadow);
+      transition: all 0.3s;
+    }
+    .card:hover {
+        transform: translateY(-2px);
     }
     .card-title {
       font-size: 1.1rem;
@@ -59,20 +107,24 @@
       padding-bottom: 5px;
       color: var(--primary);
     }
-    .summary-item h3, .summary-item p { margin: 5px 0; }
-    .summary-item h3 { font-size: 2rem; }
-    .total-balance { color: var(--dark); }
+    .summary-item h3 { font-size: 2.2rem; margin: 5px 0; font-weight: 700; }
+    .summary-item p { font-size: 0.9rem; margin-top: 0; color: var(--secondary); }
+    
+    /* Color Highlights */
+    .total-balance { color: var(--text-color); }
     .income { color: var(--success); }
     .expense { color: var(--danger); }
-    .net-balance { color: var(--info); }
+    .net-balance { color: var(--primary); }
 
-    .table-responsive {
-      overflow-x: auto;
-    }
+    /* ----------------------------------------------------- */
+    /* 4. Table Styling */
+    /* ----------------------------------------------------- */
+    .table-responsive { overflow-x: auto; }
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 15px;
+      font-size: 0.95rem;
     }
     th, td {
       padding: 12px 15px;
@@ -80,36 +132,65 @@
       text-align: right;
     }
     th {
-      background-color: var(--dark);
+      background-color: var(--primary);
       color: white;
       font-weight: 600;
       text-align: center;
+      border-color: var(--primary);
     }
     tr:nth-child(even) {
-      background-color: var(--light);
+      background-color: rgba(0, 0, 0, 0.03); /* Light tint for zebra stripping */
     }
+    html.dark-mode tr:nth-child(even), :not(.dark-mode) tr:nth-child(even) {
+      background-color: rgba(255, 255, 255, 0.05); /* Dark tint */
+    }
+    
+    /* Status Badges */
     .status-badge {
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 0.9em;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.85em;
       color: white;
-      font-weight: 500;
+      font-weight: 600;
+      display: inline-block;
     }
     .status-متأخر { background-color: var(--danger); }
     .status-مدفوع { background-color: var(--success); }
-    .status-قريب-الاستحقاق { background-color: var(--warning); color: var(--dark); }
-    .status-مستحق { background-color: var(--info); }
+    .status-قريب-الاستحقاق { background-color: var(--warning); color: var(--text-color); }
+    .status-مستحق { background-color: var(--primary); }
+
+    /* Utility Classes */
     .text-center { text-align: center !important; }
-    .text-right { text-align: right !important; }
     .text-success { color: var(--success) !important; }
     .text-danger { color: var(--danger) !important; }
     .text-warning { color: var(--warning) !important; }
+    
+    /* ----------------------------------------------------- */
+    /* 5. Theme Switch Button */
+    /* ----------------------------------------------------- */
+    #theme-toggle {
+        background: none;
+        border: 2px solid white;
+        color: white;
+        padding: 8px 15px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-size: 1.2rem;
+        transition: background-color 0.3s, border-color 0.3s;
+        order: -1; /* Place it first in the flex container */
+    }
+    #theme-toggle:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
   </style>
 </head>
 <body>
   <header>
+    <button id="theme-toggle" aria-label="تبديل الوضع الليلي/النهاري">
+        ☀️
+    </button>
     <h1>دفتر حساباتي 📊</h1>
-    <p>لوحة القيادة المالية</p>
+    <p style="margin:0; opacity: 0.8;">لوحة القيادة المالية</p>
   </header>
 
   <div class="container">
@@ -169,16 +250,16 @@
         </table>
       </div>
     </div>
+    
+    <button onclick="initializeDashboard()" style="background-color: var(--success); color: white; border: none; padding: 10px 20px; border-radius: 8px; margin-top: 20px; cursor: pointer; font-size: 1rem;">🔄 تحديث لوحة القيادة</button>
   </div>
 
   <script>
     /**
-     * Dafatir API (No UI) - [Your original JS code is included here]
-     * (Function definitions and initialization for StorageService, CoreLogic, and API)
+     * Dafatir API (No UI) - Logic Core
      */
     
     (function(global){
-      // ... [Your original JavaScript code for DafatirAPI starts here] ...
       const DB_KEY = 'myAccountingAppDB_v4';
       let state = { accounts: [], transactions: [], payables: [] };
 
@@ -186,6 +267,7 @@
       const currencyFormatter = new Intl.NumberFormat('ar-EG', { style:'currency', currency:'EGP', minimumFractionDigits:2, maximumFractionDigits:2 });
       function formatCurrency(num){ const n = Number(num) || 0; return currencyFormatter.format(n).replace('EGP','').trim(); }
       function formatDateISO(d){ try { return new Date(d).toISOString(); } catch(e){ return new Date().toISOString(); } }
+      const cryptoUUID = () => (crypto && crypto.randomUUID) ? crypto.randomUUID() : ('id-' + Math.random().toString(36).slice(2,11));
 
       // --- StorageService ---
       const StorageService = {
@@ -221,7 +303,6 @@
           }
         },
         saveInitial(){
-          const cryptoUUID = () => (crypto && crypto.randomUUID) ? crypto.randomUUID() : ('id-' + Math.random().toString(36).slice(2,11));
           const cashId = cryptoUUID();
           const bankId = cryptoUUID();
           const walletId = cryptoUUID();
@@ -242,7 +323,7 @@
               { id: cryptoUUID(), createdAt: new Date('2025-11-02T14:00:00').toISOString(), date: new Date('2025-11-02T14:00:00').toISOString(), type:'expense', from: cashId, to: null, amount: 300, category:'فواتير', notes:'فاتورة كهرباء' },
               ...(function(){ const linked = cryptoUUID(); return [
                 { id: cryptoUUID(), createdAt: new Date('2025-11-03T11:00:00').toISOString(), date: new Date('2025-11-03T11:00:00').toISOString(), type:'expense', from: bankId, to:null, amount:1000, category:'تحويل صادر', notes:'تحويل للعهدة', linkedId: linked },
-                { id: linked, createdAt: new Date('2025-11-03T11:00:00').toISOString(), date: new Date('2025-11-03T11:00:00').toISOString(), type:'income', from:null, to: cashId, amount:1000, category:'تحويل وارد', notes:'تحويل للعهدة', linkedId: null }
+                { id: linked, createdAt: new Date('2025-11-03T11:00:00').toISOString(), date: new Date('2025-11-03T11:00:00').toISOString(), type:'income', from:null, to: cashId, amount:1000, category:'تحويل وارد', notes:'تحويل للعهدة', linkedId: expense.id }
               ]; })(),
               { id: cryptoUUID(), createdAt: new Date('2025-11-05T18:00:00').toISOString(), date: new Date('2025-11-05T18:00:00').toISOString(), type:'expense', from: walletId, to: null, amount:150, category:'مشتريات أونلاين', notes:'' },
               { id: cryptoUUID(), createdAt: new Date('2025-11-07T09:00:00').toISOString(), date: new Date('2025-11-07T09:00:00').toISOString(), type:'income', to: cashId, from: null, amount:200, category:'مبيعات', notes:'مبيعات نقدية' },
@@ -266,8 +347,8 @@
         getDueById(id){ return state.payables.find(p => p.id === id); },
 
         createTransferPair(fromId, toId, amount, dateIso, notes){
-          const linkedId = (crypto && crypto.randomUUID) ? crypto.randomUUID() : ('id-' + Math.random().toString(36).slice(2,11));
-          const expense = { id: (crypto && crypto.randomUUID) ? crypto.randomUUID() : 'id-'+Math.random().toString(36).slice(2,11), createdAt: dateIso, date: dateIso, type:'expense', from: fromId, to: null, amount: amount, category:'تحويل صادر', notes: notes, linkedId: linkedId };
+          const linkedId = cryptoUUID();
+          const expense = { id: cryptoUUID(), createdAt: dateIso, date: dateIso, type:'expense', from: fromId, to: null, amount: amount, category:'تحويل صادر', notes: notes, linkedId: linkedId };
           const income = { id: linkedId, createdAt: dateIso, date: dateIso, type:'income', from:null, to: toId, amount: amount, category:'تحويل وارد', notes: notes, linkedId: expense.id };
           return [expense, income];
         },
@@ -290,7 +371,7 @@
         recalculateAllBalances(){ for (const acc of state.accounts) this.recalculateAccountBalance(acc.id); },
 
         addAccount(name, initialBalance){
-          const id = (crypto && crypto.randomUUID) ? crypto.randomUUID() : 'id-' + Math.random().toString(36).slice(2,11);
+          const id = cryptoUUID();
           state.accounts.push({ id, name, initialBalance: Number(initialBalance)||0, currentBalance: Number(initialBalance)||0 });
           this.recalculateAllBalances(); StorageService.save();
           return id;
@@ -317,7 +398,7 @@
             this.recalculateAllBalances(); StorageService.save();
             return [expense.id, income.id];
           } else {
-            const id = (crypto && crypto.randomUUID) ? crypto.randomUUID() : 'id-' + Math.random().toString(36).slice(2,11);
+            const id = cryptoUUID();
             const tx = {
               id,
               createdAt: now,
@@ -370,7 +451,7 @@
         },
 
         addDue(data){
-          const id = (crypto && crypto.randomUUID) ? crypto.randomUUID() : 'id-' + Math.random().toString(36).slice(2,11);
+          const id = cryptoUUID();
           state.payables.push({ id, type: data.type, name: data.name, amount: Number(data.amount)||0, remainingAmount: Number(data.amount)||0, dueDate: data.dueDate, accountId: data.accountId, recurrence: data.recurrence || 'none', status: 'pending', originalDueDate: data.dueDate, payments:[] });
           StorageService.save(); return id;
         },
@@ -416,9 +497,9 @@
           const nowIso = new Date().toISOString();
           let tx = null;
           if (isCollection) {
-            tx = { id: (crypto && crypto.randomUUID) ? crypto.randomUUID() : 'id-'+Math.random().toString(36).slice(2,11), createdAt: nowIso, date: nowIso, type:'income', from:null, to: accountId, amount, category:'تحصيل', notes: notes || `تحصيل: ${due.name}` };
+            tx = { id: cryptoUUID(), createdAt: nowIso, date: nowIso, type:'income', from:null, to: accountId, amount, category:'تحصيل', notes: notes || `تحصيل: ${due.name}` };
           } else {
-            tx = { id: (crypto && crypto.randomUUID) ? crypto.randomUUID() : 'id-'+Math.random().toString(36).slice(2,11), createdAt: nowIso, date: nowIso, type:'expense', from:accountId, to:null, amount, category:'سداد', notes: notes || `سداد: ${due.name}` };
+            tx = { id: cryptoUUID(), createdAt: nowIso, date: nowIso, type:'expense', from:accountId, to:null, amount, category:'سداد', notes: notes || `سداد: ${due.name}` };
           }
           state.transactions.push(tx);
 
@@ -493,17 +574,15 @@
           state.payables.forEach(d => {
               if (d.status === 'pending' || d.status === 'partially_paid') {
                   const dueDate = new Date(d.dueDate);
-                  if (dueDate >= startOfMonth && dueDate <= endOfMonth) {
-                      if (d.type === 'payable') payablesRemaining += Number(d.remainingAmount || d.amount || 0);
-                      if (d.type === 'receivable') receivablesUncollected += Number(d.remainingAmount || d.amount || 0);
-                  }
+                  if (d.type === 'payable') payablesRemaining += Number(d.remainingAmount || d.amount || 0);
+                  if (d.type === 'receivable') receivablesUncollected += Number(d.remainingAmount || d.amount || 0);
               }
           });
           return { income, expense, net: income - expense, totalBalance, payablesRemaining, receivablesUncollected };
         }
       };
 
-      // --- API layer (تعليمات مساعدة للتعامل من الخارج) ---
+      // --- API layer ---
       const API = {
         // life-cycle
         init(){ StorageService.load(); CoreLogic.recalculateAllBalances(); return Promise.resolve(true); },
@@ -547,40 +626,39 @@
         resetToInitial(){ StorageService.saveInitial(); CoreLogic.recalculateAllBalances(); return true; }
       };
 
-      // اربط الـ API بالنافذة (window) لاستخدامه من الكونسول أو من سكربت خارجي
       global.DafatirAPI = API;
 
-      // init تلقائي لسهولة الاستخدام
       StorageService.load();
       CoreLogic.recalculateAllBalances();
 
-      // Console-friendly quick helpers
-      console.info('DafatirAPI جاهز. استعمل DafatirAPI.init() للتهيئة. بعض الوظائف المفيدة: listAccounts(), listTransactions(), addAccount(name,bal), addTransaction(txData), getDashboardSummary()');
+      console.info('DafatirAPI جاهز. استخدم وظائفه في الكونسول لتجربة الإضافة: DafatirAPI.addAccount(name, balance) و DafatirAPI.addTransaction(txData)');
     
-      // --- JavaScript for Rendering the UI (New Code) ---
+      // --- JavaScript for Rendering the UI and Theme Toggle (New Code) ---
       const langMap = {
           'payable': 'مطلوب (دفع)',
           'receivable': 'متوقع (تحصيل)',
-          'income': 'إيراد',
-          'expense': 'مصروف',
-          'transfer': 'تحويل',
       };
       
       const getAccountName = (id) => {
           const account = DafatirAPI.getAccount(id);
           return account ? account.name : 'غير محدد';
       };
+      
+      const formatDate = (dateIso) => {
+          return new Date(dateIso).toLocaleDateString('ar-EG', { year: 'numeric', month: 'short', day: 'numeric' });
+      };
+
 
       function renderSummaryCards() {
         const summary = DafatirAPI.getDashboardSummary();
         const cardsContainer = document.getElementById('summary-cards');
         const summaryData = [
-          { title: 'إجمالي الرصيد الحالي', value: formatCurrency(summary.totalBalance), class: 'total-balance', icon: '💰' },
-          { title: 'إجمالي الإيرادات (الكُلية)', value: formatCurrency(summary.income), class: 'income', icon: '⬆️' },
-          { title: 'إجمالي المصروفات (الكُلية)', value: formatCurrency(summary.expense), class: 'expense', icon: '⬇️' },
-          { title: 'صافي الرصيد (الكُلي)', value: formatCurrency(summary.net), class: 'net-balance', icon: '⚖️' },
-          { title: 'مطلوب دفعه (هذا الشهر)', value: formatCurrency(summary.payablesRemaining), class: 'expense', icon: '🗓️' },
-          { title: 'متوقع تحصيله (هذا الشهر)', value: formatCurrency(summary.receivablesUncollected), class: 'income', icon: '📥' },
+          { title: 'إجمالي الرصيد', value: formatCurrency(summary.totalBalance), class: 'total-balance', icon: '💰' },
+          { title: 'الإيرادات الكُلية', value: formatCurrency(summary.income), class: 'income', icon: '⬆️' },
+          { title: 'المصروفات الكُلية', value: formatCurrency(summary.expense), class: 'expense', icon: '⬇️' },
+          { title: 'صافي الرصيد', value: formatCurrency(summary.net), class: 'net-balance', icon: '⚖️' },
+          { title: 'إجمالي مطلوب الدفع', value: formatCurrency(summary.payablesRemaining), class: 'expense', icon: '🗓️' },
+          { title: 'إجمالي متوقع التحصيل', value: formatCurrency(summary.receivablesUncollected), class: 'income', icon: '📥' },
         ];
 
         cardsContainer.innerHTML = summaryData.map(item => `
@@ -597,13 +675,14 @@
         tbody.innerHTML = accounts.map(acc => `
           <tr>
             <td>${acc.name}</td>
-            <td class="text-center ${acc.currentBalance < 0 ? 'text-danger' : ''}">${formatCurrency(acc.currentBalance)}</td>
+            <td class="text-center ${acc.currentBalance < 0 ? 'text-danger' : 'text-success'}">${formatCurrency(acc.currentBalance)}</td>
           </tr>
         `).join('');
       }
 
       function renderDuesTable() {
-        const dues = DafatirAPI.listDues().filter(d => d.statusText !== 'مدفوع');
+        // عرض فقط المستحقات غير المدفوعة أو القادمة
+        const dues = DafatirAPI.listDues().filter(d => d.statusText !== 'مدفوع' || d.recurrence === 'monthly');
         const tbody = document.querySelector('#dues-table tbody');
         
         if (dues.length === 0) {
@@ -612,14 +691,17 @@
         }
 
         tbody.innerHTML = dues.map(due => {
-          const dueDate = new Date(due.dueDate).toLocaleDateString('ar-EG', { year: 'numeric', month: 'short', day: 'numeric' });
+          const dueDateStr = formatDate(due.dueDate);
           const statusClass = due.statusText.replace(/\s/g, '-');
+          const isDanger = due.type === 'payable' && due.statusText !== 'مدفوع';
+          const isSuccess = due.type === 'receivable' && due.statusText !== 'مدفوع';
+          
           return `
             <tr>
               <td>${due.name}</td>
               <td class="text-center">${langMap[due.type]}</td>
-              <td class="text-center">${dueDate}</td>
-              <td class="text-center ${due.remainingAmount > 0 ? (due.type === 'payable' ? 'text-danger' : 'text-success') : ''}">${formatCurrency(due.remainingAmount)}</td>
+              <td class="text-center">${dueDateStr}</td>
+              <td class="text-center ${isDanger ? 'text-danger' : (isSuccess ? 'text-success' : '')}">${formatCurrency(due.remainingAmount)}</td>
               <td class="text-center">${getAccountName(due.accountId)}</td>
               <td class="text-center">
                 <span class="status-badge status-${statusClass}">${due.statusText}</span>
@@ -646,15 +728,55 @@
           `).join('');
       }
 
-      function initializeDashboard() {
+      // -----------------------------------------------------------------
+      // Theme Toggle Logic
+      // -----------------------------------------------------------------
+      function setupThemeToggle() {
+          const toggleButton = document.getElementById('theme-toggle');
+          
+          // 1. Initial setup based on localStorage or system preference
+          const storedTheme = localStorage.getItem('theme');
+          if (storedTheme === 'dark') {
+              document.documentElement.classList.add('dark-mode');
+              toggleButton.textContent = '☀️';
+          } else if (storedTheme === 'light') {
+               document.documentElement.classList.remove('dark-mode');
+               toggleButton.textContent = '🌙';
+          } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+              // Apply dark mode if system prefers it and no local storage preference
+              document.documentElement.classList.add('dark-mode');
+              toggleButton.textContent = '☀️';
+          } else {
+              toggleButton.textContent = '🌙';
+          }
+
+          // 2. Event Listener for manual toggle
+          toggleButton.addEventListener('click', () => {
+              const isDarkMode = document.documentElement.classList.toggle('dark-mode');
+              if (isDarkMode) {
+                  localStorage.setItem('theme', 'dark');
+                  toggleButton.textContent = '☀️'; // Show Sun for light mode switch
+              } else {
+                  localStorage.setItem('theme', 'light');
+                  toggleButton.textContent = '🌙'; // Show Moon for dark mode switch
+              }
+          });
+      }
+      // -----------------------------------------------------------------
+      
+      global.initializeDashboard = function() {
+        DafatirAPI.init(); // Recalculate and load latest data
         renderSummaryCards();
         renderAccountsTable();
         renderDuesTable();
         renderTopSpendingTable();
-      }
+      };
       
-      // تنفيذ تهيئة لوحة القيادة بعد تحميل الـ DOM
-      window.addEventListener('DOMContentLoaded', initializeDashboard);
+      // تنفيذ تهيئة لوحة القيادة وتفعيل زر الوضع الليلي بعد تحميل الـ DOM
+      window.addEventListener('DOMContentLoaded', () => {
+          setupThemeToggle();
+          initializeDashboard();
+      });
 
     })(window);
   </script>
