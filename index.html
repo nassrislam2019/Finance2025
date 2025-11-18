@@ -12,6 +12,7 @@
     :root {
       /* Default Light Mode Colors */
       --primary: #007bff;
+      --primary-dark: #0056b3;
       --secondary: #6c757d;
       --success: #28a745;
       --danger: #dc3545;
@@ -21,6 +22,7 @@
       --text-color: #212529;
       --border-color: #dee2e6;
       --shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+      --input-bg: white;
     }
     
     /* Dark Mode Override (prefers-color-scheme) */
@@ -31,9 +33,11 @@
         --text-color: #f1f1f1;
         --border-color: #333;
         --shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.4);
-        --primary: #4e9af1; /* Adjusted for contrast */
+        --primary: #4e9af1; 
+        --primary-dark: #2a73c2;
         --success: #6cff6c;
         --danger: #ff6b6b;
+        --input-bg: #2b2b2b;
       }
       body { color: var(--text-color); }
     }
@@ -46,8 +50,10 @@
       --border-color: #333;
       --shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.4);
       --primary: #4e9af1;
+      --primary-dark: #2a73c2;
       --success: #6cff6c;
       --danger: #ff6b6b;
+      --input-bg: #2b2b2b;
     }
     
     /* ----------------------------------------------------- */
@@ -72,9 +78,9 @@
       justify-content: space-between;
       align-items: center;
     }
-    header h1 { margin: 0; }
+    header h1 { margin: 0; font-size: 1.5rem; }
     .container {
-      max-width: 1200px;
+      max-width: 900px; /* Reduced width */
       margin: 20px auto;
       padding: 0 15px;
     }
@@ -84,31 +90,32 @@
     /* ----------------------------------------------------- */
     .dashboard-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Adjusted grid for smaller width */
+      gap: 15px;
       margin-bottom: 20px;
     }
     .card {
       background-color: var(--card-bg);
       border: 1px solid var(--border-color);
       border-radius: 12px;
-      padding: 20px;
+      padding: 15px;
       box-shadow: var(--shadow);
       transition: all 0.3s;
+      margin-bottom: 10px;
     }
     .card:hover {
         transform: translateY(-2px);
     }
     .card-title {
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: 600;
-      margin-bottom: 15px;
-      border-bottom: 2px solid var(--primary);
+      margin-bottom: 10px;
+      border-bottom: 1px solid var(--border-color);
       padding-bottom: 5px;
       color: var(--primary);
     }
-    .summary-item h3 { font-size: 2.2rem; margin: 5px 0; font-weight: 700; }
-    .summary-item p { font-size: 0.9rem; margin-top: 0; color: var(--secondary); }
+    .summary-item h3 { font-size: 1.8rem; margin: 5px 0; font-weight: 700; }
+    .summary-item p { font-size: 0.8rem; margin-top: 0; color: var(--secondary); }
     
     /* Color Highlights */
     .total-balance { color: var(--text-color); }
@@ -123,11 +130,11 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 15px;
-      font-size: 0.95rem;
+      margin-top: 10px;
+      font-size: 0.85rem;
     }
     th, td {
-      padding: 12px 15px;
+      padding: 8px 10px;
       border: 1px solid var(--border-color);
       text-align: right;
     }
@@ -139,20 +146,21 @@
       border-color: var(--primary);
     }
     tr:nth-child(even) {
-      background-color: rgba(0, 0, 0, 0.03); /* Light tint for zebra stripping */
+      background-color: rgba(0, 0, 0, 0.03); 
     }
     html.dark-mode tr:nth-child(even), :not(.dark-mode) tr:nth-child(even) {
-      background-color: rgba(255, 255, 255, 0.05); /* Dark tint */
+      background-color: rgba(255, 255, 255, 0.05); 
     }
     
     /* Status Badges */
     .status-badge {
-      padding: 4px 10px;
+      padding: 4px 8px;
       border-radius: 20px;
-      font-size: 0.85em;
+      font-size: 0.75em;
       color: white;
       font-weight: 600;
       display: inline-block;
+      white-space: nowrap;
     }
     .status-متأخر { background-color: var(--danger); }
     .status-مدفوع { background-color: var(--success); }
@@ -164,23 +172,153 @@
     .text-success { color: var(--success) !important; }
     .text-danger { color: var(--danger) !important; }
     .text-warning { color: var(--warning) !important; }
+
+    /* Action Buttons within tables */
+    .action-btn {
+        background: none;
+        border: none;
+        color: var(--primary);
+        cursor: pointer;
+        font-size: 1em;
+        margin: 0 3px;
+        padding: 4px;
+        transition: color 0.2s;
+    }
+    .action-btn:hover { color: var(--primary-dark); }
+    .action-btn.delete { color: var(--danger); }
+    .action-btn.delete:hover { color: #8a0000; }
     
     /* ----------------------------------------------------- */
-    /* 5. Theme Switch Button */
+    /* 5. Floating Action Buttons (FABs) */
     /* ----------------------------------------------------- */
-    #theme-toggle {
-        background: none;
-        border: 2px solid white;
-        color: white;
-        padding: 8px 15px;
-        border-radius: 50px;
-        cursor: pointer;
-        font-size: 1.2rem;
-        transition: background-color 0.3s, border-color 0.3s;
-        order: -1; /* Place it first in the flex container */
+    .fab-group {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        z-index: 100;
     }
-    #theme-toggle:hover {
-        background-color: rgba(255, 255, 255, 0.2);
+    .fab {
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        font-size: 1.5rem;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.3s, transform 0.2s;
+        position: relative;
+    }
+    .fab:hover {
+        background-color: var(--primary-dark);
+        transform: scale(1.05);
+    }
+    .fab .tooltip {
+        position: absolute;
+        right: 60px;
+        background-color: #333;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 0.8rem;
+        white-space: nowrap;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s, visibility 0.3s;
+    }
+    .fab:hover .tooltip {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* ----------------------------------------------------- */
+    /* 6. Modal Styling */
+    /* ----------------------------------------------------- */
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: none; /* Hidden by default */
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+    .modal-content {
+        background-color: var(--card-bg);
+        padding: 25px;
+        border-radius: 10px;
+        width: 90%;
+        max-width: 450px;
+        box-shadow: var(--shadow);
+        animation: fadeIn 0.3s;
+        position: relative;
+    }
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 10px;
+    }
+    .close-btn {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--secondary);
+    }
+    .close-btn:hover { color: var(--danger); }
+    
+    /* Form Styling */
+    .form-group {
+        margin-bottom: 15px;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        box-sizing: border-box;
+        background-color: var(--input-bg);
+        color: var(--text-color);
+    }
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 20px;
+    }
+    .btn {
+        padding: 10px 15px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        border: none;
+        transition: opacity 0.2s;
+    }
+    .btn-primary { background-color: var(--primary); color: white; }
+    .btn-secondary { background-color: var(--secondary); color: white; }
+    .btn-primary:hover, .btn-secondary:hover { opacity: 0.9; }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
@@ -194,10 +332,13 @@
   </header>
 
   <div class="container">
+    <!-- لوحة ملخص الأرقام -->
     <div class="dashboard-grid" id="summary-cards">
-      </div>
+      <!-- البطاقات سيتم توليدها هنا بواسطة JavaScript -->
+    </div>
     
     <div class="dashboard-grid">
+      <!-- جدول أرصدة الحسابات -->
       <div class="card" id="accounts-card">
         <h2 class="card-title">💵 أرصدة الحسابات</h2>
         <div class="table-responsive">
@@ -209,11 +350,13 @@
               </tr>
             </thead>
             <tbody>
-              </tbody>
+              <!-- البيانات سيتم توليدها هنا -->
+            </tbody>
           </table>
         </div>
       </div>
 
+      <!-- جدول أهم المصروفات -->
       <div class="card" id="top-spending-card">
         <h2 class="card-title">💰 أعلى فئات المصروفات (أول 5)</h2>
         <div class="table-responsive">
@@ -225,12 +368,14 @@
               </tr>
             </thead>
             <tbody>
-              </tbody>
+              <!-- البيانات سيتم توليدها هنا -->
+            </tbody>
           </table>
         </div>
       </div>
     </div>
 
+    <!-- جدول المستحقات القادمة -->
     <div class="card" id="dues-card">
       <h2 class="card-title">⏳ المستحقات القادمة (مطلوب/متوقع)</h2>
       <div class="table-responsive">
@@ -243,20 +388,47 @@
               <th class="text-center">المبلغ المتبقي (ج.م)</th>
               <th class="text-center">الحساب</th>
               <th class="text-center">الحالة</th>
+              <th class="text-center">الإجراءات</th> <!-- عمود الإجراءات -->
             </tr>
           </thead>
           <tbody>
-            </tbody>
+            <!-- البيانات سيتم توليدها هنا -->
+          </tbody>
         </table>
       </div>
     </div>
     
+    <!-- زر لتحديث البيانات (في حال تم إجراء تغيير يدوي في الكونسول) -->
     <button onclick="initializeDashboard()" style="background-color: var(--success); color: white; border: none; padding: 10px 20px; border-radius: 8px; margin-top: 20px; cursor: pointer; font-size: 1rem;">🔄 تحديث لوحة القيادة</button>
   </div>
 
+  <!-- ----------------------------------------------------- -->
+  <!-- Floating Action Buttons (FABs) -->
+  <!-- ----------------------------------------------------- -->
+  <div class="fab-group">
+    <button class="fab" onclick="openAddDueModal()">
+        +
+        <span class="tooltip">إضافة التزام جديد</span>
+    </button>
+    <button class="fab" onclick="openAddTransactionModal()">
+        T
+        <span class="tooltip">إضافة حركة (دخل/مصروف/تحويل)</span>
+    </button>
+  </div>
+
+  <!-- ----------------------------------------------------- -->
+  <!-- Generic Modal Container (Will be populated by JS) -->
+  <!-- ----------------------------------------------------- -->
+  <div id="generic-modal" class="modal" onclick="closeModalIfOutside(event)">
+    <div class="modal-content" id="modal-content">
+      <!-- Modal content will be injected here -->
+    </div>
+  </div>
+
+  <!-- تضمين كود الـ API والـ JavaScript الخاص بالواجهة -->
   <script>
     /**
-     * Dafatir API (No UI) - Logic Core
+     * Dafatir API (No UI) - Logic Core (Unchanged from previous response)
      */
     
     (function(global){
@@ -267,6 +439,7 @@
       const currencyFormatter = new Intl.NumberFormat('ar-EG', { style:'currency', currency:'EGP', minimumFractionDigits:2, maximumFractionDigits:2 });
       function formatCurrency(num){ const n = Number(num) || 0; return currencyFormatter.format(n).replace('EGP','').trim(); }
       function formatDateISO(d){ try { return new Date(d).toISOString(); } catch(e){ return new Date().toISOString(); } }
+      function getTodayDateISO() { return new Date().toISOString().slice(0, 10); } // YYYY-MM-DD
       const cryptoUUID = () => (crypto && crypto.randomUUID) ? crypto.randomUUID() : ('id-' + Math.random().toString(36).slice(2,11));
 
       // --- StorageService ---
@@ -468,23 +641,18 @@
         deleteDue(id){
           const due = this.getDueById(id);
           if (!due) return false;
-          if (due.status === 'paid' && Array.isArray(due.payments) && due.payments.length) {
+          // Note: If payments exist, we will only delete the due and associated payments (transactions)
+          if (Array.isArray(due.payments) && due.payments.length) {
             for (const p of due.payments) {
               if (p.txId) {
                 state.transactions = state.transactions.filter(t => t.id !== p.txId);
               }
             }
-            due.status = 'pending';
-            due.remainingAmount = due.amount;
-            due.dueDate = due.originalDueDate || due.dueDate;
-            due.payments = [];
-            this.recalculateAllBalances(); StorageService.save();
-            return 'restored';
-          } else {
-            state.payables = state.payables.filter(p => p.id !== id);
-            StorageService.save();
-            return 'deleted';
           }
+          state.payables = state.payables.filter(p => p.id !== id);
+          this.recalculateAllBalances(); 
+          StorageService.save();
+          return 'deleted';
         },
 
         applyPayment({ dueId, amount, accountId, notes, isCollection }) {
@@ -510,17 +678,20 @@
 
           if (due.remainingAmount <= 0.0001) {
             if (due.recurrence === 'monthly') {
+              // For monthly recurring, we keep the old one as paid, and create a new one for the next month
+              const newDue = {...due, id: cryptoUUID(), status:'pending', remainingAmount: due.amount, payments: []};
               const next = new Date(due.dueDate);
               next.setMonth(next.getMonth()+1);
-              due.dueDate = next.toISOString();
-              due.remainingAmount = Number(due.amount) || 0;
-              due.status = 'pending';
+              newDue.dueDate = next.toISOString();
+              state.payables.push(newDue);
+              
+              due.status = 'paid'; // Mark the current instance as paid
             } else {
               due.status = 'paid';
               if (!due.originalDueDate) due.originalDueDate = due.dueDate;
             }
           } else {
-            due.status = 'pending';
+            due.status = 'partially_paid';
           }
 
           this.recalculateAllBalances();
@@ -537,9 +708,11 @@
           return state.payables.map(due => {
             const dueDate = new Date(due.dueDate); dueDate.setHours(0,0,0,0);
             let statusText = 'مستحق';
-            if (due.status === 'paid' && (due.recurrence === 'none' || !due.recurrence)) statusText='مدفوع';
+            if (due.status === 'paid') statusText='مدفوع';
+            else if (due.status === 'partially_paid') statusText='مدفوع جزئياً';
             else if (dueDate < today) statusText='متأخر';
             else if (dueDate <= sevenDays) statusText='قريب الاستحقاق';
+            
             if (due.remainingAmount === undefined || due.remainingAmount === null) due.remainingAmount = Number(due.amount) || 0;
             return { ...due, statusText };
           }).sort((a,b) => new Date(a.dueDate) - new Date(b.dueDate));
@@ -566,14 +739,10 @@
           let income=0, expense=0;
           state.transactions.forEach(tx => { if (tx.type === 'income') income += Number(tx.amount)||0; else if (tx.type === 'expense') expense += Number(tx.amount)||0; });
           const totalBalance = state.accounts.reduce((s,a) => s + (Number(a.currentBalance)||0), 0);
-          const today = new Date(); today.setHours(0,0,0,0);
-          const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1); startOfMonth.setHours(0,0,0,0);
-          const endOfMonth = new Date(startOfMonth); endOfMonth.setMonth(startOfMonth.getMonth()+1); endOfMonth.setDate(0); endOfMonth.setHours(23,59,59,999);
           
           let payablesRemaining = 0, receivablesUncollected = 0;
           state.payables.forEach(d => {
-              if (d.status === 'pending' || d.status === 'partially_paid') {
-                  const dueDate = new Date(d.dueDate);
+              if (d.status !== 'paid') {
                   if (d.type === 'payable') payablesRemaining += Number(d.remainingAmount || d.amount || 0);
                   if (d.type === 'receivable') receivablesUncollected += Number(d.remainingAmount || d.amount || 0);
               }
@@ -582,48 +751,21 @@
         }
       };
 
-      // --- API layer ---
+      // --- API layer (Exposed) ---
       const API = {
-        // life-cycle
         init(){ StorageService.load(); CoreLogic.recalculateAllBalances(); return Promise.resolve(true); },
-
-        // raw state (read-only copy)
         getState(){ return JSON.parse(JSON.stringify(state)); },
-
-        // accounts
         listAccounts(){ return JSON.parse(JSON.stringify(state.accounts)); },
         getAccount(id){ return JSON.parse(JSON.stringify(CoreLogic.getAccountById(id))); },
-        addAccount(name, initialBalance){ return CoreLogic.addAccount(name, initialBalance); },
-        updateAccount(id, name, initialBalance){ return CoreLogic.updateAccount(id, name, initialBalance); },
-        deleteAccount(id){ return CoreLogic.deleteAccount(id); },
-
-        // transactions
-        listTransactions(filters){ return CoreLogic.getFilteredTransactions(filters || {}); },
-        getTransaction(id){ return JSON.parse(JSON.stringify(CoreLogic.getTransactionById(id))); },
         addTransaction(txData){ return CoreLogic.addTransaction(txData); },
-        updateTransaction(id, txData){ return CoreLogic.updateTransaction(id, txData); },
-        deleteTransaction(id){ return CoreLogic.deleteTransaction(id); },
-
-        // dues
+        addDue(data){ return CoreLogic.addDue(data); },
         listDues(){ return CoreLogic.getDuesWithStatus(); },
         getDue(id){ return JSON.parse(JSON.stringify(CoreLogic.getDueById(id))); },
-        addDue(data){ return CoreLogic.addDue(data); },
-        updateDue(id, data){ return CoreLogic.updateDue(id, data); },
         deleteDue(id){ return CoreLogic.deleteDue(id); },
-
-        // payments
-        applyPayment(args){ return CoreLogic.applyPayment(args); },
         collectReceivablePartial(dueId, amount, accountId, notes=''){ return CoreLogic.collectReceivablePartial(dueId, amount, accountId, notes); },
         payPayablePartial(dueId, amount, accountId, notes=''){ return CoreLogic.payPayablePartial(dueId, amount, accountId, notes); },
-
-        // summary & helpers
         getDashboardSummary(){ return CoreLogic.getDashboardSummary(); },
         getTopSpendingCategories(){ return CoreLogic.getTopSpendingCategories(); },
-
-        // storage
-        exportData(){ return StorageService.exportData(); },
-        importData(jsonStr){ return StorageService.importData(jsonStr); },
-        resetToInitial(){ StorageService.saveInitial(); CoreLogic.recalculateAllBalances(); return true; }
       };
 
       global.DafatirAPI = API;
@@ -631,12 +773,15 @@
       StorageService.load();
       CoreLogic.recalculateAllBalances();
 
-      console.info('DafatirAPI جاهز. استخدم وظائفه في الكونسول لتجربة الإضافة: DafatirAPI.addAccount(name, balance) و DafatirAPI.addTransaction(txData)');
-    
-      // --- JavaScript for Rendering the UI and Theme Toggle (New Code) ---
+      // --- JavaScript for Rendering the UI and Theme Toggle (New/Updated Code) ---
       const langMap = {
           'payable': 'مطلوب (دفع)',
           'receivable': 'متوقع (تحصيل)',
+          'income': 'دخل',
+          'expense': 'مصروف',
+          'transfer': 'تحويل',
+          'monthly': 'شهري',
+          'none': 'مرة واحدة'
       };
       
       const getAccountName = (id) => {
@@ -649,6 +794,7 @@
       };
 
 
+      // --- RENDER FUNCTIONS ---
       function renderSummaryCards() {
         const summary = DafatirAPI.getDashboardSummary();
         const cardsContainer = document.getElementById('summary-cards');
@@ -657,8 +803,8 @@
           { title: 'الإيرادات الكُلية', value: formatCurrency(summary.income), class: 'income', icon: '⬆️' },
           { title: 'المصروفات الكُلية', value: formatCurrency(summary.expense), class: 'expense', icon: '⬇️' },
           { title: 'صافي الرصيد', value: formatCurrency(summary.net), class: 'net-balance', icon: '⚖️' },
-          { title: 'إجمالي مطلوب الدفع', value: formatCurrency(summary.payablesRemaining), class: 'expense', icon: '🗓️' },
-          { title: 'إجمالي متوقع التحصيل', value: formatCurrency(summary.receivablesUncollected), class: 'income', icon: '📥' },
+          { title: 'مطلوب الدفع المعلق', value: formatCurrency(summary.payablesRemaining), class: 'expense', icon: '🗓️' },
+          { title: 'متوقع التحصيل المعلق', value: formatCurrency(summary.receivablesUncollected), class: 'income', icon: '📥' },
         ];
 
         cardsContainer.innerHTML = summaryData.map(item => `
@@ -682,11 +828,11 @@
 
       function renderDuesTable() {
         // عرض فقط المستحقات غير المدفوعة أو القادمة
-        const dues = DafatirAPI.listDues().filter(d => d.statusText !== 'مدفوع' || d.recurrence === 'monthly');
+        const dues = DafatirAPI.listDues().filter(d => d.status !== 'paid' || d.recurrence === 'monthly');
         const tbody = document.querySelector('#dues-table tbody');
         
         if (dues.length === 0) {
-             tbody.innerHTML = '<tr><td colspan="6" class="text-center">لا توجد مستحقات معلقة أو قادمة.</td></tr>';
+             tbody.innerHTML = '<tr><td colspan="7" class="text-center">لا توجد مستحقات معلقة أو قادمة.</td></tr>';
              return;
         }
 
@@ -695,6 +841,12 @@
           const statusClass = due.statusText.replace(/\s/g, '-');
           const isDanger = due.type === 'payable' && due.statusText !== 'مدفوع';
           const isSuccess = due.type === 'receivable' && due.statusText !== 'مدفوع';
+
+          const actionButton = due.status !== 'paid' ? `
+              <button class="action-btn" title="${due.type === 'payable' ? 'سداد' : 'تحصيل'}" onclick="openPaymentModal('${due.id}')">
+                  ${due.type === 'payable' ? '💸' : '💰'}
+              </button>
+          ` : '';
           
           return `
             <tr>
@@ -705,6 +857,12 @@
               <td class="text-center">${getAccountName(due.accountId)}</td>
               <td class="text-center">
                 <span class="status-badge status-${statusClass}">${due.statusText}</span>
+              </td>
+              <td class="text-center" style="width: 100px; white-space: nowrap;">
+                  ${actionButton}
+                  <button class="action-btn delete" title="حذف الالتزام" onclick="handleDeleteDue('${due.id}', '${due.name}')">
+                      🗑️
+                  </button>
               </td>
             </tr>
           `;
@@ -729,6 +887,280 @@
       }
 
       // -----------------------------------------------------------------
+      // Modal Logic
+      // -----------------------------------------------------------------
+      const modal = document.getElementById('generic-modal');
+      const modalContent = document.getElementById('modal-content');
+
+      function showModal(contentHtml, title) {
+        modalContent.innerHTML = `
+            <div class="modal-header">
+                <h2>${title}</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            ${contentHtml}
+        `;
+        modal.style.display = 'flex';
+      }
+
+      function closeModal() {
+        modal.style.display = 'none';
+        modalContent.innerHTML = '';
+      }
+
+      // Close modal when clicking outside the content area
+      global.closeModalIfOutside = function(event) {
+          if (event.target === modal) {
+              closeModal();
+          }
+      }
+
+      // Helper to generate Account Dropdown
+      function getAccountOptions(selectedId = null, includeAll = false) {
+          const accounts = DafatirAPI.listAccounts();
+          let options = includeAll ? '<option value="all">كل الحسابات</option>' : '';
+          options += accounts.map(acc => 
+              `<option value="${acc.id}" ${acc.id === selectedId ? 'selected' : ''}>${acc.name} (${formatCurrency(acc.currentBalance)})</option>`
+          ).join('');
+          return options;
+      }
+
+      // --- A. Add Transaction Modal ---
+      global.openAddTransactionModal = function() {
+          const formHtml = `
+              <form id="add-transaction-form" onsubmit="event.preventDefault(); handleTransactionSubmit();">
+                  <div class="form-group">
+                      <label for="tx_type">نوع الحركة:</label>
+                      <select id="tx_type" name="type" required onchange="toggleTransactionFields(this.value)">
+                          <option value="income">دخل</option>
+                          <option value="expense">مصروف</option>
+                          <option value="transfer">تحويل</option>
+                      </select>
+                  </div>
+
+                  <div class="form-group" id="tx_from_group">
+                      <label for="tx_from">من حساب:</label>
+                      <select id="tx_from" name="from">
+                          ${getAccountOptions()}
+                      </select>
+                  </div>
+
+                  <div class="form-group" id="tx_to_group">
+                      <label for="tx_to">إلى حساب:</label>
+                      <select id="tx_to" name="to">
+                          ${getAccountOptions()}
+                      </select>
+                  </div>
+                  
+                  <div class="form-group">
+                      <label for="tx_amount">المبلغ:</label>
+                      <input type="number" id="tx_amount" name="amount" min="0.01" step="0.01" required>
+                  </div>
+                  
+                  <div class="form-group">
+                      <label for="tx_date">التاريخ:</label>
+                      <input type="date" id="tx_date" name="date" value="${getTodayDateISO()}" required>
+                  </div>
+
+                  <div class="form-group" id="tx_category_group">
+                      <label for="tx_category">الفئة:</label>
+                      <input type="text" id="tx_category" name="category" placeholder="راتب، فواتير، إلخ.">
+                  </div>
+                  
+                  <div class="form-group">
+                      <label for="tx_notes">ملاحظات:</label>
+                      <textarea id="tx_notes" name="notes"></textarea>
+                  </div>
+
+                  <div class="form-actions">
+                      <button type="submit" class="btn btn-primary">إضافة الحركة</button>
+                      <button type="button" class="btn btn-secondary" onclick="closeModal()">إلغاء</button>
+                  </div>
+              </form>
+          `;
+          showModal(formHtml, 'إضافة حركة مالية جديدة');
+          // Initial field toggle setup
+          toggleTransactionFields('income');
+      }
+
+      global.toggleTransactionFields = function(type) {
+          const fromGroup = document.getElementById('tx_from_group');
+          const toGroup = document.getElementById('tx_to_group');
+          const categoryGroup = document.getElementById('tx_category_group');
+
+          fromGroup.style.display = (type === 'expense' || type === 'transfer') ? 'block' : 'none';
+          toGroup.style.display = (type === 'income' || type === 'transfer') ? 'block' : 'none';
+          categoryGroup.style.display = (type !== 'transfer') ? 'block' : 'none';
+
+          // Set required attributes based on type
+          document.getElementById('tx_from').required = (type === 'expense' || type === 'transfer');
+          document.getElementById('tx_to').required = (type === 'income' || type === 'transfer');
+          document.getElementById('tx_category').required = (type !== 'transfer');
+      }
+
+      global.handleTransactionSubmit = function() {
+          const form = document.getElementById('add-transaction-form');
+          const data = new FormData(form);
+          const txData = Object.fromEntries(data.entries());
+
+          if (txData.type === 'income') {
+              txData.from = null;
+          } else if (txData.type === 'expense') {
+              txData.to = null;
+          } else if (txData.type === 'transfer' && txData.from === txData.to) {
+              console.error('لا يمكن التحويل من وإلى نفس الحساب.');
+              // Use a user-friendly message box instead of alert
+              alert('خطأ: لا يمكن التحويل من وإلى نفس الحساب.');
+              return;
+          }
+
+          if (DafatirAPI.addTransaction(txData)) {
+              closeModal();
+              initializeDashboard();
+          } else {
+              console.error('فشل في إضافة الحركة.');
+              alert('فشل في إضافة الحركة. تحقق من البيانات.');
+          }
+      }
+
+      // --- B. Add Due Modal (Obligations/Receivables) ---
+      global.openAddDueModal = function() {
+          const formHtml = `
+              <form id="add-due-form" onsubmit="event.preventDefault(); handleDueSubmit();">
+                  <div class="form-group">
+                      <label for="due_type">النوع:</label>
+                      <select id="due_type" name="type" required>
+                          <option value="payable">مطلوب دفعه (التزام)</option>
+                          <option value="receivable">متوقع تحصيله (مستحق)</option>
+                      </select>
+                  </div>
+                  
+                  <div class="form-group">
+                      <label for="due_name">البيان/الوصف:</label>
+                      <input type="text" id="due_name" name="name" required placeholder="إيجار المكتب، دفعة العميل X">
+                  </div>
+                  
+                  <div class="form-group">
+                      <label for="due_amount">المبلغ الكلي:</label>
+                      <input type="number" id="due_amount" name="amount" min="0.01" step="0.01" required>
+                  </div>
+
+                  <div class="form-group">
+                      <label for="due_dueDate">تاريخ الاستحقاق:</label>
+                      <input type="date" id="due_dueDate" name="dueDate" value="${getTodayDateISO()}" required>
+                  </div>
+                  
+                  <div class="form-group">
+                      <label for="due_accountId">الحساب المرتبط (للدفع/التحصيل):</label>
+                      <select id="due_accountId" name="accountId" required>
+                          ${getAccountOptions()}
+                      </select>
+                  </div>
+                  
+                  <div class="form-group">
+                      <label for="due_recurrence">التكرار:</label>
+                      <select id="due_recurrence" name="recurrence">
+                          <option value="none">مرة واحدة</option>
+                          <option value="monthly">شهري</option>
+                      </select>
+                  </div>
+
+                  <div class="form-actions">
+                      <button type="submit" class="btn btn-primary">إضافة الالتزام</button>
+                      <button type="button" class="btn btn-secondary" onclick="closeModal()">إلغاء</button>
+                  </div>
+              </form>
+          `;
+          showModal(formHtml, 'إضافة التزام/مستحق جديد');
+      }
+
+      global.handleDueSubmit = function() {
+          const form = document.getElementById('add-due-form');
+          const data = new FormData(form);
+          const dueData = Object.fromEntries(data.entries());
+
+          if (DafatirAPI.addDue(dueData)) {
+              closeModal();
+              initializeDashboard();
+          } else {
+              console.error('فشل في إضافة الالتزام.');
+              alert('فشل في إضافة الالتزام. تحقق من البيانات.');
+          }
+      }
+
+      // --- C. Payment/Collection Modal (تحصيلات/سدادات) ---
+      global.openPaymentModal = function(dueId) {
+          const due = DafatirAPI.getDue(dueId);
+          if (!due) return alert('الالتزام غير موجود.');
+          
+          const isPayable = due.type === 'payable';
+          const title = isPayable ? 'تسجيل سداد التزام' : 'تسجيل تحصيل مستحق';
+          const buttonText = isPayable ? 'سداد الآن' : 'تحصيل الآن';
+          const typeLabel = isPayable ? 'المطلوب دفعه' : 'المتوقع تحصيله';
+
+          const formHtml = `
+              <form id="payment-form" onsubmit="event.preventDefault(); handlePaymentSubmit('${dueId}', ${isPayable});">
+                  <p><strong>البيان:</strong> ${due.name}</p>
+                  <p><strong>${typeLabel} المتبقي:</strong> <span class="${isPayable ? 'text-danger' : 'text-success'}">${formatCurrency(due.remainingAmount)}</span></p>
+                  
+                  <div class="form-group">
+                      <label for="pay_amount">مبلغ الدفع/التحصيل:</label>
+                      <input type="number" id="pay_amount" name="amount" min="0.01" step="0.01" max="${due.remainingAmount}" value="${due.remainingAmount.toFixed(2)}" required>
+                  </div>
+                  
+                  <div class="form-group">
+                      <label for="pay_accountId">الحساب المستخدم:</label>
+                      <select id="pay_accountId" name="accountId" required>
+                          ${getAccountOptions(due.accountId)}
+                      </select>
+                  </div>
+                  
+                  <div class="form-group">
+                      <label for="pay_notes">ملاحظات الدفع:</label>
+                      <textarea id="pay_notes" name="notes"></textarea>
+                  </div>
+
+                  <div class="form-actions">
+                      <button type="submit" class="btn btn-primary">${buttonText}</button>
+                      <button type="button" class="btn btn-secondary" onclick="closeModal()">إلغاء</button>
+                  </div>
+              </form>
+          `;
+          showModal(formHtml, title);
+      }
+      
+      global.handlePaymentSubmit = function(dueId, isPayable) {
+          const form = document.getElementById('payment-form');
+          const data = new FormData(form);
+          const payData = Object.fromEntries(data.entries());
+          
+          const amount = parseFloat(payData.amount);
+          if (isNaN(amount) || amount <= 0) return alert('يرجى إدخال مبلغ صحيح.');
+
+          let success = false;
+          if (isPayable) {
+              success = DafatirAPI.payPayablePartial(dueId, amount, payData.accountId, payData.notes);
+          } else {
+              success = DafatirAPI.collectReceivablePartial(dueId, amount, payData.accountId, payData.notes);
+          }
+          
+          if (success) {
+              closeModal();
+              initializeDashboard();
+          } else {
+              alert('فشل في تسجيل العملية. تحقق من المبلغ والرصيد المتبقي.');
+          }
+      }
+      
+      // --- D. Delete Due Function ---
+      global.handleDeleteDue = function(dueId, dueName) {
+          if (confirm(`هل أنت متأكد من حذف الالتزام "${dueName}"؟ سيتم حذف جميع الحركات المالية المرتبطة به أيضاً.`)) {
+              DafatirAPI.deleteDue(dueId);
+              initializeDashboard();
+          }
+      }
+
+      // -----------------------------------------------------------------
       // Theme Toggle Logic
       // -----------------------------------------------------------------
       function setupThemeToggle() {
@@ -736,17 +1168,13 @@
           
           // 1. Initial setup based on localStorage or system preference
           const storedTheme = localStorage.getItem('theme');
-          if (storedTheme === 'dark') {
-              document.documentElement.classList.add('dark-mode');
-              toggleButton.textContent = '☀️';
-          } else if (storedTheme === 'light') {
-               document.documentElement.classList.remove('dark-mode');
-               toggleButton.textContent = '🌙';
-          } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-              // Apply dark mode if system prefers it and no local storage preference
+          const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+          if (storedTheme === 'dark' || (!storedTheme && prefersDark)) {
               document.documentElement.classList.add('dark-mode');
               toggleButton.textContent = '☀️';
           } else {
+              document.documentElement.classList.remove('dark-mode');
               toggleButton.textContent = '🌙';
           }
 
@@ -782,3 +1210,4 @@
   </script>
 </body>
 </html>
+
