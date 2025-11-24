@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hesabaty - حساباتي | دفتر الأستاذ الشخصي</title>
+  <!-- Tailwind (dev CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Cairo Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome CDN + fallback -->
+  <link id="fa-cdn" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous" />
+  <script>
+    (function(){
+      setTimeout(() => {
+        const hasCdn = Array.from(document.styleSheets).some(s => s.href && s.href.includes('cdnjs'));
+        if (!hasCdn) {
+          const local = document.createElement('link');
+          local.rel = 'stylesheet';
+          local.href = 'assets/fontawesome/css/all.min.css'; // تأكد أن الملفات متاحة محلياً عند الاستضافة
+          document.head.appendChild(local);
+          console.warn('FontAwesome CDN might be blocked — using local fallback (assets/fontawesome/...).');
+        }
+      }, 250);
+    })();
+  </script>
+
+  <style>
+    :root{
+      --primary-color: #4A90E2;
+      --secondary-color: #50E3C2;
+      --expense-color: #E74C3C;
+      --income-color: #2ECC71;
+      --bg-color-light: #F4F7F9;
+      --bg-color-dark: #121212;
+      --card-bg-light: #FFFFFF;
+      --card-bg-dark: #1F1F1F;
+      --text-color-light: #1F2937;
+      --text-color-dark: #E0E0E0;
+    }
+    html, body { height: 100%; }
+    body {
+      font-family: 'Cairo', sans-serif;
+      background-color: var(--bg-color-light);
+      color: var(--text-color-light);
+      transition: background-color 0.25s, color 0.25s;
+    }
+    .dark body {
+      background-color: var(--bg-color-dark);
+      color: var(--text-color-dark);
+    }
+
+    /* helper classes used in JS templates */
+    .btn-primary { background-color: var(--primary-color); }
+    .bg-primary-color { background-color: var(--primary-color); }
+    .text-primary-color { color: var(--primary-color); }
+    .bg-secondary-color { background-color: var(--secondary-color); }
+    .text-secondary-color { color: var(--secondary-color); }
+
+    .card-bg { background-color: var(--card-bg-light); }
+    .dark .card-bg { background-color: var(--card-bg-dark); }
+    .card-shadow { box-shadow: 0 4px 6px rgba(0,0,0,0.08); }
+    .text-gray-800-custom { color: var(--text-color-light); }
+    .dark .text-gray-800-custom { color: var(--text-color-dark); }
+
+    .scroll-container::-webkit-scrollbar { display: none; }
+    .scroll-container { -ms-overflow-style: none; scrollbar-width: none; }
+
+    .active-tab { border-color: var(--primary-color) !important; color: #111 !important; }
+    /* disabled button look */
+    .disabled { opacity: .5; pointer-events: none; }
+  </style>
+</head>
+
+<body class="min-h-screen">
+  <div id="app" class="p-4 md:p-8 lg:p-10 max-w-7xl mx-auto">
+    <header class="mb-8">
+      <div class="flex justify-between items-center mb-4">
+        <div>
+          <h1 class="text-4xl font-extrabold text-gray-800-custom mb-2">حساباتي - Hesabaty</h1>
+          <p class="text-gray-500">إدارة مالية شخصية ودفتر أستاذ إلكتروني</p>
+        </div>
+
+        <button id="theme-toggle" class="p-3 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 shadow-md transition duration-300 hover:scale-105" aria-label="Toggle dark mode">
+          <i id="icon-moon" class="fas fa-moon"></i>
+          <i id="icon-sun" class="fas fa-sun hidden"></i>
+        </button>
+      </div>
+
+      <div id="tabs" class="flex flex-wrap border-b border-gray-200 dark:border-gray-700">
+        <button data-tab="dashboard" class="tab-btn px-4 py-2 text-sm md:text-base font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 active-tab">لوحة القيادة</button>
+        <button data-tab="movements" class="tab-btn px-4 py-2 text-sm md:text-base font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">الحركات</button>
+        <button data-tab="commitments" class="tab-btn px-4 py-2 text-sm md:text-base font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">الالتزامات</button>
+        <button data-tab="collections" class="tab-btn px-4 py-2 text-sm md:text-base font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">التحصيلات</button>
+      </div>
+
+      <div id="user-info" class="text-xs text-gray-400 mt-2 text-left">
+        ID: <span id="user-id-display">...</span>
+      </div>
+    </header>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="tab-content">
+      <div id="connection-error" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded-lg hidden" role="alert">
+        <p class="font-bold">خطأ في الاتصال بقاعدة البيانات</p>
+        <p id="error-message">لم يتمكن التطبيق من الاتصال بـ Firestore. الرجاء التأكد من توفر متغيرات التهيئة.</p>
+      </div>
+
+      <h2 class="text-2xl font-bold text-gray-800-custom mb-4">ملخص الأرصدة</h2>
+      <div id="total-balance-card" class="card-bg p-6 rounded-xl card-shadow mb-8 border-t-4" style="border-top-color: var(--primary-color);">
+        <p class="text-lg text-gray-500">إجمالي الأرصدة:</p>
+        <p id="total-balance" class="text-4xl font-extrabold text-gray-800-custom mt-1">0.00 EGP</p>
+      </div>
+
+      <h2 class="text-2xl font-bold text-gray-800-custom mb-4">الحسابات</h2>
+      <div id="accounts-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"></div>
+
+      <button onclick="openAccountModal?.()" class="btn-primary text-white px-6 py-3 rounded-full font-semibold shadow-lg hover:shadow-xl transition duration-300">
+        <i class="fas fa-plus ml-2"></i> إضافة حساب جديد
+      </button>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
+        <!-- Cards placeholder populated by JS -->
+        <div class="card-bg p-6 rounded-xl card-shadow border-t-4" style="border-top-color: #9CA3AF;">
+          <h3 class="text-xl font-bold text-gray-800-custom mb-4 flex justify-between items-center">
+            آخر 10 حركات <i class="fas fa-history text-gray-500"></i>
+          </h3>
+          <div id="last-movements-list" class="space-y-3">
+            <p id="no-recent-movements" class="text-gray-500 text-sm hidden">لا توجد حركات مسجلة حديثاً.</p>
+          </div>
+          <button onclick="switchTab('movements')" class="mt-4 w-full text-center text-sm text-primary-color hover:text-blue-700 font-semibold transition duration-300">
+            عرض كل الحركات <i class="fas fa-arrow-left mr-1 text-xs"></i>
+          </button>
+        </div>
+
+        <div class="card-bg p-6 rounded-xl card-shadow border-t-4" style="border-top-color: #E53E3E;">
+          <h3 class="text-xl font-bold text-gray-800-custom mb-4 flex justify-between items-center">
+            ملخص الشهر الحالي <i class="fas fa-calendar-alt text-gray-500"></i>
+          </h3>
+          <div class="space-y-4">
+            <div id="monthly-commitments-summary" class="border-b dark:border-gray-700 pb-4">
+              <p class="text-lg font-semibold text-red-600 mb-2 flex items-center">
+                <i class="fas fa-file-invoice-dollar ml-2"></i> التزامات غير مسددة
+              </p>
+              <p class="text-3xl font-extrabold text-gray-800-custom" id="unpaid-commitments-amount">0.00 EGP</p>
+              <p class="text-sm text-gray-500" id="unpaid-commitments-count">0 التزام مستحق</p>
+            </div>
+            <div id="monthly-collections-summary">
+              <p class="text-lg font-semibold text-green-600 mb-2 flex items-center">
+                <i class="fas fa-hand-holding-usd ml-2"></i> تحصيلات لم تُستلم
+              </p>
+              <p class="text-3xl font-extrabold text-gray-800-custom" id="uncollected-collections-amount">0.00 EGP</p>
+              <p class="text-sm text-gray-500" id="uncollected-collections-count">0 تحصيل مستحق</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-bg p-6 rounded-xl card-shadow border-t-4" style="border-top-color: var(--primary-color);">
+          <h3 class="text-xl font-bold text-gray-800-custom mb-4 flex justify-between items-center">
+            الالتزامات والتحصيلات المستحقة هذا الشهر <i class="fas fa-exclamation-triangle text-yellow-500"></i>
+          </h3>
+          <div id="upcoming-obligations-list" class="space-y-3 max-h-80 overflow-y-auto scroll-container">
+            <p id="no-upcoming-obligations" class="text-gray-500 text-sm hidden">لا توجد التزامات أو تحصيلات مستحقة غير مسددة هذا الشهر.</p>
+          </div>
+          <button onclick="switchTab('commitments')" class="mt-4 w-full text-center text-sm text-primary-color hover:text-blue-700 font-semibold transition duration-300">
+            مراجعة الالتزامات <i class="fas fa-arrow-left mr-1 text-xs"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Movements -->
+    <div id="movements" class="tab-content hidden">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800-custom mb-4 md:mb-0">سجل الحركات (دفتر الأستاذ)</h2>
+        <button onclick="openMovementModal?.()" class="btn-primary text-white px-6 py-3 rounded-full font-semibold shadow-lg hover:shadow-xl transition duration-300 w-full md:w-auto">
+          <i class="fas fa-plus ml-2"></i> إضافة حركة جديدة
+        </button>
+      </div>
+
+      <div class="card-bg p-4 rounded-xl card-shadow mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <input type="date" id="filter-date-from" class="p-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-800-custom">
+        <input type="date" id="filter-date-to" class="p-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-800-custom">
+        <select id="filter-account" class="p-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-800-custom">
+          <option value="">جميع الحسابات</option>
+        </select>
+        <select id="filter-type" class="p-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-800-custom">
+          <option value="">الكل (دخل/مصروف)</option>
+          <option value="Income">دخل</option>
+          <option value="Expense">مصروف</option>
+        </select>
+        <input type="text" id="filter-keyword" placeholder="كلمة مفتاحية/ملاحظة" class="p-2 border border-gray-300 rounded-lg text-sm lg:col-span-2 bg-white text-gray-800-custom">
+        <button onclick="applyFilters?.()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-semibold hover:bg-gray-300 transition duration-300">تطبيق الفلاتر</button>
+        <button onclick="resetFilters?.()" class="bg-red-100 text-red-600 px-4 py-2 rounded-lg font-semibold hover:bg-red-200 transition duration-300">إلغاء الفلاتر</button>
+      </div>
+
+      <div id="movements-history" class="space-y-4"></div>
+      <div id="no-movements" class="bg-yellow-100 border border-yellow-300 text-yellow-800 p-4 rounded-xl text-center hidden">
+        <i class="fas fa-info-circle ml-2"></i> لا توجد حركات مطابقة لمعايير التصفية.
+      </div>
+    </div>
+
+    <!-- Commitments -->
+    <div id="commitments" class="tab-content hidden">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800-custom">الالتزامات والدفعات الدورية</h2>
+        <button onclick="openCommitmentModal?.()" class="btn-primary text-white px-6 py-3 rounded-full font-semibold shadow-lg hover:shadow-xl transition duration-300">
+          <i class="fas fa-plus ml-2"></i> إضافة التزام
+        </button>
+      </div>
+
+      <div id="commitments-list" class="space-y-6"></div>
+      <div id="no-commitments" class="bg-yellow-100 border border-yellow-300 text-yellow-800 p-4 rounded-xl text-center hidden">
+        <i class="fas fa-info-circle ml-2"></i> لا توجد التزامات دورية حاليًا.
+      </div>
+    </div>
+
+    <!-- Collections -->
+    <div id="collections" class="tab-content hidden">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800-custom">التحصيلات والمبالغ المستحقة لك</h2>
+        <button onclick="openCollectionModal?.()" style="background-color:var(--secondary-color)" class="text-gray-900 px-6 py-3 rounded-full font-semibold shadow-lg hover:shadow-xl transition duration-300">
+          <i class="fas fa-plus ml-2"></i> إضافة تحصيل
+        </button>
+      </div>
+
+      <div id="collections-list" class="space-y-6"></div>
+      <div id="no-collections" class="bg-green-100 border border-green-300 text-green-800 p-4 rounded-xl text-center hidden">
+        <i class="fas fa-info-circle ml-2"></i> لا توجد تحصيلات مستحقة حاليًا.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Modals: ضع هنا الـ HTML الأصلي للـ modals إن أردت. -->
+  <!-- ملاحظة: handlers (CRUD) لم تُنسخ هنا لسبب الإيجاز — إذا تحب أرجع كل handlers كاملة قل "أعدّ كل Handlers" وسألصقهم. -->
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, runTransaction, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // Environment / injected config
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? (typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config) : null;
+    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+    // App state
+    let app, db, auth, userId = null, isAuthReady = false;
+    // data stores
+    let accounts = [], movements = [], commitments = [], collections = [];
+
+    // Utilities
+    window.formatCurrency = (amount) => {
+      if (isNaN(amount)) amount = 0;
+      return new Intl.NumberFormat('ar-EG', { style: 'currency', currency: 'EGP', minimumFractionDigits: 2 }).format(amount);
+    };
+    window.formatDate = (dateString) => {
+      const d = new Date(dateString);
+      if (isNaN(d.getTime())) return dateString;
+      return d.toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' });
+    };
+
+    const getAccountById = (id) => accounts.find(a => a.id === id) || null;
+
+    // recurrence helpers
+    const getNextDueDate = (lastDate, recurrence) => {
+      const d = new Date(lastDate);
+      if (isNaN(d.getTime())) return new Date().toISOString().substring(0,10);
+      switch(recurrence) {
+        case 'Daily': d.setDate(d.getDate() + 1); break;
+        case 'Weekly': d.setDate(d.getDate() + 7); break;
+        case 'Monthly':
+          const month = d.getMonth();
+          const year = d.getFullYear();
+          d.setMonth(month + 1);
+          if (d.getMonth() !== (month + 1) % 12) {
+            d.setDate(0);
+          }
+          break;
+        default: d.setMonth(d.getMonth() + 1);
+      }
+      return d.toISOString().substring(0,10);
+    };
+
+    const getObligationNextDueDate = (c, isCollection) => {
+      const paidField = isCollection ? 'collectedInstallments' : 'paidInstallments';
+      try {
+        if (c[paidField] > 0 && c.nextDueDate) return c.nextDueDate;
+        const today = new Date(); today.setHours(0,0,0,0);
+        let current = new Date(c.startDate); current.setHours(0,0,0,0);
+        if (current > today) return c.startDate;
+        let safety = 0;
+        while (current <= today && safety < 500) {
+          current = new Date(getNextDueDate(current.toISOString().substring(0,10), c.recurrence));
+          safety++;
+        }
+        return current.toISOString().substring(0,10);
+      } catch (e) {
+        return c.startDate || new Date().toISOString().substring(0,10);
+      }
+    };
+
+    // Theme init/toggle
+    const initializeTheme = () => {
+      const stored = localStorage.getItem('theme') || 'light';
+      if (stored === 'dark') document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark');
+      const moon = document.getElementById('icon-moon'), sun = document.getElementById('icon-sun');
+      if (moon && sun) {
+        moon.classList.toggle('hidden', document.documentElement.classList.contains('dark'));
+        sun.classList.toggle('hidden', !document.documentElement.classList.contains('dark'));
+      }
+    };
+    window.toggleTheme = () => {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      const moon = document.getElementById('icon-moon'), sun = document.getElementById('icon-sun');
+      if (moon && sun) {
+        moon.classList.toggle('hidden', document.documentElement.classList.contains('dark'));
+        sun.classList.toggle('hidden', !document.documentElement.classList.contains('dark'));
+      }
+    };
+    document.getElementById('theme-toggle')?.addEventListener('click', window.toggleTheme);
+    initializeTheme();
+
+    // Tabs
+    window.switchTab = (tabName) => {
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active-tab'));
+      document.getElementById(tabName)?.classList.remove('hidden');
+      document.querySelector(`[data-tab="${tabName}"]`)?.classList.add('active-tab');
+      if (tabName === 'dashboard') renderDashboard();
+    };
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
+
+    // Render functions (accounts/dashboard/movements/commitments/collections)
+    const renderAccounts = () => {
+      const list = document.getElementById('accounts-list'); if (!list) return;
+      list.innerHTML = '';
+      let total = 0;
+      accounts.forEach(acc => {
+        total += (acc.currentBalance || 0);
+        const card = document.createElement('div');
+        card.className = 'card-bg p-6 rounded-xl card-shadow border-r-8';
+        card.style.borderRightColor = acc.color || '#4A90E2';
+        card.innerHTML = `
+          <div class="flex justify-between items-start">
+            <h4 class="text-xl font-bold text-gray-800-custom">${acc.name}</h4>
+            <i class="fas fa-wallet text-gray-400 text-2xl"></i>
+          </div>
+          <p class="text-3xl font-extrabold text-gray-800-custom mt-3">${formatCurrency(acc.currentBalance||0)}</p>
+          <p class="text-sm text-gray-500">الرصيد الحالي</p>
+          <div class="mt-4 flex justify-end space-x-2 space-x-reverse">
+            <button onclick="editAccount?.('${acc.id}')" class="text-sm text-gray-500 hover:text-primary-color transition"><i class="fas fa-edit"></i></button>
+            <button onclick="deleteAccount?.('${acc.id}')" class="text-sm text-gray-500 hover:text-red-500 transition"><i class="fas fa-trash-alt"></i></button>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+      const totalEl = document.getElementById('total-balance');
+      if (totalEl) totalEl.textContent = formatCurrency(total);
+
+      // populate selects
+      const selects = ['movement-account','commitment-account','collection-account','filter-account'];
+      selects.forEach(id => {
+        const sel = document.getElementById(id);
+        if (!sel) return;
+        const prev = sel.value;
+        sel.innerHTML = id==='filter-account' ? '<option value=\"\">جميع الحسابات</option>' : '<option value=\"\">اختر حساب</option>';
+        accounts.forEach(a => {
+          const opt = document.createElement('option');
+          opt.value = a.id; opt.textContent = `${a.name} (${formatCurrency(a.currentBalance||0)})`;
+          if (a.id === prev) opt.selected = true;
+          sel.appendChild(opt);
+        });
+      });
+      renderDashboard();
+    };
+
+    const renderDashboard = () => {
+      const lastList = document.getElementById('last-movements-list');
+      const noRecent = document.getElementById('no-recent-movements');
+      if (!lastList || !noRecent) return;
+      const sorted = [...movements].sort((a,b) => new Date(b.date)-new Date(a.date));
+      const last10 = sorted.slice(0,10);
+      lastList.innerHTML = '';
+      if (last10.length === 0) { noRecent.classList.remove('hidden'); lastList.appendChild(noRecent); }
+      else {
+        noRecent.classList.add('hidden');
+        last10.forEach(m => {
+          const acc = getAccountById(m.accountId) || {name:'حساب محذوف'};
+          const isExpense = m.type==='Expense';
+          lastList.insertAdjacentHTML('beforeend', `
+            <div class="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-800 last:border-b-0">
+              <div class="flex items-center space-x-2 space-x-reverse min-w-0 flex-shrink">
+                <span class="text-sm font-semibold truncate text-gray-800-custom" title="${m.category}">${m.category}</span>
+                <span class="text-xs text-gray-500 flex-shrink-0">(${acc.name})</span>
+              </div>
+              <span class="font-bold text-sm ${isExpense ? 'text-red-500' : 'text-green-500'} flex-shrink-0">${isExpense?'-':'+'} ${formatCurrency(m.amount).replace(/^-/, '')}</span>
+            </div>
+          `);
+        });
+      }
+
+      const today = new Date(); const cy = today.getFullYear(); const cm = today.getMonth();
+      const isCurrMonth = dateStr => { const d=new Date(dateStr); return !isNaN(d.getTime()) && d.getFullYear()===cy && d.getMonth()===cm; };
+
+      let unpaidAmount=0, unpaidCount=0, uncollectedAmount=0, uncollectedCount=0;
+      const upcoming = [];
+
+      commitments.forEach(c=>{
+        if (c.status!=='Completed') {
+          const nextDue = getObligationNextDueDate(c,false);
+          if (isCurrMonth(nextDue)) { unpaidAmount += (c.amount||0); unpaidCount++; upcoming.push({type:'commitment', ...c, dueDate: nextDue}); }
+        }
+      });
+      collections.forEach(c=>{
+        if (c.status!=='Completed') {
+          const nextDue = getObligationNextDueDate(c,true);
+          if (isCurrMonth(nextDue)) { uncollectedAmount += (c.amount||0); uncollectedCount++; upcoming.push({type:'collection', ...c, dueDate: nextDue}); }
+        }
+      });
+
+      const uaEl = document.getElementById('unpaid-commitments-amount');
+      const ucEl = document.getElementById('unpaid-commitments-count');
+      const caEl = document.getElementById('uncollected-collections-amount');
+      const ccEl = document.getElementById('uncollected-collections-count');
+      if (uaEl) uaEl.textContent = formatCurrency(unpaidAmount);
+      if (ucEl) ucEl.textContent = `${unpaidCount} التزام مستحق`;
+      if (caEl) caEl.textContent = formatCurrency(uncollectedAmount);
+      if (ccEl) ccEl.textContent = `${uncollectedCount} تحصيل مستحق`;
+
+      const upEl = document.getElementById('upcoming-obligations-list');
+      const noUp = document.getElementById('no-upcoming-obligations');
+      if (!upEl || !noUp) return;
+      upEl.innerHTML = '';
+      upcoming.sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate));
+      if (upcoming.length===0) { noUp.classList.remove('hidden'); upEl.appendChild(noUp); }
+      else {
+        noUp.classList.add('hidden');
+        upcoming.forEach(item=>{
+          const isCommit = item.type==='commitment';
+          const colorClass = isCommit ? 'text-red-500' : 'text-green-500';
+          const icon = isCommit ? 'fa-arrow-circle-down' : 'fa-arrow-circle-up';
+          const label = isCommit ? 'التزام' : 'تحصيل';
+          const action = isCommit ? `payCommitment('${item.id}')` : `collectPayment('${item.id}')`;
+          const actionLabel = isCommit ? 'سداد' : 'تحصيل';
+          upEl.insertAdjacentHTML('beforeend', `
+            <div class="flex justify-between items-center p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+              <div class="flex flex-col space-y-1">
+                <div class="flex items-center space-x-2 space-x-reverse">
+                  <i class="fas ${icon} ${colorClass} text-sm"></i>
+                  <span class="text-sm font-semibold text-gray-800-custom">${item.name}</span>
+                  <span class="text-xs text-gray-500 mr-2">(${label})</span>
+                </div>
+                <p class="text-xs text-gray-500 mr-4">يستحق: ${formatDate(item.dueDate)}</p>
+              </div>
+              <div class="flex items-center space-x-3 space-x-reverse">
+                <span class="font-bold text-sm ${colorClass} flex-shrink-0">${formatCurrency(item.amount)}</span>
+                <button onclick="${action}" class="text-xs text-white px-3 py-1 rounded-full ${isCommit ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'} transition duration-200">${actionLabel}</button>
+              </div>
+            </div>
+          `);
+        });
+      }
+    };
+
+    const renderMovements = () => {
+      const historyDiv = document.getElementById('movements-history'); if (!historyDiv) return;
+      const dateFrom = document.getElementById('filter-date-from')?.value;
+      const dateTo = document.getElementById('filter-date-to')?.value;
+      const accountId = document.getElementById('filter-account')?.value;
+      const type = document.getElementById('filter-type')?.value;
+      const keyword = (document.getElementById('filter-keyword')?.value || '').toLowerCase();
+
+      let filtered = movements.filter(m=>{
+        const mTime = new Date(m.date).getTime();
+        const fromT = dateFrom ? new Date(dateFrom).getTime() : -Infinity;
+        const toT = dateTo ? new Date(dateTo).getTime() : Infinity;
+        if (isNaN(mTime)) return false;
+        const matchesDate = mTime >= fromT && mTime <= toT;
+        const matchesAccount = !accountId || m.accountId===accountId;
+        const matchesType = !type || m.type===type;
+        const matchesKeyword = !keyword || (m.description||'').toLowerCase().includes(keyword) || (m.category||'').toLowerCase().includes(keyword);
+        return matchesDate && matchesAccount && matchesType && matchesKeyword;
+      });
+
+      filtered.sort((a,b)=>new Date(b.date)-new Date(a.date));
+      historyDiv.innerHTML = '';
+      document.getElementById('no-movements')?.classList.toggle('hidden', filtered.length>0);
+
+      let startingBalance = accounts.reduce((s,a)=>s + (a.initialBalance||0), 0);
+      const allSorted = [...movements].sort((a,b)=>new Date(a.date)-new Date(b.date));
+      let earliestFilteredDate = filtered.length>0 ? new Date(filtered[filtered.length-1].date) : new Date(0);
+      let balanceBefore = startingBalance;
+      for (const m of allSorted) {
+        if (new Date(m.date) < earliestFilteredDate) {
+          balanceBefore += (m.type==='Income' ? m.amount : -m.amount);
+        }
+      }
+      let currentBalance = balanceBefore;
+      const movementsForCalc = [...filtered].sort((a,b)=>new Date(a.date)-new Date(b.date));
+      const runningBalances = {};
+      movementsForCalc.forEach(m=>{
+        currentBalance += (m.type==='Income'? m.amount : -m.amount);
+        runningBalances[m.id] = currentBalance;
+      });
+
+      filtered.forEach(m=>{
+        const acc = getAccountById(m.accountId) || {name:'حساب محذوف', color:'#ccc'};
+        const isExpense = m.type==='Expense';
+        const color = isExpense ? 'var(--expense-color)' : 'var(--income-color)';
+        const icon = isExpense ? 'fa-minus-circle' : 'fa-plus-circle';
+        const sign = isExpense ? '-' : '+';
+        const rb = runningBalances[m.id];
+        const card = document.createElement('div');
+        card.className = 'movement-card card-bg p-5 rounded-xl card-shadow border-r-8 md:flex items-center';
+        card.style.borderRightColor = acc.color || '#ccc';
+        card.innerHTML = `
+          <div class="flex-shrink-0 text-3xl ml-4" style="color:${color};"><i class="fas ${icon}"></i></div>
+          <div class="flex-grow grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 text-sm">
+            <div class="col-span-2 md:col-span-1"><p class="text-xs text-gray-500 mb-1">الفئة</p><p class="font-bold text-gray-800-custom">${m.category}</p></div>
+            <div><p class="text-xs text-gray-500 mb-1">المبلغ</p><p class="font-bold" style="color:${color}">${sign} ${formatCurrency(m.amount).replace(/^-/, '')}</p></div>
+            <div><p class="text-xs text-gray-500 mb-1">الحساب</p><p class="text-gray-800-custom">${acc.name}</p></div>
+            <div><p class="text-xs text-gray-500 mb-1">التاريخ</p><p class="text-gray-800-custom">${formatDate(m.date)}</p></div>
+            <div class="col-span-2 md:col-span-1"><p class="text-xs text-gray-500 mb-1">الرصيد بعد الحركة</p><p class="font-bold text-gray-800-custom">${rb!==undefined? formatCurrency(rb): 'N/A'}</p></div>
+          </div>
+          <div class="flex-shrink-0 mt-3 md:mt-0 md:pr-4 md:border-r md:border-gray-200 dark:md:border-gray-700">
+            <p class="text-xs text-gray-500 mb-2">ملاحظة</p>
+            <p class="text-xs italic text-gray-600 dark:text-gray-400 mb-4">${m.description||'لا توجد ملاحظات'}</p>
+            <div class="flex justify-end space-x-2 space-x-reverse">
+              <button onclick="editMovement?.('${m.id}')" class="text-sm text-gray-500 hover:text-primary-color transition"><i class="fas fa-edit ml-1"></i> تعديل</button>
+              <button onclick="deleteMovement?.('${m.id}')" class="text-sm text-gray-500 hover:text-red-500 transition"><i class="fas fa-trash-alt ml-1"></i> حذف</button>
+            </div>
+          </div>
+        `;
+        historyDiv.appendChild(card);
+      });
+    };
+
+    const renderCommitments = () => {
+      const list = document.getElementById('commitments-list'); if (!list) return;
+      list.innerHTML = '';
+      document.getElementById('no-commitments')?.classList.toggle('hidden', commitments.length>0);
+      commitments.forEach(c=>{
+        const acc = getAccountById(c.accountId) || {name:'حساب محذوف', color:'#ccc'};
+        const isCompleted = c.status==='Completed';
+        const nextDue = c.paidInstallments>0 ? getNextDueDate(c.lastPaymentDate||c.startDate, c.recurrence) : c.startDate;
+        const card = document.createElement('div');
+        card.className = `commitment-card card-bg p-6 rounded-xl card-shadow border-r-8 ${isCompleted? 'opacity-60':''}`;
+        card.style.borderRightColor = acc.color || '#ccc';
+        card.innerHTML = `
+          <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div class="md:col-span-2">
+              <h4 class="text-xl font-bold text-gray-800-custom mb-1">${c.name}</h4>
+              <p class="text-sm text-gray-500"><i class="fas fa-sync ml-1"></i> ${c.recurrence}</p>
+            </div>
+            <div class="text-center"><p class="text-xs text-gray-500 mb-1">المبلغ/القسط</p><p class="text-lg font-extrabold text-red-600">${formatCurrency(c.amount)}</p></div>
+            <div class="text-center"><p class="text-xs text-gray-500 mb-1">تاريخ الاستحقاق التالي</p><p class="text-lg font-extrabold text-gray-800-custom">${formatDate(nextDue)}</p><p class="text-xs text-gray-500 mt-1">${c.paidInstallments} من ${c.totalInstallments||'غير محدد'}</p></div>
+            <div class="flex flex-col space-y-2 justify-center">
+              <button onclick="payCommitment?.('${c.id}')" ${isCompleted? 'disabled':''} class="btn-primary text-white px-4 py-2 rounded-full font-semibold text-sm hover:bg-green-600 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"><i class="fas fa-check-circle ml-1"></i> سداد القسط الآن</button>
+              <div class="flex justify-between space-x-2 space-x-reverse">
+                <button onclick="editCommitment?.('${c.id}')" class="text-sm text-gray-500 hover:text-primary-color transition"><i class="fas fa-edit ml-1"></i> تعديل</button>
+                <button onclick="confirmDeleteCommitment?.('${c.id}')" class="text-sm text-gray-500 hover:text-red-500 transition"><i class="fas fa-trash-alt ml-1"></i> حذف</button>
+              </div>
+            </div>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+    };
+
+    const renderCollections = () => {
+      const list = document.getElementById('collections-list'); if (!list) return;
+      list.innerHTML = '';
+      document.getElementById('no-collections')?.classList.toggle('hidden', collections.length>0);
+      collections.forEach(c=>{
+        const isCompleted = c.status==='Completed';
+        const nextDue = c.collectedInstallments>0 ? getNextDueDate(c.lastCollectionDate||c.startDate, c.recurrence) : c.startDate;
+        const card = document.createElement('div');
+        card.className = `collection-card card-bg p-6 rounded-xl card-shadow border-r-8 ${isCompleted? 'opacity-60':''}`;
+        card.style.borderRightColor = 'var(--secondary-color)';
+        card.innerHTML = `
+          <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div class="md:col-span-2">
+              <h4 class="text-xl font-bold text-gray-800-custom mb-1">${c.name}</h4>
+              <p class="text-sm text-gray-500"><i class="fas fa-sync ml-1"></i> ${c.recurrence}</p>
+            </div>
+            <div class="text-center"><p class="text-xs text-gray-500 mb-1">المبلغ/الدفعة</p><p class="text-lg font-extrabold text-green-600">${formatCurrency(c.amount)}</p></div>
+            <div class="text-center"><p class="text-xs text-gray-500 mb-1">تاريخ الاستحقاق التالي</p><p class="text-lg font-extrabold text-gray-800-custom">${formatDate(nextDue)}</p><p class="text-xs text-gray-500 mt-1">${c.collectedInstallments} من ${c.totalInstallments||'غير محدد'}</p></div>
+            <div class="flex flex-col space-y-2 justify-center">
+              <button onclick="collectPayment?.('${c.id}')" ${isCompleted? 'disabled':''} style="background-color:var(--secondary-color)" class="text-gray-900 px-4 py-2 rounded-full font-semibold text-sm hover:bg-green-400 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"><i class="fas fa-money-bill-wave ml-1"></i> تحصيل الدفعة</button>
+              <div class="flex justify-between space-x-2 space-x-reverse">
+                <button onclick="editCollection?.('${c.id}')" class="text-sm text-gray-500 hover:text-secondary-color transition"><i class="fas fa-edit ml-1"></i> تعديل</button>
+                <button onclick="confirmDeleteCollection?.('${c.id}')" class="text-sm text-gray-500 hover:text-red-500 transition"><i class="fas fa-trash-alt ml-1"></i> حذف</button>
+              </div>
+            </div>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+    };
+
+    function displayConnectionError(msg) {
+      const el = document.getElementById('connection-error');
+      const m = document.getElementById('error-message');
+      if (m) m.textContent = msg || 'لم يتمكن التطبيق من الاتصال بـ Firebase. وظائف التخزين غير متاحة.';
+      el?.classList.remove('hidden');
+      setTimeout(()=>el?.classList.add('hidden'), 8000);
+    }
+
+    async function updateAccountBalance(accountId, amountChange) {
+      if (!db || !userId) { displayConnectionError(); return; }
+      const accountRef = doc(db, 'artifacts', appId, 'users', userId, 'accounts', accountId);
+      try {
+        await runTransaction(db, async (transaction) => {
+          const accSnap = await transaction.get(accountRef);
+          if (!accSnap.exists()) throw "Account does not exist!";
+          const newBalance = (accSnap.data().currentBalance||0) + amountChange;
+          transaction.update(accountRef, { currentBalance: newBalance });
+        });
+      } catch (e) {
+        console.error('Transaction failed:', e);
+        displayConnectionError(`فشل تحديث الرصيد: ${e}`);
+      }
+    }
+
+    // Firestore listeners + init
+    function setupFirestoreListeners() {
+      if (!db || !userId) return;
+      const accountsQuery = collection(db, 'artifacts', appId, 'users', userId, 'accounts');
+      onSnapshot(accountsQuery, (snap)=>{ accounts = snap.docs.map(d=>({id:d.id, ...d.data()})); renderAccounts(); renderMovements(); renderCommitments(); renderCollections(); renderDashboard(); }, (e)=>{ console.error(e); displayConnectionError('خطأ في جلب بيانات الحسابات.'); });
+
+      const movementsQuery = collection(db, 'artifacts', appId, 'users', userId, 'movements');
+      onSnapshot(movementsQuery, (snap)=>{ movements = snap.docs.map(d=>({id:d.id, ...d.data()})); renderMovements(); renderDashboard(); }, (e)=>{ console.error(e); displayConnectionError('خطأ في جلب بيانات الحركات.'); });
+
+      const commitmentsQuery = collection(db, 'artifacts', appId, 'users', userId, 'commitments');
+      onSnapshot(commitmentsQuery, (snap)=>{ commitments = snap.docs.map(d=>({id:d.id, ...d.data()})); renderCommitments(); renderDashboard(); }, (e)=>{ console.error(e); displayConnectionError('خطأ في جلب بيانات الالتزامات.'); });
+
+      const collectionsQuery = collection(db, 'artifacts', appId, 'users', userId, 'collections');
+      onSnapshot(collectionsQuery, (snap)=>{ collections = snap.docs.map(d=>({id:d.id, ...d.data()})); renderCollections(); renderDashboard(); }, (e)=>{ console.error(e); displayConnectionError('خطأ في جلب بيانات التحصيلات.'); });
+    }
+
+    async function initFirebase() {
+      const cfg = firebaseConfig;
+      if (!cfg) {
+        const connEl = document.getElementById('connection-error');
+        if (connEl) {
+          connEl.classList.remove('hidden');
+          const msgEl = document.getElementById('error-message');
+          if (msgEl) msgEl.textContent = "Firebase غير مهيّأ — التطبيق يعمل في وضع محلي (Mock). استخدم setFirebaseConfig({...}) لربطه.";
+          setTimeout(()=>connEl.classList.add('hidden'), 10000);
+        }
+        db = null; auth = null; return;
+      }
+
+      try {
+        app = initializeApp(cfg);
+        db = getFirestore(app);
+        auth = getAuth(app);
+
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            userId = user.uid; isAuthReady = true; const el = document.getElementById('user-id-display'); if (el) el.textContent = userId;
+            setupFirestoreListeners();
+          } else { isAuthReady = true; }
+        });
+
+        if (initialAuthToken) await signInWithCustomToken(auth, initialAuthToken);
+        else await signInAnonymously(auth);
+      } catch (err) {
+        displayConnectionError("فشل الاتصال بخدمة Firebase. تأكد من إعداد المتغيرات.");
+        console.info("Firebase init error (see UI):", err?.message || err);
+      }
+    }
+
+    // helper to inject config at runtime
+    window.setFirebaseConfig = function(cfg) {
+      if (typeof cfg === 'string') {
+        try { window.__firebase_config = cfg; } catch(e) { console.error(e); }
+      } else { window.__firebase_config = JSON.stringify(cfg); }
+      location.reload();
+    };
+
+    window.onload = () => {
+      initFirebase();
+      switchTab('dashboard');
+      if (typeof tailwind !== 'undefined' && tailwind && tailwind.config) {
+        console.warn('Note: you are using cdn.tailwindcss.com (development). For production build, generate a local CSS file and replace the CDN.');
+      }
+    };
+
+    // End of module
+  </script>
+</body>
+</html>
