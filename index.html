@@ -3,569 +3,605 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Abou Tia Finance Manager</title>
-    
-    <!-- React Core (CDNJS is more stable) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" crossorigin></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" crossorigin></script>
-    
-    <!-- Babel Standalone -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js" crossorigin></script>
-
+    <title>Abou Tia Finance</title>
     <style>
-        /* --- CORE CSS (Replaces Tailwind) --- */
+        /* --- CSS STYLING --- */
         :root {
             --primary: #4f46e5;
-            --primary-dark: #4338ca;
+            --primary-light: #e0e7ff;
             --bg: #f8fafc;
-            --card-bg: #ffffff;
+            --card: #ffffff;
             --text: #0f172a;
-            --text-muted: #64748b;
+            --text-sub: #64748b;
             --border: #e2e8f0;
             --danger: #ef4444;
             --success: #10b981;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
         }
-
         .dark {
             --primary: #6366f1;
-            --primary-dark: #818cf8;
+            --primary-light: #312e81;
             --bg: #0f172a;
-            --card-bg: #1e293b;
+            --card: #1e293b;
             --text: #f8fafc;
-            --text-muted: #94a3b8;
+            --text-sub: #94a3b8;
             --border: #334155;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.5);
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.5);
         }
-
+        
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg); color: var(--text); transition: background 0.3s, color 0.3s; padding-bottom: 80px; }
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 90px; transition: background 0.2s, color 0.2s; }
         
-        /* Layout Utils */
-        .container { max-width: 600px; margin: 0 auto; padding: 1rem; }
-        .flex { display: flex; }
-        .flex-col { flex-direction: column; }
-        .items-center { align-items: center; }
-        .justify-between { justify-content: space-between; }
-        .justify-center { justify-content: center; }
-        .gap-2 { gap: 0.5rem; }
-        .gap-4 { gap: 1rem; }
-        .w-full { width: 100%; }
-        .hidden { display: none; }
+        .container { max-width: 600px; margin: 0 auto; padding: 16px; }
         
-        /* Components */
-        .card { background: var(--card-bg); border-radius: 1rem; padding: 1.25rem; box-shadow: var(--shadow); margin-bottom: 1rem; border: 1px solid var(--border); }
-        .btn { padding: 0.75rem 1rem; border-radius: 0.75rem; border: none; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
-        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
-        .btn-primary:active { transform: scale(0.98); }
-        .btn-ghost { background: transparent; color: var(--text-muted); }
-        .btn-danger { background: #fee2e2; color: var(--danger); }
-        .btn-icon { padding: 0.5rem; border-radius: 50%; }
-
-        .input-group { margin-bottom: 1rem; }
-        .label { display: block; font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 0.25rem; }
-        .input { width: 100%; padding: 0.75rem; border-radius: 0.75rem; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 1rem; outline: none; }
-        .input:focus { border-color: var(--primary); ring: 2px solid var(--primary); }
-
         /* Typography */
         h1, h2, h3 { margin: 0; }
-        .text-xl { font-size: 1.25rem; font-weight: 700; }
-        .text-3xl { font-size: 1.875rem; font-weight: 800; }
-        .text-sm { font-size: 0.875rem; }
-        .text-xs { font-size: 0.75rem; }
-        .font-bold { font-weight: 700; }
-        .text-muted { color: var(--text-muted); }
-        .text-success { color: var(--success); }
-        .text-danger { color: var(--danger); }
+        .text-xl { font-size: 20px; font-weight: 700; }
+        .text-lg { font-size: 18px; font-weight: 700; }
+        .text-sm { font-size: 14px; }
+        .text-xs { font-size: 12px; }
+        .text-sub { color: var(--text-sub); }
+        .bold { font-weight: 700; }
+        .uppercase { text-transform: uppercase; }
+        
+        /* Components */
+        .card { background: var(--card); border-radius: 16px; padding: 20px; box-shadow: var(--shadow); margin-bottom: 16px; border: 1px solid var(--border); }
+        .btn { border: none; padding: 12px 16px; border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; font-size: 14px; }
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background: var(--primary); color: white; width: 100%; }
+        .btn-danger { background: #fee2e2; color: var(--danger); }
+        .btn-ghost { background: transparent; color: var(--text-sub); }
         
         /* Header & Nav */
-        header { position: sticky; top: 0; z-index: 50; background: var(--card-bg); border-bottom: 1px solid var(--border); padding: 0.75rem 1rem; backdrop-filter: blur(10px); }
-        nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); border-top: 1px solid var(--border); padding: 0.5rem 1rem 1.5rem 1rem; z-index: 50; }
-        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-muted); background: none; border: none; font-size: 10px; font-weight: 700; }
+        header { position: sticky; top: 0; background: var(--card); padding: 16px; border-bottom: 1px solid var(--border); z-index: 50; display: flex; justify-content: space-between; align-items: center; }
+        nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 12px 0 24px 0; z-index: 50; }
+        .nav-item { background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-sub); font-size: 10px; font-weight: 700; cursor: pointer; }
         .nav-item.active { color: var(--primary); }
         
-        /* Floating Button */
-        .fab { position: fixed; bottom: 90px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.5); z-index: 40; border: none; cursor: pointer; }
+        /* Inputs */
+        .input-group { margin-bottom: 12px; }
+        .label { display: block; font-size: 11px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; margin-bottom: 6px; }
+        .input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 16px; outline: none; }
+        .input:focus { border-color: var(--primary); }
         
-        /* Modal */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 1rem; }
-        .modal-content { background: var(--card-bg); width: 100%; max-width: 400px; border-radius: 1.5rem; overflow: hidden; max-height: 90vh; display: flex; flex-direction: column; animation: slideUp 0.3s ease; }
-        
-        /* Toast */
-        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #10b981; color: white; padding: 0.75rem 1.5rem; border-radius: 2rem; font-weight: 600; font-size: 0.875rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); z-index: 200; animation: fadeIn 0.3s; display: flex; align-items: center; gap: 8px; }
-        .toast.error { background: #ef4444; }
-
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* RTL Support */
+        /* FAB */
+        .fab { position: fixed; bottom: 100px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: white; border: none; box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4); z-index: 40; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 30px; }
         [dir="rtl"] .fab { right: auto; left: 20px; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
+        .modal.open { display: flex; }
+        .modal-content { background: var(--card); width: 100%; max-width: 400px; border-radius: 20px; padding: 20px; max-height: 90vh; overflow-y: auto; animation: popUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
+        @keyframes popUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* Icons */
+        .icon { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        
+        /* Helpers */
+        .flex { display: flex; }
+        .justify-between { justify-content: space-between; }
+        .items-center { align-items: center; }
+        .gap-2 { gap: 8px; }
+        .text-green { color: var(--success); }
+        .text-red { color: var(--danger); }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
-    <div id="root"></div>
 
-    <script type="text/babel">
-        const { useState, useEffect, useMemo } = React;
+    <header>
+        <div class="flex items-center gap-2">
+            <div style="width:32px; height:32px; background:var(--primary); border-radius:8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;">A</div>
+            <div class="text-lg bold" id="appTitle">Abou Tia Finance</div>
+        </div>
+        <button class="btn-ghost" onclick="toggleTheme()" id="themeBtn">🌙</button>
+    </header>
 
-        // --- 1. SAFE STORAGE (Fixes "Tracking Prevention" errors) ---
-        const safeStorage = {
-            store: {}, // Memory fallback
-            getItem: function(key) {
-                try {
-                    return localStorage.getItem(key);
-                } catch (e) {
-                    return this.store[key] || null;
-                }
-            },
-            setItem: function(key, value) {
-                try {
-                    localStorage.setItem(key, value);
-                } catch (e) {
-                    console.warn("Storage blocked. Using memory.");
-                    this.store[key] = value;
-                }
-            }
+    <div id="mainContainer" class="container">
+        </div>
+
+    <button class="fab" onclick="openModal('add')">+</button>
+
+    <nav>
+        <button class="nav-item active" onclick="switchView('dashboard')" id="nav-dash">
+            <svg class="icon"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+            <span data-i18n="dash">Dashboard</span>
+        </button>
+        <button class="nav-item" onclick="switchView('transactions')" id="nav-tx">
+            <svg class="icon"><path d="M7 10h14"/><path d="M7 14h14"/><path d="M3 10h.01"/><path d="M3 14h.01"/></svg>
+            <span data-i18n="tx">Transactions</span>
+        </button>
+        <button class="nav-item" onclick="switchView('accounts')" id="nav-acc">
+            <svg class="icon"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            <span data-i18n="accs">Accounts</span>
+        </button>
+        <button class="nav-item" onclick="switchView('settings')" id="nav-set">
+            <svg class="icon"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span data-i18n="set">Settings</span>
+        </button>
+    </nav>
+
+    <div id="txModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center" style="margin-bottom:20px;">
+                <h2 class="text-xl" id="modalTitle">Transaction</h2>
+                <button class="btn-ghost" onclick="closeModal()">✕</button>
+            </div>
+            
+            <div class="flex gap-2" style="background:var(--bg); padding:4px; border-radius:12px; margin-bottom:16px;">
+                <button type="button" class="btn" style="flex:1; background:var(--danger); color:white;" id="btn-exp" onclick="setTxType('exp')">Expense</button>
+                <button type="button" class="btn btn-ghost" style="flex:1;" id="btn-inc" onclick="setTxType('inc')">Income</button>
+            </div>
+
+            <input type="hidden" id="txId">
+            <div class="input-group">
+                <label class="label" data-i18n="amt">Amount</label>
+                <input type="number" id="txAmount" class="input" placeholder="0.00">
+            </div>
+            <div class="input-group">
+                <label class="label" data-i18n="date">Date</label>
+                <input type="date" id="txDate" class="input">
+            </div>
+            <div class="input-group">
+                <label class="label" data-i18n="desc">Description</label>
+                <input type="text" id="txDesc" class="input" placeholder="e.g. Salary">
+            </div>
+            <div class="input-group">
+                <label class="label" data-i18n="acc">Account</label>
+                <select id="txAcc" class="input"></select>
+            </div>
+            <div class="input-group">
+                <label class="label" data-i18n="cat">Category</label>
+                <input type="text" id="txCat" class="input" list="catList">
+                <datalist id="catList"></datalist>
+            </div>
+
+            <div class="flex gap-2" style="margin-top:20px;">
+                <button class="btn btn-danger hidden" id="btnDelete" onclick="deleteTx()">Delete</button>
+                <button class="btn btn-primary" onclick="saveTx()" data-i18n="save">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA & STATE ---
+        const DEFAULT_ACCOUNTS = [
+            { id: '1', name: 'Vodafone Cash', initial: 0 },
+            { id: '2', name: 'Bank Account', initial: 0 },
+            { id: '3', name: 'Credit Card', initial: 0 },
+            { id: '4', name: 'Cash', initial: 0 }
+        ];
+
+        let data = {
+            transactions: [],
+            accounts: DEFAULT_ACCOUNTS,
+            categories: [],
+            recurring: [],
+            settings: { lang: 'en', theme: 'light' }
         };
 
-        // --- 2. INLINE ICONS (No external libraries) ---
-        const Icon = ({ path, size = 24, className = "" }) => (
-            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} style={{display:'block'}}>
-                {path}
-            </svg>
-        );
-
-        const Icons = {
-            Wallet: (p) => <Icon {...p} path={<><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" /><path d="M3 5v14a2 2 0 0 0 2 2h16v-5" /><path d="M18 12a2 2 0 0 0 0 4h4v-4Z" /></>} />,
-            GraphUp: (p) => <Icon {...p} path={<><polyline points="22 7 13.5 15.5 8.5 10.5 2 17" /><polyline points="16 7 22 7 22 13" /></>} />,
-            GraphDown: (p) => <Icon {...p} path={<><polyline points="22 17 13.5 8.5 8.5 13.5 2 7" /><polyline points="16 17 22 17 22 11" /></>} />,
-            Plus: (p) => <Icon {...p} path={<><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></>} />,
-            ArrowSwap: (p) => <Icon {...p} path={<><path d="m16 3 4 4-4 4" /><path d="M20 7H4" /><path d="m8 21-4-4 4-4" /><path d="M4 17h16" /></>} />,
-            Settings: (p) => <Icon {...p} path={<><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /><circle cx="12" cy="12" r="3" /></>} />,
-            Moon: (p) => <Icon {...p} path={<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />} />,
-            Sun: (p) => <Icon {...p} path={<circle cx="12" cy="12" r="5" />} />,
-            Download: (p) => <Icon {...p} path={<><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></>} />,
-            Upload: (p) => <Icon {...p} path={<><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" x2="12" y1="3" y2="15" /></>} />,
-            Trash: (p) => <Icon {...p} path={<><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></>} />,
-            X: (p) => <Icon {...p} path={<><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></>} />,
-            Check: (p) => <Icon {...p} path={<polyline points="20 6 9 17 4 12"></polyline>} />,
-            Edit: (p) => <Icon {...p} path={<><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></>} />
-        };
+        let currentView = 'dashboard';
+        let txType = 'exp';
 
         const TRANSLATIONS = {
-            en: { appTitle: "Abou Tia Finance", total: "Total Balance", income: "Income", expense: "Expense", add: "Add Transaction", edit: "Edit Transaction", desc: "Description", amt: "Amount", date: "Date", acc: "Account", cat: "Category", save: "Save", update: "Update", cancel: "Cancel", dash: "Dashboard", tx: "Transactions", accs: "Accounts", set: "Settings", lang: "Language", mode: "Dark Mode", export: "Backup Data", import: "Restore Data", rec: "Recurring Bills", noTx: "No transactions yet.", del: "Delete", confirm: "Confirm Delete?", pay: "Pay Now", overdue: "Overdue!", due: "Due in", days: "days", today: "Due Today", addAcc: "Add Account", addRec: "Add Recurring" },
-            ar: { appTitle: "مالية أبو طيعة", total: "إجمالي الرصيد", income: "دخل", expense: "صرف", add: "إضافة معاملة", edit: "تعديل المعاملة", desc: "الوصف", amt: "المبلغ", date: "التاريخ", acc: "الحساب", cat: "الفئة", save: "حفظ", update: "تحديث", cancel: "إلغاء", dash: "الرئيسية", tx: "المعاملات", accs: "الحسابات", set: "الإعدادات", lang: "اللغة", mode: "الوضع الليلي", export: "نسخ احتياطي", import: "استرجاع", rec: "فواتير دورية", noTx: "لا توجد معاملات", del: "حذف", confirm: "تأكيد الحذف؟", pay: "ادفع", overdue: "متأخر!", due: "متبقي", days: "أيام", today: "مستحق اليوم", addAcc: "إضافة حساب", addRec: "إضافة فاتورة" }
+            en: { dash: "Dashboard", tx: "Transactions", accs: "Accounts", set: "Settings", amt: "Amount", date: "Date", desc: "Description", acc: "Account", cat: "Category", save: "Save", del: "Delete", income: "Income", expense: "Expense", total: "Total Balance", rec: "Recurring", export: "Backup", import: "Restore" },
+            ar: { dash: "الرئيسية", tx: "المعاملات", accs: "الحسابات", set: "الإعدادات", amt: "المبلغ", date: "التاريخ", desc: "الوصف", acc: "الحساب", cat: "الفئة", save: "حفظ", del: "حذف", income: "دخل", expense: "صرف", total: "إجمالي الرصيد", rec: "دوري", export: "نسخ", import: "استرجاع" }
         };
 
-        // --- 3. MAIN APPLICATION ---
-        function App() {
-            // State
-            const [lang, setLang] = useState('en');
-            const [theme, setTheme] = useState('light');
-            const [view, setView] = useState('dashboard');
+        // --- INIT ---
+        window.onload = () => {
+            loadData();
+            applyTheme();
+            applyLang();
+            render();
             
-            const [transactions, setTransactions] = useState([]);
-            const [accounts, setAccounts] = useState([
-                { id: '1', name: 'Vodafone Cash', initial: 0 },
-                { id: '2', name: 'Bank Account', initial: 0 },
-                { id: '3', name: 'Credit Card', initial: 0 },
-                { id: '4', name: 'Cash', initial: 0 }
-            ]);
-            const [categories, setCategories] = useState([]);
-            const [recurring, setRecurring] = useState([]);
-            
-            const [toast, setToast] = useState(null);
-            const [modal, setModal] = useState(null); // 'addTx', 'editTx', 'addAcc', 'addRec'
-            const [selectedTx, setSelectedTx] = useState(null);
+            // Set default date
+            document.getElementById('txDate').valueAsDate = new Date();
+        };
 
-            // Safe Load
-            useEffect(() => {
-                const loaded = safeStorage.getItem('aboutia_data_v5');
-                if (loaded) {
-                    try {
-                        const d = JSON.parse(loaded);
-                        if(d.transactions) setTransactions(d.transactions);
-                        if(d.accounts) setAccounts(d.accounts);
-                        if(d.categories) setCategories(d.categories);
-                        if(d.recurring) setRecurring(d.recurring);
-                        if(d.settings) { setLang(d.settings.lang); setTheme(d.settings.theme); }
-                    } catch(e) {}
-                }
-            }, []);
-
-            // Safe Save
-            useEffect(() => {
-                const data = { transactions, accounts, categories, recurring, settings: { lang, theme } };
-                safeStorage.setItem('aboutia_data_v5', JSON.stringify(data));
-                
-                // Theme Application
-                if(theme === 'dark') document.body.classList.add('dark');
-                else document.body.classList.remove('dark');
-            }, [transactions, accounts, categories, recurring, lang, theme]);
-
-            // Utils
-            const t = (k) => TRANSLATIONS[lang][k] || k;
-            const isRTL = lang === 'ar';
-            const fmt = (n) => new Intl.NumberFormat(lang === 'ar' ? 'ar-EG' : 'en-US', { style: 'currency', currency: 'EGP' }).format(n);
-            const showToast = (msg, err=false) => { setToast({msg, err}); setTimeout(() => setToast(null), 3000); };
-
-            // Calculations
-            const getBalance = (accId) => {
-                let bal = accounts.find(a => a.id === accId)?.initial || 0;
-                transactions.forEach(tx => {
-                    if (tx.accId === accId) {
-                        if (tx.type === 'inc') bal += Number(tx.amount);
-                        else bal -= Number(tx.amount);
-                    }
-                });
-                return bal;
-            };
-            const totalBalance = accounts.reduce((acc, curr) => acc + getBalance(curr.id), 0);
-
-            // Components
-            const Toast = () => toast ? <div className={`toast ${toast.err ? 'error' : ''}`}>{toast.err ? <Icons.Trash size={16}/> : <Icons.Check size={16}/>}{toast.msg}</div> : null;
-
-            const Modal = ({ title, children, onClose }) => (
-                <div className="modal-overlay" onClick={onClose}>
-                    <div className="modal-content" onClick={e => e.stopPropagation()}>
-                        <div className="flex justify-between items-center" style={{padding: '1rem', borderBottom: '1px solid var(--border)'}}>
-                            <h3 className="text-xl font-bold">{title}</h3>
-                            <button onClick={onClose} className="btn-icon"><Icons.X size={20}/></button>
-                        </div>
-                        <div style={{padding: '1rem', overflowY: 'auto'}}>{children}</div>
-                    </div>
-                </div>
-            );
-
-            // --- Forms ---
-            const TransactionForm = ({ initialData, onClose }) => {
-                const [type, setType] = useState('exp');
-                const [amount, setAmount] = useState('');
-                const [desc, setDesc] = useState('');
-                const [accId, setAccId] = useState(accounts[0]?.id);
-                const [cat, setCat] = useState('');
-                const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
-
-                useEffect(() => {
-                    if (initialData) {
-                        setType(initialData.type);
-                        setAmount(initialData.amount);
-                        setDesc(initialData.desc);
-                        setAccId(initialData.accId);
-                        setCat(initialData.cat);
-                        try {
-                            setDate(new Date(initialData.date).toISOString().slice(0, 10));
-                        } catch(e) {
-                             setDate(new Date().toISOString().slice(0, 10));
-                        }
-                    }
-                }, [initialData]);
-
-                const submit = () => {
-                    if(!amount || !desc) return;
-                    
-                    const txData = { 
-                        date: new Date(date).toISOString(), 
-                        type, 
-                        amount, 
-                        desc, 
-                        accId, 
-                        cat 
-                    };
-
-                    if (initialData) {
-                        setTransactions(transactions.map(t => t.id === initialData.id ? { ...t, ...txData } : t));
-                        showToast(t('update'));
-                    } else {
-                        setTransactions([{ ...txData, id: Date.now() }, ...transactions]);
-                        if(cat && !categories.find(c => c.name === cat)) setCategories([...categories, {id: Date.now(), name: cat}]);
-                        showToast(t('save'));
-                    }
-                    onClose();
-                };
-
-                const handleDelete = () => {
-                     if(confirm(t('confirm'))) {
-                        setTransactions(transactions.filter(t => t.id !== initialData.id));
-                        showToast(t('del'), true);
-                        onClose();
-                    }
-                };
-
-                return (
-                    <div className="flex flex-col gap-4">
-                        <div className="flex gap-2" style={{background: 'var(--bg)', padding: '4px', borderRadius: '8px'}}>
-                            {['inc', 'exp'].map(k => (
-                                <button key={k} onClick={() => setType(k)} className="btn w-full" style={{
-                                    background: type === k ? (k === 'inc' ? 'var(--success)' : 'var(--danger)') : 'transparent',
-                                    color: type === k ? 'white' : 'var(--text-muted)'
-                                }}>{t(k === 'inc' ? 'income' : 'expense')}</button>
-                            ))}
-                        </div>
-                        <div className="flex gap-2">
-                             <div className="w-full">
-                                <label className="label">{t('amt')}</label>
-                                <input type="number" value={amount} onChange={e=>setAmount(e.target.value)} className="input" autoFocus/>
-                             </div>
-                             <div className="w-full">
-                                <label className="label">{t('date')}</label>
-                                <input type="date" value={date} onChange={e=>setDate(e.target.value)} className="input"/>
-                             </div>
-                        </div>
-                        <div><label className="label">{t('desc')}</label><input type="text" value={desc} onChange={e=>setDesc(e.target.value)} className="input"/></div>
-                        <div>
-                            <label className="label">{t('acc')}</label>
-                            <select value={accId} onChange={e=>setAccId(e.target.value)} className="input">
-                                {accounts.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
-                            </select>
-                        </div>
-                        <div>
-                            <label className="label">{t('cat')}</label>
-                            <input type="text" list="cats" value={cat} onChange={e=>setCat(e.target.value)} className="input"/>
-                            <datalist id="cats">{categories.map(c => <option key={c.id} value={c.name}/>)}</datalist>
-                        </div>
-                        
-                        <div className="flex gap-2">
-                             {initialData && (
-                                <button onClick={handleDelete} className="btn btn-danger" style={{flex: 1}}>
-                                    <Icons.Trash size={18}/>
-                                </button>
-                             )}
-                             <button onClick={submit} className="btn btn-primary" style={{flex: 3}}>
-                                {initialData ? t('update') : t('save')}
-                             </button>
-                        </div>
-                    </div>
-                );
-            };
-
-            // --- Views ---
-            const Dashboard = () => (
-                <div className="container">
-                    <div className="card" style={{background: 'linear-gradient(135deg, var(--primary), var(--primary-dark))', color: 'white', border: 'none'}}>
-                        <div className="text-sm" style={{opacity:0.8}}>{t('total')}</div>
-                        <div className="text-3xl font-bold">{fmt(totalBalance)}</div>
-                        <div className="flex gap-4 mt-4">
-                            <div className="flex items-center gap-2" style={{background:'rgba(255,255,255,0.1)', padding:'8px 12px', borderRadius:'8px'}}>
-                                <Icons.GraphUp size={16} color="#86efac"/> <span className="font-bold">{fmt(transactions.filter(t=>t.type==='inc').reduce((a,c)=>a+Number(c.amount),0))}</span>
-                            </div>
-                            <div className="flex items-center gap-2" style={{background:'rgba(255,255,255,0.1)', padding:'8px 12px', borderRadius:'8px'}}>
-                                <Icons.GraphDown size={16} color="#fca5a5"/> <span className="font-bold">{fmt(transactions.filter(t=>t.type==='exp').reduce((a,c)=>a+Number(c.amount),0))}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Recurring Reminders */}
-                    {recurring.map(r => {
-                        const today = new Date();
-                        if(r.lastPaid === `${today.getFullYear()}-${today.getMonth()}`) return null;
-                        const due = r.day - today.getDate();
-                        if(due > 5) return null;
-                        return (
-                            <div key={r.id} className="card flex justify-between items-center" style={{borderLeft: `4px solid ${due < 0 ? 'var(--danger)' : '#f59e0b'}`}}>
-                                <div>
-                                    <div className="font-bold">{r.name}</div>
-                                    <div className="text-xs text-muted">{due < 0 ? t('overdue') : due === 0 ? t('today') : `${t('due')} ${due} ${t('days')}`} • {fmt(r.amount)}</div>
-                                </div>
-                                <button onClick={() => {
-                                    setTransactions([{id: Date.now(), date: new Date().toISOString(), type: 'exp', amount: r.amount, desc: r.name, accId: accounts[0].id}, ...transactions]);
-                                    setRecurring(recurring.map(rx => rx.id === r.id ? {...rx, lastPaid: `${today.getFullYear()}-${today.getMonth()}`} : rx));
-                                    showToast(t('save'));
-                                }} className="btn btn-primary" style={{padding:'6px 12px', fontSize:'12px'}}>{t('pay')}</button>
-                            </div>
-                        )
-                    })}
-
-                    <div className="flex justify-between items-center mb-2">
-                        <h3 className="font-bold text-muted">{t('accs')}</h3>
-                    </div>
-                    <div style={{display:'grid', gridTemplateColumns: '1fr 1fr', gap:'10px'}}>
-                        {accounts.map(a => (
-                            <div key={a.id} className="card" style={{marginBottom:0}}>
-                                <div className="text-xs text-muted uppercase">{a.name}</div>
-                                <div className="font-bold text-lg">{fmt(getBalance(a.id))}</div>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="flex justify-between items-center mt-6 mb-2">
-                        <h3 className="font-bold text-muted">{t('tx')}</h3>
-                        <button onClick={()=>setView('transactions')} className="text-xs text-primary font-bold">See All</button>
-                    </div>
-                    {transactions.length === 0 && <div className="text-center text-muted" style={{padding: '2rem'}}>{t('noTx')}</div>}
-                    {transactions.slice(0, 5).map(tx => (
-                        <div key={tx.id} onClick={() => { setSelectedTx(tx); setModal('editTx'); }} className="card flex justify-between items-center" style={{padding: '1rem', cursor: 'pointer'}}>
-                            <div className="flex items-center gap-4">
-                                <div className="btn-icon" style={{background: tx.type==='inc'?'#dcfce7':'#fee2e2', color: tx.type==='inc'?'var(--success)':'var(--danger)'}}>
-                                    {tx.type==='inc' ? <Icons.GraphUp size={18}/> : <Icons.GraphDown size={18}/>}
-                                </div>
-                                <div>
-                                    <div className="font-bold">{tx.desc}</div>
-                                    <div className="text-xs text-muted">{new Date(tx.date).toLocaleDateString()} • {tx.cat || t('cat')}</div>
-                                </div>
-                            </div>
-                            <div className={`font-bold ${tx.type==='inc'?'text-success':'text-danger'}`}>
-                                {tx.type==='inc' ? '+' : '-'}{fmt(tx.amount)}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            );
-
-            const TransactionView = () => (
-                <div className="container">
-                    <h2 className="text-xl font-bold mb-4">{t('tx')}</h2>
-                    {transactions.map(tx => (
-                        <div key={tx.id} onClick={() => { setSelectedTx(tx); setModal('editTx'); }} className="card flex justify-between items-center" style={{cursor: 'pointer'}}>
-                            <div>
-                                <div className="font-bold">{tx.desc}</div>
-                                <div className="text-xs text-muted">{new Date(tx.date).toLocaleDateString()}</div>
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <span className={tx.type==='inc'?'text-success':'text-danger'}>{fmt(tx.amount)}</span>
-                                <Icons.Edit size={16} className="text-muted"/>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            );
-
-            const AccountsView = () => (
-                <div className="container">
-                    <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-xl font-bold">{t('accs')}</h2>
-                        <button onClick={() => {
-                            const n = prompt(t('addAcc'));
-                            if(n) setAccounts([...accounts, {id: Date.now().toString(), name: n, initial: 0}]);
-                        }} className="btn btn-primary" style={{padding: '8px'}}><Icons.Plus size={18}/></button>
-                    </div>
-                    {accounts.map(a => (
-                        <div key={a.id} className="card relative">
-                            <div className="text-muted text-xs uppercase">{a.name}</div>
-                            <div className="text-3xl font-bold">{fmt(getBalance(a.id))}</div>
-                            <div className="text-xs text-muted mt-2">Initial: {fmt(a.initial)}</div>
-                            <button onClick={() => {
-                                if(confirm(t('confirm'))) setAccounts(accounts.filter(acc => acc.id !== a.id));
-                            }} className="absolute top-4 right-4 text-muted"><Icons.Trash size={16}/></button>
-                        </div>
-                    ))}
-                </div>
-            );
-
-            const SettingsView = () => (
-                <div className="container">
-                    <h2 className="text-xl font-bold mb-6">{t('set')}</h2>
-                    
-                    <div className="card">
-                        <div className="flex justify-between items-center mb-4">
-                            <span className="font-bold">{t('lang')}</span>
-                            <button onClick={()=>setLang(lang==='en'?'ar':'en')} className="btn btn-ghost" style={{border: '1px solid var(--border)'}}>{lang==='en'?'العربية':'English'}</button>
-                        </div>
-                        <div className="flex justify-between items-center">
-                            <span className="font-bold">{t('mode')}</span>
-                            <button onClick={()=>setTheme(theme==='light'?'dark':'light')} className="btn btn-ghost" style={{border: '1px solid var(--border)'}}>
-                                {theme==='light' ? <Icons.Moon size={18}/> : <Icons.Sun size={18}/>}
-                            </button>
-                        </div>
-                    </div>
-
-                    <div className="card">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="font-bold">{t('rec')}</h3>
-                            <button onClick={()=>{
-                                const n = prompt("Name (e.g. Internet)");
-                                const a = prompt("Amount");
-                                const d = prompt("Day (1-31)");
-                                if(n && a && d) setRecurring([...recurring, {id:Date.now(), name:n, amount:a, day:d, lastPaid:''}]);
-                            }} className="btn btn-primary" style={{padding:'4px 8px'}}><Icons.Plus size={16}/></button>
-                        </div>
-                        {recurring.map(r => (
-                            <div key={r.id} className="flex justify-between items-center mb-2" style={{paddingBottom:'8px', borderBottom:'1px solid var(--border)'}}>
-                                <div className="text-sm"><b>{r.name}</b> ({fmt(r.amount)}) <span className="text-muted">- Day {r.day}</span></div>
-                                <button onClick={()=>setRecurring(recurring.filter(x=>x.id!==r.id))} className="text-danger"><Icons.Trash size={16}/></button>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="card">
-                        <button onClick={() => {
-                            const blob = new Blob([JSON.stringify({transactions,accounts,recurring,categories,settings:{lang,theme}})], {type:'application/json'});
-                            const a = document.createElement('a');
-                            a.href = URL.createObjectURL(blob);
-                            a.download = `aboutia_backup_${new Date().toISOString().slice(0,10)}.json`;
-                            a.click();
-                        }} className="btn w-full mb-2" style={{border:'1px solid var(--border)'}}><Icons.Download size={18}/> {t('export')}</button>
-                        
-                        <label className="btn w-full" style={{border:'1px solid var(--border)'}}>
-                            <Icons.Upload size={18}/> {t('import')}
-                            <input type="file" className="hidden" onChange={e => {
-                                const fr = new FileReader();
-                                fr.onload = ev => {
-                                    try {
-                                        const d = JSON.parse(ev.target.result);
-                                        if(d.transactions) { setTransactions(d.transactions); setAccounts(d.accounts); showToast(t('save')); }
-                                    } catch(err) { showToast('Error', true); }
-                                };
-                                fr.readAsText(e.target.files[0]);
-                            }}/>
-                        </label>
-                    </div>
-                </div>
-            );
-
-            // --- Main Render ---
-            return (
-                <div dir={isRTL ? 'rtl' : 'ltr'}>
-                    <Toast />
-                    <header>
-                        <div className="flex items-center gap-2 container" style={{padding:0}}>
-                            <div style={{background:'var(--primary)', color:'white', width:32, height:32, borderRadius:8, display:'flex', alignItems:'center', justifyContent:'center', fontWeight:'bold'}}>A</div>
-                            <h1 className="text-xl font-bold">{t('appTitle')}</h1>
-                        </div>
-                    </header>
-
-                    <div style={{paddingBottom: '80px'}}>
-                        {view === 'dashboard' && <Dashboard />}
-                        {view === 'transactions' && <TransactionView />}
-                        {view === 'accounts' && <AccountsView />}
-                        {view === 'settings' && <SettingsView />}
-                    </div>
-
-                    {modal && (
-                        <Modal 
-                            title={modal==='addTx' ? t('add') : modal==='editTx' ? t('edit') : ''} 
-                            onClose={()=>{setModal(null); setSelectedTx(null);}}
-                        >
-                            {(modal === 'addTx' || modal === 'editTx') && 
-                                <TransactionForm 
-                                    initialData={selectedTx} 
-                                    onClose={()=>{setModal(null); setSelectedTx(null);}} 
-                                />
-                            }
-                        </Modal>
-                    )}
-
-                    <button className="fab" onClick={() => { setSelectedTx(null); setModal('addTx'); }}>
-                        <Icons.Plus size={32} />
-                    </button>
-
-                    <nav>
-                        <div className="flex justify-between container" style={{padding:0}}>
-                            <button onClick={()=>setView('dashboard')} className={`nav-item ${view==='dashboard'?'active':''}`}><Icons.GraphUp size={20}/>{t('dash')}</button>
-                            <button onClick={()=>setView('transactions')} className={`nav-item ${view==='transactions'?'active':''}`}><Icons.ArrowSwap size={20}/>{t('tx')}</button>
-                            <div style={{width:40}}></div>
-                            <button onClick={()=>setView('accounts')} className={`nav-item ${view==='accounts'?'active':''}`}><Icons.Wallet size={20}/>{t('accs')}</button>
-                            <button onClick={()=>setView('settings')} className={`nav-item ${view==='settings'?'active':''}`}><Icons.Settings size={20}/>{t('set')}</button>
-                        </div>
-                    </nav>
-                </div>
-            );
+        // --- CORE FUNCTIONS ---
+        function loadData() {
+            const stored = localStorage.getItem('abouTiaData');
+            if(stored) {
+                try { data = JSON.parse(stored); } catch(e) {}
+            }
         }
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
+        function saveData() {
+            localStorage.setItem('abouTiaData', JSON.stringify(data));
+            render();
+        }
+
+        function render() {
+            // Update Navigation State
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`nav-${currentView === 'dashboard' ? 'dash' : currentView === 'transactions' ? 'tx' : currentView === 'accounts' ? 'acc' : 'set'}`).classList.add('active');
+
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = '';
+
+            if(currentView === 'dashboard') renderDashboard(container);
+            else if(currentView === 'transactions') renderTransactions(container);
+            else if(currentView === 'accounts') renderAccounts(container);
+            else if(currentView === 'settings') renderSettings(container);
+        }
+
+        // --- RENDERERS ---
+        function renderDashboard(container) {
+            const total = data.accounts.reduce((sum, acc) => sum + getAccBalance(acc.id), 0);
+            const income = data.transactions.filter(t => t.type === 'inc').reduce((sum, t) => sum + Number(t.amount), 0);
+            const expense = data.transactions.filter(t => t.type === 'exp').reduce((sum, t) => sum + Number(t.amount), 0);
+
+            container.innerHTML = `
+                <div class="card" style="background: linear-gradient(135deg, var(--primary), #3b82f6); color: white; border:none;">
+                    <div class="text-sm" style="opacity:0.8">${t('total')}</div>
+                    <div class="text-xl bold" style="font-size:32px; margin: 4px 0;">${fmt(total)}</div>
+                    <div class="flex gap-2 mt-2">
+                        <div style="background:rgba(255,255,255,0.2); padding:8px 12px; border-radius:8px; flex:1;">
+                            <div class="text-xs">Income</div>
+                            <div class="bold">+${fmt(income)}</div>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.2); padding:8px 12px; border-radius:8px; flex:1;">
+                            <div class="text-xs">Expense</div>
+                            <div class="bold">-${fmt(expense)}</div>
+                        </div>
+                    </div>
+                </div>
+
+                ${getRecurringAlertsHTML()}
+
+                <h3 class="text-sm bold text-sub uppercase" style="margin-bottom:10px; margin-top:20px;">Accounts</h3>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    ${data.accounts.map(acc => `
+                        <div class="card" style="margin:0; padding:16px;">
+                            <div class="text-xs text-sub uppercase">${acc.name}</div>
+                            <div class="text-lg bold">${fmt(getAccBalance(acc.id))}</div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="flex justify-between items-center" style="margin-top:24px; margin-bottom:10px;">
+                    <h3 class="text-sm bold text-sub uppercase">Recent</h3>
+                    <button class="btn-ghost text-xs" onclick="switchView('transactions')">See All</button>
+                </div>
+                ${data.transactions.length === 0 ? '<div class="text-sub text-center text-sm" style="padding:20px;">No transactions yet</div>' : ''}
+                ${data.transactions.slice(0, 5).map(tx => getTxHTML(tx)).join('')}
+            `;
+        }
+
+        function renderTransactions(container) {
+            container.innerHTML = `<h2 class="text-xl bold" style="margin-bottom:16px;">${t('tx')}</h2>`;
+            if(data.transactions.length === 0) {
+                container.innerHTML += `<div class="text-center text-sub" style="margin-top:40px;">No transactions found.</div>`;
+            } else {
+                data.transactions.forEach(tx => {
+                    container.innerHTML += getTxHTML(tx);
+                });
+            }
+        }
+
+        function renderAccounts(container) {
+            container.innerHTML = `
+                <div class="flex justify-between items-center" style="margin-bottom:16px;">
+                    <h2 class="text-xl bold">${t('accs')}</h2>
+                    <button class="btn btn-primary" style="width:auto;" onclick="addAccount()">+ Add</button>
+                </div>
+            `;
+            data.accounts.forEach(acc => {
+                container.innerHTML += `
+                    <div class="card relative">
+                        <div class="text-xs text-sub uppercase">${acc.name}</div>
+                        <div class="text-xl bold">${fmt(getAccBalance(acc.id))}</div>
+                        <button class="btn-ghost" style="position:absolute; top:10px; right:10px; color:var(--danger);" onclick="deleteAccount('${acc.id}')">✕</button>
+                    </div>
+                `;
+            });
+        }
+
+        function renderSettings(container) {
+            container.innerHTML = `
+                <h2 class="text-xl bold" style="margin-bottom:16px;">${t('set')}</h2>
+                
+                <div class="card">
+                    <div class="flex justify-between items-center">
+                        <span class="bold">Language</span>
+                        <button class="btn" style="border:1px solid var(--border);" onclick="toggleLang()">${data.settings.lang === 'en' ? 'English' : 'العربية'}</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="flex justify-between items-center" style="margin-bottom:10px;">
+                        <span class="bold">Recurring Bills</span>
+                        <button class="btn btn-primary" style="width:auto; padding:6px 12px;" onclick="addRecurring()">+ Add</button>
+                    </div>
+                    ${data.recurring.map(r => `
+                        <div class="flex justify-between items-center" style="padding:8px 0; border-bottom:1px solid var(--border);">
+                            <div>
+                                <div class="bold text-sm">${r.name}</div>
+                                <div class="text-xs text-sub">Day: ${r.day} • ${fmt(r.amount)}</div>
+                            </div>
+                            <button class="btn-ghost text-red" onclick="deleteRecurring(${r.id})">✕</button>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="card">
+                    <button class="btn" style="width:100%; border:1px solid var(--border); margin-bottom:10px;" onclick="exportData()">⬇ ${t('export')}</button>
+                    <button class="btn" style="width:100%; border:1px solid var(--border);" onclick="document.getElementById('fileInput').click()">⬆ ${t('import')}</button>
+                    <input type="file" id="fileInput" class="hidden" onchange="importData(this)">
+                </div>
+            `;
+        }
+
+        // --- HELPERS ---
+        function getTxHTML(tx) {
+            const accName = data.accounts.find(a => a.id == tx.accId)?.name || 'Unknown';
+            const isInc = tx.type === 'inc';
+            return `
+                <div class="card flex justify-between items-center" style="padding:16px; cursor:pointer;" onclick="editTx(${tx.id})">
+                    <div class="flex items-center gap-2">
+                        <div style="width:40px; height:40px; border-radius:50%; background:${isInc ? '#dcfce7' : '#fee2e2'}; display:flex; align-items:center; justify-content:center; font-size:18px;">
+                            ${isInc ? '↗' : '↙'}
+                        </div>
+                        <div>
+                            <div class="bold text-sm">${tx.desc}</div>
+                            <div class="text-xs text-sub">${tx.date} • ${accName}</div>
+                        </div>
+                    </div>
+                    <div class="bold ${isInc ? 'text-green' : 'text-red'}">
+                        ${isInc ? '+' : '-'}${fmt(tx.amount)}
+                    </div>
+                </div>
+            `;
+        }
+
+        function getRecurringAlertsHTML() {
+            const today = new Date();
+            const currentDay = today.getDate();
+            const currentMonthStr = `${today.getFullYear()}-${today.getMonth()}`;
+            
+            let html = '';
+            data.recurring.forEach(r => {
+                if(r.lastPaid === currentMonthStr) return;
+                const due = r.day - currentDay;
+                if(due > 5) return; // Too far in future
+                
+                const color = due < 0 ? 'var(--danger)' : '#f59e0b';
+                const msg = due < 0 ? 'Overdue!' : due === 0 ? 'Due Today' : `Due in ${due} days`;
+                
+                html += `
+                    <div class="card flex justify-between items-center" style="border-left:4px solid ${color}; padding:12px;">
+                        <div>
+                            <div class="bold text-sm">${r.name}</div>
+                            <div class="text-xs text-sub">${msg}</div>
+                        </div>
+                        <button class="btn" style="border:1px solid var(--border); padding:6px 12px; font-size:12px;" onclick="payRecurring(${r.id})">Pay ${fmt(r.amount)}</button>
+                    </div>
+                `;
+            });
+            return html;
+        }
+
+        function getAccBalance(accId) {
+            let bal = Number(data.accounts.find(a => a.id == accId)?.initial || 0);
+            data.transactions.forEach(tx => {
+                if(tx.accId == accId) {
+                    if(tx.type === 'inc') bal += Number(tx.amount);
+                    else bal -= Number(tx.amount);
+                }
+            });
+            return bal;
+        }
+
+        // --- ACTIONS ---
+        function switchView(view) {
+            currentView = view;
+            render();
+        }
+
+        function openModal(mode, txData = null) {
+            const modal = document.getElementById('txModal');
+            modal.classList.add('open');
+            
+            // Populate Accounts Dropdown
+            const accSelect = document.getElementById('txAcc');
+            accSelect.innerHTML = data.accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+            
+            // Populate Categories
+            const catList = document.getElementById('catList');
+            catList.innerHTML = data.categories.map(c => `<option value="${c.name}">`).join('');
+
+            if(mode === 'edit' && txData) {
+                document.getElementById('modalTitle').innerText = 'Edit Transaction';
+                document.getElementById('txId').value = txData.id;
+                document.getElementById('txAmount').value = txData.amount;
+                document.getElementById('txDesc').value = txData.desc;
+                document.getElementById('txDate').value = txData.date;
+                document.getElementById('txAcc').value = txData.accId;
+                document.getElementById('txCat').value = txData.cat;
+                setTxType(txData.type);
+                document.getElementById('btnDelete').classList.remove('hidden');
+            } else {
+                document.getElementById('modalTitle').innerText = 'New Transaction';
+                document.getElementById('txId').value = '';
+                document.getElementById('txAmount').value = '';
+                document.getElementById('txDesc').value = '';
+                document.getElementById('txDate').valueAsDate = new Date();
+                document.getElementById('txCat').value = '';
+                setTxType('exp');
+                document.getElementById('btnDelete').classList.add('hidden');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('txModal').classList.remove('open');
+        }
+
+        function setTxType(type) {
+            txType = type;
+            const btnExp = document.getElementById('btn-exp');
+            const btnInc = document.getElementById('btn-inc');
+            if(type === 'exp') {
+                btnExp.style.background = 'var(--danger)'; btnExp.style.color = 'white';
+                btnInc.style.background = 'transparent'; btnInc.style.color = 'var(--text-sub)';
+            } else {
+                btnInc.style.background = 'var(--success)'; btnInc.style.color = 'white';
+                btnExp.style.background = 'transparent'; btnExp.style.color = 'var(--text-sub)';
+            }
+        }
+
+        function saveTx() {
+            const id = document.getElementById('txId').value;
+            const amount = document.getElementById('txAmount').value;
+            const desc = document.getElementById('txDesc').value;
+            const date = document.getElementById('txDate').value;
+            const accId = document.getElementById('txAcc').value;
+            const cat = document.getElementById('txCat').value;
+
+            if(!amount || !desc || !accId) return alert('Please fill details');
+
+            const txObj = {
+                id: id ? Number(id) : Date.now(),
+                type: txType,
+                amount, desc, date, accId, cat
+            };
+
+            if(id) {
+                // Update
+                const idx = data.transactions.findIndex(t => t.id == id);
+                if(idx > -1) data.transactions[idx] = txObj;
+            } else {
+                // New
+                data.transactions.unshift(txObj);
+            }
+
+            // Save Category if new
+            if(cat && !data.categories.find(c => c.name === cat)) {
+                data.categories.push({name: cat});
+            }
+
+            saveData();
+            closeModal();
+        }
+
+        function editTx(id) {
+            const tx = data.transactions.find(t => t.id == id);
+            if(tx) openModal('edit', tx);
+        }
+
+        function deleteTx() {
+            const id = document.getElementById('txId').value;
+            if(confirm('Delete this transaction?')) {
+                data.transactions = data.transactions.filter(t => t.id != id);
+                saveData();
+                closeModal();
+            }
+        }
+
+        function addAccount() {
+            const name = prompt("Account Name:");
+            if(name) {
+                data.accounts.push({id: Date.now(), name, initial: 0});
+                saveData();
+            }
+        }
+
+        function deleteAccount(id) {
+            if(confirm("Delete this account and all its transactions?")) {
+                data.accounts = data.accounts.filter(a => a.id != id);
+                data.transactions = data.transactions.filter(t => t.accId != id);
+                saveData();
+            }
+        }
+
+        function addRecurring() {
+            const name = prompt("Bill Name (e.g. Internet):");
+            const amt = prompt("Amount:");
+            const day = prompt("Day of Month (1-31):");
+            if(name && amt && day) {
+                data.recurring.push({id: Date.now(), name, amount: amt, day, lastPaid: ''});
+                saveData();
+            }
+        }
+
+        function deleteRecurring(id) {
+            if(confirm("Delete this recurring bill?")) {
+                data.recurring = data.recurring.filter(r => r.id != id);
+                saveData();
+            }
+        }
+
+        function payRecurring(id) {
+            const r = data.recurring.find(x => x.id == id);
+            if(r) {
+                const today = new Date();
+                data.transactions.unshift({
+                    id: Date.now(),
+                    date: today.toISOString().split('T')[0],
+                    type: 'exp',
+                    amount: r.amount,
+                    desc: r.name,
+                    accId: data.accounts[0].id,
+                    cat: 'Bills'
+                });
+                r.lastPaid = `${today.getFullYear()}-${today.getMonth()}`;
+                saveData();
+            }
+        }
+
+        function exportData() {
+            const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `aboutia_backup_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+        }
+
+        function importData(input) {
+            const file = input.files[0];
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    data = JSON.parse(e.target.result);
+                    saveData();
+                    alert("Data restored!");
+                } catch(err) {
+                    alert("Invalid file");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function toggleTheme() {
+            data.settings.theme = data.settings.theme === 'light' ? 'dark' : 'light';
+            saveData();
+            applyTheme();
+        }
+
+        function applyTheme() {
+            if(data.settings.theme === 'dark') document.body.classList.add('dark');
+            else document.body.classList.remove('dark');
+        }
+
+        function toggleLang() {
+            data.settings.lang = data.settings.lang === 'en' ? 'ar' : 'en';
+            saveData();
+            applyLang();
+            render();
+        }
+
+        function applyLang() {
+            document.dir = data.settings.lang === 'ar' ? 'rtl' : 'ltr';
+        }
+
+        function t(key) {
+            return TRANSLATIONS[data.settings.lang][key] || key;
+        }
+
+        function fmt(num) {
+            return new Intl.NumberFormat(data.settings.lang === 'ar' ? 'ar-EG' : 'en-US', { style: 'currency', currency: 'EGP' }).format(num);
+        }
+
     </script>
 </body>
 </html>
-
-
