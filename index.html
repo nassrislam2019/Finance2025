@@ -1,1055 +1,1109 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Abou Tia Finance</title>
-    <style>
-        /* --- CSS STYLING --- */
-        :root {
-            --primary: #4f46e5;
-            --primary-light: #e0e7ff;
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --text: #0f172a;
-            --text-sub: #64748b;
-            --border: #e2e8f0;
-            --danger: #ef4444;
-            --success: #10b981;
-            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-        }
-        .dark {
-            --primary: #6366f1;
-            --primary-light: #312e81;
-            --bg: #0f172a;
-            --card: #1e293b;
-            --text: #f8fafc;
-            --text-sub: #94a3b8;
-            --border: #334155;
-            --shadow: 0 4px 6px -1px rgba(0,0,0,0.5);
-        }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 90px; transition: background 0.2s, color 0.2s; }
-
-        .container { max-width: 600px; margin: 0 auto; padding: 16px; }
-
-        /* Typography */
-        h1, h2, h3 { margin: 0; }
-        .text-xl { font-size: 20px; font-weight: 700; }
-        .text-lg { font-size: 18px; font-weight: 700; }
-        .text-sm { font-size: 14px; }
-        .text-xs { font-size: 12px; }
-        .text-sub { color: var(--text-sub); }
-        .bold { font-weight: 700; }
-        .uppercase { text-transform: uppercase; }
-
-        /* Components */
-        .card { background: var(--card); border-radius: 16px; padding: 20px; box-shadow: var(--shadow); margin-bottom: 16px; border: 1px solid var(--border); }
-        .btn { border: none; padding: 12px 16px; border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; font-size: 14px; }
-        .btn:active { transform: scale(0.98); }
-        .btn-primary { background: var(--primary); color: white; width: 100%; }
-        .btn-danger { background: #fee2e2; color: var(--danger); }
-        .btn-ghost { background: transparent; color: var(--text-sub); }
-
-        /* Header & Nav */
-        header { position: sticky; top: 0; background: var(--card); padding: 16px; border-bottom: 1px solid var(--border); z-index: 50; display: flex; justify-content: space-between; align-items: center; }
-        nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 12px 0 24px 0; z-index: 50; }
-        .nav-item { background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-sub); font-size: 10px; font-weight: 700; cursor: pointer; }
-        .nav-item.active { color: var(--primary); }
-
-        /* Inputs */
-        .input-group { margin-bottom: 12px; }
-        .label { display: block; font-size: 11px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; margin-bottom: 6px; }
-        .input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 16px; outline: none; }
-        .input:focus { border-color: var(--primary); }
-
-        /* FAB */
-        .fab { position: fixed; bottom: 100px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: white; border: none; box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4); z-index: 40; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 30px; }
-        [dir="rtl"] .fab { right: auto; left: 20px; }
-
-        /* Modal */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
-        .modal.open { display: flex; }
-        .modal-content { background: var(--card); width: 100%; max-width: 400px; border-radius: 20px; padding: 20px; max-height: 90vh; overflow-y: auto; animation: popUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
-        @keyframes popUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-        /* Icons */
-        .icon { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-
-        /* Helpers */
-        .flex { display: flex; }
-        .justify-between { justify-content: space-between; }
-        .items-center { align-items: center; }
-        .gap-2 { gap: 8px; }
-        .text-green { color: var(--success); }
-        .text-red { color: var(--danger); }
-        .hidden { display: none !important; } /* Force hidden to win over flex */
-
-        /* Delete Confirm Modal Specifics */
-        .confirm-icon { width: 60px; height: 60px; background: #fee2e2; border-radius: 50%; color: var(--danger); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; }
-
-        .small { font-size: 12px; }
-    </style>
-</head>
-<body>
-
-    <header>
-        <div class="flex items-center gap-2">
-            <div style="width:32px; height:32px; background:var(--primary); border-radius:8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;">A</div>
-            <div class="text-lg bold" id="appTitle">Abou Tia Finance</div>
-        </div>
-        <button class="btn-ghost" onclick="toggleTheme()" id="themeBtn" aria-label="Toggle theme">🌙</button>
-    </header>
-
-    <div id="mainContainer" class="container"></div>
-
-    <button class="fab" onclick="openModal('add')" aria-label="Add transaction">+</button>
-
-    <nav>
-        <button class="nav-item active" onclick="switchView('dashboard')" id="nav-dash" aria-label="Dashboard">
-            <svg class="icon"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-            <span data-i18n="dash">Dashboard</span>
-        </button>
-        <button class="nav-item" onclick="switchView('transactions')" id="nav-tx" aria-label="Transactions">
-            <svg class="icon"><path d="M7 10h14"/><path d="M7 14h14"/><path d="M3 10h.01"/><path d="M3 14h.01"/></svg>
-            <span data-i18n="tx">Transactions</span>
-        </button>
-        <button class="nav-item" onclick="switchView('accounts')" id="nav-acc" aria-label="Accounts">
-            <svg class="icon"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-            <span data-i18n="accs">Accounts</span>
-        </button>
-        <button class="nav-item" onclick="switchView('settings')" id="nav-set" aria-label="Settings">
-            <svg class="icon"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            <span data-i18n="set">Settings</span>
-        </button>
-    </nav>
-
-    <!-- Transaction Modal -->
-    <div id="txModal" class="modal" aria-hidden="true">
-        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-            <div class="flex justify-between items-center" style="margin-bottom:20px;">
-                <h2 class="text-xl" id="modalTitle">Transaction</h2>
-                <button class="btn-ghost" onclick="closeModal()" aria-label="Close transaction modal">✕</button>
-            </div>
-
-            <div class="flex gap-2" style="background:var(--bg); padding:4px; border-radius:12px; margin-bottom:16px;">
-                <button type="button" class="btn" style="flex:1; background:var(--danger); color:white;" id="btn-exp" onclick="setTxType('exp')">Deduction</button>
-                <button type="button" class="btn btn-ghost" style="flex:1;" id="btn-inc" onclick="setTxType('inc')">Addition</button>
-            </div>
-
-            <input type="hidden" id="txId">
-            <input type="hidden" id="txRecurringId">
-
-            <div class="input-group">
-                <label class="label" for="txAmount" data-i18n="amt">Amount</label>
-                <input type="number" id="txAmount" class="input" placeholder="0.00" />
-            </div>
-            <div class="input-group">
-                <label class="label" for="txDate" data-i18n="date">Date</label>
-                <input type="date" id="txDate" class="input" />
-            </div>
-            <div class="input-group">
-                <label class="label" for="txDesc" data-i18n="desc">Description</label>
-                <input type="text" id="txDesc" class="input" placeholder="e.g. Salary" />
-            </div>
-            <div class="input-group">
-                <label class="label" for="txAcc" data-i18n="acc">Account</label>
-                <select id="txAcc" class="input"></select>
-            </div>
-            <div class="input-group">
-                <label class="label" for="txCat" data-i18n="cat">Category</label>
-                <input type="text" id="txCat" class="input" list="catList" />
-                <datalist id="catList"></datalist>
-            </div>
-
-            <div class="flex gap-2" style="margin-top:20px;">
-                <button class="btn btn-danger hidden" id="btnDelete" onclick="deleteTxClick()">Delete</button>
-                <button class="btn btn-primary" onclick="saveTx()" data-i18n="save">Save</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Recurring Modal -->
-    <div id="recModal" class="modal" aria-hidden="true">
-        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="recModalTitle">
-            <div class="flex justify-between items-center" style="margin-bottom:20px;">
-                <h2 class="text-xl" id="recModalTitle">Recurring Item</h2>
-                <button class="btn-ghost" onclick="closeRecModal()" aria-label="Close recurring modal">✕</button>
-            </div>
-
-            <div class="flex gap-2" style="background:var(--bg); padding:4px; border-radius:12px; margin-bottom:16px;">
-                <button type="button" class="btn" style="flex:1; background:var(--danger); color:white;" id="btn-rec-exp" onclick="setRecType('exp')">Deduction</button>
-                <button type="button" class="btn btn-ghost" style="flex:1;" id="btn-rec-inc" onclick="setRecType('inc')">Addition</button>
-            </div>
-
-            <input type="hidden" id="recId">
-
-            <div class="input-group">
-                <label class="label" for="recName" data-i18n="desc">Description (Name)</label>
-                <input type="text" id="recName" class="input" placeholder="e.g. Rent, Salary" />
-            </div>
-            <div class="input-group">
-                <label class="label" for="recAmount" data-i18n="amt">Amount</label>
-                <input type="number" id="recAmount" class="input" placeholder="0.00" />
-            </div>
-            <div class="input-group">
-                <label class="label">Start Date</label>
-                <input type="date" id="recDate" class="input" />
-            </div>
-
-            <div class="input-group">
-                <label class="label">Frequency</label>
-                <select id="recFreq" class="input">
-                    <option value="daily">Daily</option>
-                    <option value="weekly">Weekly</option>
-                    <option value="monthly">Monthly</option>
-                    <option value="quarterly">Quarterly</option>
-                    <option value="6months">Every 6 months</option>
-                    <option value="one-time">One time</option>
-                </select>
-            </div>
-
-            <div class="input-group">
-                <label class="label">Skip Until (optional)</label>
-                <input type="date" id="recSkipUntil" class="input" />
-                <div class="small text-sub" style="margin-top:6px;">Set a date to skip occurrences up to and including that date.</div>
-            </div>
-
-            <div class="flex gap-2" style="margin-top:20px;">
-                <button class="btn btn-danger hidden" id="btnRecDelete" onclick="deleteRecClick()">Delete</button>
-                <button class="btn btn-primary" onclick="saveRec()" data-i18n="save">Save</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Confirm Modal -->
-    <div id="confirmModal" class="modal" aria-hidden="true">
-        <div class="modal-content" style="text-align: center;">
-            <div class="confirm-icon">
-                <svg class="icon" style="width:32px; height:32px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-            </div>
-            <h2 class="text-xl bold">Are you sure?</h2>
-            <p class="text-sub" style="margin-bottom: 24px;">Do you really want to delete this? This process cannot be undone.</p>
-            <div class="flex gap-2">
-                <button class="btn btn-ghost" style="flex:1; border:1px solid var(--border);" onclick="closeConfirm()">Cancel</button>
-                <button class="btn btn-danger" style="flex:1;" id="btnConfirmDelete">Delete</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // --- DATA & STATE ---
-        const DEFAULT_ACCOUNTS = [
-            { id: '1', name: 'Vodafone Cash', initial: 0 },
-            { id: '2', name: 'Bank Account', initial: 0 },
-            { id: '3', name: 'Credit Card', initial: 0 },
-            { id: '4', name: 'Cash', initial: 0 }
-        ];
-
-        let data = {
-            transactions: [],
-            accounts: DEFAULT_ACCOUNTS.slice(),
-            categories: [],
-            recurring: [],
-            settings: { lang: 'en', theme: 'light' }
-        };
-
-        let currentView = 'dashboard';
-        let txType = 'exp';
-        let recType = 'exp';
-
-        // Confirmation callback
-        let onConfirmAction = null;
-
-        const TRANSLATIONS = {
-            en: { dash: "Dashboard", tx: "Transactions", accs: "Accounts", set: "Settings", amt: "Amount", date: "Date", desc: "Description", acc: "Account", cat: "Category", save: "Save", del: "Delete", income: "Addition", expense: "Deduction", total: "Total Balance", rec: "Recurring", export: "Backup", import: "Restore" },
-            ar: { dash: "الرئيسية", tx: "المعاملات", accs: "الحسابات", set: "الإعدادات", amt: "المبلغ", date: "التاريخ", desc: "الوصف", acc: "الحساب", cat: "الفئة", save: "حفظ", del: "حذف", income: "إضافة", expense: "خصم", total: "إجمالي الرصيد", rec: "دوري", export: "نسخ", import: "استرجاع" }
-        };
-
-        // --- INIT ---
-        window.onload = () => {
-            loadData();
-            applyTheme();
-            applyLang();
-            render();
-            document.getElementById('txDate').valueAsDate = new Date();
-            // Setup global modal behavior
-            setupModalBehavior();
-        };
-
-        // --- STORAGE & DATA SAFETY ---
-        function loadData() {
-            const stored = localStorage.getItem('abouTiaData');
-            if (stored) {
-                try {
-                    const parsed = JSON.parse(stored);
-                    data = Object.assign({
-                        transactions: [],
-                        accounts: DEFAULT_ACCOUNTS.slice(),
-                        categories: [],
-                        recurring: [],
-                        settings: { lang: 'en', theme: 'light' }
-                    }, parsed || {});
-
-                    data.transactions = Array.isArray(data.transactions) ? data.transactions : [];
-                    data.accounts = Array.isArray(data.accounts) ? data.accounts : DEFAULT_ACCOUNTS.slice();
-                    data.categories = Array.isArray(data.categories) ? data.categories : [];
-                    data.recurring = Array.isArray(data.recurring) ? data.recurring : [];
-                    data.settings = Object.assign({ lang: 'en', theme: 'light' }, data.settings || {});
-                } catch (e) {
-                    console.error("Failed to parse stored data", e);
-                }
-            }
-            // normalize IDs to string for consistent comparison
-            data.accounts.forEach(a => a.id = String(a.id));
-            data.transactions.forEach(t => t.id = String(t.id));
-            data.recurring.forEach(r => r.id = String(r.id));
-        }
-
-        function saveData(skipRender) {
-            localStorage.setItem('abouTiaData', JSON.stringify(data));
-            if (!skipRender) render();
-        }
-
-        // --- RENDER CORE ---
-        function render() {
-            // nav active
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            const navMap = { dashboard: 'dash', transactions: 'tx', accounts: 'acc', settings: 'set' };
-            document.getElementById(`nav-${navMap[currentView]}`).classList.add('active');
-
-            const container = document.getElementById('mainContainer');
-            container.innerHTML = '';
-
-            if (currentView === 'dashboard') renderDashboard(container);
-            else if (currentView === 'transactions') renderTransactions(container);
-            else if (currentView === 'accounts') renderAccounts(container);
-            else if (currentView === 'settings') renderSettings(container);
-        }
-
-        // --- HELPERS & FORMATTERS ---
-        function t(key) {
-            return TRANSLATIONS[data.settings.lang][key] || key;
-        }
-
-        function fmt(num) {
-            const n = Number(num) || 0;
-            return new Intl.NumberFormat(data.settings.lang === 'ar' ? 'ar-EG' : 'en-US', { style: 'currency', currency: 'EGP' }).format(n);
-        }
-
-        function uid() { return String(Date.now()) + Math.floor(Math.random()*1000); }
-
-        // Convert stored values to numbers when calculating
-        function safeNum(v) { return Number(v) || 0; }
-
-        // days until next occurrence for a given day-of-month, or generic next date for different frequencies
-        function daysUntilDate(targetDate) {
-            const today = new Date();
-            const start = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-            const t = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
-            const diff = Math.ceil((t - start) / (1000 * 60 * 60 * 24));
-            return diff;
-        }
-
-        // find the next due date for a recurring entry based on its start date and frequency
-        function computeNextDue(rec) {
-            const today = new Date();
-            const start = new Date(rec.startDate || rec.date || new Date());
-            const freq = rec.frequency || 'monthly';
-            let next = new Date(start.getFullYear(), start.getMonth(), start.getDate());
-
-            // If lastPaid is set to current month indicator, we should compute next future occurrence.
-            const maxIterations = 1000;
-            let iter = 0;
-
-            while (next < new Date(today.getFullYear(), today.getMonth(), today.getDate()) && iter < maxIterations) {
-                if (freq === 'daily') next.setDate(next.getDate() + 1);
-                else if (freq === 'weekly') next.setDate(next.getDate() + 7);
-                else if (freq === 'monthly') {
-                    const day = next.getDate();
-                    next.setMonth(next.getMonth() + 1);
-                    // handle month shorter days
-                    if (next.getDate() !== day) next.setDate(Math.min(day, new Date(next.getFullYear(), next.getMonth()+1, 0).getDate()));
-                } else if (freq === 'quarterly') {
-                    const day = next.getDate();
-                    next.setMonth(next.getMonth() + 3);
-                    if (next.getDate() !== day) next.setDate(Math.min(day, new Date(next.getFullYear(), next.getMonth()+1, 0).getDate()));
-                } else if (freq === '6months') {
-                    const day = next.getDate();
-                    next.setMonth(next.getMonth() + 6);
-                    if (next.getDate() !== day) next.setDate(Math.min(day, new Date(next.getFullYear(), next.getMonth()+1, 0).getDate()));
-                } else if (freq === 'one-time') {
-                    // one-time: if in the past, keep as is; break to avoid infinite loop
-                    break;
-                } else {
-                    // fallback monthly
-                    next.setMonth(next.getMonth() + 1);
-                }
-                iter++;
-            }
-
-            return next;
-        }
-
-        // check if a given recurring occurrence is due in the current month
-        function isDueInMonth(rec, year, month) {
-            const next = computeNextDue(rec);
-            return next.getFullYear() === year && next.getMonth() === month;
-        }
-
-        // check if a recurring item is skipped for a date (skipUntil inclusive)
-        function isSkipped(rec, dateObj) {
-            if (!rec.skipUntil) return false;
-            const skipUntil = new Date(rec.skipUntil);
-            // normalize times
-            const d = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
-            const s = new Date(skipUntil.getFullYear(), skipUntil.getMonth(), skipUntil.getDate());
-            return d <= s;
-        }
-
-        // normalize id comparisons
-        function eqId(a, b) { return String(a) === String(b); }
-
-        // calculate account balance by applying transactions
-        function getAccBalance(accId) {
-            let bal = safeNum(data.accounts.find(a => eqId(a.id, accId))?.initial);
-            // transactions should be sorted old->new; apply in sequence
-            data.transactions.forEach(tx => {
-                if (eqId(tx.accId, accId)) {
-                    if (tx.type === 'inc') bal += safeNum(tx.amount);
-                    else bal -= safeNum(tx.amount);
-                }
-            });
-            return bal;
-        }
-
-        // compute recurring totals for dashboard
-        function computeRecurringTotalsForMonth(year, month) {
-            let totalDeduction = 0;
-            let totalAddition = 0;
-            let unpaidDeduction = 0;
-            let unpaidAddition = 0;
-            let totalRecurringAmount = 0;
-
-            data.recurring.forEach(rec => {
-                const next = computeNextDue(rec);
-                const dueThisMonth = next.getFullYear() === year && next.getMonth() === month;
-                // skip if skipped until covers the next due
-                if (dueThisMonth && !isSkipped(rec, next)) {
-                    totalRecurringAmount += safeNum(rec.amount);
-                    if (rec.type === 'exp') {
-                        totalDeduction += safeNum(rec.amount);
-                        // check if this recurring is already paid this month (using lastPaid stored as year-month string)
-                        const monthKey = `${year}-${month}`;
-                        if (String(rec.lastPaid || '') !== monthKey) unpaidDeduction += safeNum(rec.amount);
-                    } else {
-                        totalAddition += safeNum(rec.amount);
-                        const monthKey = `${year}-${month}`;
-                        if (String(rec.lastPaid || '') !== monthKey) unpaidAddition += safeNum(rec.amount);
-                    }
-                }
-            });
-
-            return {
-                totalDeduction, totalAddition, unpaidDeduction, unpaidAddition, totalRecurringAmount
-            };
-        }
-
-        // get HTML for a single transaction
-        function getTxHTML(tx) {
-            const accName = data.accounts.find(a => eqId(a.id, tx.accId))?.name || 'Unknown';
-            const isInc = tx.type === 'inc';
-            return `
-                <div class="card flex justify-between items-center" style="padding:16px; cursor:pointer;" onclick="editTx('${tx.id}')">
-                    <div class="flex items-center gap-2">
-                        <div style="width:40px; height:40px; border-radius:50%; background:${isInc ? '#dcfce7' : '#fee2e2'}; display:flex; align-items:center; justify-content:center; font-size:18px;">
-                            ${isInc ? '↗' : '↙'}
-                        </div>
-                        <div>
-                            <div class="bold text-sm">${tx.desc}</div>
-                            <div class="text-xs text-sub">${tx.date} • ${accName}</div>
-                        </div>
-                    </div>
-                    <div class="bold ${isInc ? 'text-green' : 'text-red'}">
-                        ${isInc ? '+' : '-'}${fmt(tx.amount)}
-                    </div>
-                </div>
-            `;
-        }
-
-        // recurring alerts HTML (modified to use computeNextDue and skipping)
-        function getRecurringAlertsHTML() {
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = today.getMonth();
-            let html = '';
-
-            // compute next due and sort by next due (oldest next)
-            const recs = data.recurring.map(r => {
-                const next = computeNextDue(r);
-                return { ...r, nextDue: next };
-            }).sort((a,b) => a.nextDue - b.nextDue);
-
-            recs.forEach(r => {
-                const next = r.nextDue;
-                const monthKey = `${next.getFullYear()}-${next.getMonth()}`;
-                // if already paid this month, skip alert
-                if (String(r.lastPaid || '') === monthKey) return;
-                // if skipped until covers the next due, skip alert
-                if (isSkipped(r, next)) return;
-
-                const diffDays = daysUntilDate(next);
-                // display only if within next 30 days (adjust as needed)
-                if (diffDays > 30) return;
-
-                let color;
-                if (r.type === 'inc') color = 'var(--success)';
-                else color = diffDays < 0 ? 'var(--danger)' : '#f59e0b';
-
-                const msg = diffDays < 0 ? 'Overdue!' : diffDays === 0 ? 'Due Today' : `Due in ${diffDays} days`;
-
-                html += `
-                    <div class="card flex justify-between items-center" style="border-left:4px solid ${color}; padding:12px;">
-                        <div>
-                            <div class="bold text-sm">${r.name}</div>
-                            <div class="text-xs text-sub">${msg} • ${r.frequency}</div>
-                        </div>
-                        <button class="btn" style="border:1px solid var(--border); padding:6px 12px; font-size:12px;" onclick="payRecurring('${r.id}')">${r.type === 'inc' ? 'Collect' : 'Pay'}</button>
-                    </div>
-                `;
-            });
-
-            return html;
-        }
-
-        // --- RENDERERS ---
-        function renderDashboard(container) {
-            // total balance across accounts
-            const total = data.accounts.reduce((sum, acc) => sum + getAccBalance(acc.id), 0);
-
-            // summary income / expense from transactions for display
-            const income = data.transactions.filter(t => t.type === 'inc').reduce((sum, t) => sum + safeNum(t.amount), 0);
-            const expense = data.transactions.filter(t => t.type === 'exp').reduce((sum, t) => sum + safeNum(t.amount), 0);
-
-            // recurring totals for current month
-            const today = new Date();
-            const recTotals = computeRecurringTotalsForMonth(today.getFullYear(), today.getMonth());
-
-            container.innerHTML = `
-                <div class="card" style="background: linear-gradient(135deg, var(--primary), #3b82f6); color: white; border:none;">
-                    <div class="text-sm" style="opacity:0.9">${t('total')}</div>
-                    <div class="text-xl bold" style="font-size:32px; margin: 4px 0;">${fmt(total)}</div>
-                    <div class="flex gap-2 mt-2">
-                        <div style="background:rgba(255,255,255,0.2); padding:8px 12px; border-radius:8px; flex:1;">
-                            <div class="text-xs">Addition</div>
-                            <div class="bold">+${fmt(income)}</div>
-                        </div>
-                        <div style="background:rgba(255,255,255,0.2); padding:8px 12px; border-radius:8px; flex:1;">
-                            <div class="text-xs">Deduction</div>
-                            <div class="bold">-${fmt(expense)}</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recurring summary -->
-                <div class="card" style="padding:14px;">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <div class="text-xs text-sub">Recurring (this month)</div>
-                            <div class="bold" style="font-size:18px;">Total Recurring Amount: ${fmt(recTotals.totalRecurringAmount)}</div>
-                        </div>
-                        <div style="text-align:right;">
-                            <div class="text-xs">Unpaid (Deduction)</div>
-                            <div class="bold text-red">${fmt(recTotals.unpaidDeduction)}</div>
-                            <div class="text-xs" style="margin-top:6px;">Unpaid (Addition)</div>
-                            <div class="bold text-green">${fmt(recTotals.unpaidAddition)}</div>
-                        </div>
-                    </div>
-                    <div style="margin-top:10px;" class="text-xs text-sub">
-                        Total Deduction Scheduled: ${fmt(recTotals.totalDeduction)} • Total Addition Scheduled: ${fmt(recTotals.totalAddition)}
-                    </div>
-                </div>
-
-                ${getRecurringAlertsHTML()}
-
-                <h3 class="text-sm bold text-sub uppercase" style="margin-bottom:10px; margin-top:20px;">Accounts</h3>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    ${data.accounts.map(acc => `
-                        <div class="card" style="margin:0; padding:16px;">
-                            <div class="text-xs text-sub uppercase">${acc.name}</div>
-                            <div class="text-lg bold">${fmt(getAccBalance(acc.id))}</div>
-                        </div>
-                    `).join('')}
-                </div>
-
-                <div class="flex justify-between items-center" style="margin-top:24px; margin-bottom:10px;">
-                    <h3 class="text-sm bold text-sub uppercase">Recent</h3>
-                    <button class="btn-ghost text-xs" onclick="switchView('transactions')">See All</button>
-                </div>
-                ${data.transactions.length === 0 ? '<div class="text-sub text-center text-sm" style="padding:20px;">No transactions yet</div>' : ''}
-                ${data.transactions.slice(0, 5).map(tx => getTxHTML(tx)).join('')}
-            `;
-        }
-
-        function renderTransactions(container) {
-            container.innerHTML = `<h2 class="text-xl bold" style="margin-bottom:16px;">${t('tx')}</h2>`;
-            if (data.transactions.length === 0) {
-                container.innerHTML += `<div class="text-center text-sub" style="margin-top:40px;">No transactions found.</div>`;
-            } else {
-                // transactions sorted old -> new
-                data.transactions.forEach(tx => {
-                    container.innerHTML += getTxHTML(tx);
-                });
-            }
-        }
-
-        function renderAccounts(container) {
-            container.innerHTML = `
-                <div class="flex justify-between items-center" style="margin-bottom:16px;">
-                    <h2 class="text-xl bold">${t('accs')}</h2>
-                    <button class="btn btn-primary" style="width:auto;" onclick="addAccount()">+ Add</button>
-                </div>
-            `;
-            data.accounts.forEach(acc => {
-                container.innerHTML += `
-                    <div class="card relative">
-                        <div class="text-xs text-sub uppercase">${acc.name}</div>
-                        <div class="text-xl bold">${fmt(getAccBalance(acc.id))}</div>
-                        <button class="btn-ghost" style="position:absolute; top:10px; right:10px; color:var(--danger);" onclick="deleteAccount('${acc.id}')">✕</button>
-                    </div>
-                `;
-            });
-        }
-
-        function renderSettings(container) {
-            container.innerHTML = `
-                <h2 class="text-xl bold" style="margin-bottom:16px;">${t('set')}</h2>
-
-                <div class="card">
-                    <div class="flex justify-between items-center">
-                        <span class="bold">Language</span>
-                        <button class="btn" style="border:1px solid var(--border);" onclick="toggleLang()">${data.settings.lang === 'en' ? 'English' : 'العربية'}</button>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="flex justify-between items-center" style="margin-bottom:10px;">
-                        <span class="bold">Recurring Items</span>
-                        <button class="btn btn-primary" style="width:auto; padding:6px 12px;" onclick="openRecModal('add')">+ Add</button>
-                    </div>
-                    ${data.recurring.length === 0 ? '<div class="text-sub text-center small" style="padding:10px;">No recurring items</div>' : ''}
-                    ${data.recurring
-                        .map(r => {
-                            const next = computeNextDue(r);
-                            return { ...r, nextDueObj: next, nextDueStr: `${next.getFullYear()}-${String(next.getMonth()+1).padStart(2,'0')}-${String(next.getDate()).padStart(2,'0')}` };
-                        })
-                        .sort((a,b) => a.nextDueObj - b.nextDueObj)
-                        .map(r => `
-                        <div class="flex justify-between items-center" style="padding:8px 0; border-bottom:1px solid var(--border); cursor:pointer;">
-                            <div style="flex:1" onclick="editRec('${r.id}')">
-                                <div class="bold text-sm" style="${r.type === 'inc' ? 'color: var(--success);' : ''}">${r.name}</div>
-                                <div class="text-xs text-sub">Next: ${r.nextDueStr} • ${r.frequency} • ${fmt(r.amount)}</div>
-                                ${r.skipUntil ? `<div class="text-xs text-red small">Skipped until ${r.skipUntil}</div>` : ''}
-                            </div>
-                            <div style="display:flex; gap:6px;">
-                                <button class="btn-ghost small" onclick="editRec('${r.id}')">✎</button>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-
-                <div class="card">
-                    <button class="btn" style="width:100%; border:1px solid var(--border); margin-bottom:10px;" onclick="exportData()">⬇ ${t('export')}</button>
-                    <button class="btn" style="width:100%; border:1px solid var(--border);" onclick="document.getElementById('fileInput').click()">⬆ ${t('import')}</button>
-                    <input type="file" id="fileInput" class="hidden" onchange="importData(this)" />
-                </div>
-            `;
-        }
-
-        // --- ACTIONS & MODALS ---
-        function switchView(view) {
-            currentView = view;
-            render();
-        }
-
-        function openModal(mode, txData = null) {
-            const modal = document.getElementById('txModal');
-            modal.classList.add('open');
-            modal.setAttribute('aria-hidden', 'false');
-
-            document.getElementById('txRecurringId').value = '';
-
-            const accSelect = document.getElementById('txAcc');
-            accSelect.innerHTML = data.accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
-
-            const catList = document.getElementById('catList');
-            catList.innerHTML = data.categories.map(c => `<option value="${c.name}">`).join('');
-
-            if (mode === 'edit' && txData) {
-                document.getElementById('modalTitle').innerText = 'Edit Transaction';
-                document.getElementById('txId').value = txData.id;
-                document.getElementById('txAmount').value = safeNum(txData.amount);
-                document.getElementById('txDesc').value = txData.desc;
-                document.getElementById('txDate').value = txData.date;
-                document.getElementById('txAcc').value = txData.accId;
-                document.getElementById('txCat').value = txData.cat || '';
-                setTxType(txData.type);
-                document.getElementById('btnDelete').classList.remove('hidden');
-            } else {
-                document.getElementById('modalTitle').innerText = 'New Transaction';
-                document.getElementById('txId').value = '';
-                document.getElementById('txAmount').value = '';
-                document.getElementById('txDesc').value = '';
-                document.getElementById('txDate').valueAsDate = new Date();
-                document.getElementById('txCat').value = '';
-                setTxType('exp');
-                document.getElementById('btnDelete').classList.add('hidden');
-            }
-        }
-
-        function closeModal() {
-            const modal = document.getElementById('txModal');
-            modal.classList.remove('open');
-            modal.setAttribute('aria-hidden', 'true');
-        }
-
-        function openRecModal(mode, recData = null) {
-            const modal = document.getElementById('recModal');
-            modal.classList.add('open');
-            modal.setAttribute('aria-hidden', 'false');
-
-            if (mode === 'edit' && recData) {
-                document.getElementById('recModalTitle').innerText = 'Edit Recurring';
-                document.getElementById('recId').value = recData.id;
-                document.getElementById('recName').value = recData.name;
-                document.getElementById('recAmount').value = safeNum(recData.amount);
-                // Set Date Input based on stored Start Date
-                document.getElementById('recDate').value = (recData.startDate || recData.date || '').toString().split('T')[0] || new Date().toISOString().split('T')[0];
-                document.getElementById('recFreq').value = recData.frequency || 'monthly';
-                document.getElementById('recSkipUntil').value = recData.skipUntil || '';
-                setRecType(recData.type || 'exp');
-                document.getElementById('btnRecDelete').classList.remove('hidden');
-            } else {
-                document.getElementById('recModalTitle').innerText = 'New Recurring';
-                document.getElementById('recId').value = '';
-                document.getElementById('recName').value = '';
-                document.getElementById('recAmount').value = '';
-                document.getElementById('recDate').valueAsDate = new Date();
-                document.getElementById('recFreq').value = 'monthly';
-                document.getElementById('recSkipUntil').value = '';
-                setRecType('exp');
-                document.getElementById('btnRecDelete').classList.add('hidden');
-            }
-        }
-
-        function closeRecModal() {
-            const modal = document.getElementById('recModal');
-            modal.classList.remove('open');
-            modal.setAttribute('aria-hidden', 'true');
-        }
-
-        function openConfirm(callback) {
-            onConfirmAction = callback;
-            const modal = document.getElementById('confirmModal');
-            modal.classList.add('open');
-            modal.setAttribute('aria-hidden', 'false');
-        }
-
-        function closeConfirm() {
-            const modal = document.getElementById('confirmModal');
-            modal.classList.remove('open');
-            modal.setAttribute('aria-hidden', 'true');
-            onConfirmAction = null;
-        }
-
-        document.getElementById('btnConfirmDelete').addEventListener('click', () => {
-            if (onConfirmAction) onConfirmAction();
-            closeConfirm();
-        });
-
-        function setTxType(type) {
-            txType = type;
-            const btnExp = document.getElementById('btn-exp');
-            const btnInc = document.getElementById('btn-inc');
-            updateTypeButtons(type, btnExp, btnInc);
-        }
-
-        function setRecType(type) {
-            recType = type;
-            const btnExp = document.getElementById('btn-rec-exp');
-            const btnInc = document.getElementById('btn-rec-inc');
-            updateTypeButtons(type, btnExp, btnInc);
-        }
-
-        function updateTypeButtons(type, btnExp, btnInc) {
-            if (type === 'exp') {
-                btnExp.style.background = 'var(--danger)'; btnExp.style.color = 'white';
-                btnInc.style.background = 'transparent'; btnInc.style.color = 'var(--text-sub)';
-            } else {
-                btnInc.style.background = 'var(--success)'; btnInc.style.color = 'white';
-                btnExp.style.background = 'transparent'; btnExp.style.color = 'var(--text-sub)';
-            }
-        }
-
-        // Save transaction (amount saved as number). Transactions ordered old -> new (push).
-        function saveTx() {
-            const id = document.getElementById('txId').value;
-            const amountRaw = document.getElementById('txAmount').value;
-            const amount = parseFloat(amountRaw);
-            const desc = document.getElementById('txDesc').value.trim();
-            const date = document.getElementById('txDate').value;
-            const accId = document.getElementById('txAcc').value;
-            const cat = document.getElementById('txCat').value.trim();
-            const recId = document.getElementById('txRecurringId').value;
-
-            if (!amount || isNaN(amount) || !desc || !accId) return alert('Please fill details correctly');
-
-            const txObj = {
-                id: id ? String(id) : uid(),
-                type: txType,
-                amount: amount,
-                desc, date, accId: String(accId), cat
-            };
-
-            if (id) {
-                const idx = data.transactions.findIndex(t => eqId(t.id, id));
-                if (idx > -1) data.transactions[idx] = txObj;
-            } else {
-                // push to keep old->new ordering
-                data.transactions.push(txObj);
-            }
-
-            if (cat && !data.categories.find(c => c.name === cat)) {
-                data.categories.push({ name: cat });
-            }
-
-            if (recId) {
-                const r = data.recurring.find(x => eqId(x.id, recId));
-                if (r) {
-                    const today = new Date();
-                    r.lastPaid = `${today.getFullYear()}-${today.getMonth()}`;
-                }
-            }
-
-            saveData();
-            closeModal();
-        }
-
-        function editTx(id) {
-            const tx = data.transactions.find(t => eqId(t.id, id));
-            if (tx) openModal('edit', tx);
-        }
-
-        function deleteTxClick() {
-            const id = document.getElementById('txId').value;
-            openConfirm(() => {
-                data.transactions = data.transactions.filter(t => !eqId(t.id, id));
-                saveData();
-                closeModal();
-            });
-        }
-
-        function addAccount() {
-            const name = prompt("Account Name:");
-            if (name) {
-                const newId = uid();
-                data.accounts.push({ id: newId, name: name.trim(), initial: 0 });
-                saveData();
-            }
-        }
-
-        function deleteAccount(id) {
-            openConfirm(() => {
-                data.accounts = data.accounts.filter(a => !eqId(a.id, id));
-                data.transactions = data.transactions.filter(t => !eqId(t.accId, id));
-                saveData();
-            });
-        }
-
-        // Save recurring
-        function saveRec() {
-            const id = document.getElementById('recId').value;
-            const name = document.getElementById('recName').value.trim();
-            const amtRaw = document.getElementById('recAmount').value;
-            const amt = parseFloat(amtRaw);
-            const dateVal = document.getElementById('recDate').value;
-            const freq = document.getElementById('recFreq').value;
-            const skipUntilVal = document.getElementById('recSkipUntil').value;
-
-            if (!name || !amt || isNaN(amt) || !dateVal) { alert("Please fill all fields"); return; }
-
-            const startDate = new Date(dateVal);
-            const recObj = {
-                id: id ? String(id) : uid(),
-                name,
-                amount: amt,
-                startDate: startDate.toISOString().split('T')[0],
-                date: startDate.toISOString().split('T')[0],
-                frequency: freq,
-                type: recType,
-                lastPaid: (id ? (data.recurring.find(r => eqId(r.id, id))?.lastPaid || '') : ''),
-                skipUntil: skipUntilVal || ''
-            };
-
-            if (id) {
-                const idx = data.recurring.findIndex(r => eqId(r.id, id));
-                if (idx > -1) {
-                    // preserve lastPaid if it exists
-                    recObj.lastPaid = data.recurring[idx].lastPaid || recObj.lastPaid;
-                    data.recurring[idx] = recObj;
-                }
-            } else {
-                data.recurring.push(recObj);
-            }
-
-            saveData();
-            closeRecModal();
-        }
-
-        function editRec(id) {
-            const r = data.recurring.find(item => eqId(item.id, id));
-            if (r) openRecModal('edit', r);
-        }
-
-        function deleteRecClick() {
-            const id = document.getElementById('recId').value;
-            openConfirm(() => {
-                data.recurring = data.recurring.filter(r => !eqId(r.id, id));
-                saveData();
-                closeRecModal();
-            });
-        }
-
-        // Pay/Collect recurring: opens transaction modal prefilled
-        function payRecurring(id) {
-            const r = data.recurring.find(x => eqId(x.id, id));
-            if (r) {
-                openModal('add');
-                document.getElementById('txAmount').value = safeNum(r.amount);
-                document.getElementById('txDesc').value = r.name;
-                document.getElementById('txCat').value = 'Recurring';
-                document.getElementById('txRecurringId').value = r.id;
-                setTxType(r.type || 'exp');
-                document.getElementById('modalTitle').innerText = 'Confirm Recurring';
-            }
-        }
-
-        // Export & Import with validation and safe merging
-        function exportData() {
-            const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `aboutia_backup_${new Date().toISOString().split('T')[0]}.json`;
-            a.click();
-        }
-
-        function importData(input) {
-            const file = input.files[0];
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const incoming = JSON.parse(e.target.result);
-                    if (!incoming || typeof incoming !== 'object') throw new Error('Invalid file');
-
-                    if (!incoming.accounts || !incoming.transactions || !incoming.categories) {
-                        // Do a safer merge fallback
-                        // require minimum structure
-                        alert('Invalid backup: missing required sections');
-                        return;
-                    }
-
-                    data = {
-                        transactions: Array.isArray(incoming.transactions) ? incoming.transactions.map(t => ({ ...t, id: String(t.id) })) : [],
-                        accounts: Array.isArray(incoming.accounts) ? incoming.accounts.map(a => ({ ...a, id: String(a.id) })) : DEFAULT_ACCOUNTS.slice(),
-                        categories: Array.isArray(incoming.categories) ? incoming.categories : [],
-                        recurring: Array.isArray(incoming.recurring) ? incoming.recurring.map(r => ({ ...r, id: String(r.id) })) : [],
-                        settings: Object.assign({ lang: 'en', theme: 'light' }, incoming.settings || {})
-                    };
-
-                    // ensure numbers converted
-                    data.transactions.forEach(t => t.amount = safeNum(t.amount));
-                    data.recurring.forEach(r => r.amount = safeNum(r.amount));
-
-                    saveData();
-                    alert("Data restored!");
-                } catch (err) {
-                    console.error(err);
-                    alert("Invalid file");
-                }
-            };
-            reader.readAsText(file);
-            // reset input value so same file can be imported again if needed
-            input.value = '';
-        }
-
-        function toggleTheme() {
-            data.settings.theme = data.settings.theme === 'light' ? 'dark' : 'light';
-            saveData();
-            applyTheme();
-        }
-
-        function applyTheme() {
-            if (data.settings.theme === 'dark') document.body.classList.add('dark');
-            else document.body.classList.remove('dark');
-        }
-
-        function toggleLang() {
-            data.settings.lang = data.settings.lang === 'en' ? 'ar' : 'en';
-            saveData();
-            applyLang();
-            render();
-        }
-
-        function applyLang() {
-            document.dir = data.settings.lang === 'ar' ? 'rtl' : 'ltr';
-        }
-
-        // --- Modal behavior (ESC, backdrop click) and accessibility ---
-        function setupModalBehavior() {
-            // ESC closes modals
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    closeModal();
-                    closeRecModal();
-                    closeConfirm();
-                }
-            });
-
-            // click outside modal-content closes it
-            document.querySelectorAll('.modal').forEach(modal => {
-                modal.addEventListener('click', (ev) => {
-                    if (ev.target === modal) {
-                        modal.classList.remove('open');
-                        modal.setAttribute('aria-hidden', 'true');
-                    }
-                });
-            });
-        }
-
-        // --- Init: ensure transaction order old->new and recurring sorted by next due ---
-        // We re-order transactions to old->new upon load/save to be consistent
-        function ensureOrdering() {
-            // Convert date to timestamp for sorting but maintain object structure
-            data.transactions.sort((a, b) => {
-                const ta = new Date(a.date).getTime() || 0;
-                const tb = new Date(b.date).getTime() || 0;
-                return ta - tb; // old -> new
-            });
-            // recurring will be sorted at render time by next due
-        }
-
-        // call saveData wrapper to ensure ordering before render
-        const originalSaveData = saveData;
-        saveData = function(skipRender) {
-            ensureOrdering();
-            localStorage.setItem('abouTiaData', JSON.stringify(data));
-            if (!skipRender) render();
-        };
-
-        // --- initial ordering and render call (in case data from storage) ---
-        ensureOrdering();
-
-    </script>
-</body>
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+    <meta charset="UTF-8" />  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />  
+    <title>Abou Tia Finance</title>  
+    <style>  
+        /* --- CSS STYLING --- */  
+        :root {  
+            --primary: #4f46e5;  
+            --primary-light: #e0e7ff;  
+            --bg: #f8fafc;  
+            --card: #ffffff;  
+            --text: #0f172a;  
+            --text-sub: #64748b;  
+            --border: #e2e8f0;  
+            --danger: #ef4444;  
+            --success: #10b981;  
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);  
+        }  
+        .dark {  
+            --primary: #6366f1;  
+            --primary-light: #312e81;  
+            --bg: #0f172a;  
+            --card: #1e293b;  
+            --text: #f8fafc;  
+            --text-sub: #94a3b8;  
+            --border: #334155;  
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.5);  
+        }  
+  
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }  
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 90px; transition: background 0.2s, color 0.2s; }  
+  
+        .container { max-width: 600px; margin: 0 auto; padding: 16px; }  
+  
+        /* Typography */  
+        h1, h2, h3 { margin: 0; }  
+        .text-xl { font-size: 20px; font-weight: 700; }  
+        .text-lg { font-size: 18px; font-weight: 700; }  
+        .text-sm { font-size: 14px; }  
+        .text-xs { font-size: 12px; }  
+        .text-sub { color: var(--text-sub); }  
+        .bold { font-weight: 700; }  
+        .uppercase { text-transform: uppercase; }  
+  
+        /* Components */  
+        .card { background: var(--card); border-radius: 16px; padding: 20px; box-shadow: var(--shadow); margin-bottom: 16px; border: 1px solid var(--border); }  
+        .btn { border: none; padding: 12px 16px; border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; font-size: 14px; }  
+        .btn:active { transform: scale(0.98); }  
+        .btn-primary { background: var(--primary); color: white; width: 100%; }  
+        .btn-danger { background: #fee2e2; color: var(--danger); }  
+        .btn-ghost { background: transparent; color: var(--text-sub); }  
+  
+        /* Header & Nav */  
+        header { position: sticky; top: 0; background: var(--card); padding: 16px; border-bottom: 1px solid var(--border); z-index: 50; display: flex; justify-content: space-between; align-items: center; }  
+        nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 12px 0 24px 0; z-index: 50; }  
+        .nav-item { background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-sub); font-size: 10px; font-weight: 700; cursor: pointer; }  
+        .nav-item.active { color: var(--primary); }  
+  
+        /* Inputs */  
+        .input-group { margin-bottom: 12px; }  
+        .label { display: block; font-size: 11px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; margin-bottom: 6px; }  
+        .input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 16px; outline: none; }  
+        .input:focus { border-color: var(--primary); }  
+  
+        /* FAB */  
+        .fab { position: fixed; bottom: 100px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: white; border: none; box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4); z-index: 40; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 30px; }  
+        [dir="rtl"] .fab { right: auto; left: 20px; }  
+  
+        /* Modal */  
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; align-items: center; justify-content: center; padding: 20px; }  
+        .modal.open { display: flex; }  
+        .modal-content { background: var(--card); width: 100%; max-width: 400px; border-radius: 20px; padding: 20px; max-height: 90vh; overflow-y: auto; animation: popUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); }  
+        @keyframes popUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }  
+  
+        /* Icons */  
+        .icon { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }  
+  
+        /* Helpers */  
+        .flex { display: flex; }  
+        .justify-between { justify-content: space-between; }  
+        .items-center { align-items: center; }  
+        .gap-2 { gap: 8px; }  
+        .text-green { color: var(--success); }  
+        .text-red { color: var(--danger); }  
+        .hidden { display: none !important; } /* Force hidden to win over flex */  
+  
+        /* Delete Confirm Modal Specifics */  
+        .confirm-icon { width: 60px; height: 60px; background: #fee2e2; border-radius: 50%; color: var(--danger); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; }  
+  
+        .small { font-size: 12px; }  
+    </style>  
+</head>  
+<body>  
+  
+    <header>  
+        <div class="flex items-center gap-2">  
+            <div style="width:32px; height:32px; background:var(--primary); border-radius:8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;">A</div>  
+            <div class="text-lg bold" id="appTitle">Abou Tia Finance</div>  
+        </div>  
+        <button class="btn-ghost" onclick="toggleTheme()" id="themeBtn" aria-label="Toggle theme">🌙</button>  
+    </header>  
+  
+    <div id="mainContainer" class="container"></div>  
+  
+    <button class="fab" onclick="openModal('add')" aria-label="Add transaction">+</button>  
+  
+    <nav>  
+        <button class="nav-item active" onclick="switchView('dashboard')" id="nav-dash" aria-label="Dashboard">  
+            <svg class="icon"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>  
+            <span data-i18n="dash">Dashboard</span>  
+        </button>  
+        <button class="nav-item" onclick="switchView('transactions')" id="nav-tx" aria-label="Transactions">  
+            <svg class="icon"><path d="M7 10h14"/><path d="M7 14h14"/><path d="M3 10h.01"/><path d="M3 14h.01"/></svg>  
+            <span data-i18n="tx">Transactions</span>  
+        </button>  
+        <button class="nav-item" onclick="switchView('accounts')" id="nav-acc" aria-label="Accounts">  
+            <svg class="icon"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>  
+            <span data-i18n="accs">Accounts</span>  
+        </button>  
+        <button class="nav-item" onclick="switchView('settings')" id="nav-set" aria-label="Settings">  
+            <svg class="icon"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>  
+            <span data-i18n="set">Settings</span>  
+        </button>  
+    </nav>  
+  
+    <!-- Transaction Modal -->  
+    <div id="txModal" class="modal" aria-hidden="true">  
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">  
+            <div class="flex justify-between items-center" style="margin-bottom:20px;">  
+                <h2 class="text-xl" id="modalTitle">Transaction</h2>  
+                <button class="btn-ghost" onclick="closeModal()" aria-label="Close transaction modal">✕</button>  
+            </div>  
+  
+            <div class="flex gap-2" style="background:var(--bg); padding:4px; border-radius:12px; margin-bottom:16px;">  
+                <button type="button" class="btn" style="flex:1; background:var(--danger); color:white;" id="btn-exp" onclick="setTxType('exp')">Deduction</button>  
+                <button type="button" class="btn btn-ghost" style="flex:1;" id="btn-inc" onclick="setTxType('inc')">Addition</button>  
+            </div>  
+  
+            <input type="hidden" id="txId">  
+            <input type="hidden" id="txRecurringId">  
+  
+            <div class="input-group">  
+                <label class="label" for="txAmount" data-i18n="amt">Amount</label>  
+                <input type="number" id="txAmount" class="input" placeholder="0.00" />  
+            </div>  
+            <div class="input-group">  
+                <label class="label" for="txDate" data-i18n="date">Date</label>  
+                <input type="date" id="txDate" class="input" />  
+            </div>  
+            <div class="input-group">  
+                <label class="label" for="txDesc" data-i18n="desc">Description</label>  
+                <input type="text" id="txDesc" class="input" placeholder="e.g. Salary" />  
+            </div>  
+            <div class="input-group">  
+                <label class="label" for="txAcc" data-i18n="acc">Account</label>  
+                <select id="txAcc" class="input"></select>  
+            </div>  
+            <div class="input-group">  
+                <label class="label" for="txCat" data-i18n="cat">Category</label>  
+                <input type="text" id="txCat" class="input" list="catList" />  
+                <datalist id="catList"></datalist>  
+            </div>  
+  
+            <div class="flex gap-2" style="margin-top:20px;">  
+                <button class="btn btn-danger hidden" id="btnDelete" onclick="deleteTxClick()">Delete</button>  
+                <button class="btn btn-primary" onclick="saveTx()" data-i18n="save">Save</button>  
+            </div>  
+        </div>  
+    </div>  
+  
+    <!-- Recurring Modal -->  
+    <div id="recModal" class="modal" aria-hidden="true">  
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="recModalTitle">  
+            <div class="flex justify-between items-center" style="margin-bottom:20px;">  
+                <h2 class="text-xl" id="recModalTitle">Recurring Item</h2>  
+                <button class="btn-ghost" onclick="closeRecModal()" aria-label="Close recurring modal">✕</button>  
+            </div>  
+  
+            <div class="flex gap-2" style="background:var(--bg); padding:4px; border-radius:12px; margin-bottom:16px;">  
+                <button type="button" class="btn" style="flex:1; background:var(--danger); color:white;" id="btn-rec-exp" onclick="setRecType('exp')">Deduction</button>  
+                <button type="button" class="btn btn-ghost" style="flex:1;" id="btn-rec-inc" onclick="setRecType('inc')">Addition</button>  
+            </div>  
+  
+            <input type="hidden" id="recId">  
+  
+            <div class="input-group">  
+                <label class="label" for="recName" data-i18n="desc">Description (Name)</label>  
+                <input type="text" id="recName" class="input" placeholder="e.g. Rent, Salary" />  
+            </div>  
+            <div class="input-group">  
+                <label class="label" for="recAmount" data-i18n="amt">Amount</label>  
+                <input type="number" id="recAmount" class="input" placeholder="0.00" />  
+            </div>  
+            <div class="input-group">  
+                <label class="label">Start Date</label>  
+                <input type="date" id="recDate" class="input" />  
+            </div>  
+  
+            <div class="input-group">  
+                <label class="label">Frequency</label>  
+                <select id="recFreq" class="input">  
+                    <option value="daily">Daily</option>  
+                    <option value="weekly">Weekly</option>  
+                    <option value="monthly">Monthly</option>  
+                    <option value="quarterly">Quarterly</option>  
+                    <option value="6months">Every 6 months</option>  
+                    <option value="one-time">One time</option>  
+                </select>  
+            </div>  
+  
+            <div class="input-group">  
+                <label class="label">Skip Until (optional)</label>  
+                <input type="date" id="recSkipUntil" class="input" />  
+                <div class="small text-sub" style="margin-top:6px;">Set a date to skip occurrences up to and including that date.</div>  
+            </div>  
+  
+            <div class="flex gap-2" style="margin-top:20px;">  
+                <button class="btn btn-danger hidden" id="btnRecDelete" onclick="deleteRecClick()">Delete</button>  
+                <button class="btn btn-primary" onclick="saveRec()" data-i18n="save">Save</button>  
+            </div>  
+        </div>  
+    </div>  
+  
+    <!-- Confirm Modal -->  
+    <div id="confirmModal" class="modal" aria-hidden="true">  
+        <div class="modal-content" style="text-align: center;">  
+            <div class="confirm-icon">  
+                <svg class="icon" style="width:32px; height:32px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>  
+            </div>  
+            <h2 class="text-xl bold">Are you sure?</h2>  
+            <p class="text-sub" style="margin-bottom: 24px;">Do you really want to delete this? This process cannot be undone.</p>  
+            <div class="flex gap-2">  
+                <button class="btn btn-ghost" style="flex:1; border:1px solid var(--border);" onclick="closeConfirm()">Cancel</button>  
+                <button class="btn btn-danger" style="flex:1;" id="btnConfirmDelete">Delete</button>  
+            </div>  
+        </div>  
+    </div>  
+  
+    <script>  
+        // --- DATA & STATE ---  
+        const DEFAULT_ACCOUNTS = [  
+            { id: '1', name: 'Vodafone Cash', initial: 0 },  
+            { id: '2', name: 'Bank Account', initial: 0 },  
+            { id: '3', name: 'Credit Card', initial: 0 },  
+            { id: '4', name: 'Cash', initial: 0 }  
+        ];  
+  
+        let data = {  
+            transactions: [],  
+            accounts: DEFAULT_ACCOUNTS.slice(),  
+            categories: [],  
+            recurring: [],  
+            settings: { lang: 'en', theme: 'light' }  
+        };  
+  
+        let currentView = 'dashboard';  
+        let txType = 'exp';  
+        let recType = 'exp';  
+  
+        // Confirmation callback  
+        let onConfirmAction = null;  
+  
+        const TRANSLATIONS = {  
+            en: { dash: "Dashboard", tx: "Transactions", accs: "Accounts", set: "Settings", amt: "Amount", date: "Date", desc: "Description", acc: "Account", cat: "Category", save: "Save", del: "Delete", income: "Addition", expense: "Deduction", total: "Total Balance", rec: "Recurring", export: "Backup", import: "Restore" },  
+            ar: { dash: "الرئيسية", tx: "المعاملات", accs: "الحسابات", set: "الإعدادات", amt: "المبلغ", date: "التاريخ", desc: "الوصف", acc: "الحساب", cat: "الفئة", save: "حفظ", del: "حذف", income: "إضافة", expense: "خصم", total: "إجمالي الرصيد", rec: "دوري", export: "نسخ", import: "استرجاع" }  
+        };  
+  
+        // --- INIT ---  
+        window.onload = () => {  
+            loadData();  
+            applyTheme();  
+            applyLang();  
+            render();  
+            document.getElementById('txDate').valueAsDate = new Date();  
+            // Setup global modal behavior  
+            setupModalBehavior();  
+            updateThemeIcon();  
+        };  
+  
+        // --- STORAGE & DATA SAFETY ---  
+        function loadData() {  
+            const stored = localStorage.getItem('abouTiaData');  
+            if (stored) {  
+                try {  
+                    const parsed = JSON.parse(stored);  
+                    data = Object.assign({  
+                        transactions: [],  
+                        accounts: DEFAULT_ACCOUNTS.slice(),  
+                        categories: [],  
+                        recurring: [],  
+                        settings: { lang: 'en', theme: 'light' }  
+                    }, parsed || {});  
+  
+                    data.transactions = Array.isArray(data.transactions) ? data.transactions : [];  
+                    data.accounts = Array.isArray(data.accounts) ? data.accounts : DEFAULT_ACCOUNTS.slice();  
+                    data.categories = Array.isArray(data.categories) ? data.categories : [];  
+                    data.recurring = Array.isArray(data.recurring) ? data.recurring : [];  
+                    data.settings = Object.assign({ lang: 'en', theme: 'light' }, data.settings || {});  
+                } catch (e) {  
+                    console.error("Failed to parse stored data", e);  
+                }  
+            }  
+            // normalize IDs to string for consistent comparison  
+            data.accounts.forEach(a => a.id = String(a.id));  
+            data.transactions.forEach(t => t.id = String(t.id));  
+            data.recurring.forEach(r => r.id = String(r.id));  
+        }  
+  
+        function saveData(skipRender) {  
+            localStorage.setItem('abouTiaData', JSON.stringify(data));  
+            if (!skipRender) render();  
+        }  
+  
+        // --- RENDER CORE ---  
+        function render() {  
+            // nav active  
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));  
+            const navMap = { dashboard: 'dash', transactions: 'tx', accounts: 'acc', settings: 'set' };  
+            document.getElementById(`nav-${navMap[currentView]}`).classList.add('active');  
+  
+            const container = document.getElementById('mainContainer');  
+            container.innerHTML = '';  
+  
+            if (currentView === 'dashboard') renderDashboard(container);  
+            else if (currentView === 'transactions') renderTransactions(container);  
+            else if (currentView === 'accounts') renderAccounts(container);  
+            else if (currentView === 'settings') renderSettings(container);  
+        }  
+  
+        // --- HELPERS & FORMATTERS ---  
+        function t(key) {  
+            return TRANSLATIONS[data.settings.lang][key] || key;  
+        }  
+  
+        function fmt(num) {  
+            const n = Number(num) || 0;  
+            return new Intl.NumberFormat(data.settings.lang === 'ar' ? 'ar-EG' : 'en-US', { style: 'currency', currency: 'EGP' }).format(n);  
+        }  
+  
+        function uid() { return String(Date.now()) + Math.floor(Math.random()*1000); }  
+  
+        // Convert stored values to numbers when calculating  
+        function safeNum(v) { return Number(v) || 0; }  
+  
+        // days until next occurrence for a given day-of-month, or generic next date for different frequencies  
+        function daysUntilDate(targetDate) {  
+            const today = new Date();  
+            const start = new Date(today.getFullYear(), today.getMonth(), today.getDate());  
+            const t = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());  
+            const diff = Math.ceil((t - start) / (1000 * 60 * 60 * 24));  
+            return diff;  
+        }  
+  
+        // small helper to add or subtract a frequency unit from a date  
+        function addFrequency(dateObj, freq, op = 'add') {  
+            const d = new Date(dateObj.getTime());  
+            const sign = op === 'add' ? 1 : -1;  
+            if (freq === 'daily') d.setDate(d.getDate() + (1 * sign));  
+            else if (freq === 'weekly') d.setDate(d.getDate() + (7 * sign));  
+            else if (freq === 'monthly') {  
+                const day = d.getDate();  
+                d.setMonth(d.getMonth() + (1 * sign));  
+                if (d.getDate() !== day) d.setDate(Math.min(day, new Date(d.getFullYear(), d.getMonth()+1, 0).getDate()));  
+            } else if (freq === 'quarterly') {  
+                const day = d.getDate();  
+                d.setMonth(d.getMonth() + (3 * sign));  
+                if (d.getDate() !== day) d.setDate(Math.min(day, new Date(d.getFullYear(), d.getMonth()+1, 0).getDate()));  
+            } else if (freq === '6months') {  
+                const day = d.getDate();  
+                d.setMonth(d.getMonth() + (6 * sign));  
+                if (d.getDate() !== day) d.setDate(Math.min(day, new Date(d.getFullYear(), d.getMonth()+1, 0).getDate()));  
+            } else if (freq === 'one-time') {  
+                // no change for one-time when adding; when subtracting, move to previous day  
+                if (op === 'sub') d.setDate(d.getDate() - 1);  
+            } else {  
+                // fallback monthly  
+                const day = d.getDate();  
+                d.setMonth(d.getMonth() + (1 * sign));  
+                if (d.getDate() !== day) d.setDate(Math.min(day, new Date(d.getFullYear(), d.getMonth()+1, 0).getDate()));  
+            }  
+            return d;  
+        }  
+  
+        // find the next due date for a recurring entry based on its start date and frequency  
+        function computeNextDue(rec) {  
+            const today = new Date();  
+            const start = new Date(rec.startDate || rec.date || new Date());  
+            const freq = rec.frequency || 'monthly';  
+            let next = new Date(start.getFullYear(), start.getMonth(), start.getDate());  
+  
+            // If lastPaid is set to current month indicator, we should compute next future occurrence.  
+            const maxIterations = 1000;  
+            let iter = 0;  
+  
+            // advance until next is on/after today  
+            while (next < new Date(today.getFullYear(), today.getMonth(), today.getDate()) && iter < maxIterations) {  
+                next = addFrequency(next, freq, 'add');  
+                iter++;  
+            }  
+  
+            return next;  
+        }  
+  
+        // check if a given recurring occurrence is due in the current month  
+        function isDueInMonth(rec, year, month) {  
+            const next = computeNextDue(rec);  
+            return next.getFullYear() === year && next.getMonth() === month;  
+        }  
+  
+        // check if a recurring item is skipped for a date (skipUntil inclusive)  
+        function isSkipped(rec, dateObj) {  
+            if (!rec.skipUntil) return false;  
+            const skipUntil = new Date(rec.skipUntil);  
+            // normalize times  
+            const d = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());  
+            const s = new Date(skipUntil.getFullYear(), skipUntil.getMonth(), skipUntil.getDate());  
+            return d <= s;  
+        }  
+  
+        // normalize id comparisons  
+        function eqId(a, b) { return String(a) === String(b); }  
+  
+        // calculate account balance by applying transactions  
+        function getAccBalance(accId) {  
+            let bal = safeNum(data.accounts.find(a => eqId(a.id, accId))?.initial);  
+            // transactions should be sorted old->new; apply in sequence  
+            data.transactions.forEach(tx => {  
+                if (eqId(tx.accId, accId)) {  
+                    if (tx.type === 'inc') bal += safeNum(tx.amount);  
+                    else bal -= safeNum(tx.amount);  
+                }  
+            });  
+            return bal;  
+        }  
+  
+        // compute recurring totals for dashboard  
+        function computeRecurringTotalsForMonth(year, month) {  
+            let totalDeduction = 0;  
+            let totalAddition = 0;  
+            let unpaidDeduction = 0;  
+            let unpaidAddition = 0;  
+            let totalRecurringAmount = 0;  
+  
+            data.recurring.forEach(rec => {  
+                const next = computeNextDue(rec);  
+                const dueThisMonth = next.getFullYear() === year && next.getMonth() === month;  
+                // skip if skipped until covers the next due  
+                if (dueThisMonth && !isSkipped(rec, next)) {  
+                    totalRecurringAmount += safeNum(rec.amount);  
+                    if (rec.type === 'exp') {  
+                        totalDeduction += safeNum(rec.amount);  
+                        // check if this recurring is already paid this month (using lastPaid stored as year-month string)  
+                        const monthKey = `${year}-${month}`;  
+                        if (String(rec.lastPaid || '') !== monthKey) unpaidDeduction += safeNum(rec.amount);  
+                    } else {  
+                        totalAddition += safeNum(rec.amount);  
+                        const monthKey = `${year}-${month}`;  
+                        if (String(rec.lastPaid || '') !== monthKey) unpaidAddition += safeNum(rec.amount);  
+                    }  
+                }  
+            });  
+  
+            return {  
+                totalDeduction, totalAddition, unpaidDeduction, unpaidAddition, totalRecurringAmount  
+            };  
+        }  
+  
+        // get HTML for a single transaction  
+        function getTxHTML(tx) {  
+            const accName = data.accounts.find(a => eqId(a.id, tx.accId))?.name || 'Unknown';  
+            const isInc = tx.type === 'inc';  
+            return `  
+                <div class="card flex justify-between items-center" style="padding:16px; cursor:pointer;" onclick="editTx('${tx.id}')">  
+                    <div class="flex items-center gap-2">  
+                        <div style="width:40px; height:40px; border-radius:50%; background:${isInc ? '#dcfce7' : '#fee2e2'}; display:flex; align-items:center; justify-content:center; font-size:18px;">  
+                            ${isInc ? '↗' : '↙'}  
+                        </div>  
+                        <div>  
+                            <div class="bold text-sm">${tx.desc}</div>  
+                            <div class="text-xs text-sub">${tx.date} • ${accName}</div>  
+                        </div>  
+                    </div>  
+                    <div class="bold ${isInc ? 'text-green' : 'text-red'}">  
+                        ${isInc ? '+' : '-'}${fmt(tx.amount)}  
+                    </div>  
+                </div>  
+            `;  
+        }  
+  
+        // recurring alerts HTML (modified to use computeNextDue and skipping)  
+        function getRecurringAlertsHTML() {  
+            const today = new Date();  
+            const year = today.getFullYear();  
+            const month = today.getMonth();  
+            let html = '';  
+  
+            // compute next due and sort by next due (oldest next)  
+            const recs = data.recurring.map(r => {  
+                const next = computeNextDue(r);  
+                return { ...r, nextDue: next };  
+            }).sort((a,b) => a.nextDue - b.nextDue);  
+  
+            recs.forEach(r => {  
+                const next = r.nextDue;  
+                const monthKey = `${next.getFullYear()}-${next.getMonth()}`;  
+                // if already paid this month, skip alert  
+                if (String(r.lastPaid || '') === monthKey) return;  
+                // if skipped until covers the next due, skip alert  
+                if (isSkipped(r, next)) return;  
+  
+                const diffDays = daysUntilDate(next);  
+                // display only if within next 30 days (adjust as needed)  
+                if (diffDays > 30) return;  
+  
+                let color;  
+                if (r.type === 'inc') color = 'var(--success)';  
+                else color = diffDays < 0 ? 'var(--danger)' : '#f59e0b';  
+  
+                const msg = diffDays < 0 ? 'Overdue!' : diffDays === 0 ? 'Due Today' : `Due in ${diffDays} days`;  
+  
+                html += `  
+                    <div class="card flex justify-between items-center" style="border-left:4px solid ${color}; padding:12px;">  
+                        <div>  
+                            <div class="bold text-sm">${r.name}</div>  
+                            <div class="text-xs text-sub">${msg} • ${r.frequency}</div>  
+                        </div>  
+                        <button class="btn" style="border:1px solid var(--border); padding:6px 12px; font-size:12px;" onclick="payRecurring('${r.id}')">${r.type === 'inc' ? 'Collect' : 'Pay'}</button>  
+                    </div>  
+                `;  
+            });  
+  
+            return html;  
+        }  
+  
+        // --- RENDERERS ---  
+        function renderDashboard(container) {  
+            // total balance across accounts  
+            const total = data.accounts.reduce((sum, acc) => sum + getAccBalance(acc.id), 0);  
+  
+            // summary income / expense from transactions for display  
+            const income = data.transactions.filter(t => t.type === 'inc').reduce((sum, t) => sum + safeNum(t.amount), 0);  
+            const expense = data.transactions.filter(t => t.type === 'exp').reduce((sum, t) => sum + safeNum(t.amount), 0);  
+  
+            // recurring totals for current month  
+            const today = new Date();  
+            const recTotals = computeRecurringTotalsForMonth(today.getFullYear(), today.getMonth());  
+            const recCount = data.recurring.length;  
+  
+            container.innerHTML = `  
+                <div class="card" style="background: linear-gradient(135deg, var(--primary), #3b82f6); color: white; border:none;">  
+                    <div class="text-sm" style="opacity:0.9">${t('total')}</div>  
+                    <div class="text-xl bold" style="font-size:32px; margin: 4px 0;">${fmt(total)}</div>  
+                    <div class="flex gap-2 mt-2">  
+                        <div style="background:rgba(255,255,255,0.2); padding:8px 12px; border-radius:8px; flex:1;">  
+                            <div class="text-xs">Addition</div>  
+                            <div class="bold">+${fmt(income)}</div>  
+                        </div>  
+                        <div style="background:rgba(255,255,255,0.2); padding:8px 12px; border-radius:8px; flex:1;">  
+                            <div class="text-xs">Deduction</div>  
+                            <div class="bold">-${fmt(expense)}</div>  
+                        </div>  
+                    </div>  
+                </div>  
+  
+                <!-- Recurring summary (simplified) -->  
+                <div class="card" style="padding:14px;">  
+                    <div class="flex justify-between items-center">  
+                        <div>  
+                            <div class="text-xs text-sub">Total Recurring Items</div>  
+                            <div class="bold" style="font-size:18px;">${recCount} items • ${fmt(recTotals.totalRecurringAmount)}</div>  
+                        </div>  
+                        <div style="text-align:right;">  
+                            <div class="text-xs">Unpaid (Deduction)</div>  
+                            <div class="bold text-red">${fmt(recTotals.unpaidDeduction)}</div>  
+                            <div class="text-xs" style="margin-top:6px;">Unpaid (Addition)</div>  
+                            <div class="bold text-green">${fmt(recTotals.unpaidAddition)}</div>  
+                        </div>  
+                    </div>  
+                    <div style="margin-top:10px;" class="text-xs text-sub">  
+                        Total Deduction Scheduled: ${fmt(recTotals.totalDeduction)} • Total Addition Scheduled: ${fmt(recTotals.totalAddition)}  
+                    </div>  
+                </div>  
+  
+                ${getRecurringAlertsHTML()}  
+  
+                <h3 class="text-sm bold text-sub uppercase" style="margin-bottom:10px; margin-top:20px;">Accounts</h3>  
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">  
+                    ${data.accounts.map(acc => `  
+                        <div class="card" style="margin:0; padding:16px;">  
+                            <div class="text-xs text-sub uppercase">${acc.name}</div>  
+                            <div class="text-lg bold">${fmt(getAccBalance(acc.id))}</div>  
+                        </div>  
+                    `).join('')}  
+                </div>  
+  
+                <div class="flex justify-between items-center" style="margin-top:24px; margin-bottom:10px;">  
+                    <h3 class="text-sm bold text-sub uppercase">Recent</h3>  
+                    <button class="btn-ghost text-xs" onclick="switchView('transactions')">See All</button>  
+                </div>  
+                ${data.transactions.length === 0 ? '<div class="text-sub text-center text-sm" style="padding:20px;">No transactions yet</div>' : ''}  
+                ${data.transactions.slice(0, 5).map(tx => getTxHTML(tx)).join('')}  
+            `;  
+        }  
+  
+        function renderTransactions(container) {  
+            container.innerHTML = `<h2 class="text-xl bold" style="margin-bottom:16px;">${t('tx')}</h2>`;  
+            if (data.transactions.length === 0) {  
+                container.innerHTML += `<div class="text-center text-sub" style="margin-top:40px;">No transactions found.</div>`;  
+            } else {  
+                // transactions sorted old -> new  
+                data.transactions.forEach(tx => {  
+                    container.innerHTML += getTxHTML(tx);  
+                });  
+            }  
+        }  
+  
+        function renderAccounts(container) {  
+            container.innerHTML = `  
+                <div class="flex justify-between items-center" style="margin-bottom:16px;">  
+                    <h2 class="text-xl bold">${t('accs')}</h2>  
+                    <button class="btn btn-primary" style="width:auto;" onclick="addAccount()">+ Add</button>  
+                </div>  
+            `;  
+            data.accounts.forEach(acc => {  
+                container.innerHTML += `  
+                    <div class="card relative">  
+                        <div class="text-xs text-sub uppercase">${acc.name}</div>  
+                        <div class="text-xl bold">${fmt(getAccBalance(acc.id))}</div>  
+                        <button class="btn-ghost" style="position:absolute; top:10px; right:10px; color:var(--danger);" onclick="deleteAccount('${acc.id}')">✕</button>  
+                    </div>  
+                `;  
+            });  
+        }  
+  
+        function renderSettings(container) {  
+            container.innerHTML = `  
+                <h2 class="text-xl bold" style="margin-bottom:16px;">${t('set')}</h2>  
+  
+                <div class="card">  
+                    <div class="flex justify-between items-center">  
+                        <span class="bold">Language</span>  
+                        <button class="btn" style="border:1px solid var(--border);" onclick="toggleLang()">${data.settings.lang === 'en' ? 'English' : 'العربية'}</button>  
+                    </div>  
+                </div>  
+  
+                <div class="card">  
+                    <div class="flex justify-between items-center" style="margin-bottom:10px;">  
+                        <span class="bold">Recurring Items</span>  
+                        <button class="btn btn-primary" style="width:auto; padding:6px 12px;" onclick="openRecModal('add')">+ Add</button>  
+                    </div>  
+                    ${data.recurring.length === 0 ? '<div class="text-sub text-center small" style="padding:10px;">No recurring items</div>' : ''}  
+                    ${data.recurring  
+                        .map(r => {  
+                            const next = computeNextDue(r);  
+                            return { ...r, nextDueObj: next, nextDueStr: `${next.getFullYear()}-${String(next.getMonth()+1).padStart(2,'0')}-${String(next.getDate()).padStart(2,'0')}` };  
+                        })  
+                        .sort((a,b) => a.nextDueObj - b.nextDueObj)  
+                        .map(r => `  
+                        <div class="flex justify-between items-center" style="padding:8px 0; border-bottom:1px solid var(--border); cursor:pointer;">  
+                            <div style="flex:1" onclick="editRec('${r.id}')">  
+                                <div class="bold text-sm" style="${r.type === 'inc' ? 'color: var(--success);' : ''}">${r.name}</div>  
+                                <div class="text-xs text-sub">Next: ${r.nextDueStr} • ${r.frequency} • ${fmt(r.amount)}</div>  
+                                ${r.skipUntil ? `<div class="text-xs text-red small">Skipped until ${r.skipUntil}</div>` : ''}  
+                            </div>  
+                            <div style="display:flex; gap:6px;">  
+                                <button class="btn-ghost small" onclick="editRec('${r.id}')">✎</button>  
+                            </div>  
+                        </div>  
+                    `).join('')}  
+                </div>  
+  
+                <div class="card">  
+                    <button class="btn" style="width:100%; border:1px solid var(--border); margin-bottom:10px;" onclick="exportData()">⬇ ${t('export')}</button>  
+                    <button class="btn" style="width:100%; border:1px solid var(--border);" onclick="document.getElementById('fileInput').click()">⬆ ${t('import')}</button>  
+                    <input type="file" id="fileInput" class="hidden" onchange="importData(this)" />  
+                </div>  
+            `;  
+        }  
+  
+        // --- ACTIONS & MODALS ---  
+        function switchView(view) {  
+            currentView = view;  
+            render();  
+        }  
+  
+        function openModal(mode, txData = null) {  
+            const modal = document.getElementById('txModal');  
+            modal.classList.add('open');  
+            modal.setAttribute('aria-hidden', 'false');  
+  
+            document.getElementById('txRecurringId').value = '';  
+  
+            const accSelect = document.getElementById('txAcc');  
+            accSelect.innerHTML = data.accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');  
+  
+            const catList = document.getElementById('catList');  
+            catList.innerHTML = data.categories.map(c => `<option value="${c.name}">`).join('');  
+  
+            if (mode === 'edit' && txData) {  
+                document.getElementById('modalTitle').innerText = 'Edit Transaction';  
+                document.getElementById('txId').value = txData.id;  
+                document.getElementById('txAmount').value = safeNum(txData.amount);  
+                document.getElementById('txDesc').value = txData.desc;  
+                document.getElementById('txDate').value = txData.date;  
+                document.getElementById('txAcc').value = txData.accId;  
+                document.getElementById('txCat').value = txData.cat || '';  
+                setTxType(txData.type);  
+                document.getElementById('btnDelete').classList.remove('hidden');  
+            } else {  
+                document.getElementById('modalTitle').innerText = 'New Transaction';  
+                document.getElementById('txId').value = '';  
+                document.getElementById('txAmount').value = '';  
+                document.getElementById('txDesc').value = '';  
+                document.getElementById('txDate').valueAsDate = new Date();  
+                document.getElementById('txCat').value = '';  
+                setTxType('exp');  
+                document.getElementById('btnDelete').classList.add('hidden');  
+            }  
+        }  
+  
+        function closeModal() {  
+            const modal = document.getElementById('txModal');  
+            modal.classList.remove('open');  
+            modal.setAttribute('aria-hidden', 'true');  
+        }  
+  
+        function openRecModal(mode, recData = null) {  
+            const modal = document.getElementById('recModal');  
+            modal.classList.add('open');  
+            modal.setAttribute('aria-hidden', 'false');  
+  
+            if (mode === 'edit' && recData) {  
+                document.getElementById('recModalTitle').innerText = 'Edit Recurring';  
+                document.getElementById('recId').value = recData.id;  
+                document.getElementById('recName').value = recData.name;  
+                document.getElementById('recAmount').value = safeNum(recData.amount);  
+                // Set Date Input based on stored Start Date  
+                document.getElementById('recDate').value = (recData.startDate || recData.date || '').toString().split('T')[0] || new Date().toISOString().split('T')[0];  
+                document.getElementById('recFreq').value = recData.frequency || 'monthly';  
+                document.getElementById('recSkipUntil').value = recData.skipUntil || '';  
+                setRecType(recData.type || 'exp');  
+                document.getElementById('btnRecDelete').classList.remove('hidden');  
+            } else {  
+                document.getElementById('recModalTitle').innerText = 'New Recurring';  
+                document.getElementById('recId').value = '';  
+                document.getElementById('recName').value = '';  
+                document.getElementById('recAmount').value = '';  
+                document.getElementById('recDate').valueAsDate = new Date();  
+                document.getElementById('recFreq').value = 'monthly';  
+                document.getElementById('recSkipUntil').value = '';  
+                setRecType('exp');  
+                document.getElementById('btnRecDelete').classList.add('hidden');  
+            }  
+        }  
+  
+        function closeRecModal() {  
+            const modal = document.getElementById('recModal');  
+            modal.classList.remove('open');  
+            modal.setAttribute('aria-hidden', 'true');  
+        }  
+  
+        function openConfirm(callback) {  
+            onConfirmAction = callback;  
+            const modal = document.getElementById('confirmModal');  
+            modal.classList.add('open');  
+            modal.setAttribute('aria-hidden', 'false');  
+        }  
+  
+        function closeConfirm() {  
+            const modal = document.getElementById('confirmModal');  
+            modal.classList.remove('open');  
+            modal.setAttribute('aria-hidden', 'true');  
+            onConfirmAction = null;  
+        }  
+  
+        document.getElementById('btnConfirmDelete').addEventListener('click', () => {  
+            if (onConfirmAction) onConfirmAction();  
+            closeConfirm();  
+        });  
+  
+        function setTxType(type) {  
+            txType = type;  
+            const btnExp = document.getElementById('btn-exp');  
+            const btnInc = document.getElementById('btn-inc');  
+            updateTypeButtons(type, btnExp, btnInc);  
+        }  
+  
+        function setRecType(type) {  
+            recType = type;  
+            const btnExp = document.getElementById('btn-rec-exp');  
+            const btnInc = document.getElementById('btn-rec-inc');  
+            updateTypeButtons(type, btnExp, btnInc);  
+        }  
+  
+        function updateTypeButtons(type, btnExp, btnInc) {  
+            if (type === 'exp') {  
+                btnExp.style.background = 'var(--danger)'; btnExp.style.color = 'white';  
+                btnInc.style.background = 'transparent'; btnInc.style.color = 'var(--text-sub)';  
+            } else {  
+                btnInc.style.background = 'var(--success)'; btnInc.style.color = 'white';  
+                btnExp.style.background = 'transparent'; btnExp.style.color = 'var(--text-sub)';  
+            }  
+        }  
+  
+        // Save transaction (amount saved as number). Transactions ordered old -> new (push).  
+        function saveTx() {  
+            const id = document.getElementById('txId').value;  
+            const amountRaw = document.getElementById('txAmount').value;  
+            const amount = parseFloat(amountRaw);  
+            const desc = document.getElementById('txDesc').value.trim();  
+            const date = document.getElementById('txDate').value;  
+            const accId = document.getElementById('txAcc').value;  
+            const cat = document.getElementById('txCat').value.trim();  
+            const recId = document.getElementById('txRecurringId').value;  
+  
+            if (!amount || isNaN(amount) || !desc || !accId) return alert('Please fill details correctly');  
+  
+            const txObj = {  
+                id: id ? String(id) : uid(),  
+                type: txType,  
+                amount: amount,  
+                desc, date, accId: String(accId), cat, recurringId: recId || ''  
+            };  
+  
+            if (id) {  
+                const idx = data.transactions.findIndex(t => eqId(t.id, id));  
+                if (idx > -1) data.transactions[idx] = txObj;  
+            } else {  
+                // push to keep old->new ordering  
+                data.transactions.push(txObj);  
+            }  
+  
+            if (cat && !data.categories.find(c => c.name === cat)) {  
+                data.categories.push({ name: cat });  
+            }  
+  
+            // Recurring handling: if this transaction is linked to a recurring item, mark it paid and advance startDate  
+            if (recId) {  
+                const r = data.recurring.find(x => eqId(x.id, recId));  
+                if (r) {  
+                    const today = new Date();  
+                    const monthKey = `${today.getFullYear()}-${today.getMonth()}`;  
+                    // mark lastPaid for current occurrence  
+                    r.lastPaid = monthKey;  
+  
+                    // compute its current next due based on old startDate then move startDate forward by one frequency step  
+                    try {  
+                        const currentNext = computeNextDue(r);  
+                        const advanced = addFrequency(currentNext, r.frequency || 'monthly', 'add');  
+                        // store as ISO date string yyyy-mm-dd for uniformity  
+                        r.startDate = advanced.toISOString().split('T')[0];  
+                    } catch (e) {  
+                        console.error('Failed to advance recurring startDate', e);  
+                    }  
+                }  
+            }  
+  
+            saveData();  
+            closeModal();  
+        }  
+  
+        function editTx(id) {  
+            const tx = data.transactions.find(t => eqId(t.id, id));  
+            if (tx) openModal('edit', tx);  
+        }  
+  
+        // Delete transaction: if linked to recurring, prompt about reverting next date  
+        function deleteTxClick() {  
+            const id = document.getElementById('txId').value;  
+            const tx = data.transactions.find(t => eqId(t.id, id));  
+            openConfirm(() => {  
+                // remove tx  
+                data.transactions = data.transactions.filter(t => !eqId(t.id, id));  
+  
+                // if tx belonged to a recurring entry, ask user whether to revert next date  
+                if (tx && tx.recurringId) {  
+                    const r = data.recurring.find(x => eqId(x.id, tx.recurringId));  
+                    if (r) {  
+                        // ask user: revert next date? (synchronous confirm OK here)  
+                        const doRevert = confirm('This transaction is linked to recurring item \"' + r.name + '\". Revert next date? (Yes to revert)');  
+                        if (doRevert) {  
+                            try {  
+                                // move startDate back one frequency step and clear lastPaid for that occurrence  
+                                const currentStart = new Date(r.startDate || r.date || new Date());  
+                                const reverted = addFrequency(currentStart, r.frequency || 'monthly', 'sub');  
+                                r.startDate = reverted.toISOString().split('T')[0];  
+                                // clear lastPaid for the reverted month (so it becomes unpaid again)  
+                                r.lastPaid = '';  
+                            } catch (e) { console.error('Failed to revert recurring date', e); }  
+                        }  
+                    }  
+                }  
+  
+                saveData();  
+                closeModal();  
+            });  
+        }  
+  
+        function addAccount() {  
+            const name = prompt("Account Name:");  
+            if (name) {  
+                const newId = uid();  
+                data.accounts.push({ id: newId, name: name.trim(), initial: 0 });  
+                saveData();  
+            }  
+        }  
+  
+        function deleteAccount(id) {  
+            openConfirm(() => {  
+                data.accounts = data.accounts.filter(a => !eqId(a.id, id));  
+                data.transactions = data.transactions.filter(t => !eqId(t.accId, id));  
+                saveData();  
+            });  
+        }  
+  
+        // Save recurring  
+        function saveRec() {  
+            const id = document.getElementById('recId').value;  
+            const name = document.getElementById('recName').value.trim();  
+            const amtRaw = document.getElementById('recAmount').value;  
+            const amt = parseFloat(amtRaw);  
+            const dateVal = document.getElementById('recDate').value;  
+            const freq = document.getElementById('recFreq').value;  
+            const skipUntilVal = document.getElementById('recSkipUntil').value;  
+  
+            if (!name || !amt || isNaN(amt) || !dateVal) { alert("Please fill all fields"); return; }  
+  
+            const startDate = new Date(dateVal);  
+            const recObj = {  
+                id: id ? String(id) : uid(),  
+                name,  
+                amount: amt,  
+                startDate: startDate.toISOString().split('T')[0],  
+                date: startDate.toISOString().split('T')[0],  
+                frequency: freq,  
+                type: recType,  
+                lastPaid: (id ? (data.recurring.find(r => eqId(r.id, id))?.lastPaid || '') : ''),  
+                skipUntil: skipUntilVal || ''  
+            };  
+  
+            if (id) {  
+                const idx = data.recurring.findIndex(r => eqId(r.id, id));  
+                if (idx > -1) {  
+                    // preserve lastPaid if it exists  
+                    recObj.lastPaid = data.recurring[idx].lastPaid || recObj.lastPaid;  
+                    data.recurring[idx] = recObj;  
+                }  
+            } else {  
+                data.recurring.push(recObj);  
+            }  
+  
+            saveData();  
+            closeRecModal();  
+        }  
+  
+        function editRec(id) {  
+            const r = data.recurring.find(item => eqId(item.id, id));  
+            if (r) openRecModal('edit', r);  
+        }  
+  
+        function deleteRecClick() {  
+            const id = document.getElementById('recId').value;  
+            openConfirm(() => {  
+                data.recurring = data.recurring.filter(r => !eqId(r.id, id));  
+                saveData();  
+                closeRecModal();  
+            });  
+        }  
+  
+        // Pay/Collect recurring: opens transaction modal prefilled  
+        function payRecurring(id) {  
+            const r = data.recurring.find(x => eqId(x.id, id));  
+            if (r) {  
+                openModal('add');  
+                document.getElementById('txAmount').value = safeNum(r.amount);  
+                document.getElementById('txDesc').value = r.name;  
+                document.getElementById('txCat').value = 'Recurring';  
+                document.getElementById('txRecurringId').value = r.id;  
+                setTxType(r.type || 'exp');  
+                document.getElementById('modalTitle').innerText = 'Confirm Recurring';  
+            }  
+        }  
+  
+        // Export & Import with validation and safe merging  
+        function exportData() {  
+            const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });  
+            const a = document.createElement('a');  
+            a.href = URL.createObjectURL(blob);  
+            a.download = `aboutia_backup_${new Date().toISOString().split('T')[0]}.json`;  
+            a.click();  
+        }  
+  
+        function importData(input) {  
+            const file = input.files[0];  
+            const reader = new FileReader();  
+            reader.onload = (e) => {  
+                try {  
+                    const incoming = JSON.parse(e.target.result);  
+                    if (!incoming || typeof incoming !== 'object') throw new Error('Invalid file');  
+  
+                    if (!incoming.accounts || !incoming.transactions || !incoming.categories) {  
+                        // Do a safer merge fallback  
+                        alert('Invalid backup: missing required sections');  
+                        return;  
+                    }  
+  
+                    data = {  
+                        transactions: Array.isArray(incoming.transactions) ? incoming.transactions.map(t => ({ ...t, id: String(t.id) })) : [],  
+                        accounts: Array.isArray(incoming.accounts) ? incoming.accounts.map(a => ({ ...a, id: String(a.id) })) : DEFAULT_ACCOUNTS.slice(),  
+                        categories: Array.isArray(incoming.categories) ? incoming.categories : [],  
+                        recurring: Array.isArray(incoming.recurring) ? incoming.recurring.map(r => ({ ...r, id: String(r.id) })) : [],  
+                        settings: Object.assign({ lang: 'en', theme: 'light' }, incoming.settings || {})  
+                    };  
+  
+                    // ensure numbers converted  
+                    data.transactions.forEach(t => t.amount = safeNum(t.amount));  
+                    data.recurring.forEach(r => r.amount = safeNum(r.amount));  
+  
+                    saveData();  
+                    alert("Data restored!");  
+                } catch (err) {  
+                    console.error(err);  
+                    alert("Invalid file");  
+                }  
+            };  
+            reader.readAsText(file);  
+            // reset input value so same file can be imported again if needed  
+            input.value = '';  
+        }  
+  
+        function toggleTheme() {  
+            data.settings.theme = data.settings.theme === 'light' ? 'dark' : 'light';  
+            saveData();  
+            applyTheme();  
+            updateThemeIcon();  
+        }  
+  
+        function applyTheme() {  
+            if (data.settings.theme === 'dark') document.body.classList.add('dark');  
+            else document.body.classList.remove('dark');  
+        }  
+  
+        function updateThemeIcon() {  
+            const btn = document.getElementById('themeBtn');  
+            if (!btn) return;  
+            btn.textContent = (data.settings.theme === 'dark') ? '🌙' : '🌞';  
+        }  
+  
+        function toggleLang() {  
+            data.settings.lang = data.settings.lang === 'en' ? 'ar' : 'en';  
+            saveData();  
+            applyLang();  
+            render();  
+        }  
+  
+        function applyLang() {  
+            document.dir = data.settings.lang === 'ar' ? 'rtl' : 'ltr';  
+        }  
+  
+        // --- Modal behavior (ESC, backdrop click) and accessibility ---  
+        function setupModalBehavior() {  
+            // ESC closes modals  
+            document.addEventListener('keydown', (e) => {  
+                if (e.key === 'Escape') {  
+                    closeModal();  
+                    closeRecModal();  
+                    closeConfirm();  
+                }  
+            });  
+  
+            // click outside modal-content closes it  
+            document.querySelectorAll('.modal').forEach(modal => {  
+                modal.addEventListener('click', (ev) => {  
+                    if (ev.target === modal) {  
+                        modal.classList.remove('open');  
+                        modal.setAttribute('aria-hidden', 'true');  
+                    }  
+                });  
+            });  
+        }  
+  
+        // --- Init: ensure transaction order old->new and recurring sorted by next due ---  
+        // We re-order transactions to old->new upon load/save to be consistent  
+        function ensureOrdering() {  
+            // Convert date to timestamp for sorting but maintain object structure  
+            data.transactions.sort((a, b) => {  
+                const ta = new Date(a.date).getTime() || 0;  
+                const tb = new Date(b.date).getTime() || 0;  
+                return ta - tb; // old -> new  
+            });  
+            // recurring will be sorted at render time by next due  
+        }  
+  
+        // call saveData wrapper to ensure ordering before render  
+        const originalSaveData = saveData;  
+        saveData = function(skipRender) {  
+            ensureOrdering();  
+            localStorage.setItem('abouTiaData', JSON.stringify(data));  
+            if (!skipRender) render();  
+        };  
+  
+        // --- initial ordering and render call (in case data from storage) ---  
+        ensureOrdering();  
+  
+    </script>  
+</body>  
 </html>
