@@ -85,11 +85,13 @@
         .text-green { color: var(--success); }
         .text-red { color: var(--danger); }
         .hidden { display: none !important; } /* Force hidden to win over flex */
+        
+        /* Delete Confirm Modal Specifics */
+        .confirm-icon { width: 60px; height: 60px; background: #fee2e2; border-radius: 50%; color: var(--danger); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; }
     </style>
 </head>
 <body>
 
-    <!-- Header -->
     <header>
         <div class="flex items-center gap-2">
             <div style="width:32px; height:32px; background:var(--primary); border-radius:8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;">A</div>
@@ -98,15 +100,11 @@
         <button class="btn-ghost" onclick="toggleTheme()" id="themeBtn">🌙</button>
     </header>
 
-    <!-- Main Content Area -->
     <div id="mainContainer" class="container">
-        <!-- Content injected by JS -->
-    </div>
+        </div>
 
-    <!-- Floating Action Button -->
     <button class="fab" onclick="openModal('add')">+</button>
 
-    <!-- Navigation -->
     <nav>
         <button class="nav-item active" onclick="switchView('dashboard')" id="nav-dash">
             <svg class="icon"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
@@ -126,7 +124,6 @@
         </button>
     </nav>
 
-    <!-- Modal Form (Transactions) -->
     <div id="txModal" class="modal">
         <div class="modal-content">
             <div class="flex justify-between items-center" style="margin-bottom:20px;">
@@ -139,7 +136,6 @@
                 <button type="button" class="btn btn-ghost" style="flex:1;" id="btn-inc" onclick="setTxType('inc')">Addition</button>
             </div>
 
-            <!-- HIDDEN FIELDS -->
             <input type="hidden" id="txId">
             <input type="hidden" id="txRecurringId">
 
@@ -166,17 +162,16 @@
             </div>
 
             <div class="flex gap-2" style="margin-top:20px;">
-                <button class="btn btn-danger hidden" id="btnDelete" onclick="deleteTx()">Delete</button>
+                <button class="btn btn-danger hidden" id="btnDelete" onclick="deleteTxClick()">Delete</button>
                 <button class="btn btn-primary" onclick="saveTx()" data-i18n="save">Save</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal Form (Recurring) -->
     <div id="recModal" class="modal">
         <div class="modal-content">
             <div class="flex justify-between items-center" style="margin-bottom:20px;">
-                <h2 class="text-xl">Recurring Item</h2>
+                <h2 class="text-xl" id="recModalTitle">Recurring Item</h2>
                 <button class="btn-ghost" onclick="closeRecModal()">✕</button>
             </div>
             
@@ -184,6 +179,8 @@
                 <button type="button" class="btn" style="flex:1; background:var(--danger); color:white;" id="btn-rec-exp" onclick="setRecType('exp')">Deduction</button>
                 <button type="button" class="btn btn-ghost" style="flex:1;" id="btn-rec-inc" onclick="setRecType('inc')">Addition</button>
             </div>
+
+            <input type="hidden" id="recId">
 
             <div class="input-group">
                 <label class="label" data-i18n="desc">Description (Name)</label>
@@ -195,15 +192,30 @@
             </div>
             <div class="input-group">
                 <label class="label">Due Date (Start Date)</label>
-                <!-- CHANGED: From Number to Date -->
                 <input type="date" id="recDate" class="input">
             </div>
 
-            <button class="btn btn-primary" onclick="saveRec()" data-i18n="save">Save</button>
+            <div class="flex gap-2" style="margin-top:20px;">
+                <button class="btn btn-danger hidden" id="btnRecDelete" onclick="deleteRecClick()">Delete</button>
+                <button class="btn btn-primary" onclick="saveRec()" data-i18n="save">Save</button>
+            </div>
         </div>
     </div>
 
-    <!-- Logic -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content" style="text-align: center;">
+            <div class="confirm-icon">
+                <svg class="icon" style="width:32px; height:32px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </div>
+            <h2 class="text-xl bold">Are you sure?</h2>
+            <p class="text-sub" style="margin-bottom: 24px;">Do you really want to delete this? This process cannot be undone.</p>
+            <div class="flex gap-2">
+                <button class="btn btn-ghost" style="flex:1; border:1px solid var(--border);" onclick="closeConfirm()">Cancel</button>
+                <button class="btn btn-danger" style="flex:1;" id="btnConfirmDelete">Delete</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // --- DATA & STATE ---
         const DEFAULT_ACCOUNTS = [
@@ -224,6 +236,9 @@
         let currentView = 'dashboard';
         let txType = 'exp';
         let recType = 'exp';
+        
+        // Callback for the confirmation modal
+        let onConfirmAction = null;
 
         const TRANSLATIONS = {
             en: { dash: "Dashboard", tx: "Transactions", accs: "Accounts", set: "Settings", amt: "Amount", date: "Date", desc: "Description", acc: "Account", cat: "Category", save: "Save", del: "Delete", income: "Addition", expense: "Deduction", total: "Total Balance", rec: "Recurring", export: "Backup", import: "Restore" },
@@ -351,15 +366,15 @@
                 <div class="card">
                     <div class="flex justify-between items-center" style="margin-bottom:10px;">
                         <span class="bold">Recurring Items</span>
-                        <button class="btn btn-primary" style="width:auto; padding:6px 12px;" onclick="openRecModal()">+ Add</button>
+                        <button class="btn btn-primary" style="width:auto; padding:6px 12px;" onclick="openRecModal('add')">+ Add</button>
                     </div>
                     ${data.recurring.map(r => `
-                        <div class="flex justify-between items-center" style="padding:8px 0; border-bottom:1px solid var(--border);">
+                        <div class="flex justify-between items-center" style="padding:8px 0; border-bottom:1px solid var(--border); cursor:pointer;" onclick="editRec(${r.id})">
                             <div>
                                 <div class="bold text-sm" style="color: ${r.type === 'inc' ? 'var(--success)' : ''}">${r.name}</div>
                                 <div class="text-xs text-sub">Monthly on day ${r.day} • ${fmt(r.amount)}</div>
                             </div>
-                            <button class="btn-ghost text-red" onclick="deleteRecurring(${r.id})">✕</button>
+                            <button class="btn-ghost">✎</button>
                         </div>
                     `).join('')}
                 </div>
@@ -448,7 +463,6 @@
             const modal = document.getElementById('txModal');
             modal.classList.add('open');
             
-            // Clear the hidden Recurring ID first
             document.getElementById('txRecurringId').value = '';
             
             const accSelect = document.getElementById('txAcc');
@@ -483,21 +497,52 @@
             document.getElementById('txModal').classList.remove('open');
         }
 
-        function openRecModal() {
+        function openRecModal(mode, recData = null) {
             const modal = document.getElementById('recModal');
             modal.classList.add('open');
-            document.getElementById('recName').value = '';
-            document.getElementById('recAmount').value = '';
             
-            // Set Default Date to Today
-            document.getElementById('recDate').valueAsDate = new Date();
-            
-            setRecType('exp');
+            if(mode === 'edit' && recData) {
+                document.getElementById('recModalTitle').innerText = 'Edit Recurring';
+                document.getElementById('recId').value = recData.id;
+                document.getElementById('recName').value = recData.name;
+                document.getElementById('recAmount').value = recData.amount;
+                // Set Date Input based on stored Day
+                const d = new Date();
+                d.setDate(recData.day);
+                document.getElementById('recDate').valueAsDate = d;
+                
+                setRecType(recData.type || 'exp');
+                document.getElementById('btnRecDelete').classList.remove('hidden');
+            } else {
+                document.getElementById('recModalTitle').innerText = 'New Recurring';
+                document.getElementById('recId').value = '';
+                document.getElementById('recName').value = '';
+                document.getElementById('recAmount').value = '';
+                document.getElementById('recDate').valueAsDate = new Date();
+                setRecType('exp');
+                document.getElementById('btnRecDelete').classList.add('hidden');
+            }
         }
 
         function closeRecModal() {
             document.getElementById('recModal').classList.remove('open');
         }
+
+        function openConfirm(callback) {
+            onConfirmAction = callback;
+            document.getElementById('confirmModal').classList.add('open');
+        }
+
+        function closeConfirm() {
+            document.getElementById('confirmModal').classList.remove('open');
+            onConfirmAction = null;
+        }
+
+        // Bind Confirm Button
+        document.getElementById('btnConfirmDelete').addEventListener('click', () => {
+            if(onConfirmAction) onConfirmAction();
+            closeConfirm();
+        });
 
         function setTxType(type) {
             txType = type;
@@ -530,7 +575,6 @@
             const date = document.getElementById('txDate').value;
             const accId = document.getElementById('txAcc').value;
             const cat = document.getElementById('txCat').value;
-            
             const recId = document.getElementById('txRecurringId').value;
 
             if(!amount || !desc || !accId) return alert('Please fill details');
@@ -569,15 +613,13 @@
             if(tx) openModal('edit', tx);
         }
 
-        function deleteTx() {
-            // Ensure ID is Number for correct matching
+        function deleteTxClick() {
             const id = Number(document.getElementById('txId').value);
-            
-            if(confirm('Delete this transaction?')) {
+            openConfirm(() => {
                 data.transactions = data.transactions.filter(t => t.id !== id);
                 saveData();
                 closeModal();
-            }
+            });
         }
 
         function addAccount() {
@@ -589,30 +631,42 @@
         }
 
         function deleteAccount(id) {
-            if(confirm("Delete this account and all its transactions?")) {
+            openConfirm(() => {
                 data.accounts = data.accounts.filter(a => a.id != id);
                 data.transactions = data.transactions.filter(t => t.accId != id);
                 saveData();
-            }
+            });
         }
 
         function saveRec() {
+            const id = document.getElementById('recId').value;
             const name = document.getElementById('recName').value;
             const amt = document.getElementById('recAmount').value;
-            const dateVal = document.getElementById('recDate').value; // Get Date String
+            const dateVal = document.getElementById('recDate').value;
 
             if(name && amt && dateVal) {
-                // Extract Day of Month (1-31)
                 const day = new Date(dateVal).getDate();
-
-                data.recurring.push({
-                    id: Date.now(), 
+                const recObj = {
+                    id: id ? Number(id) : Date.now(),
                     name, 
                     amount: amt, 
-                    day: day, // Store the day
+                    day: day, 
                     type: recType,
                     lastPaid: ''
-                });
+                };
+
+                if(id) {
+                    // Update existing
+                    const idx = data.recurring.findIndex(r => r.id == id);
+                    if(idx > -1) {
+                        recObj.lastPaid = data.recurring[idx].lastPaid; // Preserve payment status
+                        data.recurring[idx] = recObj;
+                    }
+                } else {
+                    // Add new
+                    data.recurring.push(recObj);
+                }
+
                 saveData();
                 closeRecModal();
             } else {
@@ -620,11 +674,18 @@
             }
         }
 
-        function deleteRecurring(id) {
-            if(confirm("Delete this recurring item?")) {
-                data.recurring = data.recurring.filter(r => r.id != id);
+        function editRec(id) {
+            const r = data.recurring.find(item => item.id == id);
+            if(r) openRecModal('edit', r);
+        }
+
+        function deleteRecClick() {
+            const id = Number(document.getElementById('recId').value);
+            openConfirm(() => {
+                data.recurring = data.recurring.filter(r => r.id !== id);
                 saveData();
-            }
+                closeRecModal();
+            });
         }
 
         function payRecurring(id) {
@@ -695,5 +756,3 @@
     </script>
 </body>
 </html>
-
-
