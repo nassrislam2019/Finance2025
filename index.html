@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>My Finance Pro</title>
+    <title>My Finance</title>
     <style>
         /* --- CSS STYLING --- */
         :root {
@@ -55,7 +55,6 @@
 
         /* Typography */
         h1, h2, h3 { margin: 0; letter-spacing: -0.02em; }
-        .text-3xl { font-size: 28px; font-weight: 800; }
         .text-xl { font-size: 22px; font-weight: 800; }
         .text-lg { font-size: 18px; font-weight: 700; }
         .text-base { font-size: 15px; }
@@ -76,18 +75,6 @@
             margin-bottom: 16px; 
             border: 1px solid var(--card-border); 
             transition: transform 0.2s ease, box-shadow 0.2s ease; 
-        }
-
-        .summary-card {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
-        .summary-card .text-sub { color: rgba(255,255,255,0.7); }
-        .summary-blob {
-            position: absolute; width: 150px; height: 150px; background: rgba(255,255,255,0.1);
-            border-radius: 50%; top: -50px; right: -50px; pointer-events: none;
         }
         
         /* Animations */
@@ -168,12 +155,13 @@
             font-size: 28px; transition: transform 0.2s;
         }
         .fab:active { transform: scale(0.9); }
+        [dir="rtl"] .fab { right: auto; left: 20px; }
 
         /* Modal */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.2s; }
         .modal.open { display: flex; opacity: 1; }
         .modal-content { 
-            background: var(--bg-grad-start); 
+            background: var(--bg-grad-start); /* Solid background for modal content to prevent transparency issues */
             width: 100%; max-width: 400px; border-radius: 24px; padding: 24px; 
             max-height: 90vh; overflow-y: auto; 
             box-shadow: var(--glass-shadow);
@@ -182,109 +170,77 @@
         .dark .modal-content { background: #1e293b; }
         .modal.open .modal-content { transform: scale(1); }
 
-        /* Chart Styling */
-        .chart-container { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; justify-content: center; margin-top: 20px; }
-        .donut-chart { 
-            width: 160px; height: 160px; border-radius: 50%; 
-            background: conic-gradient(var(--text-sub) 0% 100%); 
-            position: relative; 
-            flex-shrink: 0;
-            transition: background 0.5s ease;
-        }
-        .donut-hole { 
-            position: absolute; width: 110px; height: 110px; 
-            background: var(--card-bg); border-radius: 50%; 
-            top: 25px; left: 25px; 
-            display: flex; align-items: center; justify-content: center; 
-            flex-direction: column;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-            z-index: 2;
-        }
-        .chart-legend { flex: 1; min-width: 140px; }
-        .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 13px; font-weight: 500;}
-        .legend-color { width: 12px; height: 12px; border-radius: 4px; flex-shrink: 0; }
-
-        /* Transactions List */
-        .tx-item { 
-            display: flex; align-items: center; gap: 12px; padding: 12px 0; 
-            border-bottom: 1px solid var(--card-border); 
-            cursor: pointer;
-        }
-        .tx-item:last-child { border-bottom: none; }
-        .tx-icon { width: 40px; height: 40px; border-radius: 12px; background: rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
-        .dark .tx-icon { background: rgba(255,255,255,0.1); }
-        .tx-details { flex: 1; min-width: 0; }
-        .tx-amount { font-weight: 700; font-size: 15px; }
-        
-        /* Privacy Blur */
-        body.privacy-mode .privacy-blur { filter: blur(6px); transition: filter 0.2s; user-select: none; }
-        body.privacy-mode .privacy-blur:hover { filter: blur(0); }
+        /* Icons */
+        .icon { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 
         /* Helpers */
         .flex { display: flex; }
         .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
         .items-center { align-items: center; }
         .gap-2 { gap: 8px; }
-        .gap-4 { gap: 16px; }
+        .gap-3 { gap: 12px; }
         .text-green { color: var(--success); }
         .text-red { color: var(--danger); }
         .hidden { display: none !important; }
-        .w-full { width: 100%; }
 
-        /* Budget Bar */
-        .budget-bar { height: 8px; background: rgba(0,0,0,0.1); border-radius: 4px; overflow: hidden; margin-top: 10px; }
-        .budget-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.5s ease; }
-        .dark .budget-bar { background: rgba(255,255,255,0.1); }
+        /* Delete Confirm Modal Specifics */
+        .confirm-icon { width: 64px; height: 64px; background: rgba(239, 68, 68, 0.1); border-radius: 50%; color: var(--danger); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; }
+
+        /* Progress Bar for Summary */
+        .progress-bar { height: 6px; background: rgba(0,0,0,0.05); border-radius: 3px; overflow: hidden; margin-top: 6px; }
+        .dark .progress-bar { background: rgba(255,255,255,0.1); }
+        .progress-fill { height: 100%; border-radius: 3px; }
+        
+        /* Swipe visual cue */
+        .swipe-hint { transition: transform 0.2s; position: relative; overflow: hidden; }
+        .swiping { transform: translateX(-30px); opacity: 0.7; }
     </style>
 </head>
 <body>
 
     <header>
         <div class="flex items-center gap-2">
+            <!-- New Icon: Wallet -->
             <div style="width:36px; height:36px; background:linear-gradient(135deg, var(--primary), var(--primary-dark)); border-radius:10px; display:flex; align-items:center; justify-content:center; color:white; box-shadow: 0 4px 10px rgba(var(--primary-rgb), 0.3);">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
             </div>
             <div class="text-xl bold" id="appTitle">My Finance</div>
         </div>
-        <div class="flex gap-2">
-            <button class="btn-ghost" style="font-size:18px; width:40px; height:40px; border-radius:50%;" onclick="togglePrivacy()" id="privacyBtn" title="Privacy Mode">👁️</button>
-            <button class="btn-ghost" style="font-size:20px; width:40px; height:40px; border-radius:50%;" onclick="toggleTheme()" id="themeBtn" aria-label="Toggle theme">🌞</button>
-        </div>
+        <button class="btn-ghost" style="font-size:20px; width:40px; height:40px; border-radius:50%;" onclick="toggleTheme()" id="themeBtn" aria-label="Toggle theme">🌞</button>
     </header>
 
-    <div id="mainContainer" class="container">
-        <!-- Content injected by JS -->
-    </div>
+    <div id="mainContainer" class="container"></div>
 
     <button class="fab" onclick="openModal('add')" aria-label="Add transaction">
-        <svg style="width:28px; height:28px; stroke:white; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; fill:none;" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        <svg class="icon" style="width:28px; height:28px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
     </button>
 
     <nav>
-        <button class="nav-item active" onclick="switchView('dashboard')" id="nav-dash">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-            <span>Home</span>
+        <button class="nav-item active" onclick="switchView('dashboard')" id="nav-dash" aria-label="Dashboard">
+            <svg class="icon"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            <span data-i18n="dash">Home</span>
         </button>
-        <button class="nav-item" onclick="switchView('transactions')" id="nav-tx">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 17l-5-5 5-5"/><path d="M20 12H4"/></svg>
-            <span>Transact</span>
+        <button class="nav-item" onclick="switchView('transactions')" id="nav-tx" aria-label="Transactions">
+            <svg class="icon"><path d="M9 17l-5-5 5-5"/><path d="M20 12H4"/></svg>
+            <span data-i18n="tx">Transact</span>
         </button>
-        <button class="nav-item" onclick="switchView('accounts')" id="nav-acc">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-            <span>Wallets</span>
+        <button class="nav-item" onclick="switchView('accounts')" id="nav-acc" aria-label="Accounts">
+            <svg class="icon"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            <span data-i18n="accs">Wallets</span>
         </button>
-        <button class="nav-item" onclick="switchView('settings')" id="nav-set">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            <span>Settings</span>
+        <button class="nav-item" onclick="switchView('settings')" id="nav-set" aria-label="Settings">
+            <svg class="icon"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span data-i18n="set">Settings</span>
         </button>
     </nav>
 
     <!-- Transaction Modal -->
-    <div id="txModal" class="modal">
-        <div class="modal-content">
+    <div id="txModal" class="modal" aria-hidden="true">
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
             <div class="flex justify-between items-center" style="margin-bottom:20px;">
                 <h2 class="text-xl" id="modalTitle">Transaction</h2>
-                <button class="btn-ghost" onclick="closeModal()">✕</button>
+                <button class="btn-ghost" onclick="closeModal()" aria-label="Close transaction modal">✕</button>
             </div>
 
             <div class="flex gap-2" style="background:rgba(0,0,0,0.05); padding:4px; border-radius:16px; margin-bottom:16px;">
@@ -293,494 +249,865 @@
             </div>
 
             <input type="hidden" id="txId">
+            <input type="hidden" id="txRecurringId">
+
             <div class="input-group">
-                <label class="label">Amount</label>
-                <input type="number" id="txAmount" class="input" placeholder="0.00" inputmode="decimal" step="0.01" />
+                <label class="label" for="txAmount" data-i18n="amt">Amount</label>
+                <input type="number" id="txAmount" class="input" placeholder="0.00" inputmode="decimal" />
             </div>
             <div class="input-group">
-                <label class="label">Date</label>
+                <label class="label" for="txDate" data-i18n="date">Date</label>
                 <input type="date" id="txDate" class="input" />
             </div>
             <div class="input-group">
-                <label class="label">Description</label>
-                <input type="text" id="txDesc" class="input" placeholder="e.g. Lunch" />
+                <label class="label" for="txDesc" data-i18n="desc">Description</label>
+                <input type="text" id="txDesc" class="input" placeholder="e.g. Salary" />
             </div>
             <div class="input-group">
-                <label class="label">Category</label>
-                <input type="text" id="txCat" class="input" list="catList" placeholder="Select or type..." />
+                <label class="label" for="txAcc" data-i18n="acc">Account</label>
+                <select id="txAcc" class="input"></select>
+            </div>
+            <div class="input-group">
+                <label class="label" for="txCat" data-i18n="cat">Category</label>
+                <input type="text" id="txCat" class="input" list="catList" />
                 <datalist id="catList"></datalist>
             </div>
 
             <div class="flex gap-2" style="margin-top:24px;">
                 <button class="btn btn-danger hidden" id="btnDelete" onclick="deleteTxClick()" style="flex:1">Delete</button>
-                <button class="btn btn-primary" onclick="saveTx()" style="flex:2">Save</button>
+                <button class="btn btn-primary" onclick="saveTx()" data-i18n="save" style="flex:2">Save Transaction</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Transfer Modal -->
+    <div id="transferModal" class="modal" aria-hidden="true">
+        <div class="modal-content">
+            <div class="flex justify-between items-center" style="margin-bottom:20px;">
+                <h2 class="text-xl">Transfer</h2>
+                <button class="btn-ghost" onclick="closeTransferModal()">✕</button>
+            </div>
+            
+            <div class="input-group">
+                <label class="label">From Account</label>
+                <select id="tfFrom" class="input"></select>
+            </div>
+
+            <div class="flex justify-center" style="margin:-12px 0 8px 0;">
+                <div style="width:32px; height:32px; background:var(--primary); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:16px; border:2px solid var(--card-bg);">
+                    ↓
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label class="label">To Account</label>
+                <select id="tfTo" class="input"></select>
+            </div>
+
+            <div class="flex gap-2">
+                <div class="input-group" style="flex:1">
+                    <label class="label">Amount</label>
+                    <input type="number" id="tfAmount" class="input" placeholder="0.00" inputmode="decimal">
+                </div>
+                <div class="input-group" style="flex:1">
+                    <label class="label">Fees (opt)</label>
+                    <input type="number" id="tfFees" class="input" placeholder="0.00" inputmode="decimal">
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label class="label">Date</label>
+                <input type="date" id="tfDate" class="input">
+            </div>
+
+            <button class="btn btn-primary" style="margin-top:24px;" onclick="executeTransfer()">Confirm Transfer</button>
+        </div>
+    </div>
+
+    <!-- Recurring Modal -->
+    <div id="recModal" class="modal" aria-hidden="true">
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="recModalTitle">
+            <div class="flex justify-between items-center" style="margin-bottom:20px;">
+                <h2 class="text-xl" id="recModalTitle">Recurring Item</h2>
+                <button class="btn-ghost" onclick="closeRecModal()" aria-label="Close recurring modal">✕</button>
+            </div>
+
+            <div class="flex gap-2" style="background:rgba(0,0,0,0.05); padding:4px; border-radius:16px; margin-bottom:16px;">
+                <button type="button" class="btn" style="flex:1; background:var(--danger); color:white;" id="btn-rec-exp" onclick="setRecType('exp')">Expense</button>
+                <button type="button" class="btn btn-ghost" style="flex:1;" id="btn-rec-inc" onclick="setRecType('inc')">Income</button>
+            </div>
+
+            <input type="hidden" id="recId">
+
+            <div class="input-group">
+                <label class="label" for="recName" data-i18n="desc">Name</label>
+                <input type="text" id="recName" class="input" placeholder="e.g. Rent, Netflix" />
+            </div>
+            <div class="input-group">
+                <label class="label" for="recAmount" data-i18n="amt">Amount</label>
+                <input type="number" id="recAmount" class="input" placeholder="0.00" inputmode="decimal" />
+            </div>
+            <div class="input-group">
+                <label class="label">Next Due Date</label>
+                <input type="date" id="recDate" class="input" />
+            </div>
+
+            <div class="input-group">
+                <label class="label">Frequency</label>
+                <select id="recFreq" class="input">
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                    <option value="quarterly">Quarterly</option>
+                    <option value="6months">Every 6 months</option>
+                    <option value="yearly">Yearly</option>
+                    <option value="one-time">One time</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label class="label">Skip Until (optional)</label>
+                <input type="date" id="recSkipUntil" class="input" />
+                <div class="text-xs text-sub" style="margin-top:6px;">Pause alerts until this date.</div>
+            </div>
+
+            <div class="flex gap-2" style="margin-top:24px;">
+                <button class="btn btn-danger hidden" id="btnRecDelete" onclick="deleteRecClick()" style="flex:1">Delete</button>
+                <button class="btn btn-primary" onclick="saveRec()" data-i18n="save" style="flex:2">Save Schedule</button>
             </div>
         </div>
     </div>
 
-    <!-- Script Logic -->
+    <!-- Confirm Modal (Generic) -->
+    <div id="confirmModal" class="modal" aria-hidden="true">
+        <div class="modal-content" style="text-align: center;">
+            <div class="confirm-icon">
+                <svg class="icon" style="width:32px; height:32px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </div>
+            <h2 class="text-xl bold" id="confirmTitle">Are you sure?</h2>
+            <p class="text-sub" style="margin-bottom: 24px;" id="confirmText">This process cannot be undone.</p>
+            <div class="flex gap-2">
+                <button class="btn btn-outline" style="flex:1; border-color:var(--card-border);" onclick="closeConfirm()">Cancel</button>
+                <button class="btn btn-danger" style="flex:1;" id="btnConfirmDelete">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Revert Date Modal -->
+    <div id="revertModal" class="modal" aria-hidden="true">
+        <div class="modal-content" style="text-align:center;">
+             <div style="width:50px; height:50px; background:var(--bg-grad-end); color:var(--primary); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px auto;">
+                <svg class="icon" style="width:24px; height:24px;"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            </div>
+            <h2 class="text-xl bold">Revert Date?</h2>
+            <p class="text-sub" style="margin-bottom:24px; margin-top:8px;">You deleted a scheduled payment. Should we revert the next due date back?</p>
+            
+            <div class="flex gap-2" style="flex-direction:column;">
+                <button class="btn btn-primary" id="btnRevertYes">Yes, Revert Date</button>
+                <button class="btn btn-outline" id="btnRevertNo">No, Keep Current Date</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // State
-        let transactions = [];
-        let currency = '$';
+        // --- DATA & STATE ---
+        const DEFAULT_ACCOUNTS = [
+            { id: '1', name: 'Wallet', initial: 0 },
+            { id: '2', name: 'Bank', initial: 0 },
+            { id: '3', name: 'Credit Card', initial: 0 }
+        ];
+
+        let data = {
+            transactions: [],
+            accounts: DEFAULT_ACCOUNTS.slice(),
+            categories: [],
+            recurring: [],
+            settings: { lang: 'en', theme: 'light' }
+        };
+
         let currentView = 'dashboard';
-        let txType = 'exp'; // 'exp' or 'inc'
-        let monthlyBudget = 2000;
-        let categories = ["🍔 Food", "🏠 Rent", "🚗 Transport", "🛍️ Shopping", "💡 Utilities", "🎬 Entertainment", "🏥 Health", "💸 Salary", "📈 Investment"];
+        let txType = 'exp';
+        let recType = 'exp';
+        let onConfirmAction = null;
 
-        // Initialization
-        document.addEventListener('DOMContentLoaded', () => {
+        const TRANSLATIONS = {
+            en: { dash: "Home", tx: "Transact", accs: "Wallets", set: "Settings", amt: "Amount", date: "Date", desc: "Description", acc: "Account", cat: "Category", save: "Save", del: "Delete", income: "Income", expense: "Expense", total: "Total Balance", rec: "Recurring", export: "Backup", import: "Restore" },
+            ar: { dash: "الرئيسية", tx: "المعاملات", accs: "المحافظ", set: "الإعدادات", amt: "المبلغ", date: "التاريخ", desc: "الوصف", acc: "الحساب", cat: "الفئة", save: "حفظ", del: "حذف", income: "دخل", expense: "مصروف", total: "إجمالي الرصيد", rec: "دوري", export: "نسخ", import: "استرجاع" }
+        };
+
+        // --- INIT ---
+        window.onload = () => {
             loadData();
-            initDateInput();
-            renderCategories();
-            switchView('dashboard');
-            
-            // Theme Check
-            if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark');
-        });
+            applyTheme();
+            applyLang();
+            render();
+            document.getElementById('txDate').valueAsDate = new Date();
+            setupModalBehavior();
+        };
 
-        // --- Core Functions ---
-
+        // --- STORAGE ---
         function loadData() {
-            const saved = localStorage.getItem('mf_data');
-            if (saved) {
-                transactions = JSON.parse(saved);
-            } else {
-                // Mock Data for new users
-                transactions = [
-                    { id: 1, amount: 2500, type: 'inc', desc: 'Salary', category: '💸 Salary', date: new Date().toISOString().split('T')[0] },
-                    { id: 2, amount: 45.50, type: 'exp', desc: 'Grocery Run', category: '🍔 Food', date: new Date().toISOString().split('T')[0] },
-                    { id: 3, amount: 1200, type: 'exp', desc: 'Rent', category: '🏠 Rent', date: new Date(Date.now() - 86400000 * 2).toISOString().split('T')[0] },
-                ];
-                saveData();
+            const stored = localStorage.getItem('abouTiaData');
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    data = Object.assign({
+                        transactions: [],
+                        accounts: DEFAULT_ACCOUNTS.slice(),
+                        categories: [],
+                        recurring: [],
+                        settings: { lang: 'en', theme: 'light' }
+                    }, parsed || {});
+                } catch (e) {
+                    console.error("Failed to parse", e);
+                }
             }
-            
-            const savedBudget = localStorage.getItem('mf_budget');
-            if (savedBudget) monthlyBudget = parseFloat(savedBudget);
+            data.accounts.forEach(a => a.id = String(a.id));
+            data.transactions.forEach(t => t.id = String(t.id));
+            data.recurring.forEach(r => r.id = String(r.id));
         }
 
-        function saveData() {
-            localStorage.setItem('mf_data', JSON.stringify(transactions));
-            localStorage.setItem('mf_budget', monthlyBudget);
-            updateUI();
+        function saveData(skipRender) {
+            data.transactions.sort((a, b) => new Date(a.date) - new Date(b.date));
+            localStorage.setItem('abouTiaData', JSON.stringify(data));
+            if (!skipRender) render();
         }
 
-        function updateUI() {
-            if (currentView === 'dashboard') renderDashboard();
-            if (currentView === 'transactions') renderTransactionsView();
-            if (currentView === 'accounts') renderAccounts(); // Placeholder logic
-        }
-
-        function switchView(viewName) {
-            currentView = viewName;
-            
-            // Update Nav
+        // --- RENDER CORE ---
+        function render() {
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            document.getElementById('nav-' + (viewName === 'dashboard' ? 'dash' : viewName === 'transactions' ? 'tx' : viewName === 'accounts' ? 'acc' : 'set')).classList.add('active');
+            const navMap = { dashboard: 'dash', transactions: 'tx', accounts: 'acc', settings: 'set' };
+            document.getElementById(`nav-${navMap[currentView]}`).classList.add('active');
 
             const container = document.getElementById('mainContainer');
-            container.innerHTML = ''; // Clear
-            container.classList.remove('animate-enter');
-            void container.offsetWidth; // Trigger reflow
-            container.classList.add('animate-enter');
+            container.innerHTML = '';
 
-            if (viewName === 'dashboard') renderDashboard();
-            else if (viewName === 'transactions') renderTransactionsView();
-            else if (viewName === 'accounts') renderAccountsView();
-            else if (viewName === 'settings') renderSettingsView();
+            if (currentView === 'dashboard') renderDashboard(container);
+            else if (currentView === 'transactions') renderTransactions(container);
+            else if (currentView === 'accounts') renderAccounts(container);
+            else if (currentView === 'settings') renderSettings(container);
         }
 
-        // --- View Renderers ---
+        // --- HELPERS ---
+        function t(key) { return TRANSLATIONS[data.settings.lang][key] || key; }
+        function fmt(num) {
+            return new Intl.NumberFormat(data.settings.lang === 'ar' ? 'ar-EG' : 'en-US', { style: 'currency', currency: 'EGP', maximumFractionDigits: 0 }).format(Number(num) || 0);
+        }
+        function uid() { return Date.now().toString(36) + Math.random().toString(36).substr(2); }
+        function safeNum(v) { return Number(v) || 0; }
+        function eqId(a, b) { return String(a) === String(b); }
 
-        function renderDashboard() {
-            const totalIncome = transactions.reduce((sum, t) => t.type === 'inc' ? sum + t.amount : sum, 0);
-            const totalExp = transactions.reduce((sum, t) => t.type === 'exp' ? sum + t.amount : sum, 0);
-            const balance = totalIncome - totalExp;
+        function getNextDate(dateStr, freq) {
+            const date = new Date(dateStr);
+            const originalDay = date.getDate();
+            if (freq === 'daily') date.setDate(date.getDate() + 1);
+            else if (freq === 'weekly') date.setDate(date.getDate() + 7);
+            else if (freq === 'monthly') {
+                date.setMonth(date.getMonth() + 1);
+                if (date.getDate() !== originalDay) date.setDate(0); 
+            } 
+            else if (freq === 'quarterly') date.setMonth(date.getMonth() + 3);
+            else if (freq === '6months') date.setMonth(date.getMonth() + 6);
+            else if (freq === 'yearly') date.setFullYear(date.getFullYear() + 1);
+            return date.toISOString().split('T')[0];
+        }
 
-            // Budget Calc (Simulated for this month)
-            const currentMonth = new Date().toISOString().slice(0, 7);
-            const thisMonthExp = transactions
-                .filter(t => t.type === 'exp' && t.date.startsWith(currentMonth))
-                .reduce((sum, t) => sum + t.amount, 0);
-            const budgetPct = Math.min((thisMonthExp / monthlyBudget) * 100, 100);
-            const budgetColor = budgetPct > 90 ? 'var(--danger)' : budgetPct > 70 ? 'var(--warning)' : 'var(--primary)';
+        function getPrevDate(dateStr, freq) {
+            const date = new Date(dateStr);
+            if (freq === 'daily') date.setDate(date.getDate() - 1);
+            else if (freq === 'weekly') date.setDate(date.getDate() - 7);
+            else if (freq === 'monthly') date.setMonth(date.getMonth() - 1);
+            else if (freq === 'quarterly') date.setMonth(date.getMonth() - 3);
+            else if (freq === '6months') date.setMonth(date.getMonth() - 6);
+            else if (freq === 'yearly') date.setFullYear(date.getFullYear() - 1);
+            return date.toISOString().split('T')[0];
+        }
 
-            let html = `
-                <div class="card summary-card">
-                    <div class="summary-blob"></div>
-                    <div class="text-sub" style="color:rgba(255,255,255,0.8)">Total Balance</div>
-                    <div class="text-3xl bold privacy-blur" style="margin-top:4px;">${formatMoney(balance)}</div>
-                    <div class="flex gap-4" style="margin-top:16px;">
-                        <div>
-                            <div class="text-xs text-sub" style="color:rgba(255,255,255,0.7)">Income</div>
-                            <div class="text-lg bold privacy-blur">${formatMoney(totalIncome)}</div>
-                        </div>
-                        <div>
-                            <div class="text-xs text-sub" style="color:rgba(255,255,255,0.7)">Expenses</div>
-                            <div class="text-lg bold privacy-blur">${formatMoney(totalExp)}</div>
-                        </div>
-                    </div>
-                </div>
+        function daysUntil(targetDate) {
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const t = new Date(targetDate);
+            t.setHours(0,0,0,0);
+            return Math.ceil((t - today) / (1000 * 60 * 60 * 24));
+        }
 
-                <div class="card">
-                    <div class="flex justify-between items-center">
-                        <div class="text-lg bold">Monthly Budget</div>
-                        <div class="text-sm text-sub">${formatMoney(thisMonthExp)} / ${formatMoney(monthlyBudget)}</div>
-                    </div>
-                    <div class="budget-bar">
-                        <div class="budget-fill" style="width:${budgetPct}%; background:${budgetColor}"></div>
-                    </div>
-                </div>
+        function getAccBalance(accId) {
+            let bal = safeNum(data.accounts.find(a => eqId(a.id, accId))?.initial);
+            data.transactions.forEach(tx => {
+                if (eqId(tx.accId, accId)) {
+                    bal += (tx.type === 'inc' ? 1 : -1) * safeNum(tx.amount);
+                }
+            });
+            return bal;
+        }
 
-                <div class="card">
-                    <div class="text-lg bold">Spending Breakdown</div>
-                    <div class="chart-container" id="chartContainer">
-                        <!-- Chart Injected Here -->
-                    </div>
-                </div>
-
-                <div class="flex justify-between items-center" style="margin-bottom:12px; margin-top:8px;">
-                    <div class="text-lg bold">Recent</div>
-                    <button class="btn-ghost btn-sm" onclick="switchView('transactions')">View All</button>
-                </div>
-                <div id="recentTxList"></div>
-            `;
+        // --- DASHBOARD RENDER ---
+        function getRecurringSummaryHTML() {
+            const today = new Date();
+            const curMonth = today.getMonth();
+            const curYear = today.getFullYear();
             
-            document.getElementById('mainContainer').innerHTML = html;
-            renderChart();
-            renderTxList(transactions.slice().sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0, 5), 'recentTxList');
-        }
-
-        function renderTransactionsView() {
-            const html = `
-                <div class="input-group">
-                    <input type="text" id="searchTx" class="input" placeholder="🔍 Search transactions..." onkeyup="filterTransactions()">
-                </div>
-                <div id="fullTxList"></div>
-            `;
-            document.getElementById('mainContainer').innerHTML = html;
-            renderTxList(transactions.slice().sort((a,b) => new Date(b.date) - new Date(a.date)), 'fullTxList');
-        }
-
-        function renderAccountsView() {
-            // Simplified Accounts View
-            const html = `
-                <div class="card">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <div class="text-lg bold">Cash Wallet</div>
-                            <div class="text-sm text-sub">Default Account</div>
-                        </div>
-                        <div class="text-xl bold privacy-blur">${formatMoney(calculateBalance())}</div>
-                    </div>
-                </div>
-                <div class="card" style="border-style:dashed; display:flex; align-items:center; justify-content:center; padding:30px; color:var(--text-sub);">
-                    <span>+ Add New Wallet (Pro Feature)</span>
-                </div>
-            `;
-            document.getElementById('mainContainer').innerHTML = html;
-        }
-
-        function renderSettingsView() {
-            const html = `
-                <div class="card">
-                    <h3 class="text-lg bold" style="margin-bottom:16px;">Preferences</h3>
-                    <div class="input-group">
-                        <label class="label">Monthly Budget Goal</label>
-                        <input type="number" class="input" value="${monthlyBudget}" onchange="updateBudget(this.value)">
-                    </div>
-                    <div class="input-group">
-                        <label class="label">Currency Symbol</label>
-                        <input type="text" class="input" value="${currency}" onchange="updateCurrency(this.value)" style="width:60px;">
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h3 class="text-lg bold" style="margin-bottom:16px;">Data Management</h3>
-                    <button class="btn btn-outline w-full" onclick="exportData()" style="margin-bottom:12px;">📥 Export JSON</button>
-                    <button class="btn btn-outline w-full" onclick="exportCSV()" style="margin-bottom:12px;">📊 Export CSV</button>
-                    <button class="btn btn-danger w-full" onclick="clearData()">🗑️ Reset All Data</button>
-                </div>
-
-                <div class="text-center text-sub text-xs" style="margin-top:20px;">
-                    My Finance Pro v1.2<br>Offline-First & Secure
-                </div>
-            `;
-            document.getElementById('mainContainer').innerHTML = html;
-        }
-
-        // --- Components Renderers ---
-
-        function renderTxList(list, containerId) {
-            const container = document.getElementById(containerId);
-            if (!container) return;
-            
-            if (list.length === 0) {
-                container.innerHTML = `<div class="text-center text-sub" style="padding:20px;">No transactions found.</div>`;
-                return;
-            }
-
-            container.innerHTML = list.map(t => {
-                const isExp = t.type === 'exp';
-                return `
-                <div class="tx-item animate-enter" onclick="openModal('edit', ${t.id})">
-                    <div class="tx-icon">
-                        ${t.category.split(' ')[0] || '📄'}
-                    </div>
-                    <div class="tx-details">
-                        <div class="text-base bold">${t.desc}</div>
-                        <div class="text-xs text-sub">${t.category} • ${formatDate(t.date)}</div>
-                    </div>
-                    <div class="tx-amount ${isExp ? 'text-red' : 'text-green'} privacy-blur">
-                        ${isExp ? '-' : '+'}${formatMoney(t.amount)}
-                    </div>
-                </div>
-                `;
-            }).join('');
-        }
-
-        function renderChart() {
-            const container = document.getElementById('chartContainer');
-            if (!container) return;
-
-            // Group by category
-            const cats = {};
-            let total = 0;
-            transactions.filter(t => t.type === 'exp').forEach(t => {
-                const c = t.category;
-                cats[c] = (cats[c] || 0) + t.amount;
-                total += t.amount;
+            // 1. Calculate Unpaid (Remaining)
+            let unpaidExp = 0;
+            let unpaidInc = 0;
+            data.recurring.forEach(r => {
+                const d = new Date(r.date);
+                if (d.getMonth() === curMonth && d.getFullYear() === curYear) {
+                    if (r.type === 'exp') unpaidExp += safeNum(r.amount);
+                    else unpaidInc += safeNum(r.amount);
+                }
             });
 
-            if (total === 0) {
-                container.innerHTML = `<div class="text-sub text-sm">No expenses to display.</div>`;
-                return;
-            }
+            // 2. Calculate Paid (From Transactions)
+            let paidExp = 0;
+            let collectedInc = 0;
+            data.transactions.forEach(t => {
+                if(!t.recId) return;
+                const d = new Date(t.date);
+                if (d.getMonth() === curMonth && d.getFullYear() === curYear) {
+                    if (t.type === 'exp') paidExp += safeNum(t.amount);
+                    else collectedInc += safeNum(t.amount);
+                }
+            });
 
-            // Colors
-            const colors = ['#6366f1', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4'];
-            let gradientStr = '';
-            let currentDeg = 0;
-            let legendHtml = '';
+            const totalExp = unpaidExp + paidExp;
+            const totalInc = unpaidInc + collectedInc;
 
-            Object.entries(cats).sort((a,b) => b[1] - a[1]).forEach(([name, val], index) => {
-                const pct = (val / total) * 100;
-                const deg = (pct / 100) * 360;
-                const color = colors[index % colors.length];
-                
-                gradientStr += `${color} ${currentDeg}deg ${currentDeg + deg}deg, `;
-                currentDeg += deg;
+            // Simple bars
+            const expPct = totalExp > 0 ? (paidExp / totalExp) * 100 : 0;
+            const incPct = totalInc > 0 ? (collectedInc / totalInc) * 100 : 0;
 
-                legendHtml += `
-                    <div class="legend-item">
-                        <div class="legend-color" style="background:${color}"></div>
-                        <div class="flex justify-between w-full">
-                            <span>${name.split(' ')[1] || name}</span>
-                            <span class="text-sub privacy-blur">${Math.round(pct)}%</span>
+            return `
+                <div class="card animate-enter" style="animation-delay: 0.1s;">
+                     <h3 class="text-xs bold text-sub uppercase" style="margin-bottom:12px;">Recurring (This Month)</h3>
+                     
+                     <div class="flex gap-3" style="margin-bottom:12px;">
+                        <div style="flex:1;">
+                            <div class="flex justify-between text-xs text-sub"><span>Expenses</span> <span>${fmt(unpaidExp)} left</span></div>
+                            <div class="bold text-lg text-red">${fmt(totalExp)}</div>
+                            <div class="progress-bar"><div class="progress-fill" style="width:${expPct}%; background:var(--danger);"></div></div>
+                        </div>
+                        <div style="flex:1;">
+                            <div class="flex justify-between text-xs text-sub"><span>Income</span> <span>${fmt(unpaidInc)} left</span></div>
+                            <div class="bold text-lg text-green">${fmt(totalInc)}</div>
+                            <div class="progress-bar"><div class="progress-fill" style="width:${incPct}%; background:var(--success);"></div></div>
+                        </div>
+                     </div>
+                </div>
+            `;
+        }
+
+        function getRecurringAlertsHTML() {
+            let html = '';
+            const recs = data.recurring.map(r => ({ ...r, dateObj: new Date(r.date) }))
+                            .sort((a,b) => a.dateObj - b.dateObj);
+
+            recs.forEach((r, idx) => {
+                if (r.skipUntil && new Date(r.skipUntil) >= r.dateObj) return;
+
+                const diffDays = daysUntil(r.date);
+                if (diffDays > 31) return; // Only show upcoming month
+
+                let statusColor = diffDays < 0 ? 'var(--danger)' : diffDays === 0 ? 'var(--warning)' : 'var(--text-sub)';
+                let borderLeft = diffDays < 0 ? '4px solid var(--danger)' : diffDays === 0 ? '4px solid var(--warning)' : '4px solid var(--primary)';
+                const msg = diffDays < 0 ? 'Overdue!' : diffDays === 0 ? 'Due Today' : `In ${diffDays} days`;
+
+                html += `
+                    <div class="card flex justify-between items-center animate-enter" style="animation-delay: ${0.15 + (idx * 0.05)}s; border-left:${borderLeft}; padding:14px;">
+                        <div>
+                            <div class="bold text-base">${r.name}</div>
+                            <div class="text-xs" style="color:${statusColor}">${msg} • ${r.date}</div>
+                        </div>
+                        <div style="text-align:right">
+                            <div class="bold text-base">${fmt(r.amount)}</div>
+                            <div class="flex gap-2" style="margin-top:6px;">
+                                <button class="btn btn-sm btn-outline" style="padding:4px 8px;" onclick="skipRecurring('${r.id}')" title="Skip this occurence">Skip ⏭️</button>
+                                <button class="btn btn-sm" style="background:var(--primary); color:white; padding:4px 10px;" onclick="payRecurring('${r.id}')">${r.type === 'inc' ? 'Get' : 'Pay'}</button>
+                            </div>
                         </div>
                     </div>
                 `;
             });
+            return html;
+        }
 
-            gradientStr = gradientStr.slice(0, -2); // remove last comma
+        function renderDashboard(container) {
+            const total = data.accounts.reduce((sum, acc) => sum + getAccBalance(acc.id), 0);
+            const income = data.transactions.filter(t => t.type === 'inc').reduce((sum, t) => sum + safeNum(t.amount), 0);
+            const expense = data.transactions.filter(t => t.type === 'exp').reduce((sum, t) => sum + safeNum(t.amount), 0);
 
             container.innerHTML = `
-                <div class="donut-chart" style="background: conic-gradient(${gradientStr})">
-                    <div class="donut-hole">
-                        <span class="text-xs text-sub">Expense</span>
-                        <span class="text-lg bold privacy-blur">${formatMoney(total)}</span>
+                <div class="card animate-enter" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border:none; padding:24px;">
+                    <div class="text-sm" style="opacity:0.8; font-weight:600;">${t('total')}</div>
+                    <div class="text-xl bold" style="font-size:36px; margin: 6px 0;">${fmt(total)}</div>
+                    <div class="flex gap-2 mt-2">
+                        <div style="background:rgba(255,255,255,0.15); padding:10px 14px; border-radius:12px; flex:1; backdrop-filter:blur(4px);">
+                            <div class="text-xs" style="opacity:0.9">Income</div>
+                            <div class="bold text-lg">+${fmt(income)}</div>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.15); padding:10px 14px; border-radius:12px; flex:1; backdrop-filter:blur(4px);">
+                            <div class="text-xs" style="opacity:0.9">Expense</div>
+                            <div class="bold text-lg">-${fmt(expense)}</div>
+                        </div>
                     </div>
                 </div>
-                <div class="chart-legend">
-                    ${legendHtml}
+
+                ${getRecurringSummaryHTML()}
+                <h3 class="text-sm bold text-sub uppercase animate-enter" style="animation-delay:0.12s; margin-top:20px; margin-bottom:8px;">Upcoming</h3>
+                ${getRecurringAlertsHTML()}
+
+                <h3 class="text-sm bold text-sub uppercase animate-enter" style="animation-delay:0.2s; margin-top:24px; margin-bottom:8px;">Wallets</h3>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;" class="animate-enter" style="animation-delay:0.25s">
+                    ${data.accounts.map(acc => `
+                        <div class="card" style="margin:0; padding:16px;">
+                            <div class="text-xs text-sub uppercase">${acc.name}</div>
+                            <div class="text-lg bold">${fmt(getAccBalance(acc.id))}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            addSwipeListeners(container);
+        }
+
+        function renderTransactions(container) {
+            container.innerHTML = `<h2 class="text-xl bold" style="margin-bottom:16px;">${t('tx')}</h2>`;
+            if (data.transactions.length === 0) {
+                container.innerHTML += `<div class="text-center text-sub" style="margin-top:40px;">No transactions found.</div>`;
+            } else {
+                const sorted = [...data.transactions].reverse();
+                sorted.forEach((tx, idx) => {
+                    const accName = data.accounts.find(a => eqId(a.id, tx.accId))?.name || 'Unknown';
+                    const isInc = tx.type === 'inc';
+                    container.innerHTML += `
+                    <div class="card flex justify-between items-center swipe-hint animate-enter" style="animation-delay:${idx*0.05}s; padding:16px; cursor:pointer;" data-id="${tx.id}" onclick="editTx('${tx.id}')">
+                        <div class="flex items-center gap-3">
+                            <div style="width:42px; height:42px; border-radius:14px; background:${isInc ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)'}; color:${isInc ? 'var(--success)' : 'var(--danger)'}; display:flex; align-items:center; justify-content:center; font-size:20px;">
+                                ${isInc ? '↓' : '↑'}
+                            </div>
+                            <div>
+                                <div class="bold text-base">${tx.desc}</div>
+                                <div class="text-xs text-sub">${tx.date} • ${accName}</div>
+                            </div>
+                        </div>
+                        <div class="bold ${isInc ? 'text-green' : 'text-red'} text-base">
+                            ${isInc ? '+' : '-'}${fmt(tx.amount)}
+                        </div>
+                    </div>`;
+                });
+            }
+            addSwipeListeners(container);
+        }
+
+        // --- SWIPE LOGIC ---
+        function addSwipeListeners(container) {
+            const cards = container.querySelectorAll('.swipe-hint');
+            cards.forEach(card => {
+                let startX = 0;
+                card.addEventListener('touchstart', e => startX = e.touches[0].clientX, {passive: true});
+                card.addEventListener('touchend', e => {
+                    if (startX && (startX - e.changedTouches[0].clientX > 80)) {
+                        prepareDeleteTx(card.getAttribute('data-id'));
+                    }
+                });
+            });
+        }
+
+        function renderAccounts(container) {
+            container.innerHTML = `
+                <div class="flex justify-between items-center" style="margin-bottom:16px;">
+                    <h2 class="text-xl bold">${t('accs')}</h2>
+                    <div class="flex gap-2">
+                        <button class="btn btn-outline btn-sm" onclick="openTransferModal()">Transfer ⇄</button>
+                        <button class="btn btn-primary btn-sm" style="width:auto;" onclick="addAccount()">+ Add</button>
+                    </div>
+                </div>
+            `;
+            data.accounts.forEach((acc, idx) => {
+                container.innerHTML += `
+                    <div class="card relative animate-enter" style="animation-delay:${idx*0.05}s">
+                        <div class="text-xs text-sub uppercase mb-1">${acc.name}</div>
+                        <div class="text-xl bold">${fmt(getAccBalance(acc.id))}</div>
+                        <button class="btn-ghost" style="position:absolute; top:12px; right:12px; color:var(--danger); opacity:0.6;" onclick="deleteAccount('${acc.id}')">✕</button>
+                    </div>
+                `;
+            });
+        }
+
+        function renderSettings(container) {
+            container.innerHTML = `
+                <h2 class="text-xl bold" style="margin-bottom:16px;">${t('set')}</h2>
+
+                <div class="card animate-enter">
+                    <div class="flex justify-between items-center">
+                        <span class="bold">Language</span>
+                        <button class="btn btn-outline btn-sm" onclick="toggleLang()">${data.settings.lang === 'en' ? 'English' : 'العربية'}</button>
+                    </div>
+                </div>
+
+                <div class="card animate-enter" style="animation-delay:0.1s">
+                    <div class="flex justify-between items-center" style="margin-bottom:16px;">
+                        <span class="bold">Recurring Items</span>
+                        <button class="btn btn-primary btn-sm" style="width:auto;" onclick="openRecModal('add')">+ Add</button>
+                    </div>
+                    ${data.recurring.map(r => `
+                        <div class="flex justify-between items-center" style="padding:12px 0; border-bottom:1px solid var(--card-border); cursor:pointer;">
+                            <div style="flex:1" onclick="editRec('${r.id}')">
+                                <div class="bold text-sm" style="${r.type === 'inc' ? 'color: var(--success);' : ''}">${r.name}</div>
+                                <div class="text-xs text-sub">${r.frequency} • Next: ${r.date}</div>
+                            </div>
+                            <div class="bold text-sm" style="margin-right:10px;">${fmt(r.amount)}</div>
+                            <button class="btn-ghost" style="font-size:16px;" onclick="editRec('${r.id}')">✎</button>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="card animate-enter" style="animation-delay:0.2s">
+                    <button class="btn btn-outline" style="width:100%; margin-bottom:10px;" onclick="exportData()">⬇ ${t('export')}</button>
+                    <button class="btn btn-outline" style="width:100%;" onclick="document.getElementById('fileInput').click()">⬆ ${t('import')}</button>
+                    <input type="file" id="fileInput" class="hidden" onchange="importData(this)" />
                 </div>
             `;
         }
 
-        function renderCategories() {
-            const dl = document.getElementById('catList');
-            dl.innerHTML = categories.map(c => `<option value="${c}">`).join('');
+        // --- ACTIONS ---
+        function switchView(view) { currentView = view; render(); }
+
+        function openModal(mode, txData) {
+            const modal = document.getElementById('txModal');
+            modal.classList.add('open');
+            modal.setAttribute('aria-hidden', 'false');
+
+            const accSelect = document.getElementById('txAcc');
+            accSelect.innerHTML = data.accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+            document.getElementById('catList').innerHTML = data.categories.map(c => `<option value="${c.name}">`).join('');
+
+            if (mode === 'edit' && txData) {
+                document.getElementById('modalTitle').innerText = 'Edit Transaction';
+                document.getElementById('txId').value = txData.id;
+                document.getElementById('txRecurringId').value = txData.recId || '';
+                document.getElementById('txAmount').value = safeNum(txData.amount);
+                document.getElementById('txDesc').value = txData.desc;
+                document.getElementById('txDate').value = txData.date;
+                document.getElementById('txAcc').value = txData.accId;
+                document.getElementById('txCat').value = txData.cat || '';
+                setTxType(txData.type);
+                document.getElementById('btnDelete').classList.remove('hidden');
+            } else {
+                document.getElementById('modalTitle').innerText = 'New Transaction';
+                document.getElementById('txId').value = '';
+                document.getElementById('txRecurringId').value = '';
+                document.getElementById('txAmount').value = '';
+                document.getElementById('txDesc').value = '';
+                document.getElementById('txDate').valueAsDate = new Date();
+                document.getElementById('txCat').value = '';
+                setTxType('exp');
+                document.getElementById('btnDelete').classList.add('hidden');
+            }
+        }
+        
+        // --- TRANSFER LOGIC ---
+        function openTransferModal() {
+            const modal = document.getElementById('transferModal');
+            modal.classList.add('open');
+            const opts = data.accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+            document.getElementById('tfFrom').innerHTML = opts;
+            document.getElementById('tfTo').innerHTML = opts;
+            document.getElementById('tfDate').valueAsDate = new Date();
+            document.getElementById('tfAmount').value = '';
+            document.getElementById('tfFees').value = ''; // Reset fees
+            
+            // Smart select: if >1 accounts, select second one for 'To'
+            if(data.accounts.length > 1) {
+                document.getElementById('tfTo').selectedIndex = 1;
+            }
+        }
+        
+        function closeTransferModal() {
+            document.getElementById('transferModal').classList.remove('open');
+        }
+        
+        function executeTransfer() {
+            const fromId = document.getElementById('tfFrom').value;
+            const toId = document.getElementById('tfTo').value;
+            const amount = parseFloat(document.getElementById('tfAmount').value);
+            const fees = parseFloat(document.getElementById('tfFees').value) || 0;
+            const date = document.getElementById('tfDate').value;
+            
+            if(fromId === toId) return alert("Source and Destination cannot be the same.");
+            if(!amount || amount <= 0) return alert("Invalid amount");
+            
+            const fromAcc = data.accounts.find(a => a.id === fromId).name;
+            const toAcc = data.accounts.find(a => a.id === toId).name;
+            
+            // Create Outgoing
+            data.transactions.push({
+                id: uid(),
+                type: 'exp',
+                amount: amount,
+                desc: `Transfer to ${toAcc}`,
+                date: date,
+                accId: fromId,
+                cat: 'Transfer',
+                recId: null
+            });
+            
+            // Create Incoming
+            data.transactions.push({
+                id: uid(),
+                type: 'inc',
+                amount: amount,
+                desc: `Transfer from ${fromAcc}`,
+                date: date,
+                accId: toId,
+                cat: 'Transfer',
+                recId: null
+            });
+            
+            // Create Fee Transaction
+            if (fees > 0) {
+                data.transactions.push({
+                    id: uid(),
+                    type: 'exp',
+                    amount: fees,
+                    desc: `Fee: Transfer to ${toAcc}`,
+                    date: date,
+                    accId: fromId,
+                    cat: 'Bank Fees',
+                    recId: null
+                });
+            }
+            
+            saveData();
+            closeTransferModal();
         }
 
-        // --- Logic & Actions ---
+        function openRecModal(mode, recData) {
+            const modal = document.getElementById('recModal');
+            modal.classList.add('open');
+            if (mode === 'edit' && recData) {
+                document.getElementById('recModalTitle').innerText = 'Edit Schedule';
+                document.getElementById('recId').value = recData.id;
+                document.getElementById('recName').value = recData.name;
+                document.getElementById('recAmount').value = safeNum(recData.amount);
+                document.getElementById('recDate').value = recData.date;
+                document.getElementById('recFreq').value = recData.frequency || 'monthly';
+                document.getElementById('recSkipUntil').value = recData.skipUntil || '';
+                setRecType(recData.type || 'exp');
+                document.getElementById('btnRecDelete').classList.remove('hidden');
+            } else {
+                document.getElementById('recModalTitle').innerText = 'New Schedule';
+                document.getElementById('recId').value = '';
+                document.getElementById('recName').value = '';
+                document.getElementById('recAmount').value = '';
+                document.getElementById('recDate').valueAsDate = new Date();
+                document.getElementById('recFreq').value = 'monthly';
+                document.getElementById('recSkipUntil').value = '';
+                setRecType('exp');
+                document.getElementById('btnRecDelete').classList.add('hidden');
+            }
+        }
 
         function setTxType(type) {
             txType = type;
-            document.getElementById('btn-exp').style.background = type === 'exp' ? 'var(--danger)' : 'transparent';
-            document.getElementById('btn-exp').style.color = type === 'exp' ? 'white' : 'var(--text-sub)';
-            
-            document.getElementById('btn-inc').style.background = type === 'inc' ? 'var(--success)' : 'transparent';
-            document.getElementById('btn-inc').style.color = type === 'inc' ? 'white' : 'var(--text-sub)';
+            const btnExp = document.getElementById('btn-exp');
+            const btnInc = document.getElementById('btn-inc');
+            btnExp.style.background = type === 'exp' ? 'var(--danger)' : 'transparent';
+            btnExp.style.color = type === 'exp' ? 'white' : 'var(--text-sub)';
+            btnInc.style.background = type === 'inc' ? 'var(--success)' : 'transparent';
+            btnInc.style.color = type === 'inc' ? 'white' : 'var(--text-sub)';
         }
 
-        function openModal(mode, id = null) {
-            const modal = document.getElementById('txModal');
-            const title = document.getElementById('modalTitle');
-            const btnDel = document.getElementById('btnDelete');
-            const hiddenId = document.getElementById('txId');
-
-            // Reset Fields
-            document.getElementById('txAmount').value = '';
-            document.getElementById('txDesc').value = '';
-            document.getElementById('txCat').value = '';
-            initDateInput();
-            setTxType('exp');
-
-            if (mode === 'edit' && id) {
-                const t = transactions.find(x => x.id === id);
-                if (t) {
-                    title.innerText = 'Edit Transaction';
-                    hiddenId.value = t.id;
-                    document.getElementById('txAmount').value = t.amount;
-                    document.getElementById('txDate').value = t.date;
-                    document.getElementById('txDesc').value = t.desc;
-                    document.getElementById('txCat').value = t.category;
-                    setTxType(t.type);
-                    btnDel.classList.remove('hidden');
-                }
-            } else {
-                title.innerText = 'New Transaction';
-                hiddenId.value = '';
-                btnDel.classList.add('hidden');
-            }
-
-            modal.classList.add('open');
-        }
-
-        function closeModal() {
-            document.getElementById('txModal').classList.remove('open');
+        function setRecType(type) {
+            recType = type;
+            const btnExp = document.getElementById('btn-rec-exp');
+            const btnInc = document.getElementById('btn-rec-inc');
+            btnExp.style.background = type === 'exp' ? 'var(--danger)' : 'transparent';
+            btnExp.style.color = type === 'exp' ? 'white' : 'var(--text-sub)';
+            btnInc.style.background = type === 'inc' ? 'var(--success)' : 'transparent';
+            btnInc.style.color = type === 'inc' ? 'white' : 'var(--text-sub)';
         }
 
         function saveTx() {
             const id = document.getElementById('txId').value;
-            const amt = parseFloat(document.getElementById('txAmount').value);
+            const amount = parseFloat(document.getElementById('txAmount').value);
+            const desc = document.getElementById('txDesc').value.trim();
             const date = document.getElementById('txDate').value;
-            const desc = document.getElementById('txDesc').value;
-            let cat = document.getElementById('txCat').value;
+            const accId = document.getElementById('txAcc').value;
+            const cat = document.getElementById('txCat').value.trim();
+            const recId = document.getElementById('txRecurringId').value;
 
-            if (!amt || !desc || !date) {
-                alert("Please fill in all fields");
-                return;
-            }
+            if (!amount || !desc || !accId) return alert('Please check details');
 
-            if (!cat) cat = '📂 Uncategorized';
-
-            // Add emoji if missing and known
-            if (!cat.match(/[\p{Emoji}]/u)) {
-               // Simple heuristic
-               if(cat.toLowerCase().includes('food')) cat = '🍔 ' + cat;
-               else if(cat.toLowerCase().includes('shop')) cat = '🛍️ ' + cat;
-               else cat = '📄 ' + cat;
-            }
+            const txObj = { id: id || uid(), type: txType, amount, desc, date, accId, cat, recId: recId || null };
 
             if (id) {
-                // Edit
-                const idx = transactions.findIndex(t => t.id == id);
-                if (idx > -1) {
-                    transactions[idx] = { id: parseInt(id), amount: amt, type: txType, desc, category: cat, date };
-                }
+                const idx = data.transactions.findIndex(t => eqId(t.id, id));
+                if (idx > -1) data.transactions[idx] = txObj;
             } else {
-                // Add
-                const newId = Date.now();
-                transactions.push({ id: newId, amount: amt, type: txType, desc, category: cat, date });
+                data.transactions.push(txObj);
+                if (recId) {
+                    const rIdx = data.recurring.findIndex(r => eqId(r.id, recId));
+                    if (rIdx > -1) {
+                        const r = data.recurring[rIdx];
+                        if (r.frequency === 'one-time') data.recurring.splice(rIdx, 1);
+                        else {
+                            r.date = getNextDate(r.date, r.frequency);
+                            data.recurring[rIdx] = r;
+                        }
+                    }
+                }
             }
-
+            if (cat && !data.categories.find(c => c.name === cat)) data.categories.push({ name: cat });
             saveData();
             closeModal();
-            updateUI(); // Refresh view
+        }
+
+        function skipRecurring(id) {
+            const idx = data.recurring.findIndex(r => eqId(r.id, id));
+            if (idx > -1) {
+                const r = data.recurring[idx];
+                // Simply move date forward without transaction
+                r.date = getNextDate(r.date, r.frequency);
+                data.recurring[idx] = r;
+                saveData();
+            }
+        }
+
+        function saveRec() {
+            const id = document.getElementById('recId').value;
+            const name = document.getElementById('recName').value.trim();
+            const amount = parseFloat(document.getElementById('recAmount').value);
+            const date = document.getElementById('recDate').value;
+            const frequency = document.getElementById('recFreq').value;
+            
+            if (!name || !amount) return alert('Check details');
+            
+            const recObj = { 
+                id: id || uid(), name, amount, date, frequency, 
+                type: recType, skipUntil: document.getElementById('recSkipUntil').value 
+            };
+            
+            if (id) {
+                const idx = data.recurring.findIndex(r => eqId(r.id, id));
+                if (idx > -1) data.recurring[idx] = recObj;
+            } else data.recurring.push(recObj);
+            
+            saveData();
+            closeRecModal();
         }
 
         function deleteTxClick() {
             const id = document.getElementById('txId').value;
-            if (confirm('Are you sure you want to delete this?')) {
-                transactions = transactions.filter(t => t.id != id);
+            const tx = data.transactions.find(t => eqId(t.id, id));
+            openConfirm("Delete?", "Remove this transaction?", () => {
+                data.transactions = data.transactions.filter(t => !eqId(t.id, id));
+                if (tx && tx.recId) {
+                    const rec = data.recurring.find(r => eqId(r.id, tx.recId));
+                    if (rec) {
+                        setTimeout(() => openRevertModal(
+                            () => { rec.date = getPrevDate(rec.date, rec.frequency); saveData(); },
+                            () => saveData()
+                        ), 300);
+                        return;
+                    }
+                }
                 saveData();
                 closeModal();
-                updateUI();
-            }
-        }
-
-        function filterTransactions() {
-            const query = document.getElementById('searchTx').value.toLowerCase();
-            const filtered = transactions.filter(t => 
-                t.desc.toLowerCase().includes(query) || 
-                t.category.toLowerCase().includes(query) ||
-                t.amount.toString().includes(query)
-            ).sort((a,b) => new Date(b.date) - new Date(a.date));
-            renderTxList(filtered, 'fullTxList');
-        }
-
-        function updateBudget(val) {
-            monthlyBudget = parseFloat(val);
-            saveData();
-        }
-        
-        function updateCurrency(val) {
-            currency = val;
-            updateUI();
-        }
-
-        function togglePrivacy() {
-            document.body.classList.toggle('privacy-mode');
-        }
-
-        function toggleTheme() {
-            document.body.classList.toggle('dark');
-            const isDark = document.body.classList.contains('dark');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            document.getElementById('themeBtn').innerText = isDark ? '🌙' : '🌞';
-        }
-
-        function exportData() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(transactions));
-            const node = document.createElement('a');
-            node.setAttribute("href", dataStr);
-            node.setAttribute("download", "my_finance_backup.json");
-            document.body.appendChild(node);
-            node.click();
-            node.remove();
-        }
-
-        function exportCSV() {
-            let csvContent = "data:text/csv;charset=utf-8,Date,Description,Category,Type,Amount\n";
-            transactions.forEach(t => {
-                const row = `${t.date},"${t.desc}","${t.category}",${t.type},${t.amount}`;
-                csvContent += row + "\n";
             });
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "my_finance_export.csv");
-            document.body.appendChild(link);
-            link.click();
         }
 
-        function clearData() {
-            if(confirm("DANGER: This will delete ALL your transaction data permanently. Are you sure?")) {
-                transactions = [];
+        // --- COMMON UTILS ---
+        function closeModal() { document.getElementById('txModal').classList.remove('open'); }
+        function closeRecModal() { document.getElementById('recModal').classList.remove('open'); }
+        function closeConfirm() { document.getElementById('confirmModal').classList.remove('open'); }
+        
+        function openConfirm(title, text, cb) {
+            onConfirmAction = cb;
+            document.getElementById('confirmTitle').innerText = title;
+            document.getElementById('confirmText').innerText = text;
+            document.getElementById('confirmModal').classList.add('open');
+        }
+        document.getElementById('btnConfirmDelete').onclick = () => { if(onConfirmAction) onConfirmAction(); closeConfirm(); };
+
+        function openRevertModal(cbYes, cbNo) {
+            const m = document.getElementById('revertModal');
+            m.classList.add('open');
+            const y = document.getElementById('btnRevertYes'), n = document.getElementById('btnRevertNo');
+            const ny = y.cloneNode(true), nn = n.cloneNode(true);
+            y.parentNode.replaceChild(ny, y); n.parentNode.replaceChild(nn, n);
+            ny.onclick = () => { cbYes(); m.classList.remove('open'); };
+            nn.onclick = () => { cbNo(); m.classList.remove('open'); };
+        }
+
+        function editTx(id) { openModal('edit', data.transactions.find(t => eqId(t.id, id))); }
+        function prepareDeleteTx(id) { document.getElementById('txId').value = id; deleteTxClick(); }
+        function editRec(id) { openRecModal('edit', data.recurring.find(r => eqId(r.id, id))); }
+        function deleteRecClick() {
+            const id = document.getElementById('recId').value;
+            openConfirm("Stop Recurring?", "This won't delete past transactions.", () => {
+                data.recurring = data.recurring.filter(r => !eqId(r.id, id));
                 saveData();
-                updateUI();
+                closeRecModal();
+            });
+        }
+        function payRecurring(id) {
+            const r = data.recurring.find(x => eqId(x.id, id));
+            if (r) {
+                openModal('add');
+                document.getElementById('txAmount').value = safeNum(r.amount);
+                document.getElementById('txDesc').value = r.name;
+                document.getElementById('txCat').value = 'Recurring';
+                document.getElementById('txRecurringId').value = r.id;
+                setTxType(r.type || 'exp');
+                document.getElementById('modalTitle').innerText = r.type === 'inc' ? 'Collect Recurring' : 'Pay Recurring';
             }
         }
-
-        // --- Helpers ---
-        function calculateBalance() {
-            return transactions.reduce((sum, t) => t.type === 'inc' ? sum + t.amount : sum - t.amount, 0);
+        function addAccount() {
+            const name = prompt("Account Name:");
+            if (name) { data.accounts.push({ id: uid(), name: name.trim(), initial: 0 }); saveData(); }
         }
-
-        function formatMoney(amount) {
-            return currency + amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        function deleteAccount(id) {
+            openConfirm("Delete Wallet?", "Deletes all related transactions.", () => {
+                data.accounts = data.accounts.filter(a => !eqId(a.id, id));
+                data.transactions = data.transactions.filter(t => !eqId(t.accId, id));
+                saveData();
+            });
         }
-
-        function formatDate(dateStr) {
-            const options = { month: 'short', day: 'numeric' };
-            return new Date(dateStr).toLocaleDateString(undefined, options);
+        function toggleTheme() {
+            data.settings.theme = data.settings.theme === 'light' ? 'dark' : 'light';
+            saveData(); applyTheme();
         }
-
-        function initDateInput() {
-            document.getElementById('txDate').value = new Date().toISOString().split('T')[0];
+        function applyTheme() {
+            document.body.classList.toggle('dark', data.settings.theme === 'dark');
+            document.getElementById('themeBtn').innerText = data.settings.theme === 'dark' ? '🌙' : '🌞';
         }
-
+        function toggleLang() {
+            data.settings.lang = data.settings.lang === 'en' ? 'ar' : 'en';
+            saveData(); applyLang(); render();
+        }
+        function applyLang() { document.dir = data.settings.lang === 'ar' ? 'rtl' : 'ltr'; }
+        
+        function setupModalBehavior() {
+            document.querySelectorAll('.modal').forEach(m => m.onclick = e => { if(e.target === m) m.classList.remove('open'); });
+        }
+        function exportData() {
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], {type:'application/json'}));
+            a.download = `backup_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+        }
+        function importData(input) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                try {
+                    const inc = JSON.parse(e.target.result);
+                    if(inc) { data = inc; saveData(); alert("Restored!"); }
+                } catch(err) { alert("Invalid file"); }
+            };
+            reader.readAsText(input.files[0]);
+        }
     </script>
 </body>
 </html>
+
+
