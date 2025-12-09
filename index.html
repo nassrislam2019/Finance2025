@@ -186,6 +186,7 @@
 
         /* Delete Confirm Modal Specifics */
         .confirm-icon { width: 64px; height: 64px; background: rgba(239, 68, 68, 0.1); border-radius: 50%; color: var(--danger); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; }
+        .info-icon { width: 64px; height: 64px; background: rgba(99, 102, 241, 0.1); border-radius: 50%; color: var(--primary); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; }
 
         /* Progress Bar for Summary */
         .progress-bar { height: 6px; background: rgba(0,0,0,0.05); border-radius: 3px; overflow: hidden; margin-top: 6px; }
@@ -393,6 +394,35 @@
         </div>
     </div>
 
+    <!-- Alert Modal (Replacement for window.alert) -->
+    <div id="msgModal" class="modal" aria-hidden="true">
+        <div class="modal-content" style="text-align: center;">
+            <div class="info-icon">
+                <svg class="icon" style="width:32px; height:32px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            </div>
+            <h2 class="text-xl bold" id="msgTitle">Info</h2>
+            <p class="text-sub" style="margin-bottom: 24px;" id="msgText">Message goes here.</p>
+            <button class="btn btn-primary" style="width:100%;" onclick="closeMsgModal()">OK</button>
+        </div>
+    </div>
+
+    <!-- Prompt Modal (Replacement for window.prompt) -->
+    <div id="promptModal" class="modal" aria-hidden="true">
+        <div class="modal-content">
+            <div class="flex justify-between items-center" style="margin-bottom:20px;">
+                <h2 class="text-xl" id="promptTitle">Enter Value</h2>
+                <button class="btn-ghost" onclick="closePromptModal()">✕</button>
+            </div>
+            <div class="input-group">
+                <input type="text" id="promptInput" class="input" placeholder="Type here..." />
+            </div>
+            <div class="flex gap-2" style="margin-top:16px;">
+                <button class="btn btn-outline" style="flex:1;" onclick="closePromptModal()">Cancel</button>
+                <button class="btn btn-primary" style="flex:1;" id="btnPromptOk">Save</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Revert Date Modal -->
     <div id="revertModal" class="modal" aria-hidden="true">
         <div class="modal-content" style="text-align:center;">
@@ -429,6 +459,7 @@
         let txType = 'exp';
         let recType = 'exp';
         let onConfirmAction = null;
+        let onPromptAction = null;
 
         const TRANSLATIONS = {
             en: { dash: "Home", tx: "Transact", accs: "Wallets", set: "Settings", amt: "Amount", date: "Date", desc: "Description", acc: "Account", cat: "Category", save: "Save", del: "Delete", income: "Income", expense: "Expense", total: "Total Balance", rec: "Recurring", export: "Backup", import: "Restore" },
@@ -833,8 +864,8 @@
             const fees = parseFloat(document.getElementById('tfFees').value) || 0;
             const date = document.getElementById('tfDate').value;
             
-            if(fromId === toId) return alert("Source and Destination cannot be the same.");
-            if(!amount || amount <= 0) return alert("Invalid amount");
+            if(fromId === toId) return showAlert("Error", "Source and Destination cannot be the same.");
+            if(!amount || amount <= 0) return showAlert("Error", "Invalid amount");
             
             const fromAcc = data.accounts.find(a => a.id === fromId).name;
             const toAcc = data.accounts.find(a => a.id === toId).name;
@@ -936,7 +967,7 @@
             const cat = document.getElementById('txCat').value.trim();
             const recId = document.getElementById('txRecurringId').value;
 
-            if (!amount || !desc || !accId) return alert('Please check details');
+            if (!amount || !desc || !accId) return showAlert("Missing Info", "Please check details");
 
             const txObj = { id: id || uid(), type: txType, amount, desc, date, accId, cat, recId: recId || null };
 
@@ -980,7 +1011,7 @@
             const date = document.getElementById('recDate').value;
             const frequency = document.getElementById('recFreq').value;
             
-            if (!name || !amount) return alert('Check details');
+            if (!name || !amount) return showAlert("Missing Info", "Check details");
             
             const recObj = { 
                 id: id || uid(), name, amount, date, frequency, 
@@ -1020,6 +1051,8 @@
         function closeModal() { document.getElementById('txModal').classList.remove('open'); }
         function closeRecModal() { document.getElementById('recModal').classList.remove('open'); }
         function closeConfirm() { document.getElementById('confirmModal').classList.remove('open'); }
+        function closeMsgModal() { document.getElementById('msgModal').classList.remove('open'); }
+        function closePromptModal() { document.getElementById('promptModal').classList.remove('open'); }
         
         function openConfirm(title, text, cb) {
             onConfirmAction = cb;
@@ -1028,6 +1061,30 @@
             document.getElementById('confirmModal').classList.add('open');
         }
         document.getElementById('btnConfirmDelete').onclick = () => { if(onConfirmAction) onConfirmAction(); closeConfirm(); };
+
+        // Custom Alert Implementation
+        function showAlert(title, text) {
+            document.getElementById('msgTitle').innerText = title;
+            document.getElementById('msgText').innerText = text;
+            document.getElementById('msgModal').classList.add('open');
+        }
+
+        // Custom Prompt Implementation
+        function showPrompt(title, placeholder, cb) {
+            onPromptAction = cb;
+            document.getElementById('promptTitle').innerText = title;
+            const input = document.getElementById('promptInput');
+            input.value = '';
+            input.placeholder = placeholder || '';
+            document.getElementById('promptModal').classList.add('open');
+            input.focus();
+        }
+
+        document.getElementById('btnPromptOk').onclick = () => {
+            const val = document.getElementById('promptInput').value;
+            if (val && onPromptAction) onPromptAction(val);
+            closePromptModal();
+        };
 
         function openRevertModal(cbYes, cbNo) {
             const m = document.getElementById('revertModal');
@@ -1063,8 +1120,12 @@
             }
         }
         function addAccount() {
-            const name = prompt("Account Name:");
-            if (name) { data.accounts.push({ id: uid(), name: name.trim(), initial: 0 }); saveData(); }
+            showPrompt("New Wallet", "Wallet Name", (name) => {
+                if (name) { 
+                    data.accounts.push({ id: uid(), name: name.trim(), initial: 0 }); 
+                    saveData(); 
+                }
+            });
         }
         function deleteAccount(id) {
             openConfirm("Delete Wallet?", "Deletes all related transactions.", () => {
@@ -1101,11 +1162,12 @@
             reader.onload = e => {
                 try {
                     const inc = JSON.parse(e.target.result);
-                    if(inc) { data = inc; saveData(); alert("Restored!"); }
-                } catch(err) { alert("Invalid file"); }
+                    if(inc) { data = inc; saveData(); showAlert("Success", "Restored!"); }
+                } catch(err) { showAlert("Error", "Invalid file"); }
             };
             reader.readAsText(input.files[0]);
         }
     </script>
 </body>
 </html>
+
