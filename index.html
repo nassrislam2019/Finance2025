@@ -1,1173 +1,514 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>My Finance</title>
+    <title>My Finance EGP</title>
     <style>
         /* --- CSS STYLING --- */
         :root {
             --primary: #6366f1;
-            --primary-rgb: 99, 102, 241;
             --primary-dark: #4338ca;
             --bg-grad-start: #f3f4f6;
             --bg-grad-end: #e0e7ff;
-            --card-bg: rgba(255, 255, 255, 0.85);
-            --card-border: rgba(255, 255, 255, 0.6);
+            --card-bg: rgba(255, 255, 255, 0.9);
             --text: #1e293b;
             --text-sub: #64748b;
             --danger: #ef4444;
             --success: #10b981;
-            --warning: #f59e0b;
-            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
-            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
+        /* Dark Mode */
         .dark {
             --primary: #818cf8;
-            --primary-rgb: 129, 140, 248;
             --primary-dark: #6366f1;
             --bg-grad-start: #0f172a;
             --bg-grad-end: #1e1b4b;
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --card-border: rgba(255, 255, 255, 0.08);
+            --card-bg: rgba(30, 41, 59, 0.85);
             --text: #f1f5f9;
             --text-sub: #94a3b8;
-            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
-            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
         }
+
+        /* RTL Support */
+        [dir="rtl"] { font-family: 'Tahoma', 'Segoe UI', sans-serif; }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body { 
-            margin: 0; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-            background: linear-gradient(135deg, var(--bg-grad-start) 0%, var(--bg-grad-end) 100%);
-            background-attachment: fixed;
-            color: var(--text); 
-            padding-bottom: 90px; 
-            min-height: 100vh;
-            transition: color 0.3s; 
-            overscroll-behavior-y: none; 
+            margin: 0; font-family: var(--font-main); 
+            background: linear-gradient(135deg, var(--bg-grad-start), var(--bg-grad-end));
+            background-attachment: fixed; color: var(--text); 
+            padding-bottom: 90px; min-height: 100vh;
         }
 
         .container { max-width: 600px; margin: 0 auto; padding: 16px; }
 
         /* Typography */
-        h1, h2, h3 { margin: 0; letter-spacing: -0.02em; }
         .text-xl { font-size: 22px; font-weight: 800; }
         .text-lg { font-size: 18px; font-weight: 700; }
         .text-base { font-size: 15px; }
         .text-sm { font-size: 13px; }
-        .text-xs { font-size: 11px; }
         .text-sub { color: var(--text-sub); }
         .bold { font-weight: 700; }
-        .uppercase { text-transform: uppercase; letter-spacing: 0.05em; }
 
         /* Components */
         .card { 
-            background: var(--card-bg); 
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 20px; 
-            padding: 20px; 
-            box-shadow: var(--shadow); 
-            margin-bottom: 16px; 
-            border: 1px solid var(--card-border); 
-            transition: transform 0.2s ease, box-shadow 0.2s ease; 
+            background: var(--card-bg); backdrop-filter: blur(12px);
+            border-radius: 20px; padding: 20px; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); 
+            margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.1);
         }
-        
-        /* Animations */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+
+        .balance-card {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white; position: relative; overflow: hidden;
         }
-        .animate-enter { animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+        .balance-card .text-sub { color: rgba(255,255,255,0.7); }
 
         .btn { 
-            border: none; padding: 12px 16px; border-radius: 14px; 
+            border: none; padding: 12px; border-radius: 12px; 
             font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; 
-            gap: 6px; transition: all 0.2s; font-size: 14px; 
+            gap: 6px; font-size: 14px; width: 100%; transition: transform 0.1s;
         }
         .btn:active { transform: scale(0.96); }
-        .btn-primary { 
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark)); 
-            color: white; width: 100%; 
-            box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3);
-        }
-        .btn-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
-        .btn-ghost { background: transparent; color: var(--text-sub); }
-        .btn-outline { background: transparent; border: 1px solid var(--card-border); color: var(--text); }
-        .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 10px; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-ghost { background: transparent; color: var(--text); }
+        .btn-outline { background: transparent; border: 1px solid var(--text-sub); color: var(--text); }
 
-        /* Header & Nav */
-        header { 
-            position: sticky; top: 0; 
-            background: var(--card-bg); 
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            padding: 16px; 
-            border-bottom: 1px solid var(--card-border); 
-            z-index: 50; display: flex; justify-content: space-between; align-items: center; 
-        }
-        
+        /* Navigation */
         nav { 
             position: fixed; bottom: 0; left: 0; right: 0; 
-            background: var(--card-bg); 
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-top: 1px solid var(--card-border); 
+            background: var(--card-bg); backdrop-filter: blur(16px);
+            border-top: 1px solid rgba(0,0,0,0.05); 
             display: flex; justify-content: space-around; 
-            padding: 12px 0 24px 0; z-index: 50; 
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+            padding: 10px 0 25px 0; z-index: 50; 
         }
-        
         .nav-item { 
             background: none; border: none; display: flex; flex-direction: column; align-items: center; 
-            gap: 5px; color: var(--text-sub); font-size: 10px; font-weight: 600; cursor: pointer; 
-            transition: color 0.2s;
+            gap: 4px; color: var(--text-sub); font-size: 11px;
         }
-        .nav-item svg { transition: transform 0.2s; }
         .nav-item.active { color: var(--primary); }
-        .nav-item.active svg { transform: translateY(-2px); stroke-width: 2.5; }
+        .nav-item svg { width: 24px; height: 24px; stroke-width: 2px; }
+
+        /* Floating Action Button */
+        .fab-container { position: fixed; bottom: 90px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 40; }
+        [dir="rtl"] .fab-container { right: auto; left: 20px; }
+        
+        .fab { 
+            width: 56px; height: 56px; border-radius: 20px; 
+            background: var(--primary); color: white; border: none; 
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4); 
+            font-size: 24px; display: flex; align-items: center; justify-content: center;
+        }
+        .fab-mini {
+            width: 48px; height: 48px; border-radius: 15px;
+            background: var(--card-bg); color: var(--text); border: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
 
         /* Inputs */
         .input-group { margin-bottom: 14px; }
-        .label { display: block; font-size: 11px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.05em; }
+        .label { display: block; font-size: 11px; font-weight: 700; color: var(--text-sub); margin-bottom: 6px; text-transform: uppercase; }
         .input { 
-            width: 100%; padding: 14px; border-radius: 14px; 
-            border: 1px solid var(--card-border); 
-            background: rgba(255,255,255,0.5); 
-            color: var(--text); font-size: 16px; outline: none; 
-            transition: border-color 0.2s, background 0.2s;
+            width: 100%; padding: 14px; border-radius: 12px; 
+            border: 1px solid rgba(0,0,0,0.1); background: rgba(255,255,255,0.5); 
+            color: var(--text); font-size: 16px;
         }
-        .dark .input { background: rgba(0,0,0,0.2); border-color: rgba(255,255,255,0.1); }
-        .input:focus { border-color: var(--primary); background: transparent; }
-
-        /* FAB */
-        .fab { 
-            position: fixed; bottom: 100px; right: 20px; width: 56px; height: 56px; 
-            border-radius: 20px; 
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark)); 
-            color: white; border: none; 
-            box-shadow: 0 8px 20px rgba(var(--primary-rgb), 0.4); 
-            z-index: 40; cursor: pointer; display: flex; align-items: center; justify-content: center; 
-            font-size: 28px; transition: transform 0.2s;
-        }
-        .fab:active { transform: scale(0.9); }
-        [dir="rtl"] .fab { right: auto; left: 20px; }
+        .dark .input { background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.1); }
 
         /* Modal */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.2s; }
-        .modal.open { display: flex; opacity: 1; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
+        .modal.open { display: flex; }
         .modal-content { 
-            background: var(--bg-grad-start); /* Solid background for modal content to prevent transparency issues */
-            width: 100%; max-width: 400px; border-radius: 24px; padding: 24px; 
-            max-height: 90vh; overflow-y: auto; 
-            box-shadow: var(--glass-shadow);
-            transform: scale(0.95); transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            background: var(--bg-grad-start); width: 100%; max-width: 400px; 
+            border-radius: 24px; padding: 24px; max-height: 90vh; overflow-y: auto; 
         }
         .dark .modal-content { background: #1e293b; }
-        .modal.open .modal-content { transform: scale(1); }
 
-        /* Icons */
-        .icon { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-
-        /* Helpers */
+        /* List Items */
+        .tx-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .tx-icon { width: 40px; height: 40px; border-radius: 12px; background: rgba(100,100,100,0.1); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        
         .flex { display: flex; }
         .justify-between { justify-content: space-between; }
-        .justify-center { justify-content: center; }
-        .items-center { align-items: center; }
         .gap-2 { gap: 8px; }
-        .gap-3 { gap: 12px; }
         .text-green { color: var(--success); }
         .text-red { color: var(--danger); }
         .hidden { display: none !important; }
 
-        /* Delete Confirm Modal Specifics */
-        .confirm-icon { width: 64px; height: 64px; background: rgba(239, 68, 68, 0.1); border-radius: 50%; color: var(--danger); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; }
-        .info-icon { width: 64px; height: 64px; background: rgba(99, 102, 241, 0.1); border-radius: 50%; color: var(--primary); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; }
-
-        /* Progress Bar for Summary */
-        .progress-bar { height: 6px; background: rgba(0,0,0,0.05); border-radius: 3px; overflow: hidden; margin-top: 6px; }
-        .dark .progress-bar { background: rgba(255,255,255,0.1); }
-        .progress-fill { height: 100%; border-radius: 3px; }
-        
-        /* Swipe visual cue */
-        .swipe-hint { transition: transform 0.2s; position: relative; overflow: hidden; }
-        .swiping { transform: translateX(-30px); opacity: 0.7; }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="flex items-center gap-2">
-            <!-- New Icon: Wallet -->
-            <div style="width:36px; height:36px; background:linear-gradient(135deg, var(--primary), var(--primary-dark)); border-radius:10px; display:flex; align-items:center; justify-content:center; color:white; box-shadow: 0 4px 10px rgba(var(--primary-rgb), 0.3);">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
+    <header class="card" style="border-radius: 0 0 20px 20px; margin-top:0; border-top:none;">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div style="width:32px; height:32px; background:var(--primary); border-radius:8px; display:flex; align-items:center; justify-content:center; color:white;">
+                    💰
+                </div>
+                <div class="text-xl bold">My Finance</div>
             </div>
-            <div class="text-xl bold" id="appTitle">My Finance</div>
+            <div class="flex gap-2">
+                <button class="btn-ghost" onclick="toggleLang()" style="width:auto; padding:0 8px;">🇺🇸/🇪🇬</button>
+                <button class="btn-ghost" onclick="toggleTheme()" style="width:32px;">🌗</button>
+            </div>
         </div>
-        <button class="btn-ghost" style="font-size:20px; width:40px; height:40px; border-radius:50%;" onclick="toggleTheme()" id="themeBtn" aria-label="Toggle theme">🌞</button>
     </header>
 
     <div id="mainContainer" class="container"></div>
 
-    <button class="fab" onclick="openModal('add')" aria-label="Add transaction">
-        <svg class="icon" style="width:28px; height:28px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-    </button>
+    <div class="fab-container">
+        <button class="fab fab-mini" onclick="openTransferModal()" title="Transfer">⇄</button>
+        <button class="fab" onclick="openTxModal()" title="Add Transaction">＋</button>
+    </div>
 
     <nav>
-        <button class="nav-item active" onclick="switchView('dashboard')" id="nav-dash" aria-label="Dashboard">
-            <svg class="icon"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-            <span data-i18n="dash">Home</span>
+        <button class="nav-item active" onclick="switchView('dashboard')" id="nav-dash">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            <span data-i18n="home">Home</span>
         </button>
-        <button class="nav-item" onclick="switchView('transactions')" id="nav-tx" aria-label="Transactions">
-            <svg class="icon"><path d="M9 17l-5-5 5-5"/><path d="M20 12H4"/></svg>
-            <span data-i18n="tx">Transact</span>
+        <button class="nav-item" onclick="switchView('transactions')" id="nav-tx">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 17l-5-5 5-5"/><path d="M20 12H4"/></svg>
+            <span data-i18n="history">History</span>
         </button>
-        <button class="nav-item" onclick="switchView('accounts')" id="nav-acc" aria-label="Accounts">
-            <svg class="icon"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-            <span data-i18n="accs">Wallets</span>
-        </button>
-        <button class="nav-item" onclick="switchView('settings')" id="nav-set" aria-label="Settings">
-            <svg class="icon"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            <span data-i18n="set">Settings</span>
+        <button class="nav-item" onclick="switchView('settings')" id="nav-set">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span data-i18n="settings">Settings</span>
         </button>
     </nav>
 
-    <!-- Transaction Modal -->
-    <div id="txModal" class="modal" aria-hidden="true">
-        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-            <div class="flex justify-between items-center" style="margin-bottom:20px;">
-                <h2 class="text-xl" id="modalTitle">Transaction</h2>
-                <button class="btn-ghost" onclick="closeModal()" aria-label="Close transaction modal">✕</button>
-            </div>
-
-            <div class="flex gap-2" style="background:rgba(0,0,0,0.05); padding:4px; border-radius:16px; margin-bottom:16px;">
-                <button type="button" class="btn" style="flex:1; background:var(--danger); color:white;" id="btn-exp" onclick="setTxType('exp')">Expense</button>
-                <button type="button" class="btn btn-ghost" style="flex:1;" id="btn-inc" onclick="setTxType('inc')">Income</button>
-            </div>
-
-            <input type="hidden" id="txId">
-            <input type="hidden" id="txRecurringId">
-
-            <div class="input-group">
-                <label class="label" for="txAmount" data-i18n="amt">Amount</label>
-                <input type="number" id="txAmount" class="input" placeholder="0.00" inputmode="decimal" />
-            </div>
-            <div class="input-group">
-                <label class="label" for="txDate" data-i18n="date">Date</label>
-                <input type="date" id="txDate" class="input" />
-            </div>
-            <div class="input-group">
-                <label class="label" for="txDesc" data-i18n="desc">Description</label>
-                <input type="text" id="txDesc" class="input" placeholder="e.g. Salary" />
-            </div>
-            <div class="input-group">
-                <label class="label" for="txAcc" data-i18n="acc">Account</label>
-                <select id="txAcc" class="input"></select>
-            </div>
-            <div class="input-group">
-                <label class="label" for="txCat" data-i18n="cat">Category</label>
-                <input type="text" id="txCat" class="input" list="catList" />
-                <datalist id="catList"></datalist>
-            </div>
-
-            <div class="flex gap-2" style="margin-top:24px;">
-                <button class="btn btn-danger hidden" id="btnDelete" onclick="deleteTxClick()" style="flex:1">Delete</button>
-                <button class="btn btn-primary" onclick="saveTx()" data-i18n="save" style="flex:2">Save Transaction</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Transfer Modal -->
-    <div id="transferModal" class="modal" aria-hidden="true">
+    <div id="txModal" class="modal">
         <div class="modal-content">
             <div class="flex justify-between items-center" style="margin-bottom:20px;">
-                <h2 class="text-xl">Transfer</h2>
-                <button class="btn-ghost" onclick="closeTransferModal()">✕</button>
+                <h2 class="text-xl" data-i18n="addTx">Add Transaction</h2>
+                <button class="btn-ghost" onclick="closeModal('txModal')">✕</button>
             </div>
             
-            <div class="input-group">
-                <label class="label">From Account</label>
-                <select id="tfFrom" class="input"></select>
-            </div>
-
-            <div class="flex justify-center" style="margin:-12px 0 8px 0;">
-                <div style="width:32px; height:32px; background:var(--primary); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:16px; border:2px solid var(--card-bg);">
-                    ↓
-                </div>
+            <div class="flex gap-2" style="background:rgba(0,0,0,0.05); padding:4px; border-radius:12px; margin-bottom:16px;">
+                <button class="btn" id="btn-exp" onclick="setTxType('exp')" style="background:var(--danger); color:white;">Expense</button>
+                <button class="btn btn-ghost" id="btn-inc" onclick="setTxType('inc')">Income</button>
             </div>
 
             <div class="input-group">
-                <label class="label">To Account</label>
-                <select id="tfTo" class="input"></select>
+                <label class="label" data-i18n="amount">Amount</label>
+                <input type="number" id="txAmount" class="input" placeholder="0.00" inputmode="decimal">
             </div>
-
-            <div class="flex gap-2">
-                <div class="input-group" style="flex:1">
-                    <label class="label">Amount</label>
-                    <input type="number" id="tfAmount" class="input" placeholder="0.00" inputmode="decimal">
-                </div>
-                <div class="input-group" style="flex:1">
-                    <label class="label">Fees (opt)</label>
-                    <input type="number" id="tfFees" class="input" placeholder="0.00" inputmode="decimal">
-                </div>
-            </div>
-            
             <div class="input-group">
-                <label class="label">Date</label>
-                <input type="date" id="tfDate" class="input">
+                <label class="label" data-i18n="wallet">Wallet</label>
+                <select id="txAccount" class="input"></select>
             </div>
-
-            <button class="btn btn-primary" style="margin-top:24px;" onclick="executeTransfer()">Confirm Transfer</button>
+            <div class="input-group">
+                <label class="label" data-i18n="category">Category</label>
+                <select id="txCategory" class="input"></select>
+            </div>
+            <div class="input-group">
+                <label class="label" data-i18n="desc">Description</label>
+                <input type="text" id="txDesc" class="input">
+            </div>
+            <button class="btn btn-primary" onclick="saveTransaction()" data-i18n="save">Save</button>
         </div>
     </div>
 
-    <!-- Recurring Modal -->
-    <div id="recModal" class="modal" aria-hidden="true">
-        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="recModalTitle">
-            <div class="flex justify-between items-center" style="margin-bottom:20px;">
-                <h2 class="text-xl" id="recModalTitle">Recurring Item</h2>
-                <button class="btn-ghost" onclick="closeRecModal()" aria-label="Close recurring modal">✕</button>
-            </div>
-
-            <div class="flex gap-2" style="background:rgba(0,0,0,0.05); padding:4px; border-radius:16px; margin-bottom:16px;">
-                <button type="button" class="btn" style="flex:1; background:var(--danger); color:white;" id="btn-rec-exp" onclick="setRecType('exp')">Expense</button>
-                <button type="button" class="btn btn-ghost" style="flex:1;" id="btn-rec-inc" onclick="setRecType('inc')">Income</button>
-            </div>
-
-            <input type="hidden" id="recId">
-
-            <div class="input-group">
-                <label class="label" for="recName" data-i18n="desc">Name</label>
-                <input type="text" id="recName" class="input" placeholder="e.g. Rent, Netflix" />
-            </div>
-            <div class="input-group">
-                <label class="label" for="recAmount" data-i18n="amt">Amount</label>
-                <input type="number" id="recAmount" class="input" placeholder="0.00" inputmode="decimal" />
-            </div>
-            <div class="input-group">
-                <label class="label">Next Due Date</label>
-                <input type="date" id="recDate" class="input" />
-            </div>
-
-            <div class="input-group">
-                <label class="label">Frequency</label>
-                <select id="recFreq" class="input">
-                    <option value="daily">Daily</option>
-                    <option value="weekly">Weekly</option>
-                    <option value="monthly">Monthly</option>
-                    <option value="quarterly">Quarterly</option>
-                    <option value="6months">Every 6 months</option>
-                    <option value="yearly">Yearly</option>
-                    <option value="one-time">One time</option>
-                </select>
-            </div>
-
-            <div class="input-group">
-                <label class="label">Skip Until (optional)</label>
-                <input type="date" id="recSkipUntil" class="input" />
-                <div class="text-xs text-sub" style="margin-top:6px;">Pause alerts until this date.</div>
-            </div>
-
-            <div class="flex gap-2" style="margin-top:24px;">
-                <button class="btn btn-danger hidden" id="btnRecDelete" onclick="deleteRecClick()" style="flex:1">Delete</button>
-                <button class="btn btn-primary" onclick="saveRec()" data-i18n="save" style="flex:2">Save Schedule</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Confirm Modal (Generic) -->
-    <div id="confirmModal" class="modal" aria-hidden="true">
-        <div class="modal-content" style="text-align: center;">
-            <div class="confirm-icon">
-                <svg class="icon" style="width:32px; height:32px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-            </div>
-            <h2 class="text-xl bold" id="confirmTitle">Are you sure?</h2>
-            <p class="text-sub" style="margin-bottom: 24px;" id="confirmText">This process cannot be undone.</p>
-            <div class="flex gap-2">
-                <button class="btn btn-outline" style="flex:1; border-color:var(--card-border);" onclick="closeConfirm()">Cancel</button>
-                <button class="btn btn-danger" style="flex:1;" id="btnConfirmDelete">Delete</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Alert Modal (Replacement for window.alert) -->
-    <div id="msgModal" class="modal" aria-hidden="true">
-        <div class="modal-content" style="text-align: center;">
-            <div class="info-icon">
-                <svg class="icon" style="width:32px; height:32px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-            </div>
-            <h2 class="text-xl bold" id="msgTitle">Info</h2>
-            <p class="text-sub" style="margin-bottom: 24px;" id="msgText">Message goes here.</p>
-            <button class="btn btn-primary" style="width:100%;" onclick="closeMsgModal()">OK</button>
-        </div>
-    </div>
-
-    <!-- Prompt Modal (Replacement for window.prompt) -->
-    <div id="promptModal" class="modal" aria-hidden="true">
+    <div id="transferModal" class="modal">
         <div class="modal-content">
             <div class="flex justify-between items-center" style="margin-bottom:20px;">
-                <h2 class="text-xl" id="promptTitle">Enter Value</h2>
-                <button class="btn-ghost" onclick="closePromptModal()">✕</button>
+                <h2 class="text-xl" data-i18n="transfer">Transfer</h2>
+                <button class="btn-ghost" onclick="closeModal('transferModal')">✕</button>
             </div>
             <div class="input-group">
-                <input type="text" id="promptInput" class="input" placeholder="Type here..." />
+                <label class="label" data-i18n="amount">Amount</label>
+                <input type="number" id="trAmount" class="input" placeholder="0.00">
             </div>
-            <div class="flex gap-2" style="margin-top:16px;">
-                <button class="btn btn-outline" style="flex:1;" onclick="closePromptModal()">Cancel</button>
-                <button class="btn btn-primary" style="flex:1;" id="btnPromptOk">Save</button>
+            <div class="input-group">
+                <label class="label" data-i18n="from">From</label>
+                <select id="trFrom" class="input"></select>
             </div>
-        </div>
-    </div>
-
-    <!-- Revert Date Modal -->
-    <div id="revertModal" class="modal" aria-hidden="true">
-        <div class="modal-content" style="text-align:center;">
-             <div style="width:50px; height:50px; background:var(--bg-grad-end); color:var(--primary); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px auto;">
-                <svg class="icon" style="width:24px; height:24px;"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            <div class="input-group">
+                <label class="label" data-i18n="to">To</label>
+                <select id="trTo" class="input"></select>
             </div>
-            <h2 class="text-xl bold">Revert Date?</h2>
-            <p class="text-sub" style="margin-bottom:24px; margin-top:8px;">You deleted a scheduled payment. Should we revert the next due date back?</p>
-            
-            <div class="flex gap-2" style="flex-direction:column;">
-                <button class="btn btn-primary" id="btnRevertYes">Yes, Revert Date</button>
-                <button class="btn btn-outline" id="btnRevertNo">No, Keep Current Date</button>
-            </div>
+            <button class="btn btn-primary" onclick="saveTransfer()" data-i18n="save">Confirm Transfer</button>
         </div>
     </div>
 
     <script>
         // --- DATA & STATE ---
-        const DEFAULT_ACCOUNTS = [
-            { id: '1', name: 'Wallet', initial: 0 },
-            { id: '2', name: 'Bank', initial: 0 },
-            { id: '3', name: 'Credit Card', initial: 0 }
+        let lang = localStorage.getItem('mf_lang') || 'en';
+        let currency = 'EGP';
+        
+        let accounts = JSON.parse(localStorage.getItem('mf_accounts')) || [
+            { id: 1, name: "Cash", type: "cash", balance: 0 },
+            { id: 2, name: "Vodafone Cash", type: "digital", balance: 0 },
+            { id: 3, name: "Bank / InstaPay", type: "bank", balance: 0 }
         ];
 
-        let data = {
-            transactions: [],
-            accounts: DEFAULT_ACCOUNTS.slice(),
-            categories: [],
-            recurring: [],
-            settings: { lang: 'en', theme: 'light' }
+        let transactions = JSON.parse(localStorage.getItem('mf_tx')) || [];
+        let txType = 'exp';
+
+        // --- TRANSLATIONS (English / Arabic) ---
+        const i18n = {
+            en: {
+                home: "Home", history: "History", settings: "Settings",
+                balance: "Total Balance", income: "Income", expense: "Expenses",
+                addTx: "Add Transaction", transfer: "Transfer", 
+                amount: "Amount", wallet: "Wallet", category: "Category",
+                desc: "Description", save: "Save", from: "From", to: "To",
+                recent: "Recent Transactions", reset: "Reset Data",
+                export: "Export Data"
+            },
+            ar: {
+                home: "الرئيسية", history: "السجل", settings: "الإعدادات",
+                balance: "إجمالي الرصيد", income: "دخل", expense: "مصروفات",
+                addTx: "إضافة معاملة", transfer: "تحويل", 
+                amount: "المبلغ", wallet: "المحفظة", category: "التصنيف",
+                desc: "الوصف", save: "حفظ", from: "من", to: "إلى",
+                recent: "أحدث المعاملات", reset: "حذف البيانات",
+                export: "تصدير البيانات"
+            }
         };
 
-        let currentView = 'dashboard';
-        let txType = 'exp';
-        let recType = 'exp';
-        let onConfirmAction = null;
-        let onPromptAction = null;
-
-        const TRANSLATIONS = {
-            en: { dash: "Home", tx: "Transact", accs: "Wallets", set: "Settings", amt: "Amount", date: "Date", desc: "Description", acc: "Account", cat: "Category", save: "Save", del: "Delete", income: "Income", expense: "Expense", total: "Total Balance", rec: "Recurring", export: "Backup", import: "Restore" },
-            ar: { dash: "الرئيسية", tx: "المعاملات", accs: "المحافظ", set: "الإعدادات", amt: "المبلغ", date: "التاريخ", desc: "الوصف", acc: "الحساب", cat: "الفئة", save: "حفظ", del: "حذف", income: "دخل", expense: "مصروف", total: "إجمالي الرصيد", rec: "دوري", export: "نسخ", import: "استرجاع" }
+        const categories = {
+            exp: ["🍔 Food", "🚕 Transport", "🏠 Rent", "🛒 Groceries", "📱 Bills", "💊 Health"],
+            inc: ["💸 Salary", "📈 Bonus", "🎁 Gift", "💼 Freelance"]
         };
 
         // --- INIT ---
-        window.onload = () => {
-            loadData();
-            applyTheme();
-            applyLang();
-            render();
-            document.getElementById('txDate').valueAsDate = new Date();
-            setupModalBehavior();
-        };
+        document.addEventListener('DOMContentLoaded', () => {
+            updateLangAttrs();
+            if(localStorage.getItem('theme') === 'dark') document.body.classList.add('dark');
+            switchView('dashboard');
+        });
 
-        // --- STORAGE ---
-        function loadData() {
-            const stored = localStorage.getItem('abouTiaData');
-            if (stored) {
-                try {
-                    const parsed = JSON.parse(stored);
-                    data = Object.assign({
-                        transactions: [],
-                        accounts: DEFAULT_ACCOUNTS.slice(),
-                        categories: [],
-                        recurring: [],
-                        settings: { lang: 'en', theme: 'light' }
-                    }, parsed || {});
-                } catch (e) {
-                    console.error("Failed to parse", e);
-                }
-            }
-            data.accounts.forEach(a => a.id = String(a.id));
-            data.transactions.forEach(t => t.id = String(t.id));
-            data.recurring.forEach(r => r.id = String(r.id));
-        }
-
-        function saveData(skipRender) {
-            data.transactions.sort((a, b) => new Date(a.date) - new Date(b.date));
-            localStorage.setItem('abouTiaData', JSON.stringify(data));
-            if (!skipRender) render();
-        }
-
-        // --- RENDER CORE ---
-        function render() {
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            const navMap = { dashboard: 'dash', transactions: 'tx', accounts: 'acc', settings: 'set' };
-            document.getElementById(`nav-${navMap[currentView]}`).classList.add('active');
-
+        // --- VIEW ENGINE ---
+        function switchView(view) {
             const container = document.getElementById('mainContainer');
-            container.innerHTML = '';
-
-            if (currentView === 'dashboard') renderDashboard(container);
-            else if (currentView === 'transactions') renderTransactions(container);
-            else if (currentView === 'accounts') renderAccounts(container);
-            else if (currentView === 'settings') renderSettings(container);
-        }
-
-        // --- HELPERS ---
-        function t(key) { return TRANSLATIONS[data.settings.lang][key] || key; }
-        function fmt(num) {
-            return new Intl.NumberFormat(data.settings.lang === 'ar' ? 'ar-EG' : 'en-US', { style: 'currency', currency: 'EGP', maximumFractionDigits: 0 }).format(Number(num) || 0);
-        }
-        function uid() { return Date.now().toString(36) + Math.random().toString(36).substr(2); }
-        function safeNum(v) { return Number(v) || 0; }
-        function eqId(a, b) { return String(a) === String(b); }
-
-        function getNextDate(dateStr, freq) {
-            const date = new Date(dateStr);
-            const originalDay = date.getDate();
-            if (freq === 'daily') date.setDate(date.getDate() + 1);
-            else if (freq === 'weekly') date.setDate(date.getDate() + 7);
-            else if (freq === 'monthly') {
-                date.setMonth(date.getMonth() + 1);
-                if (date.getDate() !== originalDay) date.setDate(0); 
-            } 
-            else if (freq === 'quarterly') date.setMonth(date.getMonth() + 3);
-            else if (freq === '6months') date.setMonth(date.getMonth() + 6);
-            else if (freq === 'yearly') date.setFullYear(date.getFullYear() + 1);
-            return date.toISOString().split('T')[0];
-        }
-
-        function getPrevDate(dateStr, freq) {
-            const date = new Date(dateStr);
-            if (freq === 'daily') date.setDate(date.getDate() - 1);
-            else if (freq === 'weekly') date.setDate(date.getDate() - 7);
-            else if (freq === 'monthly') date.setMonth(date.getMonth() - 1);
-            else if (freq === 'quarterly') date.setMonth(date.getMonth() - 3);
-            else if (freq === '6months') date.setMonth(date.getMonth() - 6);
-            else if (freq === 'yearly') date.setFullYear(date.getFullYear() - 1);
-            return date.toISOString().split('T')[0];
-        }
-
-        function daysUntil(targetDate) {
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            const t = new Date(targetDate);
-            t.setHours(0,0,0,0);
-            return Math.ceil((t - today) / (1000 * 60 * 60 * 24));
-        }
-
-        function getAccBalance(accId) {
-            let bal = safeNum(data.accounts.find(a => eqId(a.id, accId))?.initial);
-            data.transactions.forEach(tx => {
-                if (eqId(tx.accId, accId)) {
-                    bal += (tx.type === 'inc' ? 1 : -1) * safeNum(tx.amount);
-                }
-            });
-            return bal;
-        }
-
-        // --- DASHBOARD RENDER ---
-        function getRecurringSummaryHTML() {
-            const today = new Date();
-            const curMonth = today.getMonth();
-            const curYear = today.getFullYear();
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             
-            // 1. Calculate Unpaid (Remaining)
-            let unpaidExp = 0;
-            let unpaidInc = 0;
-            data.recurring.forEach(r => {
-                const d = new Date(r.date);
-                if (d.getMonth() === curMonth && d.getFullYear() === curYear) {
-                    if (r.type === 'exp') unpaidExp += safeNum(r.amount);
-                    else unpaidInc += safeNum(r.amount);
-                }
-            });
-
-            // 2. Calculate Paid (From Transactions)
-            let paidExp = 0;
-            let collectedInc = 0;
-            data.transactions.forEach(t => {
-                if(!t.recId) return;
-                const d = new Date(t.date);
-                if (d.getMonth() === curMonth && d.getFullYear() === curYear) {
-                    if (t.type === 'exp') paidExp += safeNum(t.amount);
-                    else collectedInc += safeNum(t.amount);
-                }
-            });
-
-            const totalExp = unpaidExp + paidExp;
-            const totalInc = unpaidInc + collectedInc;
-
-            // Simple bars
-            const expPct = totalExp > 0 ? (paidExp / totalExp) * 100 : 0;
-            const incPct = totalInc > 0 ? (collectedInc / totalInc) * 100 : 0;
-
-            return `
-                <div class="card animate-enter" style="animation-delay: 0.1s;">
-                     <h3 class="text-xs bold text-sub uppercase" style="margin-bottom:12px;">Recurring (This Month)</h3>
-                     
-                     <div class="flex gap-3" style="margin-bottom:12px;">
-                        <div style="flex:1;">
-                            <div class="flex justify-between text-xs text-sub"><span>Expenses</span> <span>${fmt(unpaidExp)} left</span></div>
-                            <div class="bold text-lg text-red">${fmt(totalExp)}</div>
-                            <div class="progress-bar"><div class="progress-fill" style="width:${expPct}%; background:var(--danger);"></div></div>
-                        </div>
-                        <div style="flex:1;">
-                            <div class="flex justify-between text-xs text-sub"><span>Income</span> <span>${fmt(unpaidInc)} left</span></div>
-                            <div class="bold text-lg text-green">${fmt(totalInc)}</div>
-                            <div class="progress-bar"><div class="progress-fill" style="width:${incPct}%; background:var(--success);"></div></div>
-                        </div>
-                     </div>
-                </div>
-            `;
-        }
-
-        function getRecurringAlertsHTML() {
-            let html = '';
-            const recs = data.recurring.map(r => ({ ...r, dateObj: new Date(r.date) }))
-                            .sort((a,b) => a.dateObj - b.dateObj);
-
-            recs.forEach((r, idx) => {
-                if (r.skipUntil && new Date(r.skipUntil) >= r.dateObj) return;
-
-                const diffDays = daysUntil(r.date);
-                if (diffDays > 31) return; // Only show upcoming month
-
-                let statusColor = diffDays < 0 ? 'var(--danger)' : diffDays === 0 ? 'var(--warning)' : 'var(--text-sub)';
-                let borderLeft = diffDays < 0 ? '4px solid var(--danger)' : diffDays === 0 ? '4px solid var(--warning)' : '4px solid var(--primary)';
-                const msg = diffDays < 0 ? 'Overdue!' : diffDays === 0 ? 'Due Today' : `In ${diffDays} days`;
-
-                html += `
-                    <div class="card flex justify-between items-center animate-enter" style="animation-delay: ${0.15 + (idx * 0.05)}s; border-left:${borderLeft}; padding:14px;">
-                        <div>
-                            <div class="bold text-base">${r.name}</div>
-                            <div class="text-xs" style="color:${statusColor}">${msg} • ${r.date}</div>
-                        </div>
-                        <div style="text-align:right">
-                            <div class="bold text-base">${fmt(r.amount)}</div>
-                            <div class="flex gap-2" style="margin-top:6px;">
-                                <button class="btn btn-sm btn-outline" style="padding:4px 8px;" onclick="skipRecurring('${r.id}')" title="Skip this occurence">Skip ⏭️</button>
-                                <button class="btn btn-sm" style="background:var(--primary); color:white; padding:4px 10px;" onclick="payRecurring('${r.id}')">${r.type === 'inc' ? 'Get' : 'Pay'}</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            return html;
-        }
-
-        function renderDashboard(container) {
-            const total = data.accounts.reduce((sum, acc) => sum + getAccBalance(acc.id), 0);
-            const income = data.transactions.filter(t => t.type === 'inc').reduce((sum, t) => sum + safeNum(t.amount), 0);
-            const expense = data.transactions.filter(t => t.type === 'exp').reduce((sum, t) => sum + safeNum(t.amount), 0);
-
-            container.innerHTML = `
-                <div class="card animate-enter" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border:none; padding:24px;">
-                    <div class="text-sm" style="opacity:0.8; font-weight:600;">${t('total')}</div>
-                    <div class="text-xl bold" style="font-size:36px; margin: 6px 0;">${fmt(total)}</div>
-                    <div class="flex gap-2 mt-2">
-                        <div style="background:rgba(255,255,255,0.15); padding:10px 14px; border-radius:12px; flex:1; backdrop-filter:blur(4px);">
-                            <div class="text-xs" style="opacity:0.9">Income</div>
-                            <div class="bold text-lg">+${fmt(income)}</div>
-                        </div>
-                        <div style="background:rgba(255,255,255,0.15); padding:10px 14px; border-radius:12px; flex:1; backdrop-filter:blur(4px);">
-                            <div class="text-xs" style="opacity:0.9">Expense</div>
-                            <div class="bold text-lg">-${fmt(expense)}</div>
-                        </div>
-                    </div>
-                </div>
-
-                ${getRecurringSummaryHTML()}
-                <h3 class="text-sm bold text-sub uppercase animate-enter" style="animation-delay:0.12s; margin-top:20px; margin-bottom:8px;">Upcoming</h3>
-                ${getRecurringAlertsHTML()}
-
-                <h3 class="text-sm bold text-sub uppercase animate-enter" style="animation-delay:0.2s; margin-top:24px; margin-bottom:8px;">Wallets</h3>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;" class="animate-enter" style="animation-delay:0.25s">
-                    ${data.accounts.map(acc => `
-                        <div class="card" style="margin:0; padding:16px;">
-                            <div class="text-xs text-sub uppercase">${acc.name}</div>
-                            <div class="text-lg bold">${fmt(getAccBalance(acc.id))}</div>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-            addSwipeListeners(container);
-        }
-
-        function renderTransactions(container) {
-            container.innerHTML = `<h2 class="text-xl bold" style="margin-bottom:16px;">${t('tx')}</h2>`;
-            if (data.transactions.length === 0) {
-                container.innerHTML += `<div class="text-center text-sub" style="margin-top:40px;">No transactions found.</div>`;
-            } else {
-                const sorted = [...data.transactions].reverse();
-                sorted.forEach((tx, idx) => {
-                    const accName = data.accounts.find(a => eqId(a.id, tx.accId))?.name || 'Unknown';
-                    const isInc = tx.type === 'inc';
-                    container.innerHTML += `
-                    <div class="card flex justify-between items-center swipe-hint animate-enter" style="animation-delay:${idx*0.05}s; padding:16px; cursor:pointer;" data-id="${tx.id}" onclick="editTx('${tx.id}')">
-                        <div class="flex items-center gap-3">
-                            <div style="width:42px; height:42px; border-radius:14px; background:${isInc ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)'}; color:${isInc ? 'var(--success)' : 'var(--danger)'}; display:flex; align-items:center; justify-content:center; font-size:20px;">
-                                ${isInc ? '↓' : '↑'}
-                            </div>
-                            <div>
-                                <div class="bold text-base">${tx.desc}</div>
-                                <div class="text-xs text-sub">${tx.date} • ${accName}</div>
-                            </div>
-                        </div>
-                        <div class="bold ${isInc ? 'text-green' : 'text-red'} text-base">
-                            ${isInc ? '+' : '-'}${fmt(tx.amount)}
-                        </div>
-                    </div>`;
-                });
+            if(view === 'dashboard') {
+                document.getElementById('nav-dash').classList.add('active');
+                renderDashboard(container);
+            } else if(view === 'transactions') {
+                document.getElementById('nav-tx').classList.add('active');
+                renderHistory(container);
+            } else if(view === 'settings') {
+                document.getElementById('nav-set').classList.add('active');
+                renderSettings(container);
             }
-            addSwipeListeners(container);
+            applyTranslations();
         }
 
-        // --- SWIPE LOGIC ---
-        function addSwipeListeners(container) {
-            const cards = container.querySelectorAll('.swipe-hint');
-            cards.forEach(card => {
-                let startX = 0;
-                card.addEventListener('touchstart', e => startX = e.touches[0].clientX, {passive: true});
-                card.addEventListener('touchend', e => {
-                    if (startX && (startX - e.changedTouches[0].clientX > 80)) {
-                        prepareDeleteTx(card.getAttribute('data-id'));
-                    }
-                });
-            });
-        }
+        function renderDashboard(target) {
+            const totalBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0);
+            const inc = transactions.filter(t => t.type === 'inc').reduce((sum, t) => sum + t.amount, 0);
+            const exp = transactions.filter(t => t.type === 'exp').reduce((sum, t) => sum + t.amount, 0);
 
-        function renderAccounts(container) {
-            container.innerHTML = `
-                <div class="flex justify-between items-center" style="margin-bottom:16px;">
-                    <h2 class="text-xl bold">${t('accs')}</h2>
+            let accountsHtml = accounts.map(acc => `
+                <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(0,0,0,0.05);">
+                    <div class="flex items-center gap-2">
+                        <span>${acc.name.includes('Vodafone') ? '📱' : acc.name.includes('Bank') ? '💳' : '💵'}</span>
+                        <span class="text-sm bold">${acc.name}</span>
+                    </div>
+                    <span class="text-sm bold">${formatMoney(acc.balance)}</span>
+                </div>
+            `).join('');
+
+            target.innerHTML = `
+                <div class="card balance-card">
+                    <div class="text-sub" data-i18n="balance">${i18n[lang].balance}</div>
+                    <div class="text-xl bold" style="margin:5px 0 15px 0;">${formatMoney(totalBalance)}</div>
                     <div class="flex gap-2">
-                        <button class="btn btn-outline btn-sm" onclick="openTransferModal()">Transfer ⇄</button>
-                        <button class="btn btn-primary btn-sm" style="width:auto;" onclick="addAccount()">+ Add</button>
-                    </div>
-                </div>
-            `;
-            data.accounts.forEach((acc, idx) => {
-                container.innerHTML += `
-                    <div class="card relative animate-enter" style="animation-delay:${idx*0.05}s">
-                        <div class="text-xs text-sub uppercase mb-1">${acc.name}</div>
-                        <div class="text-xl bold">${fmt(getAccBalance(acc.id))}</div>
-                        <button class="btn-ghost" style="position:absolute; top:12px; right:12px; color:var(--danger); opacity:0.6;" onclick="deleteAccount('${acc.id}')">✕</button>
-                    </div>
-                `;
-            });
-        }
-
-        function renderSettings(container) {
-            container.innerHTML = `
-                <h2 class="text-xl bold" style="margin-bottom:16px;">${t('set')}</h2>
-
-                <div class="card animate-enter">
-                    <div class="flex justify-between items-center">
-                        <span class="bold">Language</span>
-                        <button class="btn btn-outline btn-sm" onclick="toggleLang()">${data.settings.lang === 'en' ? 'English' : 'العربية'}</button>
-                    </div>
-                </div>
-
-                <div class="card animate-enter" style="animation-delay:0.1s">
-                    <div class="flex justify-between items-center" style="margin-bottom:16px;">
-                        <span class="bold">Recurring Items</span>
-                        <button class="btn btn-primary btn-sm" style="width:auto;" onclick="openRecModal('add')">+ Add</button>
-                    </div>
-                    ${data.recurring.map(r => `
-                        <div class="flex justify-between items-center" style="padding:12px 0; border-bottom:1px solid var(--card-border); cursor:pointer;">
-                            <div style="flex:1" onclick="editRec('${r.id}')">
-                                <div class="bold text-sm" style="${r.type === 'inc' ? 'color: var(--success);' : ''}">${r.name}</div>
-                                <div class="text-xs text-sub">${r.frequency} • Next: ${r.date}</div>
-                            </div>
-                            <div class="bold text-sm" style="margin-right:10px;">${fmt(r.amount)}</div>
-                            <button class="btn-ghost" style="font-size:16px;" onclick="editRec('${r.id}')">✎</button>
+                        <div style="flex:1; background:rgba(255,255,255,0.2); padding:10px; border-radius:10px;">
+                            <div class="text-sm text-sub" style="color:rgba(255,255,255,0.8)" data-i18n="income">${i18n[lang].income}</div>
+                            <div class="bold">${formatMoney(inc)}</div>
                         </div>
-                    `).join('')}
+                        <div style="flex:1; background:rgba(255,255,255,0.2); padding:10px; border-radius:10px;">
+                            <div class="text-sm text-sub" style="color:rgba(255,255,255,0.8)" data-i18n="expense">${i18n[lang].expense}</div>
+                            <div class="bold">${formatMoney(exp)}</div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="card animate-enter" style="animation-delay:0.2s">
-                    <button class="btn btn-outline" style="width:100%; margin-bottom:10px;" onclick="exportData()">⬇ ${t('export')}</button>
-                    <button class="btn btn-outline" style="width:100%;" onclick="document.getElementById('fileInput').click()">⬆ ${t('import')}</button>
-                    <input type="file" id="fileInput" class="hidden" onchange="importData(this)" />
+                <div class="card">
+                    <h3 class="text-lg bold" style="margin-bottom:10px;" data-i18n="wallet">${i18n[lang].wallet}</h3>
+                    ${accountsHtml}
+                </div>
+
+                <div class="card">
+                    <h3 class="text-lg bold" style="margin-bottom:10px;" data-i18n="recent">${i18n[lang].recent}</h3>
+                    <div id="recentTxList"></div>
+                </div>
+            `;
+            renderTxList(transactions.slice(-5).reverse(), document.getElementById('recentTxList'));
+        }
+
+        function renderHistory(target) {
+            target.innerHTML = `
+                <div class="card">
+                    <h3 class="text-lg bold" style="margin-bottom:10px;" data-i18n="history">${i18n[lang].history}</h3>
+                    <div id="fullTxList"></div>
+                </div>
+            `;
+            renderTxList(transactions.slice().reverse(), document.getElementById('fullTxList'));
+        }
+
+        function renderSettings(target) {
+            target.innerHTML = `
+                <div class="card">
+                    <h3 class="text-lg bold" data-i18n="settings">${i18n[lang].settings}</h3>
+                    <div style="margin-top:20px;">
+                        <button class="btn btn-outline" onclick="exportData()" data-i18n="export" style="margin-bottom:10px;">${i18n[lang].export}</button>
+                        <button class="btn" style="background:var(--danger); color:white;" onclick="resetData()" data-i18n="reset">${i18n[lang].reset}</button>
+                    </div>
                 </div>
             `;
         }
 
-        // --- ACTIONS ---
-        function switchView(view) { currentView = view; render(); }
-
-        function openModal(mode, txData) {
-            const modal = document.getElementById('txModal');
-            modal.classList.add('open');
-            modal.setAttribute('aria-hidden', 'false');
-
-            const accSelect = document.getElementById('txAcc');
-            accSelect.innerHTML = data.accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
-            document.getElementById('catList').innerHTML = data.categories.map(c => `<option value="${c.name}">`).join('');
-
-            if (mode === 'edit' && txData) {
-                document.getElementById('modalTitle').innerText = 'Edit Transaction';
-                document.getElementById('txId').value = txData.id;
-                document.getElementById('txRecurringId').value = txData.recId || '';
-                document.getElementById('txAmount').value = safeNum(txData.amount);
-                document.getElementById('txDesc').value = txData.desc;
-                document.getElementById('txDate').value = txData.date;
-                document.getElementById('txAcc').value = txData.accId;
-                document.getElementById('txCat').value = txData.cat || '';
-                setTxType(txData.type);
-                document.getElementById('btnDelete').classList.remove('hidden');
-            } else {
-                document.getElementById('modalTitle').innerText = 'New Transaction';
-                document.getElementById('txId').value = '';
-                document.getElementById('txRecurringId').value = '';
-                document.getElementById('txAmount').value = '';
-                document.getElementById('txDesc').value = '';
-                document.getElementById('txDate').valueAsDate = new Date();
-                document.getElementById('txCat').value = '';
-                setTxType('exp');
-                document.getElementById('btnDelete').classList.add('hidden');
-            }
+        function renderTxList(list, el) {
+            if(!list.length) { el.innerHTML = '<div class="text-center text-sub" style="padding:10px;">No Data</div>'; return; }
+            el.innerHTML = list.map(t => `
+                <div class="tx-item">
+                    <div class="tx-icon">${t.icon || '📄'}</div>
+                    <div style="flex:1;">
+                        <div class="text-base bold">${t.desc || t.category}</div>
+                        <div class="text-sm text-sub">${t.accountName} • ${t.date}</div>
+                    </div>
+                    <div class="bold ${t.type === 'exp' ? 'text-red' : t.type === 'inc' ? 'text-green' : ''}">
+                        ${t.type === 'exp' ? '-' : t.type === 'inc' ? '+' : ''}${formatMoney(t.amount)}
+                    </div>
+                </div>
+            `).join('');
         }
-        
-        // --- TRANSFER LOGIC ---
+
+        // --- MODAL ACTIONS ---
+        function openTxModal() {
+            setTxType('exp');
+            populateSelect('txAccount', accounts.map(a => a.name));
+            populateSelect('txCategory', categories.exp);
+            document.getElementById('txModal').classList.add('open');
+        }
+
         function openTransferModal() {
-            const modal = document.getElementById('transferModal');
-            modal.classList.add('open');
-            const opts = data.accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
-            document.getElementById('tfFrom').innerHTML = opts;
-            document.getElementById('tfTo').innerHTML = opts;
-            document.getElementById('tfDate').valueAsDate = new Date();
-            document.getElementById('tfAmount').value = '';
-            document.getElementById('tfFees').value = ''; // Reset fees
-            
-            // Smart select: if >1 accounts, select second one for 'To'
-            if(data.accounts.length > 1) {
-                document.getElementById('tfTo').selectedIndex = 1;
-            }
-        }
-        
-        function closeTransferModal() {
-            document.getElementById('transferModal').classList.remove('open');
-        }
-        
-        function executeTransfer() {
-            const fromId = document.getElementById('tfFrom').value;
-            const toId = document.getElementById('tfTo').value;
-            const amount = parseFloat(document.getElementById('tfAmount').value);
-            const fees = parseFloat(document.getElementById('tfFees').value) || 0;
-            const date = document.getElementById('tfDate').value;
-            
-            if(fromId === toId) return showAlert("Error", "Source and Destination cannot be the same.");
-            if(!amount || amount <= 0) return showAlert("Error", "Invalid amount");
-            
-            const fromAcc = data.accounts.find(a => a.id === fromId).name;
-            const toAcc = data.accounts.find(a => a.id === toId).name;
-            
-            // Create Outgoing
-            data.transactions.push({
-                id: uid(),
-                type: 'exp',
-                amount: amount,
-                desc: `Transfer to ${toAcc}`,
-                date: date,
-                accId: fromId,
-                cat: 'Transfer',
-                recId: null
-            });
-            
-            // Create Incoming
-            data.transactions.push({
-                id: uid(),
-                type: 'inc',
-                amount: amount,
-                desc: `Transfer from ${fromAcc}`,
-                date: date,
-                accId: toId,
-                cat: 'Transfer',
-                recId: null
-            });
-            
-            // Create Fee Transaction
-            if (fees > 0) {
-                data.transactions.push({
-                    id: uid(),
-                    type: 'exp',
-                    amount: fees,
-                    desc: `Fee: Transfer to ${toAcc}`,
-                    date: date,
-                    accId: fromId,
-                    cat: 'Bank Fees',
-                    recId: null
-                });
-            }
-            
-            saveData();
-            closeTransferModal();
+            populateSelect('trFrom', accounts.map(a => a.name));
+            populateSelect('trTo', accounts.map(a => a.name));
+            document.getElementById('transferModal').classList.add('open');
         }
 
-        function openRecModal(mode, recData) {
-            const modal = document.getElementById('recModal');
-            modal.classList.add('open');
-            if (mode === 'edit' && recData) {
-                document.getElementById('recModalTitle').innerText = 'Edit Schedule';
-                document.getElementById('recId').value = recData.id;
-                document.getElementById('recName').value = recData.name;
-                document.getElementById('recAmount').value = safeNum(recData.amount);
-                document.getElementById('recDate').value = recData.date;
-                document.getElementById('recFreq').value = recData.frequency || 'monthly';
-                document.getElementById('recSkipUntil').value = recData.skipUntil || '';
-                setRecType(recData.type || 'exp');
-                document.getElementById('btnRecDelete').classList.remove('hidden');
-            } else {
-                document.getElementById('recModalTitle').innerText = 'New Schedule';
-                document.getElementById('recId').value = '';
-                document.getElementById('recName').value = '';
-                document.getElementById('recAmount').value = '';
-                document.getElementById('recDate').valueAsDate = new Date();
-                document.getElementById('recFreq').value = 'monthly';
-                document.getElementById('recSkipUntil').value = '';
-                setRecType('exp');
-                document.getElementById('btnRecDelete').classList.add('hidden');
-            }
-        }
+        function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
         function setTxType(type) {
             txType = type;
-            const btnExp = document.getElementById('btn-exp');
-            const btnInc = document.getElementById('btn-inc');
-            btnExp.style.background = type === 'exp' ? 'var(--danger)' : 'transparent';
-            btnExp.style.color = type === 'exp' ? 'white' : 'var(--text-sub)';
-            btnInc.style.background = type === 'inc' ? 'var(--success)' : 'transparent';
-            btnInc.style.color = type === 'inc' ? 'white' : 'var(--text-sub)';
+            document.getElementById('btn-exp').style.background = type === 'exp' ? 'var(--danger)' : 'transparent';
+            document.getElementById('btn-exp').style.color = type === 'exp' ? 'white' : 'var(--text)';
+            document.getElementById('btn-inc').style.background = type === 'inc' ? 'var(--success)' : 'transparent';
+            document.getElementById('btn-inc').style.color = type === 'inc' ? 'white' : 'var(--text)';
+            populateSelect('txCategory', categories[type]);
         }
 
-        function setRecType(type) {
-            recType = type;
-            const btnExp = document.getElementById('btn-rec-exp');
-            const btnInc = document.getElementById('btn-rec-inc');
-            btnExp.style.background = type === 'exp' ? 'var(--danger)' : 'transparent';
-            btnExp.style.color = type === 'exp' ? 'white' : 'var(--text-sub)';
-            btnInc.style.background = type === 'inc' ? 'var(--success)' : 'transparent';
-            btnInc.style.color = type === 'inc' ? 'white' : 'var(--text-sub)';
-        }
+        function saveTransaction() {
+            const amt = parseFloat(document.getElementById('txAmount').value);
+            const accName = document.getElementById('txAccount').value;
+            const cat = document.getElementById('txCategory').value;
+            const desc = document.getElementById('txDesc').value;
 
-        function saveTx() {
-            const id = document.getElementById('txId').value;
-            const amount = parseFloat(document.getElementById('txAmount').value);
-            const desc = document.getElementById('txDesc').value.trim();
-            const date = document.getElementById('txDate').value;
-            const accId = document.getElementById('txAcc').value;
-            const cat = document.getElementById('txCat').value.trim();
-            const recId = document.getElementById('txRecurringId').value;
+            if(!amt || !accName) return alert('Please enter amount and wallet');
 
-            if (!amount || !desc || !accId) return showAlert("Missing Info", "Please check details");
+            // Update Account Balance
+            const acc = accounts.find(a => a.name === accName);
+            if(txType === 'exp') acc.balance -= amt;
+            else acc.balance += amt;
 
-            const txObj = { id: id || uid(), type: txType, amount, desc, date, accId, cat, recId: recId || null };
+            transactions.push({
+                type: txType, amount: amt, accountName: accName, category: cat,
+                desc: desc || cat, date: new Date().toLocaleDateString(),
+                icon: cat.split(' ')[0]
+            });
 
-            if (id) {
-                const idx = data.transactions.findIndex(t => eqId(t.id, id));
-                if (idx > -1) data.transactions[idx] = txObj;
-            } else {
-                data.transactions.push(txObj);
-                if (recId) {
-                    const rIdx = data.recurring.findIndex(r => eqId(r.id, recId));
-                    if (rIdx > -1) {
-                        const r = data.recurring[rIdx];
-                        if (r.frequency === 'one-time') data.recurring.splice(rIdx, 1);
-                        else {
-                            r.date = getNextDate(r.date, r.frequency);
-                            data.recurring[rIdx] = r;
-                        }
-                    }
-                }
-            }
-            if (cat && !data.categories.find(c => c.name === cat)) data.categories.push({ name: cat });
             saveData();
-            closeModal();
+            closeModal('txModal');
+            switchView(document.getElementById('nav-dash').classList.contains('active') ? 'dashboard' : 'transactions');
         }
 
-        function skipRecurring(id) {
-            const idx = data.recurring.findIndex(r => eqId(r.id, id));
-            if (idx > -1) {
-                const r = data.recurring[idx];
-                // Simply move date forward without transaction
-                r.date = getNextDate(r.date, r.frequency);
-                data.recurring[idx] = r;
-                saveData();
-            }
-        }
+        function saveTransfer() {
+            const amt = parseFloat(document.getElementById('trAmount').value);
+            const fromName = document.getElementById('trFrom').value;
+            const toName = document.getElementById('trTo').value;
 
-        function saveRec() {
-            const id = document.getElementById('recId').value;
-            const name = document.getElementById('recName').value.trim();
-            const amount = parseFloat(document.getElementById('recAmount').value);
-            const date = document.getElementById('recDate').value;
-            const frequency = document.getElementById('recFreq').value;
-            
-            if (!name || !amount) return showAlert("Missing Info", "Check details");
-            
-            const recObj = { 
-                id: id || uid(), name, amount, date, frequency, 
-                type: recType, skipUntil: document.getElementById('recSkipUntil').value 
-            };
-            
-            if (id) {
-                const idx = data.recurring.findIndex(r => eqId(r.id, id));
-                if (idx > -1) data.recurring[idx] = recObj;
-            } else data.recurring.push(recObj);
-            
+            if(!amt || fromName === toName) return alert('Invalid transfer');
+
+            const fromAcc = accounts.find(a => a.name === fromName);
+            const toAcc = accounts.find(a => a.name === toName);
+
+            if(fromAcc.balance < amt) return alert('Insufficient funds');
+
+            fromAcc.balance -= amt;
+            toAcc.balance += amt;
+
+            transactions.push({
+                type: 'tr', amount: amt, accountName: `${fromName} ➝ ${toName}`,
+                category: 'Transfer', desc: 'Internal Transfer', date: new Date().toLocaleDateString(),
+                icon: '⇄'
+            });
+
             saveData();
-            closeRecModal();
+            closeModal('transferModal');
+            switchView('dashboard');
         }
 
-        function deleteTxClick() {
-            const id = document.getElementById('txId').value;
-            const tx = data.transactions.find(t => eqId(t.id, id));
-            openConfirm("Delete?", "Remove this transaction?", () => {
-                data.transactions = data.transactions.filter(t => !eqId(t.id, id));
-                if (tx && tx.recId) {
-                    const rec = data.recurring.find(r => eqId(r.id, tx.recId));
-                    if (rec) {
-                        setTimeout(() => openRevertModal(
-                            () => { rec.date = getPrevDate(rec.date, rec.frequency); saveData(); },
-                            () => saveData()
-                        ), 300);
-                        return;
-                    }
-                }
-                saveData();
-                closeModal();
-            });
+        // --- UTILS ---
+        function populateSelect(id, items) {
+            document.getElementById(id).innerHTML = items.map(i => `<option value="${i}">${i}</option>`).join('');
         }
 
-        // --- COMMON UTILS ---
-        function closeModal() { document.getElementById('txModal').classList.remove('open'); }
-        function closeRecModal() { document.getElementById('recModal').classList.remove('open'); }
-        function closeConfirm() { document.getElementById('confirmModal').classList.remove('open'); }
-        function closeMsgModal() { document.getElementById('msgModal').classList.remove('open'); }
-        function closePromptModal() { document.getElementById('promptModal').classList.remove('open'); }
-        
-        function openConfirm(title, text, cb) {
-            onConfirmAction = cb;
-            document.getElementById('confirmTitle').innerText = title;
-            document.getElementById('confirmText').innerText = text;
-            document.getElementById('confirmModal').classList.add('open');
-        }
-        document.getElementById('btnConfirmDelete').onclick = () => { if(onConfirmAction) onConfirmAction(); closeConfirm(); };
+        function formatMoney(n) { return n.toLocaleString('en-US') + ' ' + currency; }
 
-        // Custom Alert Implementation
-        function showAlert(title, text) {
-            document.getElementById('msgTitle').innerText = title;
-            document.getElementById('msgText').innerText = text;
-            document.getElementById('msgModal').classList.add('open');
+        function saveData() {
+            localStorage.setItem('mf_accounts', JSON.stringify(accounts));
+            localStorage.setItem('mf_tx', JSON.stringify(transactions));
         }
 
-        // Custom Prompt Implementation
-        function showPrompt(title, placeholder, cb) {
-            onPromptAction = cb;
-            document.getElementById('promptTitle').innerText = title;
-            const input = document.getElementById('promptInput');
-            input.value = '';
-            input.placeholder = placeholder || '';
-            document.getElementById('promptModal').classList.add('open');
-            input.focus();
-        }
-
-        document.getElementById('btnPromptOk').onclick = () => {
-            const val = document.getElementById('promptInput').value;
-            if (val && onPromptAction) onPromptAction(val);
-            closePromptModal();
-        };
-
-        function openRevertModal(cbYes, cbNo) {
-            const m = document.getElementById('revertModal');
-            m.classList.add('open');
-            const y = document.getElementById('btnRevertYes'), n = document.getElementById('btnRevertNo');
-            const ny = y.cloneNode(true), nn = n.cloneNode(true);
-            y.parentNode.replaceChild(ny, y); n.parentNode.replaceChild(nn, n);
-            ny.onclick = () => { cbYes(); m.classList.remove('open'); };
-            nn.onclick = () => { cbNo(); m.classList.remove('open'); };
-        }
-
-        function editTx(id) { openModal('edit', data.transactions.find(t => eqId(t.id, id))); }
-        function prepareDeleteTx(id) { document.getElementById('txId').value = id; deleteTxClick(); }
-        function editRec(id) { openRecModal('edit', data.recurring.find(r => eqId(r.id, id))); }
-        function deleteRecClick() {
-            const id = document.getElementById('recId').value;
-            openConfirm("Stop Recurring?", "This won't delete past transactions.", () => {
-                data.recurring = data.recurring.filter(r => !eqId(r.id, id));
-                saveData();
-                closeRecModal();
-            });
-        }
-        function payRecurring(id) {
-            const r = data.recurring.find(x => eqId(x.id, id));
-            if (r) {
-                openModal('add');
-                document.getElementById('txAmount').value = safeNum(r.amount);
-                document.getElementById('txDesc').value = r.name;
-                document.getElementById('txCat').value = 'Recurring';
-                document.getElementById('txRecurringId').value = r.id;
-                setTxType(r.type || 'exp');
-                document.getElementById('modalTitle').innerText = r.type === 'inc' ? 'Collect Recurring' : 'Pay Recurring';
-            }
-        }
-        function addAccount() {
-            showPrompt("New Wallet", "Wallet Name", (name) => {
-                if (name) { 
-                    data.accounts.push({ id: uid(), name: name.trim(), initial: 0 }); 
-                    saveData(); 
-                }
-            });
-        }
-        function deleteAccount(id) {
-            openConfirm("Delete Wallet?", "Deletes all related transactions.", () => {
-                data.accounts = data.accounts.filter(a => !eqId(a.id, id));
-                data.transactions = data.transactions.filter(t => !eqId(t.accId, id));
-                saveData();
-            });
-        }
-        function toggleTheme() {
-            data.settings.theme = data.settings.theme === 'light' ? 'dark' : 'light';
-            saveData(); applyTheme();
-        }
-        function applyTheme() {
-            document.body.classList.toggle('dark', data.settings.theme === 'dark');
-            document.getElementById('themeBtn').innerText = data.settings.theme === 'dark' ? '🌙' : '🌞';
-        }
-        function toggleLang() {
-            data.settings.lang = data.settings.lang === 'en' ? 'ar' : 'en';
-            saveData(); applyLang(); render();
-        }
-        function applyLang() { document.dir = data.settings.lang === 'ar' ? 'rtl' : 'ltr'; }
-        
-        function setupModalBehavior() {
-            document.querySelectorAll('.modal').forEach(m => m.onclick = e => { if(e.target === m) m.classList.remove('open'); });
-        }
         function exportData() {
+            const data = JSON.stringify({ accounts, transactions });
+            const blob = new Blob([data], {type: 'application/json'});
             const a = document.createElement('a');
-            a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], {type:'application/json'}));
-            a.download = `backup_${new Date().toISOString().split('T')[0]}.json`;
+            a.href = URL.createObjectURL(blob);
+            a.download = 'finance_backup.json';
             a.click();
         }
-        function importData(input) {
-            const reader = new FileReader();
-            reader.onload = e => {
-                try {
-                    const inc = JSON.parse(e.target.result);
-                    if(inc) { data = inc; saveData(); showAlert("Success", "Restored!"); }
-                } catch(err) { showAlert("Error", "Invalid file"); }
-            };
-            reader.readAsText(input.files[0]);
+
+        function resetData() {
+            if(confirm('Delete all data?')) {
+                localStorage.removeItem('mf_accounts');
+                localStorage.removeItem('mf_tx');
+                location.reload();
+            }
+        }
+
+        // --- LANGUAGE & THEME ---
+        function toggleLang() {
+            lang = lang === 'en' ? 'ar' : 'en';
+            localStorage.setItem('mf_lang', lang);
+            updateLangAttrs();
+            applyTranslations();
+            switchView(document.querySelector('.nav-item.active').id === 'nav-dash' ? 'dashboard' : 'transactions');
+        }
+
+        function updateLangAttrs() {
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+        }
+
+        function applyTranslations() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if(i18n[lang][key]) el.innerText = i18n[lang][key];
+            });
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark');
+            localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
         }
     </script>
 </body>
 </html>
-
