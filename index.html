@@ -176,6 +176,7 @@
         /* Helpers */
         .flex { display: flex; }
         .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
         .items-center { align-items: center; }
         .gap-2 { gap: 8px; }
         .gap-3 { gap: 12px; }
@@ -276,6 +277,50 @@
                 <button class="btn btn-danger hidden" id="btnDelete" onclick="deleteTxClick()" style="flex:1">Delete</button>
                 <button class="btn btn-primary" onclick="saveTx()" data-i18n="save" style="flex:2">Save Transaction</button>
             </div>
+        </div>
+    </div>
+    
+    <!-- Transfer Modal -->
+    <div id="transferModal" class="modal" aria-hidden="true">
+        <div class="modal-content">
+            <div class="flex justify-between items-center" style="margin-bottom:20px;">
+                <h2 class="text-xl">Transfer</h2>
+                <button class="btn-ghost" onclick="closeTransferModal()">✕</button>
+            </div>
+            
+            <div class="input-group">
+                <label class="label">From Account</label>
+                <select id="tfFrom" class="input"></select>
+            </div>
+
+            <div class="flex justify-center" style="margin:-12px 0 8px 0;">
+                <div style="width:32px; height:32px; background:var(--primary); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:16px; border:2px solid var(--card-bg);">
+                    ↓
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label class="label">To Account</label>
+                <select id="tfTo" class="input"></select>
+            </div>
+
+            <div class="flex gap-2">
+                <div class="input-group" style="flex:1">
+                    <label class="label">Amount</label>
+                    <input type="number" id="tfAmount" class="input" placeholder="0.00" inputmode="decimal">
+                </div>
+                <div class="input-group" style="flex:1">
+                    <label class="label">Fees (opt)</label>
+                    <input type="number" id="tfFees" class="input" placeholder="0.00" inputmode="decimal">
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label class="label">Date</label>
+                <input type="date" id="tfDate" class="input">
+            </div>
+
+            <button class="btn btn-primary" style="margin-top:24px;" onclick="executeTransfer()">Confirm Transfer</button>
         </div>
     </div>
 
@@ -671,7 +716,10 @@
             container.innerHTML = `
                 <div class="flex justify-between items-center" style="margin-bottom:16px;">
                     <h2 class="text-xl bold">${t('accs')}</h2>
-                    <button class="btn btn-primary btn-sm" style="width:auto;" onclick="addAccount()">+ Add</button>
+                    <div class="flex gap-2">
+                        <button class="btn btn-outline btn-sm" onclick="openTransferModal()">Transfer ⇄</button>
+                        <button class="btn btn-primary btn-sm" style="width:auto;" onclick="addAccount()">+ Add</button>
+                    </div>
                 </div>
             `;
             data.accounts.forEach((acc, idx) => {
@@ -755,6 +803,82 @@
                 setTxType('exp');
                 document.getElementById('btnDelete').classList.add('hidden');
             }
+        }
+        
+        // --- TRANSFER LOGIC ---
+        function openTransferModal() {
+            const modal = document.getElementById('transferModal');
+            modal.classList.add('open');
+            const opts = data.accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+            document.getElementById('tfFrom').innerHTML = opts;
+            document.getElementById('tfTo').innerHTML = opts;
+            document.getElementById('tfDate').valueAsDate = new Date();
+            document.getElementById('tfAmount').value = '';
+            document.getElementById('tfFees').value = ''; // Reset fees
+            
+            // Smart select: if >1 accounts, select second one for 'To'
+            if(data.accounts.length > 1) {
+                document.getElementById('tfTo').selectedIndex = 1;
+            }
+        }
+        
+        function closeTransferModal() {
+            document.getElementById('transferModal').classList.remove('open');
+        }
+        
+        function executeTransfer() {
+            const fromId = document.getElementById('tfFrom').value;
+            const toId = document.getElementById('tfTo').value;
+            const amount = parseFloat(document.getElementById('tfAmount').value);
+            const fees = parseFloat(document.getElementById('tfFees').value) || 0;
+            const date = document.getElementById('tfDate').value;
+            
+            if(fromId === toId) return alert("Source and Destination cannot be the same.");
+            if(!amount || amount <= 0) return alert("Invalid amount");
+            
+            const fromAcc = data.accounts.find(a => a.id === fromId).name;
+            const toAcc = data.accounts.find(a => a.id === toId).name;
+            
+            // Create Outgoing
+            data.transactions.push({
+                id: uid(),
+                type: 'exp',
+                amount: amount,
+                desc: `Transfer to ${toAcc}`,
+                date: date,
+                accId: fromId,
+                cat: 'Transfer',
+                recId: null
+            });
+            
+            // Create Incoming
+            data.transactions.push({
+                id: uid(),
+                type: 'inc',
+                amount: amount,
+                desc: `Transfer from ${fromAcc}`,
+                date: date,
+                accId: toId,
+                cat: 'Transfer',
+                recId: null
+            });
+            
+            // Create Fee Transaction
+            if (fees > 0) {
+                data.transactions.push({
+                    id: uid(),
+                    type: 'exp',
+                    amount: fees,
+                    desc: `Fee: Transfer to ${toAcc}`,
+                    date: date,
+                    accId: fromId,
+                    cat: 'Bank Fees',
+                    recId: null
+                });
+            }
+            
+            saveData();
+            closeTransferModal();
         }
 
         function openRecModal(mode, recData) {
@@ -985,4 +1109,3 @@
     </script>
 </body>
 </html>
-
