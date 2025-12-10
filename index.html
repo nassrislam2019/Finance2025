@@ -487,7 +487,7 @@
             document.getElementById('eyeBtn').style.opacity = privacyMode ? '1' : '0.5';
         }
 
-        // --- RECURRING SUMMARY (RESTORED MAIN FUNCTION) ---
+        // --- RECURRING LOGIC ---
         function getRecurringSummaryHTML() {
             const today = new Date();
             const curMonth = today.getMonth();
@@ -536,10 +536,44 @@
             `;
         }
 
+        function getRecurringAlertsHTML() {
+            let html = '';
+            const recs = data.recurring.map(r => ({ ...r, dateObj: new Date(r.date) }))
+                            .sort((a,b) => a.dateObj - b.dateObj);
+
+            recs.forEach((r, idx) => {
+                if (r.skipUntil && new Date(r.skipUntil) >= r.dateObj) return;
+
+                const diffDays = daysUntil(r.date);
+                if (diffDays > 31) return; 
+
+                let statusColor = diffDays < 0 ? 'var(--danger)' : diffDays === 0 ? 'var(--warning)' : 'var(--text-sub)';
+                let borderLeft = diffDays < 0 ? '4px solid var(--danger)' : diffDays === 0 ? '4px solid var(--warning)' : '4px solid var(--primary)';
+                const msg = diffDays < 0 ? 'Overdue!' : diffDays === 0 ? 'Due Today' : `In ${diffDays} days`;
+
+                html += `
+                    <div class="card flex justify-between items-center animate-enter" style="animation-delay: ${0.15 + (idx * 0.05)}s; border-left:${borderLeft}; padding:14px;">
+                        <div>
+                            <div class="bold text-base">${r.name}</div>
+                            <div class="text-xs" style="color:${statusColor}">${msg} • ${r.date}</div>
+                        </div>
+                        <div style="text-align:right">
+                            <div class="bold text-base">${fmt(r.amount)}</div>
+                            <div class="flex gap-2" style="margin-top:6px;">
+                                <button class="btn btn-sm btn-outline" style="padding:4px 8px;" onclick="skipRecurring('${r.id}')" title="Skip">Skip</button>
+                                <button class="btn btn-sm" style="background:var(--primary); color:white; padding:4px 10px;" onclick="payRecurring('${r.id}')">${r.type === 'inc' ? 'Get' : 'Pay'}</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            return html;
+        }
+
         function renderDashboard(container) {
             const total = data.accounts.reduce((sum, acc) => sum + getAccBalance(acc.id), 0);
             
-            // Budget Alerts (Pro Feature)
+            // Budget Alerts
             let budgetHtml = '';
             const curMonth = new Date().toISOString().slice(0, 7);
             data.categories.forEach(cat => {
@@ -564,8 +598,21 @@
                     <div class="text-sm" style="opacity:0.8; font-weight:600;">Total Balance</div>
                     <div class="text-xl bold privacy-blur" style="font-size:36px; margin: 6px 0;">${fmt(total)}</div>
                 </div>
-                ${getRecurringSummaryHTML()} 
+                ${getRecurringSummaryHTML()}
+                <h3 class="text-xs bold text-sub uppercase mb-2">Upcoming Payments</h3>
+                ${getRecurringAlertsHTML()}
                 ${budgetHtml ? `<h3 class="text-xs bold text-sub uppercase mb-2">Budget Alerts</h3>${budgetHtml}` : ''}
+                
+                <h3 class="text-xs bold text-sub uppercase mb-2 mt-4">Wallets</h3>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    ${data.accounts.map(acc => `
+                        <div class="card mb-0" style="padding:16px;">
+                            <div class="text-xs text-sub uppercase">${acc.name}</div>
+                            <div class="text-lg bold privacy-blur">${fmt(getAccBalance(acc.id))}</div>
+                        </div>
+                    `).join('')}
+                </div>
+
                 <h3 class="text-xs bold text-sub uppercase mb-2 mt-4">Recent</h3>
                 ${getRecentTxHtml()}
             `;
@@ -831,6 +878,18 @@
                 data.transactions[idx] = tx;
             } else {
                 data.transactions.push(tx);
+                const recId = document.getElementById('txRecurringId').value;
+                if (recId) {
+                    const rIdx = data.recurring.findIndex(r => eqId(r.id, recId));
+                    if (rIdx > -1) {
+                        const r = data.recurring[rIdx];
+                        if (r.frequency === 'one-time') data.recurring.splice(rIdx, 1);
+                        else {
+                            r.date = getNextDate(r.date, r.frequency);
+                            data.recurring[rIdx] = r;
+                        }
+                    }
+                }
             }
             saveData();
             closeModal();
@@ -938,6 +997,26 @@
             saveData(); closeRecModal();
         }
         function closeRecModal() { document.getElementById('recModal').classList.remove('open'); }
+        function payRecurring(id) {
+            const r = data.recurring.find(x => eqId(x.id, id));
+            if (r) {
+                openModal('add');
+                document.getElementById('txAmount').value = safeNum(r.amount);
+                document.getElementById('txDesc').value = r.name;
+                document.getElementById('txRecurringId').value = r.id;
+                setTxType(r.type || 'exp');
+                document.getElementById('modalTitle').innerText = r.type === 'inc' ? 'Collect Recurring' : 'Pay Recurring';
+            }
+        }
+        function skipRecurring(id) {
+            const idx = data.recurring.findIndex(r => eqId(r.id, id));
+            if (idx > -1) {
+                const r = data.recurring[idx];
+                r.date = getNextDate(r.date, r.frequency);
+                data.recurring[idx] = r;
+                saveData();
+            }
+        }
 
         function openCatManager() {
             document.getElementById('catModal').classList.add('open');
@@ -1176,6 +1255,30 @@
         function toggleTheme() { data.settings.theme = data.settings.theme==='light'?'dark':'light'; saveData(); applyTheme(); }
         function applyTheme() { document.body.classList.toggle('dark', data.settings.theme==='dark'); }
         
+        // Date helpers for recurring logic
+        function getNextDate(dateStr, freq) {
+            const date = new Date(dateStr);
+            const originalDay = date.getDate();
+            if (freq === 'daily') date.setDate(date.getDate() + 1);
+            else if (freq === 'weekly') date.setDate(date.getDate() + 7);
+            else if (freq === 'monthly') {
+                date.setMonth(date.getMonth() + 1);
+                if (date.getDate() !== originalDay) date.setDate(0); 
+            } 
+            else if (freq === 'quarterly') date.setMonth(date.getMonth() + 3);
+            else if (freq === '6months') date.setMonth(date.getMonth() + 6);
+            else if (freq === 'yearly') date.setFullYear(date.getFullYear() + 1);
+            return date.toISOString().split('T')[0];
+        }
+
+        function daysUntil(targetDate) {
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const t = new Date(targetDate);
+            t.setHours(0,0,0,0);
+            return Math.ceil((t - today) / (1000 * 60 * 60 * 24));
+        }
+
         // Modals
         function closeModal() { document.querySelectorAll('.modal').forEach(m=>m.classList.remove('open')); }
         function showAlert(t,m) { document.getElementById('msgTitle').innerText=t; document.getElementById('msgText').innerText=m; document.getElementById('msgModal').classList.add('open'); }
