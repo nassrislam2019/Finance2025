@@ -405,7 +405,7 @@
         </div>
     </div>
 
-    <div id="recModal" class="modal"><div class="modal-content"><h2 class="text-xl" id="recModalTitle">Recurring</h2><input type="hidden" id="recId"><input id="recName" class="input mb-2" placeholder="Name"><input id="recAmount" type="number" class="input mb-2" placeholder="Amount"><input type="date" id="recDate" class="input mb-2"><select id="recFreq" class="input mb-4"><option value="daily">Daily</option><option value="monthly">Monthly</option><option value="weekly">Weekly</option><option value="yearly">Yearly</option></select><input type="date" id="recSkipUntil" class="input mb-4" placeholder="Skip Until"><div class="flex gap-2"><button class="btn btn-danger hidden" onclick="deleteRecClick()" id="btnRecDelete">Del</button><button class="btn btn-primary" style="flex:2" onclick="saveRec()">Save</button><button class="btn btn-ghost" onclick="closeRecModal()">✕</button></div></div></div>
+    <div id="recModal" class="modal"><div class="modal-content"><h2 class="text-xl" id="recModalTitle">Recurring</h2><input type="hidden" id="recId"><input id="recName" class="input mb-2" placeholder="Name"><input id="recAmount" type="number" class="input mb-2" placeholder="Amount"><input type="date" id="recDate" class="input mb-2"><select id="recFreq" class="input mb-4"><option value="daily">Daily</option><option value="monthly">Monthly</option><option value="weekly">Weekly</option><option value="yearly">Yearly</option><option value="one-time">One Time</option></select><input type="date" id="recSkipUntil" class="input mb-4" placeholder="Skip Until"><div class="flex gap-2"><button class="btn btn-danger hidden" onclick="deleteRecClick()" id="btnRecDelete">Del</button><button class="btn btn-primary" style="flex:2" onclick="saveRec()">Save</button><button class="btn btn-ghost" onclick="closeRecModal()">✕</button></div></div></div>
     
     <div id="msgModal" class="modal"><div class="modal-content text-center"><div class="info-icon">ℹ️</div><h2 id="msgTitle" class="text-xl bold"></h2><p id="msgText" class="text-sub mb-4"></p><button class="btn btn-primary" onclick="document.getElementById('msgModal').classList.remove('open')">OK</button></div></div>
     
@@ -450,7 +450,6 @@
         };
 
         function loadData() {
-            // Using 'abouTiaData' to match original data key so you don't lose data
             const stored = localStorage.getItem('abouTiaData');
             if (stored) {
                 try {
@@ -536,6 +535,50 @@
             `;
         }
 
+        function getNextMonthRecurringSummaryHTML() {
+            const today = new Date();
+            let nextMonth = today.getMonth() + 1;
+            let nextYear = today.getFullYear();
+            if (nextMonth > 11) { nextMonth = 0; nextYear++; }
+            
+            let projectedExp = 0, projectedInc = 0;
+
+            data.recurring.forEach(r => {
+                const d = new Date(r.date);
+                let hitsNextMonth = false;
+                
+                if (r.frequency === 'monthly') hitsNextMonth = true; 
+                else if (r.frequency === 'one-time') {
+                    if (d.getMonth() === nextMonth && d.getFullYear() === nextYear) hitsNextMonth = true;
+                } 
+                else if (r.frequency === 'yearly') { if (d.getMonth() === nextMonth) hitsNextMonth = true; }
+                else if (r.frequency === 'weekly') hitsNextMonth = true; 
+
+                if (r.skipUntil && new Date(r.skipUntil) >= new Date(nextYear, nextMonth, 1)) hitsNextMonth = false;
+
+                if (hitsNextMonth) {
+                    if (r.type === 'exp') projectedExp += safeNum(r.amount);
+                    else projectedInc += safeNum(r.amount);
+                }
+            });
+
+            return `
+                <div class="card" style="opacity: 0.8; margin-top: 10px;">
+                     <h3 class="text-xs bold text-sub uppercase" style="margin-bottom:12px;">Recurring (Next Month)</h3>
+                     <div class="flex gap-3">
+                        <div style="flex:1;">
+                            <div class="text-xs text-sub">Projected Expense</div>
+                            <div class="bold text-lg text-red">${fmt(projectedExp)}</div>
+                        </div>
+                        <div style="flex:1;">
+                            <div class="text-xs text-sub">Projected Income</div>
+                            <div class="bold text-lg text-green">${fmt(projectedInc)}</div>
+                        </div>
+                     </div>
+                </div>
+            `;
+        }
+
         function getRecurringAlertsHTML() {
             let html = '';
             const recs = data.recurring.map(r => ({ ...r, dateObj: new Date(r.date) }))
@@ -599,6 +642,7 @@
                     <div class="text-xl bold privacy-blur" style="font-size:36px; margin: 6px 0;">${fmt(total)}</div>
                 </div>
                 ${getRecurringSummaryHTML()}
+                ${getNextMonthRecurringSummaryHTML()}
                 <h3 class="text-xs bold text-sub uppercase mb-2">Upcoming Payments</h3>
                 ${getRecurringAlertsHTML()}
                 ${budgetHtml ? `<h3 class="text-xs bold text-sub uppercase mb-2">Budget Alerts</h3>${budgetHtml}` : ''}
