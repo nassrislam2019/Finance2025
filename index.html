@@ -405,7 +405,22 @@
         </div>
     </div>
 
-    <div id="recModal" class="modal"><div class="modal-content"><h2 class="text-xl" id="recModalTitle">Recurring</h2><input type="hidden" id="recId"><input id="recName" class="input mb-2" placeholder="Name"><input id="recAmount" type="number" class="input mb-2" placeholder="Amount"><input type="date" id="recDate" class="input mb-2"><select id="recFreq" class="input mb-4"><option value="daily">Daily</option><option value="monthly">Monthly</option><option value="weekly">Weekly</option><option value="yearly">Yearly</option><option value="one-time">One Time</option></select><input type="date" id="recSkipUntil" class="input mb-4" placeholder="Skip Until"><div class="flex gap-2"><button class="btn btn-danger hidden" onclick="deleteRecClick()" id="btnRecDelete">Del</button><button class="btn btn-primary" style="flex:2" onclick="saveRec()">Save</button><button class="btn btn-ghost" onclick="closeRecModal()">✕</button></div></div></div>
+    <!-- Recurring Modal (Updated: includes type selection) -->
+    <div id="recModal" class="modal"><div class="modal-content"><h2 class="text-xl" id="recModalTitle">Recurring</h2>
+        <input type="hidden" id="recId">
+        <div class="input-group"><label class="label">Name</label><input id="recName" class="input mb-2" placeholder="Name"></div>
+        <div class="input-group"><label class="label">Amount</label><input id="recAmount" type="number" class="input mb-2" placeholder="Amount"></div>
+        <div class="input-group"><label class="label">Date</label><input type="date" id="recDate" class="input mb-2"></div>
+        <div class="input-group"><label class="label">Frequency</label><select id="recFreq" class="input mb-4"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="yearly">Yearly</option><option value="one-time">One Time</option></select></div>
+        <div class="input-group"><label class="label">Type</label>
+            <select id="recType" class="input mb-4">
+                <option value="exp">Payment (Expense)</option>
+                <option value="inc">Collection (Income)</option>
+            </select>
+        </div>
+        <div class="input-group"><label class="label">Skip Until (optional)</label><input type="date" id="recSkipUntil" class="input mb-4" placeholder="Skip Until"></div>
+        <div class="flex gap-2"><button class="btn btn-danger hidden" onclick="deleteRecClick()" id="btnRecDelete">Del</button><button class="btn btn-primary" style="flex:2" onclick="saveRec()">Save</button><button class="btn btn-ghost" onclick="closeRecModal()">✕</button></div>
+    </div></div>
     
     <div id="msgModal" class="modal"><div class="modal-content text-center"><div class="info-icon">ℹ️</div><h2 id="msgTitle" class="text-xl bold"></h2><p id="msgText" class="text-sub mb-4"></p><button class="btn btn-primary" onclick="document.getElementById('msgModal').classList.remove('open')">OK</button></div></div>
     
@@ -593,18 +608,21 @@
                 let statusColor = diffDays < 0 ? 'var(--danger)' : diffDays === 0 ? 'var(--warning)' : 'var(--text-sub)';
                 let borderLeft = diffDays < 0 ? '4px solid var(--danger)' : diffDays === 0 ? '4px solid var(--warning)' : '4px solid var(--primary)';
                 const msg = diffDays < 0 ? 'Overdue!' : diffDays === 0 ? 'Due Today' : `In ${diffDays} days`;
+                const typeLabel = r.type === 'inc' ? 'Income' : 'Expense';
 
                 html += `
                     <div class="card flex justify-between items-center animate-enter" style="animation-delay: ${0.15 + (idx * 0.05)}s; border-left:${borderLeft}; padding:14px;">
                         <div>
-                            <div class="bold text-base">${r.name}</div>
+                            <div class="bold text-base">${r.name} <span class="text-xs text-sub">• ${typeLabel}</span></div>
                             <div class="text-xs" style="color:${statusColor}">${msg} • ${r.date}</div>
                         </div>
                         <div style="text-align:right">
                             <div class="bold text-base">${fmt(r.amount)}</div>
                             <div class="flex gap-2" style="margin-top:6px;">
                                 <button class="btn btn-sm btn-outline" style="padding:4px 8px;" onclick="skipRecurring('${r.id}')" title="Skip">Skip</button>
-                                <button class="btn btn-sm" style="background:var(--primary); color:white; padding:4px 10px;" onclick="payRecurring('${r.id}')">${r.type === 'inc' ? 'Get' : 'Pay'}</button>
+                                <button class="btn btn-sm" style="background:var(--primary); color:white; padding:4px 10px;" onclick="payRecurring('${r.id}')">${r.type === 'inc' ? 'Collect' : 'Pay'}</button>
+                                <button class="btn btn-sm btn-ghost" style="padding:4px 8px;" onclick="editRec('${r.id}')">Edit</button>
+                                <button class="btn btn-sm" style="padding:4px 8px; background:rgba(239,68,68,0.08); color:var(--danger);" onclick="confirmDeleteRec('${r.id}')">Delete</button>
                             </div>
                         </div>
                     </div>
@@ -844,7 +862,7 @@
                       data.recurring.map(r => `
                         <div class="flex justify-between items-center py-2" style="padding: 10px 0; border-bottom: 1px solid var(--card-border); cursor:pointer;" onclick="editRec('${r.id}')">
                             <div>
-                                <div class="bold text-sm">${r.name}</div>
+                                <div class="bold text-sm">${r.name} <span class="text-xs text-sub">• ${r.type === 'inc' ? 'Income' : 'Expense'}</span></div>
                                 <div class="text-xs text-sub">${r.frequency} • ${r.date}</div>
                             </div>
                             <div class="bold text-sm privacy-blur">${fmt(r.amount)}</div>
@@ -1003,6 +1021,9 @@
             document.getElementById('recName').value = '';
             document.getElementById('recAmount').value = '';
             document.getElementById('recDate').valueAsDate = new Date();
+            document.getElementById('recFreq').value = 'monthly';
+            document.getElementById('recType').value = 'exp';
+            document.getElementById('recSkipUntil').value = '';
             document.getElementById('btnRecDelete').classList.add('hidden');
         }
         function editRec(id) {
@@ -1015,6 +1036,7 @@
                 document.getElementById('recDate').value = r.date;
                 document.getElementById('recFreq').value = r.frequency;
                 document.getElementById('recSkipUntil').value = r.skipUntil || '';
+                document.getElementById('recType').value = r.type || 'exp';
                 document.getElementById('btnRecDelete').classList.remove('hidden');
             }
         }
@@ -1025,9 +1047,10 @@
             const date = document.getElementById('recDate').value;
             const freq = document.getElementById('recFreq').value;
             const skip = document.getElementById('recSkipUntil').value;
+            const type = document.getElementById('recType').value;
             
             if(!name || !amount) return showAlert("Error", "Missing info");
-            const r = { id: id||uid(), name, amount, date, frequency:freq, skipUntil:skip, type:'exp' };
+            const r = { id: id||uid(), name, amount, date, frequency:freq, skipUntil:skip, type: type };
             if(id) {
                 const idx = data.recurring.findIndex(x=>x.id===id);
                 data.recurring[idx] = r;
@@ -1037,8 +1060,10 @@
         }
         function deleteRecClick() {
             const id = document.getElementById('recId').value;
-            data.recurring = data.recurring.filter(r => r.id !== id);
-            saveData(); closeRecModal();
+            openConfirm("Delete recurring item?", "This will remove the recurring schedule. Existing transactions remain. Proceed?", () => {
+                data.recurring = data.recurring.filter(r => r.id !== id);
+                saveData(); closeRecModal();
+            });
         }
         function closeRecModal() { document.getElementById('recModal').classList.remove('open'); }
         function payRecurring(id) {
@@ -1060,6 +1085,14 @@
                 data.recurring[idx] = r;
                 saveData();
             }
+        }
+
+        // New: confirmation flow for delete recurring from list
+        function confirmDeleteRec(id) {
+            openConfirm("Delete recurring item?", "This will remove the recurring schedule. Existing transactions will not be deleted. Are you sure?", () => {
+                data.recurring = data.recurring.filter(r => r.id !== id);
+                saveData();
+            });
         }
 
         function openCatManager() {
